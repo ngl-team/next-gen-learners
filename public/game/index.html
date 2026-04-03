@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Money Smart Kids — Woodstock Public Schools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--green:#22C55E;--blue:#3B82F6;--purple:#8B5CF6;--orange:#F59E0B;--pink:#EC4899;--red:#EF4444;--bg:#0F172A;--card:#1E293B;--card2:#334155}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden}
+
+    /* Floating coins background */
+    .bg-coins{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .coin{position:absolute;font-size:2rem;opacity:.08;animation:floatUp linear infinite}
+    @keyframes floatUp{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-10vh) rotate(720deg)}}
+
+    /* Main container */
+    .app{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:20px}
+
+    /* Header */
+    .header{text-align:center;padding:24px 0 8px}
+    .header .school{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);font-weight:700;opacity:.8}
+    .header h1{font-size:2.2rem;font-weight:900;margin:8px 0;line-height:1.1}
+    .header h1 span{background:linear-gradient(135deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header .sub{font-size:.95rem;opacity:.5;margin-bottom:8px}
+
+    /* Stats bar */
+    .stats{display:flex;gap:12px;justify-content:center;margin:16px 0 24px;flex-wrap:wrap}
+    .stat{background:var(--card);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:.95rem;border:2px solid transparent;transition:all .3s}
+    .stat.coins-stat{border-color:var(--orange)}
+    .stat.stars-stat{border-color:var(--purple)}
+    .stat.streak-stat{border-color:var(--pink)}
+    .stat .icon{font-size:1.3rem}
+    .stat .val{font-size:1.1rem}
+
+    /* Screen system */
+    .screen{display:none;animation:fadeIn .4s ease}
+    .screen.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Menu */
+    .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+    .menu-card{background:var(--card);border-radius:20px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .25s;border:3px solid transparent;position:relative;overflow:hidden}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+    .menu-card:active{transform:scale(.97)}
+    .menu-card .emoji{font-size:2.8rem;margin-bottom:10px;display:block;animation:bounce 2s ease infinite}
+    .menu-card h3{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+    .menu-card p{font-size:.75rem;opacity:.5;line-height:1.3}
+    .menu-card.green{border-color:var(--green)}.menu-card.green:hover{background:rgba(34,197,94,.1)}
+    .menu-card.blue{border-color:var(--blue)}.menu-card.blue:hover{background:rgba(59,130,246,.1)}
+    .menu-card.purple{border-color:var(--purple)}.menu-card.purple:hover{background:rgba(139,92,246,.1)}
+    .menu-card.orange{border-color:var(--orange)}.menu-card.orange:hover{background:rgba(245,158,11,.1)}
+    .menu-card .badge{position:absolute;top:10px;right:10px;background:var(--pink);font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:8px;letter-spacing:.05em}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+    /* Game area */
+    .game-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .back-btn{background:var(--card2);border:none;color:#fff;width:40px;height:40px;border-radius:12px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .back-btn:hover{background:var(--blue)}
+    .game-header h2{font-size:1.4rem;font-weight:800}
+    .game-header .progress-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin-left:auto;max-width:200px}
+    .game-header .progress-fill{height:100%;border-radius:4px;transition:width .4s ease;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+    /* Question card */
+    .q-card{background:var(--card);border-radius:20px;padding:28px;margin-bottom:16px;text-align:center}
+    .q-card .q-emoji{font-size:3rem;margin-bottom:12px;display:block;animation:bounce 2s ease infinite}
+    .q-card .q-text{font-size:1.2rem;font-weight:700;line-height:1.4;margin-bottom:4px}
+    .q-card .q-hint{font-size:.8rem;opacity:.4;margin-top:4px}
+
+    /* Answer buttons */
+    .answers{display:grid;gap:12px}
+    .ans-btn{background:var(--card);border:3px solid var(--card2);border-radius:16px;padding:16px 20px;font-size:1.05rem;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;font-family:inherit}
+    .ans-btn:hover{border-color:var(--blue);background:rgba(59,130,246,.08);transform:translateX(4px)}
+    .ans-btn:active{transform:scale(.98)}
+    .ans-btn .letter{width:32px;height:32px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;flex-shrink:0}
+    .ans-btn.correct{border-color:var(--green);background:rgba(34,197,94,.15);animation:pop .4s ease}
+    .ans-btn.correct .letter{background:var(--green)}
+    .ans-btn.wrong{border-color:var(--red);background:rgba(239,68,68,.1);animation:shake .4s ease}
+    .ans-btn.wrong .letter{background:var(--red)}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+    /* Feedback */
+    .feedback{text-align:center;padding:20px;border-radius:16px;margin-top:16px;display:none;animation:fadeIn .3s ease}
+    .feedback.show{display:block}
+    .feedback.good{background:rgba(34,197,94,.1);border:2px solid var(--green)}
+    .feedback.bad{background:rgba(239,68,68,.1);border:2px solid var(--red)}
+    .feedback .fb-emoji{font-size:2.4rem;display:block;margin-bottom:8px}
+    .feedback .fb-text{font-size:1rem;font-weight:700}
+    .feedback .fb-explain{font-size:.85rem;opacity:.6;margin-top:4px;line-height:1.4}
+    .next-btn{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;padding:12px 32px;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;margin-top:16px;font-family:inherit;transition:all .2s}
+    .next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,.3)}
+
+    /* Drag & drop game */
+    .drag-zone{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0;min-height:60px}
+    .drag-item{background:var(--card);border:2px solid var(--card2);border-radius:14px;padding:12px 16px;font-size:1rem;font-weight:700;cursor:grab;transition:all .2s;user-select:none;display:flex;align-items:center;gap:8px}
+    .drag-item:active{cursor:grabbing;transform:scale(1.05)}
+    .drag-item .d-emoji{font-size:1.3rem}
+    .drop-targets{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .drop-box{background:var(--card);border:3px dashed var(--card2);border-radius:18px;padding:20px;min-height:180px;text-align:center;transition:all .2s}
+    .drop-box h3{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+    .drop-box p{font-size:.75rem;opacity:.4;margin-bottom:12px}
+    .drop-box.over{border-color:var(--blue);background:rgba(59,130,246,.06)}
+    .drop-box .dropped{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+    .drop-box .dropped .drag-item{font-size:.85rem;padding:8px 12px;cursor:default}
+    .drop-box.need{border-color:var(--green)}
+    .drop-box.need h3{color:var(--green)}
+    .drop-box.want{border-color:var(--purple)}
+    .drop-box.want h3{color:var(--purple)}
+    .check-btn{background:linear-gradient(135deg,var(--green),#16A34A);border:none;color:#fff;padding:14px 40px;border-radius:14px;font-size:1.1rem;font-weight:800;cursor:pointer;margin:20px auto 0;display:block;font-family:inherit;transition:all .2s}
+    .check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(34,197,94,.3)}
+
+    /* Budget game */
+    .budget-header{text-align:center;margin-bottom:20px}
+    .budget-header .total{font-size:2.4rem;font-weight:900;color:var(--green)}
+    .budget-header .remaining{font-size:1rem;opacity:.6}
+    .shop-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    .shop-item{background:var(--card);border:3px solid var(--card2);border-radius:16px;padding:16px;text-align:center;cursor:pointer;transition:all .2s}
+    .shop-item:hover{border-color:var(--blue);transform:translateY(-2px)}
+    .shop-item.bought{border-color:var(--green);background:rgba(34,197,94,.08)}
+    .shop-item.cant{opacity:.4;cursor:not-allowed}
+    .shop-item .s-emoji{font-size:2rem;display:block;margin-bottom:6px}
+    .shop-item .s-name{font-size:.85rem;font-weight:700}
+    .shop-item .s-price{font-size:.9rem;font-weight:800;color:var(--orange);margin-top:4px}
+    .cart{background:var(--card);border-radius:16px;padding:16px;margin-top:16px}
+    .cart h3{font-size:.9rem;font-weight:700;margin-bottom:8px;opacity:.6}
+    .cart-items{display:flex;gap:8px;flex-wrap:wrap;min-height:32px}
+    .cart-tag{background:var(--card2);padding:6px 12px;border-radius:10px;font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:6px}
+
+    /* Coin counter game */
+    .coin-display{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:20px 0}
+    .coin-btn{width:72px;height:72px;border-radius:50%;border:4px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-family:inherit;background:var(--card)}
+    .coin-btn:hover{transform:scale(1.1)}
+    .coin-btn:active{transform:scale(.95)}
+    .coin-btn .c-val{font-size:.65rem;font-weight:800;margin-top:2px}
+    .coin-btn .c-icon{font-size:1.4rem}
+    .coin-btn.penny{border-color:#B45309;color:#F59E0B}
+    .coin-btn.nickel{border-color:#6B7280;color:#9CA3AF}
+    .coin-btn.dime{border-color:#9CA3AF;color:#D1D5DB}
+    .coin-btn.quarter{border-color:#D97706;color:#FBBF24}
+    .target-price{text-align:center;margin:16px 0}
+    .target-price .price-label{font-size:.8rem;opacity:.5;font-weight:700}
+    .target-price .price-val{font-size:2.8rem;font-weight:900;color:var(--green)}
+    .your-total{text-align:center;margin:12px 0}
+    .your-total .yt-label{font-size:.8rem;opacity:.5}
+    .your-total .yt-val{font-size:1.8rem;font-weight:900;transition:color .2s}
+    .your-total .yt-val.match{color:var(--green)}
+    .your-total .yt-val.over{color:var(--red)}
+    .coin-tray{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:36px;margin:8px 0}
+    .coin-tray .mini-coin{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;animation:popIn .2s ease}
+    .mini-coin.penny{background:#92400E;color:#FCD34D}
+    .mini-coin.nickel{background:#4B5563;color:#E5E7EB}
+    .mini-coin.dime{background:#6B7280;color:#F3F4F6}
+    .mini-coin.quarter{background:#B45309;color:#FDE68A}
+    @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+    .reset-coins{background:var(--card2);border:none;color:#fff;padding:8px 20px;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+
+    /* Results screen */
+    .results{text-align:center;padding:32px 0}
+    .results .r-emoji{font-size:4rem;display:block;margin-bottom:16px;animation:bounce 1s ease infinite}
+    .results h2{font-size:1.8rem;font-weight:900;margin-bottom:8px}
+    .results .r-score{font-size:1.1rem;opacity:.6;margin-bottom:24px}
+    .results .r-stars{font-size:2rem;margin-bottom:24px;letter-spacing:4px}
+    .play-again{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;padding:14px 36px;border-radius:14px;font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;margin:8px}
+    .play-again:hover{transform:translateY(-2px)}
+
+    /* Celebration overlay */
+    .celebrate{position:fixed;inset:0;pointer-events:none;z-index:100}
+    .confetti{position:absolute;width:10px;height:10px;border-radius:2px;animation:confettiFall linear forwards}
+    @keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(1080deg);opacity:0}}
+
+    /* Responsive */
+    @media(max-width:600px){
+      .menu-grid{grid-template-columns:1fr}
+      .drop-targets{grid-template-columns:1fr}
+      .shop-grid{grid-template-columns:1fr 1fr}
+      .header h1{font-size:1.7rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-coins" id="bgCoins"></div>
+
+<div class="app">
+  <div class="header">
+    <p class="school">Woodstock Public Schools</p>
+    <h1>Money <span>Smart Kids</span></h1>
+    <p class="sub">Learn about money the fun way!</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat coins-stat"><span class="icon">🪙</span><span class="val" id="totalCoins">0</span></div>
+    <div class="stat stars-stat"><span class="icon">⭐</span><span class="val" id="totalStars">0</span></div>
+    <div class="stat streak-stat"><span class="icon">🔥</span><span class="val" id="streak">0</span></div>
+  </div>
+
+  <!-- MENU SCREEN -->
+  <div class="screen active" id="menuScreen">
+    <div class="menu-grid">
+      <div class="menu-card green" onclick="startGame('needs')">
+        <span class="emoji">🛒</span>
+        <h3>Needs vs Wants</h3>
+        <p>Can you tell the difference?</p>
+      </div>
+      <div class="menu-card blue" onclick="startGame('coins')">
+        <span class="emoji">💰</span>
+        <h3>Coin Counter</h3>
+        <p>Add up the right coins!</p>
+      </div>
+      <div class="menu-card purple" onclick="startGame('quiz')">
+        <span class="emoji">🧠</span>
+        <h3>Money Quiz</h3>
+        <p>Test your money smarts!</p>
+      </div>
+      <div class="menu-card orange" onclick="startGame('budget')">
+        <span class="emoji">🏪</span>
+        <h3>Budget Boss</h3>
+        <p>Spend wisely at the store!</p>
+        <span class="badge">NEW</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="quizScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2 id="quizTitle">Money Quiz</h2>
+      <div class="progress-bar"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <span class="q-emoji" id="quizEmoji">🧠</span>
+      <p class="q-text" id="quizQuestion"></p>
+      <p class="q-hint" id="quizHint"></p>
+    </div>
+    <div class="answers" id="quizAnswers"></div>
+    <div class="feedback" id="quizFeedback">
+      <span class="fb-emoji" id="fbEmoji"></span>
+      <p class="fb-text" id="fbText"></p>
+      <p class="fb-explain" id="fbExplain"></p>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- NEEDS VS WANTS SCREEN -->
+  <div class="screen" id="needsScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2>Needs vs Wants</h2>
+      <div class="progress-bar"><div class="progress-fill" id="needsProgress" style="width:0%"></div></div>
+    </div>
+    <p style="text-align:center;opacity:.5;font-size:.9rem;margin-bottom:8px">Drag each item to the right box!</p>
+    <div class="drag-zone" id="dragZone"></div>
+    <div class="drop-targets">
+      <div class="drop-box need" id="needBox" ondrop="dropItem(event,'need')" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+        <h3>✅ Needs</h3>
+        <p>Things you MUST have</p>
+        <div class="dropped" id="needDropped"></div>
+      </div>
+      <div class="drop-box want" id="wantBox" ondrop="dropItem(event,'want')" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+        <h3>💜 Wants</h3>
+        <p>Things that are nice to have</p>
+        <div class="dropped" id="wantDropped"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="checkNeeds" onclick="checkNeeds()" style="display:none">Check My Answers! ✓</button>
+  </div>
+
+  <!-- COIN COUNTER SCREEN -->
+  <div class="screen" id="coinsScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2>Coin Counter</h2>
+      <div class="progress-bar"><div class="progress-fill" id="coinsProgress" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <span class="q-emoji">🏷️</span>
+      <p class="q-text" id="coinQuestion">How much does this cost?</p>
+    </div>
+    <div class="target-price">
+      <p class="price-label">PRICE TAG</p>
+      <p class="price-val" id="targetPrice">$0.00</p>
+    </div>
+    <p style="text-align:center;font-size:.85rem;opacity:.5;margin-bottom:8px">Tap coins to add them up!</p>
+    <div class="coin-display">
+      <button class="coin-btn penny" onclick="addCoin(1,'penny')"><span class="c-icon">🪙</span><span class="c-val">1¢</span></button>
+      <button class="coin-btn nickel" onclick="addCoin(5,'nickel')"><span class="c-icon">🪙</span><span class="c-val">5¢</span></button>
+      <button class="coin-btn dime" onclick="addCoin(10,'dime')"><span class="c-icon">🪙</span><span class="c-val">10¢</span></button>
+      <button class="coin-btn quarter" onclick="addCoin(25,'quarter')"><span class="c-icon">🪙</span><span class="c-val">25¢</span></button>
+    </div>
+    <div class="coin-tray" id="coinTray"></div>
+    <div class="your-total">
+      <p class="yt-label">YOUR COINS</p>
+      <p class="yt-val" id="yourTotal">$0.00</p>
+    </div>
+    <div style="text-align:center">
+      <button class="reset-coins" onclick="resetCoins()">Clear Coins ↺</button>
+    </div>
+  </div>
+
+  <!-- BUDGET SCREEN -->
+  <div class="screen" id="budgetScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2>Budget Boss</h2>
+    </div>
+    <div class="budget-header">
+      <p style="font-size:.8rem;opacity:.5">YOU HAVE</p>
+      <p class="total" id="budgetTotal">$10.00</p>
+      <p class="remaining">Remaining: <strong id="budgetRemaining">$10.00</strong></p>
+    </div>
+    <p style="text-align:center;font-size:.9rem;opacity:.5;margin-bottom:16px">Buy what you NEED first, then see what's left for wants!</p>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div class="cart">
+      <h3>🛍️ Your Cart</h3>
+      <div class="cart-items" id="cartItems"></div>
+    </div>
+    <button class="check-btn" id="budgetCheck" onclick="checkBudget()" style="margin-top:16px">Done Shopping! ✓</button>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="resultsScreen">
+    <div class="results">
+      <span class="r-emoji" id="rEmoji">🏆</span>
+      <h2 id="rTitle">Amazing!</h2>
+      <p class="r-score" id="rScore"></p>
+      <p class="r-stars" id="rStars"></p>
+      <button class="play-again" onclick="goMenu()">Back to Games 🎮</button>
+      <button class="play-again" style="background:linear-gradient(135deg,var(--green),#16A34A)" id="rReplay" onclick="replayGame()">Play Again! 🔄</button>
+    </div>
+  </div>
+</div>
+
+<div class="celebrate" id="celebrate"></div>
+
+<script>
+// ===== STATE =====
+let coins=0,stars=0,streak=0,currentGame='',currentQ=0,score=0,totalQ=0;
+let coinTotal=0,coinTarget=0,coinRound=0;
+let budgetMoney=1000,cart=[];
+let needsItems=[],needsSorted=0,needsTotal=0;
+let lastGame='';
+
+// ===== BACKGROUND COINS =====
+(function(){const c=document.getElementById('bgCoins');for(let i=0;i<15;i++){const d=document.createElement('div');d.className='coin';d.textContent=['💵','🪙','💰','💲','🏦'][Math.floor(Math.random()*5)];d.style.left=Math.random()*100+'%';d.style.animationDuration=(15+Math.random()*20)+'s';d.style.animationDelay=Math.random()*20+'s';c.appendChild(d)}})();
+
+// ===== QUIZ DATA =====
+const quizQuestions=[
+  {q:"If you have 2 quarters, how much money do you have?",a:["50 cents","25 cents","75 cents","10 cents"],c:0,e:"Each quarter is worth 25 cents. 25 + 25 = 50 cents!",emoji:"🪙"},
+  {q:"Which coin is worth the MOST?",a:["Quarter","Dime","Nickel","Penny"],c:0,e:"A quarter is worth 25 cents — the most of any coin!",emoji:"🥇"},
+  {q:"You saved $5 each week for 3 weeks. How much did you save?",a:["$15","$10","$8","$20"],c:0,e:"$5 + $5 + $5 = $15. Great saving!",emoji:"🐷"},
+  {q:"What is a NEED?",a:["Food to eat","A new video game","A toy robot","Candy"],c:0,e:"Food keeps us healthy and alive — it's something we need!",emoji:"🍎"},
+  {q:"What does 'saving money' mean?",a:["Keeping money to use later","Throwing money away","Giving all your money away","Spending it all at once"],c:0,e:"Saving means keeping money safe so you can use it later!",emoji:"💰"},
+  {q:"You have $3. A book costs $2. How much is left?",a:["$1","$2","$3","$0"],c:0,e:"$3 minus $2 = $1 left over!",emoji:"📚"},
+  {q:"Which is a WANT, not a need?",a:["A new toy","Water to drink","A warm coat","A place to live"],c:0,e:"Toys are fun but we don't need them to survive!",emoji:"🧸"},
+  {q:"If an apple costs 50¢ and you pay with $1, what's your change?",a:["50 cents","25 cents","75 cents","$1"],c:0,e:"$1.00 - $0.50 = $0.50. You get 50 cents back!",emoji:"🍏"},
+  {q:"What's a smart thing to do with birthday money?",a:["Save some and spend some","Spend it all right away","Hide it under your bed","Give it all away"],c:0,e:"Saving some and spending some is a great balance!",emoji:"🎂"},
+  {q:"How many pennies make a dollar?",a:["100","50","10","25"],c:0,e:"Each penny is 1 cent, and there are 100 cents in a dollar!",emoji:"🏦"}
+];
+
+// ===== NEEDS VS WANTS DATA =====
+const needsData=[
+  {name:"Water",emoji:"💧",type:"need"},
+  {name:"Food",emoji:"🍎",type:"need"},
+  {name:"House",emoji:"🏠",type:"need"},
+  {name:"Clothes",emoji:"👕",type:"need"},
+  {name:"Medicine",emoji:"💊",type:"need"},
+  {name:"Video Game",emoji:"🎮",type:"want"},
+  {name:"Candy",emoji:"🍬",type:"want"},
+  {name:"Toy Robot",emoji:"🤖",type:"want"},
+  {name:"New Sneakers",emoji:"👟",type:"want"},
+  {name:"Ice Cream",emoji:"🍦",type:"want"}
+];
+
+// ===== COIN ROUNDS =====
+const coinRounds=[
+  {item:"Eraser",emoji:"✏️",price:15},
+  {item:"Sticker",emoji:"⭐",price:25},
+  {item:"Apple",emoji:"🍎",price:50},
+  {item:"Juice Box",emoji:"🧃",price:75},
+  {item:"Notebook",emoji:"📓",price:35},
+  {item:"Cookie",emoji:"🍪",price:60},
+  {item:"Pencil",emoji:"✏️",price:10},
+  {item:"Bookmark",emoji:"📖",price:45}
+];
+
+// ===== BUDGET DATA =====
+const shopItems=[
+  {name:"Lunch",emoji:"🥪",price:300,type:"need"},
+  {name:"Water",emoji:"💧",price:100,type:"need"},
+  {name:"Bus Fare",emoji:"🚌",price:200,type:"need"},
+  {name:"Notebook",emoji:"📓",price:150,type:"need"},
+  {name:"Candy",emoji:"🍬",price:100,type:"want"},
+  {name:"Toy Car",emoji:"🚗",price:250,type:"want"},
+  {name:"Stickers",emoji:"⭐",price:50,type:"want"},
+  {name:"Comic Book",emoji:"📖",price:200,type:"want"},
+  {name:"Gum",emoji:"🫧",price:50,type:"want"}
+];
+
+// ===== NAVIGATION =====
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goMenu(){showScreen('menuScreen')}
+
+function startGame(game){
+  currentGame=game;lastGame=game;score=0;currentQ=0;
+  if(game==='quiz')initQuiz();
+  else if(game==='needs')initNeeds();
+  else if(game==='coins')initCoins();
+  else if(game==='budget')initBudget();
+}
+
+function replayGame(){startGame(lastGame)}
+
+// ===== QUIZ =====
+function initQuiz(){
+  totalQ=quizQuestions.length;currentQ=0;score=0;
+  shuffleArray(quizQuestions);
+  showScreen('quizScreen');
+  showQuestion();
+}
+
+function showQuestion(){
+  if(currentQ>=totalQ){endGame();return}
+  const q=quizQuestions[currentQ];
+  document.getElementById('quizEmoji').textContent=q.emoji;
+  document.getElementById('quizQuestion').textContent=q.q;
+  document.getElementById('quizHint').textContent=`Question ${currentQ+1} of ${totalQ}`;
+  document.getElementById('quizProgress').style.width=((currentQ)/totalQ*100)+'%';
+  document.getElementById('quizFeedback').className='feedback';
+  const ans=document.getElementById('quizAnswers');ans.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.a.forEach((a,i)=>{
+    const btn=document.createElement('button');btn.className='ans-btn';
+    btn.innerHTML=`<span class="letter">${letters[i]}</span>${a}`;
+    btn.onclick=()=>selectAnswer(i,q.c,q.e);
+    ans.appendChild(btn);
+  });
+}
+
+function selectAnswer(selected,correct,explain){
+  const btns=document.querySelectorAll('#quizAnswers .ans-btn');
+  btns.forEach((b,i)=>{
+    b.onclick=null;
+    if(i===correct)b.classList.add('correct');
+    else if(i===selected&&selected!==correct)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('quizFeedback');
+  if(selected===correct){
+    score++;streak++;coins+=10;
+    fb.className='feedback show good';
+    document.getElementById('fbEmoji').textContent=['🎉','⭐','🔥','💪','🏆'][Math.floor(Math.random()*5)];
+    document.getElementById('fbText').textContent=['Awesome!','You got it!','Nailed it!','Money smart!','Brilliant!'][Math.floor(Math.random()*5)];
+  }else{
+    streak=0;
+    fb.className='feedback show bad';
+    document.getElementById('fbEmoji').textContent='😅';
+    document.getElementById('fbText').textContent="Not quite!";
+  }
+  document.getElementById('fbExplain').textContent=explain;
+  document.getElementById('nextBtn').textContent=currentQ>=totalQ-1?'See Results →':'Next →';
+  updateStats();
+}
+
+function nextQuestion(){currentQ++;showQuestion()}
+
+// ===== NEEDS VS WANTS =====
+function initNeeds(){
+  needsSorted=0;needsTotal=needsData.length;score=0;
+  const shuffled=[...needsData];shuffleArray(shuffled);
+  needsItems=shuffled;
+  showScreen('needsScreen');
+  document.getElementById('needDropped').innerHTML='';
+  document.getElementById('wantDropped').innerHTML='';
+  document.getElementById('checkNeeds').style.display='none';
+  document.getElementById('needsProgress').style.width='0%';
+  renderDragItems();
+}
+
+function renderDragItems(){
+  const zone=document.getElementById('dragZone');zone.innerHTML='';
+  needsItems.forEach((item,i)=>{
+    if(item.placed)return;
+    const d=document.createElement('div');d.className='drag-item';d.draggable=true;d.dataset.index=i;
+    d.innerHTML=`<span class="d-emoji">${item.emoji}</span>${item.name}`;
+    d.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',i)});
+    // Touch support
+    d.addEventListener('touchstart',handleTouchStart,{passive:false});
+    d.addEventListener('touchmove',handleTouchMove,{passive:false});
+    d.addEventListener('touchend',handleTouchEnd);
+    zone.appendChild(d);
+  });
+}
+
+let touchDragIndex=null,touchClone=null;
+function handleTouchStart(e){
+  e.preventDefault();
+  touchDragIndex=parseInt(e.target.closest('.drag-item').dataset.index);
+  touchClone=e.target.closest('.drag-item').cloneNode(true);
+  touchClone.style.position='fixed';touchClone.style.zIndex='1000';touchClone.style.opacity='.8';touchClone.style.pointerEvents='none';
+  document.body.appendChild(touchClone);
+  moveTouchClone(e);
+}
+function handleTouchMove(e){e.preventDefault();moveTouchClone(e)}
+function moveTouchClone(e){if(!touchClone)return;const t=e.touches[0];touchClone.style.left=(t.clientX-50)+'px';touchClone.style.top=(t.clientY-25)+'px'}
+function handleTouchEnd(e){
+  if(touchClone){touchClone.remove();touchClone=null}
+  if(touchDragIndex===null)return;
+  const t=e.changedTouches[0];const el=document.elementFromPoint(t.clientX,t.clientY);
+  const box=el?el.closest('.drop-box'):null;
+  if(box){
+    const type=box.id==='needBox'?'need':'want';
+    placeItem(touchDragIndex,type);
+  }
+  touchDragIndex=null;
+}
+
+function dragOver(e){e.preventDefault();e.currentTarget.classList.add('over')}
+function dragLeave(e){e.currentTarget.classList.remove('over')}
+function dropItem(e,type){
+  e.preventDefault();e.currentTarget.classList.remove('over');
+  const idx=parseInt(e.dataTransfer.getData('text/plain'));
+  placeItem(idx,type);
+}
+
+function placeItem(idx,type){
+  const item=needsItems[idx];if(!item||item.placed)return;
+  item.placed=type;needsSorted++;
+  const container=document.getElementById(type==='need'?'needDropped':'wantDropped');
+  const tag=document.createElement('div');tag.className='drag-item';
+  tag.innerHTML=`<span class="d-emoji">${item.emoji}</span>${item.name}`;
+  tag.style.cursor='default';container.appendChild(tag);
+  document.getElementById('needsProgress').style.width=(needsSorted/needsTotal*100)+'%';
+  renderDragItems();
+  if(needsSorted>=needsTotal)document.getElementById('checkNeeds').style.display='block';
+}
+
+function checkNeeds(){
+  let correct=0;
+  needsItems.forEach(item=>{if(item.placed===item.type)correct++});
+  score=correct;totalQ=needsTotal;
+  coins+=correct*5;stars+=correct>=8?1:0;streak=correct>=8?streak+1:0;
+  updateStats();endGame();
+}
+
+// ===== COIN COUNTER =====
+function initCoins(){
+  coinRound=0;score=0;totalQ=coinRounds.length;
+  shuffleArray(coinRounds);
+  showScreen('coinsScreen');
+  loadCoinRound();
+}
+
+function loadCoinRound(){
+  if(coinRound>=totalQ){endGame();return}
+  coinTotal=0;
+  const r=coinRounds[coinRound];
+  coinTarget=r.price;
+  document.getElementById('coinQuestion').textContent=`Pay for the ${r.item} ${r.emoji}`;
+  document.getElementById('targetPrice').textContent=formatCents(coinTarget);
+  document.getElementById('yourTotal').textContent=formatCents(0);
+  document.getElementById('yourTotal').className='yt-val';
+  document.getElementById('coinTray').innerHTML='';
+  document.getElementById('coinsProgress').style.width=(coinRound/totalQ*100)+'%';
+}
+
+function addCoin(val,type){
+  coinTotal+=val;
+  const tray=document.getElementById('coinTray');
+  const c=document.createElement('div');c.className='mini-coin '+type;c.textContent=val+'¢';
+  tray.appendChild(c);
+  const el=document.getElementById('yourTotal');
+  el.textContent=formatCents(coinTotal);
+  if(coinTotal===coinTarget){
+    el.className='yt-val match';score++;coinRound++;
+    coins+=10;streak++;updateStats();
+    setTimeout(()=>loadCoinRound(),800);
+  }else if(coinTotal>coinTarget){
+    el.className='yt-val over';streak=0;updateStats();
+    setTimeout(()=>{coinTotal=0;document.getElementById('coinTray').innerHTML='';el.textContent=formatCents(0);el.className='yt-val'},600);
+  }
+}
+
+function resetCoins(){
+  coinTotal=0;document.getElementById('coinTray').innerHTML='';
+  document.getElementById('yourTotal').textContent=formatCents(0);
+  document.getElementById('yourTotal').className='yt-val';
+}
+
+function formatCents(c){return'$'+(c/100).toFixed(2)}
+
+// ===== BUDGET BOSS =====
+function initBudget(){
+  budgetMoney=1000;cart=[];
+  showScreen('budgetScreen');
+  document.getElementById('budgetTotal').textContent=formatCents(budgetMoney);
+  document.getElementById('budgetRemaining').textContent=formatCents(budgetMoney);
+  renderShop();renderCart();
+}
+
+function renderShop(){
+  const grid=document.getElementById('shopGrid');grid.innerHTML='';
+  shopItems.forEach((item,i)=>{
+    const bought=cart.includes(i);
+    const canBuy=!bought&&item.price<=budgetMoney-cart.reduce((s,ci)=>s+shopItems[ci].price,0)+( bought?item.price:0);
+    const remaining=budgetMoney-cart.reduce((s,ci)=>s+shopItems[ci].price,0);
+    const affordable=item.price<=remaining;
+    const d=document.createElement('div');
+    d.className='shop-item'+(bought?' bought':(!affordable?' cant':''));
+    d.innerHTML=`<span class="s-emoji">${item.emoji}</span><p class="s-name">${item.name}</p><p class="s-price">${formatCents(item.price)}</p>`;
+    if(!bought&&affordable)d.onclick=()=>buyItem(i);
+    else if(bought)d.onclick=()=>unbuyItem(i);
+    grid.appendChild(d);
+  });
+}
+
+function buyItem(i){cart.push(i);updateBudget()}
+function unbuyItem(i){cart=cart.filter(c=>c!==i);updateBudget()}
+
+function updateBudget(){
+  const spent=cart.reduce((s,i)=>s+shopItems[i].price,0);
+  document.getElementById('budgetRemaining').textContent=formatCents(budgetMoney-spent);
+  renderShop();renderCart();
+}
+
+function renderCart(){
+  const el=document.getElementById('cartItems');el.innerHTML='';
+  cart.forEach(i=>{
+    const item=shopItems[i];
+    const tag=document.createElement('span');tag.className='cart-tag';
+    tag.innerHTML=`${item.emoji} ${item.name}`;
+    el.appendChild(tag);
+  });
+}
+
+function checkBudget(){
+  const needs=cart.filter(i=>shopItems[i].type==='need');
+  const allNeeds=shopItems.filter(s=>s.type==='need').length;
+  const spent=cart.reduce((s,i)=>s+shopItems[i].price,0);
+  const underBudget=spent<=budgetMoney;
+  const gotAllNeeds=needs.length>=allNeeds;
+
+  if(gotAllNeeds&&underBudget){score=10;totalQ=10;coins+=20;stars++;streak++}
+  else if(gotAllNeeds){score=7;totalQ=10;coins+=10}
+  else{score=4;totalQ=10;streak=0}
+  updateStats();endGame();
+}
+
+// ===== END GAME =====
+function endGame(){
+  const pct=score/totalQ;
+  const s=pct>=.9?3:pct>=.7?2:pct>=.5?1:0;
+  stars+=s;updateStats();
+  document.getElementById('rEmoji').textContent=pct>=.9?'🏆':pct>=.7?'⭐':pct>=.5?'👍':'💪';
+  document.getElementById('rTitle').textContent=pct>=.9?'Amazing!':pct>=.7?'Great job!':pct>=.5?'Good try!':'Keep practicing!';
+  document.getElementById('rScore').textContent=`You got ${score} out of ${totalQ} right!`;
+  document.getElementById('rStars').textContent='⭐'.repeat(s)+'☆'.repeat(3-s);
+  showScreen('resultsScreen');
+  if(pct>=.7)spawnConfetti();
+}
+
+// ===== CONFETTI =====
+function spawnConfetti(){
+  const el=document.getElementById('celebrate');el.innerHTML='';
+  const colors=['#22C55E','#3B82F6','#8B5CF6','#F59E0B','#EC4899','#EF4444','#06B6D4'];
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'%';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';
+    c.style.animationDuration=(1.5+Math.random()*2)+'s';
+    c.style.animationDelay=(Math.random()*0.5)+'s';
+    el.appendChild(c);
+  }
+  setTimeout(()=>el.innerHTML='',4000);
+}
+
+// ===== UTILS =====
+function updateStats(){
+  document.getElementById('totalCoins').textContent=coins;
+  document.getElementById('totalStars').textContent=stars;
+  document.getElementById('streak').textContent=streak;
+}
+
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+</script>
+
+</body>
+</html>
