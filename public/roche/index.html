@@ -91,6 +91,32 @@
     .b-from{font-size:.65rem;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;font-weight:700}
     .b-to{font-size:.92rem;font-weight:700;color:var(--text)}
 
+    /* Calculator */
+    .calc-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px;margin-bottom:24px}
+    .task-row{display:grid;grid-template-columns:1fr 80px 80px 65px;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+    .task-row.header-row{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);padding:8px 0;border-bottom:2px solid var(--border);font-weight:700}
+    .task-name{font-size:.82rem;color:var(--text);font-weight:500}.task-name small{display:block;font-size:.7rem;color:var(--text-3);margin-top:2px;font-weight:400}
+    input[type=number]{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.82rem;padding:8px;outline:none;text-align:center;transition:border-color .2s}
+    input[type=number]:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--indigo-glow)}
+    .saved-cell{font-size:.85rem;font-weight:700;color:var(--accent);text-align:center}
+    .roi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:24px}
+    .roi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center}
+    .roi-card .r-label{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;font-weight:700}
+    .roi-card .r-value{font-weight:800;letter-spacing:-.02em;font-size:1.5rem}
+    .roi-card .r-sub{font-size:.72rem;color:var(--text-2);margin-top:4px;line-height:1.4}
+    .payback-bar{background:var(--accent-glow);border:1px solid rgba(16,185,129,.2);border-radius:var(--radius-lg);padding:20px;text-align:center;margin-top:14px}
+    .payback-bar .pb-main{font-size:1.1rem;font-weight:800;color:var(--accent)}
+    .payback-bar .pb-sub{font-size:.78rem;color:var(--text-2);margin-top:4px}
+
+    /* Comparison */
+    .comp-table{width:100%;border-collapse:collapse;margin-top:20px}
+    .comp-table th{text-align:left;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;padding:10px 12px;border-bottom:2px solid var(--border)}
+    .comp-table td{padding:12px;font-size:.85rem;border-bottom:1px solid var(--border);color:var(--text-2)}
+    .comp-table td:first-child{font-weight:600;color:var(--text)}
+    .comp-table .check{color:var(--accent);font-weight:800}
+    .comp-table .cross{color:var(--text-3)}
+    .comp-table tr:last-child td{border-bottom:none;font-weight:800;color:var(--text)}
+
     /* Engagement */
     .engage{background:var(--surface);border:2px solid var(--primary);border-radius:var(--radius-xl);padding:32px;margin-bottom:20px}
     .engage .e-tag{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;font-weight:800;color:var(--primary);background:var(--indigo-glow);padding:5px 14px;border-radius:100px;display:inline-block;margin-bottom:14px}
@@ -138,7 +164,7 @@
     <div class="nav-links">
       <a href="#today" class="nav-link">Today</a>
       <a href="#solution" class="nav-link">Your Jarvis</a>
-      <a href="#day" class="nav-link">Your Day</a>
+      <a href="#calculator" class="nav-link">Your ROI</a>
       <a href="#engagement" class="nav-link">The Sprint</a>
     </div>
   </div>
@@ -275,6 +301,127 @@
     </div>
   </div>
 
+  <!-- YOUR NUMBERS -->
+  <div class="section" id="calculator">
+    <div class="sh-label">Your Numbers</div>
+    <h2 class="sh-title">See What You Get Back</h2>
+    <p class="sh-desc">These are pre-filled based on what you described on April 3. Adjust anything that's off — the ROI updates in real-time.</p>
+
+    <div class="calc-wrap fade-up">
+      <div class="task-row header-row">
+        <div>Task</div>
+        <div style="text-align:center">Now (hrs/wk)</div>
+        <div style="text-align:center">With Jarvis</div>
+        <div style="text-align:center">Saved</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Email triage &amp; responses<small>500+ daily — sorting, drafting, responding</small></div>
+        <input type="number" id="t1n" value="10" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t1a" value="2" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t1s">8</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Meeting minutes &amp; follow-ups<small>Transcribe, organize, assign, chase</small></div>
+        <input type="number" id="t2n" value="4" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t2a" value="0.5" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t2s">3.5</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Board meeting preparation<small>Data gathering, presentations, talking points</small></div>
+        <input type="number" id="t3n" value="4" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t3a" value="1" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t3s">3</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Agenda building &amp; scheduling<small>Pulling open items, coordinating calendars</small></div>
+        <input type="number" id="t4n" value="2" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t4a" value="0.25" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t4s">1.75</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Staff coordination &amp; tracking<small>Action items, reminders, status updates</small></div>
+        <input type="number" id="t5n" value="3" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t5a" value="0.5" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t5s">2.5</div>
+      </div>
+      <div class="task-row">
+        <div class="task-name">Parent &amp; community communication<small>Updates, newsletters, individual follow-ups</small></div>
+        <input type="number" id="t6n" value="2" min="0" max="40" step=".5" oninput="calc()" />
+        <input type="number" id="t6a" value="0.5" min="0" max="40" step=".25" oninput="calc()" />
+        <div class="saved-cell" id="t6s">1.5</div>
+      </div>
+    </div>
+
+    <div class="roi-grid fade-up">
+      <div class="roi-card">
+        <div class="r-label">Hours Back Per Week</div>
+        <div class="r-value" style="color:var(--accent)" id="weeklyHrs">20.3</div>
+        <div class="r-sub" id="weeklyDesc">Over 2 full workdays. Every week.</div>
+      </div>
+      <div class="roi-card">
+        <div class="r-label">Dollar Value Per Year</div>
+        <div class="r-value" style="color:var(--primary)" id="annualVal">$79,144</div>
+        <div class="r-sub">Based on your time at ~$75/hr</div>
+      </div>
+      <div class="roi-card">
+        <div class="r-label">Return on Investment</div>
+        <div class="r-value" style="color:var(--secondary)" id="roiX">31x</div>
+        <div class="r-sub">For every $1 spent, you get <span id="roiDollars">$31</span> back</div>
+      </div>
+    </div>
+
+    <div class="payback-bar fade-up">
+      <div class="pb-main" id="paybackText">This system pays for itself in 8 days.</div>
+      <div class="pb-sub">After that, every hour saved is pure return — for as long as you use it.</div>
+    </div>
+  </div>
+
+  <!-- COST OF INACTION -->
+  <div class="section">
+    <div class="sh-label">The Other Option</div>
+    <h2 class="sh-title">What Another Year of This Looks Like</h2>
+    <p class="sh-desc">You already know the answer. But seeing the number changes the conversation.</p>
+
+    <div class="roi-grid fade-up">
+      <div class="roi-card" style="border-color:var(--red)">
+        <div class="r-label">Hours Lost This Year</div>
+        <div class="r-value" style="color:var(--red)" id="lostHrs">1,056</div>
+        <div class="r-sub">On tasks Jarvis handles automatically</div>
+      </div>
+      <div class="roi-card" style="border-color:var(--red)">
+        <div class="r-label">Evenings Past 5 PM</div>
+        <div class="r-value" style="color:var(--red)">200+</div>
+        <div class="r-sub">At your current 7-9 PM schedule</div>
+      </div>
+      <div class="roi-card" style="border-color:var(--red)">
+        <div class="r-label">Son's Weekday Games</div>
+        <div class="r-value" style="color:var(--red)">Missed</div>
+        <div class="r-sub">Because the inbox doesn't wait</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VS BREAKTHROUGH COACH -->
+  <div class="section">
+    <div class="sh-label">How This Compares</div>
+    <h2 class="sh-title">You Mentioned The Breakthrough Coach</h2>
+    <p class="sh-desc">You said it yourself — "he's doing the 1980s version of this." Here's the side-by-side.</p>
+
+    <div class="calc-wrap fade-up">
+      <table class="comp-table">
+        <tr><th></th><th>Breakthrough Coach</th><th>Your Jarvis</th></tr>
+        <tr><td>Format</td><td>2-day group workshop</td><td>1-day private sprint, built for you</td></tr>
+        <tr><td>System</td><td>Paper-based time tracking</td><td>AI operating system on your computer</td></tr>
+        <tr><td>Email solution</td><td>Delegate to secretary</td><td>Auto-categorize, auto-draft, you approve</td></tr>
+        <tr><td>Meeting minutes</td><td>Manual</td><td>Auto-transcribed, auto-distributed</td></tr>
+        <tr><td>Data privacy</td><td>N/A</td><td>100% local — nothing leaves your machine</td></tr>
+        <tr><td>Keeps improving</td><td class="cross">No — static system</td><td class="check">Yes — learns your patterns daily</td></tr>
+        <tr><td>Ongoing support</td><td class="cross">Workshop ends, you're on your own</td><td class="check">30 days of direct access to Brayan</td></tr>
+        <tr><td>Typical cost</td><td>$2,000 - $3,500/person</td><td>$2,500 — everything included</td></tr>
+      </table>
+    </div>
+  </div>
+
   <!-- WHAT CHANGES -->
   <div class="section">
     <div class="sh-label">The Shift</div>
@@ -309,19 +456,21 @@
 
     <div class="engage fade-up">
       <span class="e-tag">Superintendent AI Sprint</span>
-      <h3>Jarvis Setup &amp; Training</h3>
+      <h3>Your Jarvis — Built With You in One Day</h3>
       <div class="price">$2,500</div>
-      <p>A one-day intensive where I build your sovereign operating system with you, not for you. You'll be using it before I leave.</p>
+      <p>I drive to Woodstock. We spend a full day together. By the time I leave, your sovereign operating system is live on your computer — configured to your email, your meetings, your people, and your priorities. You'll be using it that night.</p>
       <ul>
-        <li>Full workflow audit — we map exactly how you spend your time</li>
-        <li>Email triage system configured to your inbox patterns</li>
-        <li>Meeting intelligence — transcription, minutes, action items, follow-ups</li>
-        <li>Board prep and institutional memory system</li>
-        <li>Calendar and time tracking integration</li>
-        <li>People directory with context for every key contact</li>
-        <li>Hands-on training until you're comfortable running it alone</li>
-        <li>30-day support window — call, text, or email me anytime</li>
+        <li><strong>Full workflow audit</strong> — we map exactly where your 60+ hours go</li>
+        <li><strong>Email command center</strong> — 500 emails become 10-15 that need your eyes</li>
+        <li><strong>Meeting intelligence</strong> — auto-transcription, minutes, action items, follow-ups</li>
+        <li><strong>Board prep system</strong> — your data, your decisions, searchable and ready</li>
+        <li><strong>Calendar &amp; time tracking</strong> — see where hours go, reclaim them</li>
+        <li><strong>People directory</strong> — context for every board member, principal, parent you interact with</li>
+        <li><strong>Institutional memory</strong> — everything captured, connected, and growing daily</li>
+        <li><strong>Hands-on training</strong> — you won't just understand it, you'll own it</li>
+        <li><strong>30-day direct access</strong> — call me, text me, email me. I'm there.</li>
       </ul>
+      <p style="margin-top:16px;font-size:.82rem;color:var(--text-3);line-height:1.6"><strong style="color:var(--text)">What you keep forever:</strong> The system lives on your computer. No subscription. No monthly fees. No vendor lock-in. If Claude disappears tomorrow, we swap in another AI model. You own everything.</p>
     </div>
 
     <div class="engage-secondary fade-up">
@@ -373,6 +522,31 @@
 </footer>
 
 <script>
+const HOURLY=75,COST=2500,WEEKS=52;
+function calc(){
+  let total=0;
+  for(let i=1;i<=6;i++){
+    const now=parseFloat(document.getElementById(`t${i}n`).value)||0;
+    const ai=parseFloat(document.getElementById(`t${i}a`).value)||0;
+    const saved=Math.max(0,now-ai);
+    document.getElementById(`t${i}s`).textContent=saved%1===0?saved:saved.toFixed(1);
+    total+=saved;
+  }
+  const annualHrs=Math.round(total*WEEKS);
+  const annualVal=Math.round(total*WEEKS*HOURLY);
+  const roi=Math.round(annualVal/COST);
+  const paybackDays=Math.max(1,Math.round(COST/(total*HOURLY/5)));
+
+  document.getElementById('weeklyHrs').textContent=total.toFixed(1);
+  document.getElementById('weeklyDesc').textContent=total>=16?`Over ${Math.floor(total/8)} full workdays. Every week.`:total>=8?'Over a full workday back. Every week.':`${total.toFixed(1)} hours back every week.`;
+  document.getElementById('annualVal').textContent='$'+annualVal.toLocaleString();
+  document.getElementById('roiX').textContent=roi+'x';
+  document.getElementById('roiDollars').textContent='$'+roi;
+  document.getElementById('paybackText').textContent=`This system pays for itself in ${paybackDays} day${paybackDays===1?'':'s'}.`;
+  document.getElementById('lostHrs').textContent=annualHrs.toLocaleString();
+}
+calc();
+
 const observer=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:.1});
 document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
 </script>
