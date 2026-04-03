@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NGL — Live Demo Prompts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:#060606;color:#fff;min-height:100vh;padding:40px 20px 80px}
+    .container{max-width:700px;margin:0 auto}
+    .header{text-align:center;margin-bottom:48px}
+    .label{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;font-weight:700;opacity:0.4;margin-bottom:12px}
+    h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.03em;line-height:1.1}
+    .accent{color:#818CF8}
+
+    .demo{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px;margin-bottom:24px}
+    .demo-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+    .demo-label.d1{color:#818CF8}
+    .demo-label.d2{color:#10B981}
+    .demo-label.d3{color:#FBBF24}
+    .demo-label.d4{color:#22D3EE}
+    .demo h2{font-size:1.2rem;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em}
+
+    .prompt-block{position:relative;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px 48px 16px 16px;margin-bottom:12px;font-size:0.92rem;line-height:1.6;white-space:pre-wrap;cursor:pointer;transition:border-color 0.2s}
+    .prompt-block:hover{border-color:rgba(255,255,255,0.25)}
+    .prompt-block:last-child{margin-bottom:0}
+
+    .copy-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;font-size:0.85rem}
+    .copy-btn:hover{background:rgba(255,255,255,0.2)}
+    .copy-btn.copied{background:#10B981}
+
+    .say{font-size:0.82rem;color:rgba(255,255,255,0.45);margin-top:12px;padding-left:12px;border-left:2px solid rgba(255,255,255,0.1);line-height:1.5;font-style:italic}
+
+    .footer{text-align:center;margin-top:48px;opacity:0.3;font-size:0.75rem}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <p class="label">Woodstock PD &mdash; April 3, 2026</p>
+    <h1>Live Demo <span class="accent">Prompts</span></h1>
+  </div>
+
+  <!-- Demo 1 -->
+  <div class="demo">
+    <p class="demo-label d1">Demo 1</p>
+    <h2>Lesson Plan Partner</h2>
+    <div class="prompt-block" onclick="copyPrompt(this)">I teach 6th grade ELA. I'm starting a unit on persuasive writing next week. Before you give me a lesson plan, ask me 5 questions about my students so you can personalize it.<button class="copy-btn" title="Copy">&#x2398;</button></div>
+    <p class="say">SAY: "Notice I didn't ask for a lesson plan. I asked it to ask ME questions first. That's the partner mindset. Your expertise leads. AI supports."</p>
+  </div>
+
+  <!-- Demo 2 -->
+  <div class="demo">
+    <p class="demo-label d2">Demo 2</p>
+    <h2>Differentiation in 60 Seconds</h2>
+    <div class="prompt-block" onclick="copyPrompt(this)">Now adapt this for a student who understands the concepts but struggles with English as a second language. Keep the thinking demands high but simplify the language.<button class="copy-btn" title="Copy">&#x2398;</button></div>
+    <div class="prompt-block" onclick="copyPrompt(this)">Now create a version for a student who finishes early and needs extension.<button class="copy-btn" title="Copy">&#x2398;</button></div>
+    <p class="say">SAY: "60 seconds. Two differentiated versions. You made every decision. How many of your students know more than they can show you because of a language barrier? AI just removed that barrier. Not the rigor — the barrier."</p>
+  </div>
+
+  <!-- Demo 3 -->
+  <div class="demo">
+    <p class="demo-label d3">Demo 3</p>
+    <h2>Student Simulator</h2>
+    <div class="prompt-block" onclick="copyPrompt(this)">Act as a 7th grader who is confused about fractions. I'm going to explain it to you, and you tell me where my explanation is unclear or where a real student might get lost.<button class="copy-btn" title="Copy">&#x2398;</button></div>
+    <p class="say">SAY: "Practice your lesson before class, not during it. Find the gaps before your students do."</p>
+  </div>
+
+  <!-- Demo 4 -->
+  <div class="demo">
+    <p class="demo-label d4">Demo 4</p>
+    <h2>Feedback Writer</h2>
+    <div class="prompt-block" onclick="copyPrompt(this)">Here's a paragraph a 5th grader wrote about their favorite animal: "Dogs are the best pets because they are fun and nice. They play with you and love you. I want a golden retriever." Give feedback the way a great teacher would — specific, encouraging, focused on one thing to improve. Don't rewrite it.<button class="copy-btn" title="Copy">&#x2398;</button></div>
+    <p class="say">SAY: "Specific. Encouraging. One clear next step. And you decide if it sounds like YOU before it ever reaches the student. That's the partner mindset."</p>
+  </div>
+
+  <div class="footer">Next Generation Learners</div>
+</div>
+
+<script>
+function copyPrompt(el) {
+  const btn = el.querySelector('.copy-btn');
+  const text = el.childNodes[0].textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '&#x2713;';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '&#x2398;';
+    }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>
