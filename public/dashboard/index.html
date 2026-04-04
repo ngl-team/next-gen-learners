@@ -159,7 +159,17 @@ if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate')
         </div>
       </div>
     </div>
-    <div style="text-align:center;padding:24px;border-top:1px solid var(--border)">
+
+    <!-- Priorities Section -->
+    <div style="max-width:620px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 4px">
+        <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700">Priorities</div>
+        <button class="btn primary" onclick="loadPriorities()" id="nglPriorityBtn" style="font-size:0.65rem;padding:4px 12px">What should I focus on?</button>
+      </div>
+      <div id="nglPriorities"></div>
+    </div>
+
+    <div style="text-align:center;padding:24px;border-top:1px solid var(--border);margin-top:24px">
       <p style="font-size:.68rem;color:var(--text-3)">Next Generation Learners &middot; Making the most important job easier.</p>
     </div>
   </div>
@@ -438,6 +448,37 @@ async function editPnl(id){
 async function deletePnl(id){
   await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
   loadPnl();
+}
+
+// Priorities
+async function loadPriorities(){
+  const btn=document.getElementById('nglPriorityBtn');
+  const container=document.getElementById('nglPriorities');
+  btn.textContent='Analyzing...';btn.disabled=true;
+  container.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--text-3);font-size:0.82rem">Reading your CRM, calendar, financials, and queue...</div>';
+  try{
+    const data=await fetch(`${API_BASE}/api/priorities/ngl`).then(r=>r.json());
+    if(data.error)throw new Error(data.error);
+    const impactColors={revenue:'#10B981',relationship:'#3B82F6',both:'#F59E0B'};
+    container.innerHTML=data.priorities.map(p=>`
+      <div class="card" style="padding:18px;margin-bottom:4px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-glow);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:var(--primary);flex-shrink:0">${p.rank}</div>
+          <div style="flex:1">
+            <div style="font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:4px">${esc(p.priority)}</div>
+            <div style="font-size:0.75rem;color:var(--text-2);line-height:1.5;margin-bottom:6px">${esc(p.why)}</div>
+            <div style="font-size:0.78rem;color:var(--text);background:var(--surface-2);padding:8px 12px;border-radius:8px;border-left:3px solid var(--primary)">${esc(p.action)}</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <span style="font-size:0.6rem;padding:2px 8px;border-radius:4px;background:${impactColors[p.impact]||'var(--text-3)'}15;color:${impactColors[p.impact]||'var(--text-3)'};font-weight:600;text-transform:uppercase;letter-spacing:0.06em">${esc(p.impact)}</span>
+              <span style="font-size:0.6rem;padding:2px 8px;border-radius:4px;background:var(--warm-glow);color:var(--warm);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">${esc(p.urgency)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){
+    container.innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.8rem">Error: ${esc(e.message)}</div>`;
+  }finally{btn.textContent='What should I focus on?';btn.disabled=false}
 }
 </script>
 </body>
