@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NGL — Dashboard</title>
+  <link rel="icon" href="/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+      --border:#E2E8F0;--border-2:#CBD5E1;
+      --text:#1E1B4B;--text-2:#475569;--text-3:#94A3B8;
+      --primary:#4F46E5;--primary-glow:rgba(79,70,229,.08);
+      --secondary:#7C3AED;--secondary-glow:rgba(124,58,237,.08);
+      --accent:#10B981;--accent-glow:rgba(16,185,129,.08);
+      --warm:#F59E0B;--warm-glow:rgba(245,158,11,.08);
+      --cyan:#06B6D4;--cyan-glow:rgba(6,182,212,.08);
+      --pink:#EC4899;--pink-glow:rgba(236,72,153,.08);
+      --green:#10B981;--red:#EF4444;
+    }
+    body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+    .topbar-title{font-size:1rem;color:var(--primary);font-weight:800;letter-spacing:0.02em;cursor:pointer}
+    .tabs{display:flex;gap:4px}
+    .tab{padding:7px 18px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--text-3);font-family:inherit;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all 0.15s}
+    .tab.active{border-color:var(--primary);color:var(--primary);background:var(--primary-glow)}
+    .tab:hover:not(.active){color:var(--text);border-color:var(--border-2)}
+
+    .view{display:none}.view.active{display:block}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+    .card-title{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--primary);margin-bottom:16px;font-weight:700}
+
+    .field{margin-bottom:14px}
+    label{display:block;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;font-weight:600}
+    input,textarea,select{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.88rem;padding:9px 12px;outline:none;transition:border-color 0.15s}
+    input:focus,select:focus{border-color:var(--primary)}
+
+    .btn{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text-2);font-family:inherit;font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em}
+    .btn:hover{border-color:var(--border-2);color:var(--text)}
+    .btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+    .btn.primary:hover{opacity:0.9}
+    .btn.danger{color:var(--red);border-color:var(--red)}
+
+    .dash-app{transition:all .25s;border-radius:14px}
+    .dash-app:hover{transform:translateY(-4px);border-color:var(--border-2);box-shadow:0 12px 32px rgba(0,0,0,.06)}
+    .dash-app:active{transform:scale(.97)}
+
+    .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .bar-label{width:110px;font-size:0.7rem;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bar-track{flex:1;height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:5px;transition:width 0.3s}
+
+    .empty{font-size:0.78rem;color:var(--text-3);font-style:italic;padding:8px 0}
+    .alert{font-size:0.78rem;padding:10px 14px;border-radius:8px;display:none}
+    .alert.show{display:block}
+
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;overflow-y:auto;padding:40px 20px}
+    .modal-overlay.show{display:block}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;max-width:420px;margin:0 auto;padding:32px}
+    .modal-title{font-size:0.85rem;color:var(--primary);margin-bottom:20px;letter-spacing:0.03em;font-weight:700}
+    .modal-close{float:right;background:transparent;border:none;color:var(--text-3);font-size:1.2rem;cursor:pointer}
+
+    @media(max-width:480px){
+      #dashAppGrid{grid-template-columns:repeat(2,1fr)!important}
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="authGate" style="position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column">
+  <div style="text-align:center;max-width:340px;padding:2rem">
+    <p style="font-size:1.1rem;color:var(--primary);font-weight:800;letter-spacing:0.02em;margin-bottom:0.3rem">Next Generation Learners</p>
+    <p style="font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:2rem;font-weight:600">Private Dashboard</p>
+    <input type="password" id="authPass" placeholder="Password" autocomplete="off" style="width:100%;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:0.88rem;outline:none;border-radius:8px;text-align:center;letter-spacing:0.06em;margin-bottom:10px" onkeydown="if(event.key==='Enter')checkAuth()" />
+    <button onclick="checkAuth()" class="btn primary" style="width:100%">Enter</button>
+    <p id="authError" style="color:var(--red);font-size:0.78rem;margin-top:10px;display:none">Wrong password.</p>
+  </div>
+</div>
+<script>
+const _AUTH_HASH='c4883d48298ba953610aa229489a5fbfc2511029bc72b08fbf87088625885f86';
+async function _sha256(m){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function checkAuth(){
+  const h=await _sha256(document.getElementById('authPass').value);
+  if(h===_AUTH_HASH||sessionStorage.getItem('ngl_auth')==='1'){
+    sessionStorage.setItem('ngl_auth','1');
+    document.getElementById('authGate').style.display='none';
+  } else {
+    document.getElementById('authError').style.display='block';
+    document.getElementById('authPass').value='';
+  }
+}
+if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate').style.display='none';
+</script>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title" onclick="switchTab('dashboard')">NGL</div>
+  <div class="tabs">
+    <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
+  </div>
+</div>
+
+<div style="margin:0 auto;padding:32px 24px;max-width:900px">
+
+  <!-- DASHBOARD -->
+  <div class="view active" id="view-dashboard">
+    <div style="text-align:center;padding:20px 0 8px">
+      <div style="font-size:2.2rem;font-weight:800;color:var(--text);letter-spacing:-0.02em" id="dashClock"></div>
+      <div style="font-size:0.85rem;color:var(--text-2);margin-top:4px" id="dashGreet"></div>
+    </div>
+    <div style="max-width:620px;margin:24px auto 0">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-bottom:14px;padding-left:4px">Apps</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px" id="dashAppGrid">
+        <div class="card dash-app" onclick="switchTab('pnl')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--accent-glow)">📊</div>
+          <div style="font-size:.82rem;font-weight:700">P&L</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Financial tracking</div>
+        </div>
+        <a href="https://nextgenerationlearners.com/woodstock" class="card dash-app" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0;text-decoration:none;color:var(--text)">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--cyan-glow)">🛠️</div>
+          <div style="font-size:.82rem;font-weight:700">Toolkit</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Educator PD tools</div>
+        </a>
+        <a href="https://nextgenerationlearners.com/game" class="card dash-app" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0;text-decoration:none;color:var(--text)">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--warm-glow)">🎮</div>
+          <div style="font-size:.82rem;font-weight:700">Games</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Student financial literacy</div>
+        </a>
+        <a href="https://nextgenerationlearners.com/qr" class="card dash-app" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0;text-decoration:none;color:var(--text)">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--pink-glow)">📬</div>
+          <div style="font-size:.82rem;font-weight:700">Email Capture</div>
+          <div style="font-size:.65rem;color:var(--text-3)">QR sign-up page</div>
+        </a>
+        <a href="https://nextgenerationlearners.com/after-school" class="card dash-app" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0;text-decoration:none;color:var(--text)">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--secondary-glow)">🏫</div>
+          <div style="font-size:.82rem;font-weight:700">After School</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Program page</div>
+        </a>
+        <a href="https://app.forgelegatus.org" class="card dash-app" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0;text-decoration:none;color:var(--text)">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--primary-glow)">⚒️</div>
+          <div style="font-size:.82rem;font-weight:700">Forge</div>
+          <div style="font-size:.65rem;color:var(--text-3)">CRM, Calendar & more</div>
+        </a>
+      </div>
+
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-bottom:14px;padding-left:4px">Quick Actions</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:32px">
+        <div class="card" onclick="switchTab('pnl');setTimeout(openPnlAdd,300)" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:0">
+          <span style="font-size:1.2rem">💰</span>
+          <div><div style="font-size:.78rem;font-weight:600">Log Expense</div><div style="font-size:.62rem;color:var(--text-3)">Track P&L entry</div></div>
+        </div>
+        <div class="card" onclick="switchTab('pnl');setTimeout(()=>document.getElementById('pnlPeriod').value='month',300);setTimeout(loadPnl,400)" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:0">
+          <span style="font-size:1.2rem">📈</span>
+          <div><div style="font-size:.78rem;font-weight:600">This Month</div><div style="font-size:.62rem;color:var(--text-3)">View monthly P&L</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:24px;border-top:1px solid var(--border)">
+      <p style="font-size:.68rem;color:var(--text-3)">Next Generation Learners &middot; Making the most important job easier.</p>
+    </div>
+  </div>
+
+  <!-- P&L VIEW -->
+  <div class="view" id="view-pnl">
+    <div class="card" style="padding:14px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">Next Generation Learners P&L</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="pnlPeriod" onchange="loadPnl()" style="font-size:0.72rem;padding:5px 8px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:inherit">
+            <option value="all">All Time</option>
+            <option value="month">This Month</option>
+            <option value="quarter">This Quarter</option>
+            <option value="year">This Year</option>
+          </select>
+          <button class="btn primary" onclick="openPnlAdd()" style="padding:6px 14px">+ Add Entry</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Revenue</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--green);margin-top:4px" id="pnlRevenue">$0</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Expenses</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlExpenses">$0</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net P&L</div>
+        <div style="font-size:1.4rem;font-weight:800;margin-top:4px" id="pnlNet">$0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:20px">
+      <div class="card-title">Monthly Trend</div>
+      <div id="pnlChart" style="height:200px;display:flex;align-items:flex-end;gap:2px;margin-top:12px"></div>
+      <div id="pnlChartLabels" style="display:flex;gap:2px;margin-top:4px"></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div class="card" style="padding:16px">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:10px;font-weight:700">Revenue Breakdown</div>
+        <div id="pnlRevenueBreakdown"></div>
+      </div>
+      <div class="card" style="padding:16px">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:10px;font-weight:700">Expense Breakdown</div>
+        <div id="pnlExpenseBreakdown"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div class="card-title">All Entries</div>
+      <div id="pnlEntries" style="margin-top:10px"></div>
+    </div>
+
+    <div class="alert" id="pnlAlert" style="margin-top:12px"></div>
+  </div>
+
+</div>
+
+<!-- P&L Modal -->
+<div class="modal-overlay" id="pnlModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePnlModal()">&times;</button>
+    <div class="modal-title" id="pnlModalTitle">Add Entry</div>
+    <input type="hidden" id="pnlEditId" />
+    <div class="field"><label>Date</label><input type="date" id="pnlDate" /></div>
+    <div class="field"><label>Type</label>
+      <select id="pnlType">
+        <option value="revenue">Revenue</option>
+        <option value="expense">Expense</option>
+      </select>
+    </div>
+    <div class="field"><label>Category</label>
+      <select id="pnlCategory">
+        <option value="Client Revenue">Client Revenue</option>
+        <option value="Workshop Revenue">Workshop Revenue</option>
+        <option value="Product Revenue">Product Revenue</option>
+        <option value="Grant / Award">Grant / Award</option>
+        <option value="Other Revenue">Other Revenue</option>
+        <option value="Software / SaaS">Software / SaaS</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Hosting / Infra">Hosting / Infra</option>
+        <option value="Contractor">Contractor</option>
+        <option value="Travel">Travel</option>
+        <option value="Food / Meals">Food / Meals</option>
+        <option value="Materials / Supplies">Materials / Supplies</option>
+        <option value="Equipment">Equipment</option>
+        <option value="Other Expense">Other Expense</option>
+      </select>
+    </div>
+    <div class="field"><label>Description</label><input type="text" id="pnlDesc" placeholder="e.g. Woodstock PD session" /></div>
+    <div class="field"><label>Amount ($)</label><input type="number" id="pnlAmount" step="0.01" min="0" placeholder="0.00" /></div>
+    <button class="btn primary" onclick="savePnlEntry()" style="width:100%;margin-top:12px">Save</button>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://app.forgelegatus.org';
+const PNL_BIZ = 'ngl';
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function showAlert(id,msg,type){
+  const el=document.getElementById(id);
+  if(!msg){el.classList.remove('show');return}
+  el.textContent=msg;
+  el.style.background=type==='err'?'rgba(239,68,68,.1)':type==='ok'?'rgba(16,185,129,.1)':'rgba(79,70,229,.08)';
+  el.style.color=type==='err'?'var(--red)':type==='ok'?'var(--green)':'var(--primary)';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
+}
+
+// Tabs
+function switchTab(t){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+t).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>{if(b.textContent.toLowerCase().replace('&','').includes(t))b.classList.add('active')});
+  if(t==='pnl')loadPnl();
+  history.replaceState(null,'','#'+t);
+}
+(function(){
+  const hash=location.hash.replace('#','');
+  if(['pnl','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
+})();
+
+// Clock
+function updateDashClock(){
+  const now=new Date(),h=now.getHours(),m=now.getMinutes(),h12=h%12||12;
+  document.getElementById('dashClock').textContent=`${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+  let msg='Good evening, Brayan.';
+  if(h<12)msg='Good morning, Brayan.';
+  else if(h<17)msg='Good afternoon, Brayan.';
+  document.getElementById('dashGreet').textContent=msg;
+}
+updateDashClock();
+setInterval(updateDashClock,30000);
+
+// P&L
+function getPnlDateRange(){
+  const period=document.getElementById('pnlPeriod').value;
+  const now=new Date();
+  let from,to=now.toISOString().split('T')[0];
+  if(period==='month')from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];
+  else if(period==='quarter'){const qm=Math.floor(now.getMonth()/3)*3;from=new Date(now.getFullYear(),qm,1).toISOString().split('T')[0]}
+  else if(period==='year')from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];
+  else from='2020-01-01';
+  return{from,to};
+}
+
+async function loadPnl(){
+  const{from,to}=getPnlDateRange();
+  try{
+    const[entries,summary,monthly]=await Promise.all([
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}?from=${from}&to=${to}`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/summary?from=${from}&to=${to}`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/monthly`).then(r=>r.json()),
+    ]);
+
+    let totalRev=0,totalExp=0;
+    summary.forEach(s=>{if(s.type==='revenue')totalRev+=s.total;else totalExp+=s.total});
+    const net=totalRev-totalExp;
+    document.getElementById('pnlRevenue').textContent='$'+totalRev.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('pnlExpenses').textContent='$'+totalExp.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const netEl=document.getElementById('pnlNet');
+    netEl.textContent=(net>=0?'+$':'-$')+Math.abs(net).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    netEl.style.color=net>=0?'var(--green)':'var(--red)';
+
+    const revCats=summary.filter(s=>s.type==='revenue');
+    const expCats=summary.filter(s=>s.type==='expense');
+    const maxRev=Math.max(...revCats.map(s=>s.total),1);
+    const maxExp=Math.max(...expCats.map(s=>s.total),1);
+
+    document.getElementById('pnlRevenueBreakdown').innerHTML=revCats.length?revCats.map(s=>`
+      <div class="bar-row"><div class="bar-label">${s.category}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(s.total/maxRev*100).toFixed(0)}%;background:var(--green)"></div></div>
+      <div style="width:60px;font-size:0.72rem;color:var(--text-2);text-align:right">$${s.total.toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`).join(''):'<div class="empty">No revenue yet</div>';
+
+    document.getElementById('pnlExpenseBreakdown').innerHTML=expCats.length?expCats.map(s=>`
+      <div class="bar-row"><div class="bar-label">${s.category}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(s.total/maxExp*100).toFixed(0)}%;background:var(--red)"></div></div>
+      <div style="width:60px;font-size:0.72rem;color:var(--text-2);text-align:right">$${s.total.toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`).join(''):'<div class="empty">No expenses yet</div>';
+
+    const months={};
+    monthly.forEach(m=>{if(!months[m.month])months[m.month]={rev:0,exp:0};if(m.type==='revenue')months[m.month].rev=m.total;else months[m.month].exp=m.total});
+    const mKeys=Object.keys(months).sort();
+    const maxBar=Math.max(...mKeys.map(k=>Math.max(months[k].rev,months[k].exp)),1);
+
+    document.getElementById('pnlChart').innerHTML=mKeys.length?mKeys.map(k=>{
+      const m=months[k];
+      return`<div style="flex:1;display:flex;gap:1px;align-items:flex-end;min-width:0">
+        <div style="flex:1;height:${(m.rev/maxBar*180).toFixed(0)}px;background:var(--green);border-radius:4px 4px 0 0;min-height:2px" title="Revenue: $${m.rev.toFixed(2)}"></div>
+        <div style="flex:1;height:${(m.exp/maxBar*180).toFixed(0)}px;background:var(--red);border-radius:4px 4px 0 0;min-height:2px" title="Expenses: $${m.exp.toFixed(2)}"></div>
+      </div>`;
+    }).join(''):'<div class="empty" style="width:100%;text-align:center">No data yet</div>';
+
+    document.getElementById('pnlChartLabels').innerHTML=mKeys.map(k=>
+      `<div style="flex:1;font-size:0.55rem;color:var(--text-3);text-align:center;min-width:0;overflow:hidden">${k.slice(5)}-${k.slice(2,4)}</div>`
+    ).join('');
+
+    document.getElementById('pnlEntries').innerHTML=entries.length?entries.map(e=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
+        <div style="width:80px;color:var(--text-3);font-size:0.7rem">${e.date}</div>
+        <div style="width:14px;font-size:0.9rem">${e.type==='revenue'?'↑':'↓'}</div>
+        <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          ${esc(e.description||e.category)}
+          <span style="color:var(--text-3);font-size:0.65rem;margin-left:4px">${esc(e.category)}</span>
+        </div>
+        <div style="width:90px;text-align:right;font-weight:700;color:${e.type==='revenue'?'var(--green)':'var(--red)'}">
+          ${e.type==='revenue'?'+':'-'}$${Math.abs(e.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
+        </div>
+        <button class="btn" style="font-size:0.6rem;padding:3px 6px" onclick="editPnl(${e.id})">Edit</button>
+        <button class="btn danger" style="font-size:0.6rem;padding:3px 6px" onclick="deletePnl(${e.id})">x</button>
+      </div>
+    `).join(''):'<div class="empty">No entries yet. Click "+ Add Entry" to start tracking.</div>';
+
+  }catch(e){showAlert('pnlAlert',e.message,'err')}
+}
+
+function openPnlAdd(){
+  document.getElementById('pnlEditId').value='';
+  document.getElementById('pnlModalTitle').textContent='Add Entry';
+  document.getElementById('pnlDate').value=new Date().toISOString().split('T')[0];
+  document.getElementById('pnlType').value='expense';
+  document.getElementById('pnlCategory').value='Software / SaaS';
+  document.getElementById('pnlDesc').value='';
+  document.getElementById('pnlAmount').value='';
+  document.getElementById('pnlModal').classList.add('show');
+}
+function closePnlModal(){document.getElementById('pnlModal').classList.remove('show')}
+
+async function savePnlEntry(){
+  const editId=document.getElementById('pnlEditId').value;
+  const data={
+    business:PNL_BIZ,
+    date:document.getElementById('pnlDate').value,
+    type:document.getElementById('pnlType').value,
+    category:document.getElementById('pnlCategory').value,
+    description:document.getElementById('pnlDesc').value,
+    amount:document.getElementById('pnlAmount').value,
+  };
+  if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
+  try{
+    if(editId){
+      await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }else{
+      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }
+    closePnlModal();loadPnl();
+  }catch(e){showAlert('pnlAlert',e.message,'err')}
+}
+
+async function editPnl(id){
+  const entries=await fetch(`${API_BASE}/api/pnl/${PNL_BIZ}`).then(r=>r.json());
+  const e=entries.find(x=>x.id===id);
+  if(!e)return;
+  document.getElementById('pnlEditId').value=id;
+  document.getElementById('pnlModalTitle').textContent='Edit Entry';
+  document.getElementById('pnlDate').value=e.date;
+  document.getElementById('pnlType').value=e.type;
+  document.getElementById('pnlCategory').value=e.category;
+  document.getElementById('pnlDesc').value=e.description;
+  document.getElementById('pnlAmount').value=e.amount;
+  document.getElementById('pnlModal').classList.add('show');
+}
+
+async function deletePnl(id){
+  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
+  loadPnl();
+}
+</script>
+</body>
+</html>
