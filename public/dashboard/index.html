@@ -81,7 +81,7 @@
   </div>
 </div>
 <script>
-const _AUTH_HASH='c4883d48298ba953610aa229489a5fbfc2511029bc72b08fbf87088625885f86';
+const _AUTH_HASH='0dceedf6e999d218a361cd70d6751270b9df85350d0b4ef2fb4701812cc03d26';
 async function _sha256(m){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function checkAuth(){
   const h=await _sha256(document.getElementById('authPass').value);
@@ -255,6 +255,7 @@ if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate')
       </select>
     </div>
     <div class="field"><label>Description</label><input type="text" id="pnlDesc" placeholder="e.g. Woodstock PD session" /></div>
+    <div class="field"><label>Person</label><input type="text" id="pnlPerson" placeholder="e.g. Brayan, Ryan" /></div>
     <div class="field"><label>Amount ($)</label><input type="number" id="pnlAmount" step="0.01" min="0" placeholder="0.00" /></div>
     <button class="btn primary" onclick="savePnlEntry()" style="width:100%;margin-top:12px">Save</button>
   </div>
@@ -371,6 +372,7 @@ async function loadPnl(){
         <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
           ${esc(e.description||e.category)}
           <span style="color:var(--text-3);font-size:0.65rem;margin-left:4px">${esc(e.category)}</span>
+          ${e.person?`<span style="color:var(--primary);font-size:0.6rem;margin-left:4px">${esc(e.person)}</span>`:''}
         </div>
         <div style="width:90px;text-align:right;font-weight:700;color:${e.type==='revenue'?'var(--green)':'var(--red)'}">
           ${e.type==='revenue'?'+':'-'}$${Math.abs(e.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
@@ -390,6 +392,7 @@ function openPnlAdd(){
   document.getElementById('pnlType').value='expense';
   document.getElementById('pnlCategory').value='Software / SaaS';
   document.getElementById('pnlDesc').value='';
+  document.getElementById('pnlPerson').value='';
   document.getElementById('pnlAmount').value='';
   document.getElementById('pnlModal').classList.add('show');
 }
@@ -403,6 +406,7 @@ async function savePnlEntry(){
     type:document.getElementById('pnlType').value,
     category:document.getElementById('pnlCategory').value,
     description:document.getElementById('pnlDesc').value,
+    person:document.getElementById('pnlPerson').value,
     amount:document.getElementById('pnlAmount').value,
   };
   if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
@@ -426,6 +430,7 @@ async function editPnl(id){
   document.getElementById('pnlType').value=e.type;
   document.getElementById('pnlCategory').value=e.category;
   document.getElementById('pnlDesc').value=e.description;
+  document.getElementById('pnlPerson').value=e.person||'';
   document.getElementById('pnlAmount').value=e.amount;
   document.getElementById('pnlModal').classList.add('show');
 }
