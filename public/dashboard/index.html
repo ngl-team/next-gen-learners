@@ -81,19 +81,17 @@
   </div>
 </div>
 <script>
-const _AUTH_HASH='0dceedf6e999d218a361cd70d6751270b9df85350d0b4ef2fb4701812cc03d26';
-async function _sha256(m){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function checkAuth(){
-  const h=await _sha256(document.getElementById('authPass').value);
-  if(h===_AUTH_HASH||sessionStorage.getItem('ngl_auth')==='1'){
-    sessionStorage.setItem('ngl_auth','1');
-    document.getElementById('authGate').style.display='none';
-  } else {
-    document.getElementById('authError').style.display='block';
-    document.getElementById('authPass').value='';
-  }
+  const password=document.getElementById('authPass').value;
+  try{
+    const resp=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});
+    if(resp.ok){document.getElementById('authGate').style.display='none';initApp()}
+    else{document.getElementById('authError').style.display='block';document.getElementById('authPass').value=''}
+  }catch(e){document.getElementById('authError').style.display='block'}
 }
-if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate').style.display='none';
+fetch('/api/auth/check').then(r=>r.json()).then(d=>{if(d.authenticated){document.getElementById('authGate').style.display='none';initApp()}});
+let _appInitialized=false;
+function initApp(){if(_appInitialized)return;_appInitialized=true;}
 </script>
 
 <!-- TOP BAR -->
@@ -272,10 +270,7 @@ if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate')
 </div>
 
 <script>
-const API_BASE = 'https://app.forgelegatus.org';
-const PNL_BIZ = 'ngl';
-const API_KEY = 'b563b656b7d7e6c7f1ac744401ce9bbc86cd81691031dc1f';
-const apiHeaders = {'Content-Type':'application/json','X-Api-Key':API_KEY};
+const API_BASE = ''; // Same origin — NGL's own API
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
@@ -331,9 +326,9 @@ async function loadPnl(){
   const{from,to}=getPnlDateRange();
   try{
     const[entries,summary,monthly]=await Promise.all([
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}?from=${from}&to=${to}`,{headers:apiHeaders}).then(r=>r.json()),
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/summary?from=${from}&to=${to}`,{headers:apiHeaders}).then(r=>r.json()),
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/monthly`,{headers:apiHeaders}).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl?from=${from}&to=${to}`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/summary?from=${from}&to=${to}`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/monthly`).then(r=>r.json()),
     ]);
 
     let totalRev=0,totalExp=0;
@@ -413,7 +408,6 @@ function closePnlModal(){document.getElementById('pnlModal').classList.remove('s
 async function savePnlEntry(){
   const editId=document.getElementById('pnlEditId').value;
   const data={
-    business:PNL_BIZ,
     date:document.getElementById('pnlDate').value,
     type:document.getElementById('pnlType').value,
     category:document.getElementById('pnlCategory').value,
@@ -424,16 +418,16 @@ async function savePnlEntry(){
   if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
   try{
     if(editId){
-      await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:apiHeaders,body:JSON.stringify(data)});
+      await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     }else{
-      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:apiHeaders,body:JSON.stringify(data)});
+      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     }
     closePnlModal();loadPnl();
   }catch(e){showAlert('pnlAlert',e.message,'err')}
 }
 
 async function editPnl(id){
-  const entries=await fetch(`${API_BASE}/api/pnl/${PNL_BIZ}`,{headers:apiHeaders}).then(r=>r.json());
+  const entries=await fetch(`${API_BASE}/api/pnl`).then(r=>r.json());
   const e=entries.find(x=>x.id===id);
   if(!e)return;
   document.getElementById('pnlEditId').value=id;
@@ -448,7 +442,7 @@ async function editPnl(id){
 }
 
 async function deletePnl(id){
-  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE',headers:apiHeaders});
+  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
   loadPnl();
 }
 
@@ -459,7 +453,7 @@ async function loadPriorities(){
   btn.textContent='Analyzing...';btn.disabled=true;
   container.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--text-3);font-size:0.82rem">Reading your CRM, calendar, financials, and queue...</div>';
   try{
-    const data=await fetch(`${API_BASE}/api/priorities/ngl`,{headers:apiHeaders}).then(r=>r.json());
+    const data=await fetch(`/api/priorities`).then(r=>r.json());
     if(data.error)throw new Error(data.error);
     const impactColors={revenue:'#10B981',relationship:'#3B82F6',both:'#F59E0B'};
     container.innerHTML=data.priorities.map(p=>`
