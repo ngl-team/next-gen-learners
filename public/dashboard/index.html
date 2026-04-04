@@ -274,6 +274,8 @@ if(sessionStorage.getItem('ngl_auth')==='1') document.getElementById('authGate')
 <script>
 const API_BASE = 'https://app.forgelegatus.org';
 const PNL_BIZ = 'ngl';
+const API_KEY = 'b563b656b7d7e6c7f1ac744401ce9bbc86cd81691031dc1f';
+const apiHeaders = {'Content-Type':'application/json','X-Api-Key':API_KEY};
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
@@ -329,9 +331,9 @@ async function loadPnl(){
   const{from,to}=getPnlDateRange();
   try{
     const[entries,summary,monthly]=await Promise.all([
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}?from=${from}&to=${to}`).then(r=>r.json()),
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/summary?from=${from}&to=${to}`).then(r=>r.json()),
-      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/monthly`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}?from=${from}&to=${to}`,{headers:apiHeaders}).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/summary?from=${from}&to=${to}`,{headers:apiHeaders}).then(r=>r.json()),
+      fetch(`${API_BASE}/api/pnl/${PNL_BIZ}/monthly`,{headers:apiHeaders}).then(r=>r.json()),
     ]);
 
     let totalRev=0,totalExp=0;
@@ -422,16 +424,16 @@ async function savePnlEntry(){
   if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
   try{
     if(editId){
-      await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:apiHeaders,body:JSON.stringify(data)});
     }else{
-      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:apiHeaders,body:JSON.stringify(data)});
     }
     closePnlModal();loadPnl();
   }catch(e){showAlert('pnlAlert',e.message,'err')}
 }
 
 async function editPnl(id){
-  const entries=await fetch(`${API_BASE}/api/pnl/${PNL_BIZ}`).then(r=>r.json());
+  const entries=await fetch(`${API_BASE}/api/pnl/${PNL_BIZ}`,{headers:apiHeaders}).then(r=>r.json());
   const e=entries.find(x=>x.id===id);
   if(!e)return;
   document.getElementById('pnlEditId').value=id;
@@ -446,7 +448,7 @@ async function editPnl(id){
 }
 
 async function deletePnl(id){
-  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
+  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE',headers:apiHeaders});
   loadPnl();
 }
 
@@ -457,7 +459,7 @@ async function loadPriorities(){
   btn.textContent='Analyzing...';btn.disabled=true;
   container.innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--text-3);font-size:0.82rem">Reading your CRM, calendar, financials, and queue...</div>';
   try{
-    const data=await fetch(`${API_BASE}/api/priorities/ngl`).then(r=>r.json());
+    const data=await fetch(`${API_BASE}/api/priorities/ngl`,{headers:apiHeaders}).then(r=>r.json());
     if(data.error)throw new Error(data.error);
     const impactColors={revenue:'#10B981',relationship:'#3B82F6',both:'#F59E0B'};
     container.innerHTML=data.priorities.map(p=>`
