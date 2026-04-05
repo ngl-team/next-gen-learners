@@ -291,6 +291,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Team Login */}
+      <footer className="py-6 text-center border-t border-[#E2E8F0]">
+        <a href="/dashboard" className="text-xs text-[#94A3B8] hover:text-[#4F46E5] transition-colors">Team Login</a>
+      </footer>
     </main>
   );
 }
