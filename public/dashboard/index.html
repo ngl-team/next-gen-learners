@@ -114,6 +114,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <div style="max-width:620px;margin:24px auto 0">
       <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-bottom:14px;padding-left:4px">Apps</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px" id="dashAppGrid">
+        <div class="card dash-app" onclick="switchTab('crm')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--primary-glow)">👥</div>
+          <div style="font-size:.82rem;font-weight:700">CRM</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Contacts & outreach</div>
+        </div>
         <div class="card dash-app" onclick="switchTab('pnl')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
           <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--accent-glow)">📊</div>
           <div style="font-size:.82rem;font-weight:700">P&L</div>
