@@ -58,6 +58,12 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  // Migrations
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'brayan'"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN revenue REAL DEFAULT 0"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN follow_up_date TEXT DEFAULT NULL"); } catch {}
+
   initialized = true;
 }
 
@@ -97,6 +103,29 @@ export async function updatePnlEntry(id: number, data: { date: string; type: str
 export async function deletePnlEntry(id: number) {
   await initDb();
   await db.execute({ sql: 'DELETE FROM pnl_entries WHERE id = ?', args: [id] });
+}
+
+// ── Metrics ──────────────────────────────────────────────────────────
+export async function getMetrics() {
+  await initDb();
+  const replyByChannel = (await db.execute(
+    "SELECT channel, COUNT(*) as total, SUM(CASE WHEN status IN ('replied','signed') THEN 1 ELSE 0 END) as replied, SUM(revenue) as revenue FROM contacts WHERE channel != '' GROUP BY channel ORDER BY total DESC"
+  )).rows;
+  const replyBySource = (await db.execute(
+    "SELECT source, COUNT(*) as total, SUM(CASE WHEN status IN ('replied','signed') THEN 1 ELSE 0 END) as replied, SUM(revenue) as revenue FROM contacts GROUP BY source ORDER BY total DESC"
+  )).rows;
+  const replyByOrg = (await db.execute(
+    "SELECT organization, COUNT(*) as total, SUM(CASE WHEN status IN ('replied','signed') THEN 1 ELSE 0 END) as replied, SUM(revenue) as revenue FROM contacts WHERE organization != '' GROUP BY organization ORDER BY replied DESC, total DESC LIMIT 15"
+  )).rows;
+  const staleContacts = (await db.execute(
+    "SELECT * FROM contacts WHERE status = 'emailed' AND (last_contact_date IS NULL OR last_contact_date <= date('now', '-7 days') OR (last_contact_date IS NULL AND created_at <= datetime('now', '-7 days'))) ORDER BY created_at"
+  )).rows;
+  const statusCounts = (await db.execute(
+    "SELECT status, COUNT(*) as count FROM contacts GROUP BY status ORDER BY count DESC"
+  )).rows;
+  const totalRevenue = (await db.execute("SELECT SUM(revenue) as total FROM contacts")).rows[0];
+
+  return { replyByChannel, replyBySource, replyByOrg, staleContacts, statusCounts, totalRevenue };
 }
 
 // ── CRM ─────────────────────────────────────────────────────────────

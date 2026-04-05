@@ -99,6 +99,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   <div class="topbar-title" onclick="switchTab('dashboard')">NGL</div>
   <div class="tabs">
     <button class="tab" onclick="switchTab('crm')">CRM</button>
+    <button class="tab" onclick="switchTab('metrics')">Metrics</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
   </div>
 </div>
@@ -245,6 +246,24 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <option value="signed">Signed</option>
         </select>
       </div>
+      <div class="field"><label>Source (who reached out)</label>
+        <select id="cf-source">
+          <option value="brayan">Brayan</option>
+          <option value="ryan">Ryan</option>
+        </select>
+      </div>
+      <div class="field"><label>Channel</label>
+        <select id="cf-channel">
+          <option value="">Select...</option>
+          <option value="library">Library</option>
+          <option value="school">School</option>
+          <option value="district">District</option>
+          <option value="pd">PD / Workshop</option>
+          <option value="referral">Referral</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Revenue ($)</label><input type="number" id="cf-revenue" step="0.01" min="0" placeholder="0.00" /></div>
       <div class="field"><label>Notes</label><textarea id="cf-notes" style="min-height:60px"></textarea></div>
       <button class="btn primary" onclick="saveContact()" style="width:100%;margin-top:12px">Save</button>
     </div>
@@ -260,6 +279,58 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div class="field"><label>Body</label><textarea id="compose-body" style="min-height:120px"></textarea></div>
       <button class="btn primary" onclick="sendComposedEmail()" style="width:100%;margin-top:12px">Send</button>
       <div class="alert" id="composeAlert" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- METRICS VIEW -->
+  <div class="view" id="view-metrics">
+    <div class="card" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--primary);margin-bottom:4px;font-weight:700">Metrics</div>
+          <div style="font-size:0.85rem;color:var(--text-2)">What's working, what's not, where the money is</div>
+        </div>
+        <button class="btn primary" onclick="loadMetrics()" style="font-size:0.72rem">Refresh</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+      <div class="card" style="padding:14px;text-align:center;margin:0">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--primary)" id="m-total">0</div>
+        <div style="font-size:0.55rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Total Contacts</div>
+      </div>
+      <div class="card" style="padding:14px;text-align:center;margin:0">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--accent)" id="m-replied">0</div>
+        <div style="font-size:0.55rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Replied</div>
+      </div>
+      <div class="card" style="padding:14px;text-align:center;margin:0">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--warm)" id="m-rate">0%</div>
+        <div style="font-size:0.55rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Reply Rate</div>
+      </div>
+      <div class="card" style="padding:14px;text-align:center;margin:0">
+        <div style="font-size:1.3rem;font-weight:800;color:var(--accent)" id="m-revenue">$0</div>
+        <div style="font-size:0.55rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Revenue</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700">Reply Rate by Channel</div>
+      <div id="m-channels"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700">By Source (Brayan vs Ryan)</div>
+      <div id="m-sources"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700">Reply Rate by Organization</div>
+      <div id="m-orgs"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:12px;font-weight:700">Needs Follow-up (7+ days, no reply)</div>
+      <div id="m-stale"></div>
     </div>
   </div>
 
@@ -383,11 +454,12 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach(b=>{if(b.textContent.toLowerCase().replace('&','').includes(t))b.classList.add('active')});
   if(t==='pnl')loadPnl();
   if(t==='crm')loadCRM();
+  if(t==='metrics')loadMetrics();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -461,6 +533,9 @@ function openContactModal(){
   document.getElementById('cf-org').value='';
   document.getElementById('cf-email').value='';
   document.getElementById('cf-status').value='cold';
+  document.getElementById('cf-source').value='brayan';
+  document.getElementById('cf-channel').value='';
+  document.getElementById('cf-revenue').value='';
   document.getElementById('cf-notes').value='';
   document.getElementById('contactModal').classList.add('show');
 }
@@ -475,13 +550,16 @@ function editContact(id){
   document.getElementById('cf-org').value=c.organization||'';
   document.getElementById('cf-email').value=c.email||'';
   document.getElementById('cf-status').value=c.status;
+  document.getElementById('cf-source').value=c.source||'brayan';
+  document.getElementById('cf-channel').value=c.channel||'';
+  document.getElementById('cf-revenue').value=c.revenue||'';
   document.getElementById('cf-notes').value=c.notes||'';
   document.getElementById('contactModal').classList.add('show');
 }
 
 async function saveContact(){
   const editId=document.getElementById('contactEditId').value;
-  const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,notes:document.getElementById('cf-notes').value};
+  const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,source:document.getElementById('cf-source').value,channel:document.getElementById('cf-channel').value,revenue:parseFloat(document.getElementById('cf-revenue').value)||0,notes:document.getElementById('cf-notes').value};
   if(!data.name){showAlert('crmAlert','Name required','err');return}
   try{
     if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
@@ -527,6 +605,68 @@ async function sendComposedEmail(){
     showAlert('crmAlert','Email sent to '+to,'ok');
     loadCRM();
   }catch(e){showAlert('composeAlert',e.message,'err')}
+}
+
+// ── Metrics ─────────────────────────────────────────────────────────────────
+async function loadMetrics(){
+  try{
+    const d=await fetch('/api/metrics').then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+
+    // Summary
+    const totalContacts=d.statusCounts.reduce((s,c)=>s+Number(c.count),0);
+    const totalReplied=d.statusCounts.filter(c=>c.status==='replied'||c.status==='signed').reduce((s,c)=>s+Number(c.count),0);
+    document.getElementById('m-total').textContent=totalContacts;
+    document.getElementById('m-replied').textContent=totalReplied;
+    document.getElementById('m-rate').textContent=totalContacts?Math.round(totalReplied/totalContacts*100)+'%':'0%';
+    document.getElementById('m-revenue').textContent='$'+(Number(d.totalRevenue?.total)||0).toLocaleString('en-US',{minimumFractionDigits:2});
+
+    // Channels
+    document.getElementById('m-channels').innerHTML=d.replyByChannel.length?d.replyByChannel.map(c=>{
+      const rate=Number(c.total)?Math.round(Number(c.replied)/Number(c.total)*100):0;
+      const rev=Number(c.revenue)||0;
+      return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="width:80px;font-size:0.82rem;font-weight:600;text-transform:capitalize">${c.channel}</div>
+        <div class="bar-track" style="flex:1;height:8px"><div class="bar-fill" style="width:${rate}%;background:${rate>50?'var(--accent)':rate>20?'var(--warm)':'var(--red)'}"></div></div>
+        <div style="width:50px;font-size:0.75rem;font-weight:700;text-align:right;color:${rate>50?'var(--accent)':rate>20?'var(--warm)':'var(--red)'}">${rate}%</div>
+        <div style="width:60px;font-size:0.7rem;color:var(--text-3);text-align:right">${c.replied}/${c.total}</div>
+        ${rev>0?`<div style="width:60px;font-size:0.7rem;color:var(--accent);text-align:right">$${rev.toFixed(0)}</div>`:''}
+      </div>`;
+    }).join(''):'<div class="empty">No channels tagged yet. Edit contacts to add channels (library, school, district, etc.)</div>';
+
+    // Sources
+    document.getElementById('m-sources').innerHTML=d.replyBySource.map(s=>{
+      const rate=Number(s.total)?Math.round(Number(s.replied)/Number(s.total)*100):0;
+      const rev=Number(s.revenue)||0;
+      return`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="width:80px;font-size:0.82rem;font-weight:600;text-transform:capitalize">${s.source||'unknown'}</div>
+        <div class="bar-track" style="flex:1;height:8px"><div class="bar-fill" style="width:${rate}%;background:var(--primary)"></div></div>
+        <div style="width:50px;font-size:0.75rem;font-weight:700;text-align:right">${rate}%</div>
+        <div style="width:60px;font-size:0.7rem;color:var(--text-3);text-align:right">${s.replied}/${s.total}</div>
+        ${rev>0?`<div style="width:60px;font-size:0.7rem;color:var(--accent);text-align:right">$${rev.toFixed(0)}</div>`:''}
+      </div>`;
+    }).join('');
+
+    // Orgs
+    document.getElementById('m-orgs').innerHTML=d.replyByOrg.length?d.replyByOrg.map(o=>{
+      const rate=Number(o.total)?Math.round(Number(o.replied)/Number(o.total)*100):0;
+      return`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
+        <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.organization)}</div>
+        <div style="width:40px;text-align:right;font-weight:700;color:${rate>50?'var(--accent)':rate>0?'var(--warm)':'var(--text-3)'}">${rate}%</div>
+        <div style="width:50px;text-align:right;color:var(--text-3)">${o.replied}/${o.total}</div>
+      </div>`;
+    }).join(''):'<div class="empty">No data yet</div>';
+
+    // Stale
+    document.getElementById('m-stale').innerHTML=d.staleContacts.length?d.staleContacts.map(c=>
+      `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
+        <div style="flex:1">${esc(c.name)} <span style="color:var(--text-3);font-size:0.65rem">${esc(c.organization||'')}</span></div>
+        <div style="font-size:0.65rem;color:var(--red)">${c.last_contact_date||'never contacted'}</div>
+        ${c.email?`<button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="quickEmail('${esc(c.email)}','${esc(c.name)}',${c.id})">Follow up</button>`:''}
+      </div>`
+    ).join(''):'<div class="empty" style="color:var(--accent)">No stale contacts. You are on top of it.</div>';
+
+  }catch(e){console.error('Metrics error:',e)}
 }
 
 // P&L
