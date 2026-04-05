@@ -75,7 +75,7 @@ IMPORTANT GUIDELINES:
       generated_plan: generatedPlan,
     });
 
-    return NextResponse.json({ id, generated_plan: generatedPlan });
+    return NextResponse.json({ id: Number(id), generated_plan: generatedPlan });
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';
     return NextResponse.json({ error: `Failed to generate lesson plan: ${errorMessage}` }, { status: 500 });

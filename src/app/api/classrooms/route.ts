@@ -20,5 +20,5 @@ export async function POST(req: NextRequest) {
     class_size: data.class_size || 25,
     special_notes: data.special_notes || '',
   });
-  return NextResponse.json({ id });
+  return NextResponse.json({ id: Number(id) });
 }
