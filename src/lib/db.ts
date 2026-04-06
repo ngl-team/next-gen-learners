@@ -114,7 +114,7 @@ export async function initDb() {
     )
   `);
   // Migrations
-  try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'brayan'"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'ryan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN revenue REAL DEFAULT 0"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN follow_up_date TEXT DEFAULT NULL"); } catch {}

@@ -679,9 +679,9 @@ function switchTab(t){
 function updateDashClock(){
   const now=new Date(),h=now.getHours(),m=now.getMinutes(),h12=h%12||12;
   document.getElementById('dashClock').textContent=`${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
-  let msg='Good evening, Brayan.';
-  if(h<12)msg='Good morning, Brayan.';
-  else if(h<17)msg='Good afternoon, Brayan.';
+  let msg='Good evening, Ryan.';
+  if(h<12)msg='Good morning, Ryan.';
+  else if(h<17)msg='Good afternoon, Ryan.';
   document.getElementById('dashGreet').textContent=msg;
 }
 updateDashClock();
@@ -748,7 +748,7 @@ function openContactModal(){
   document.getElementById('cf-org').value='';
   document.getElementById('cf-email').value='';
   document.getElementById('cf-status').value='cold';
-  document.getElementById('cf-source').value='brayan';
+  document.getElementById('cf-source').value='ryan';
   document.getElementById('cf-channel').value='';
   document.getElementById('cf-revenue').value='';
   document.getElementById('cf-notes').value='';
@@ -768,7 +768,7 @@ function editContact(id){
   document.getElementById('cf-org').value=c.organization||'';
   document.getElementById('cf-email').value=c.email||'';
   document.getElementById('cf-status').value=c.status;
-  document.getElementById('cf-source').value=c.source||'brayan';
+  document.getElementById('cf-source').value=c.source||'ryan';
   document.getElementById('cf-channel').value=c.channel||'';
   document.getElementById('cf-revenue').value=c.revenue||'';
   document.getElementById('cf-notes').value=c.notes||'';
