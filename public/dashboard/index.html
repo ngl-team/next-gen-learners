@@ -102,6 +102,8 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('metrics')">Metrics</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
     <button class="tab" onclick="switchTab('time')">Time</button>
+    <button class="tab" onclick="switchTab('audit')">Audit</button>
+    <button class="tab" onclick="switchTab('emails')">Emails</button>
   </div>
 </div>
 
@@ -446,6 +448,68 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 
 </div>
 
+  <!-- AUDIT VIEW -->
+  <div class="view" id="view-audit">
+    <div class="card" style="padding:20px">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:4px">Business Audit Tool</div>
+      <div style="font-size:0.78rem;color:var(--text-2)">Research a business and generate 3-4 AI automation opportunities. Rostam method.</div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:20px">
+      <div class="field"><label>Business Name</label><input type="text" id="audit-biz" placeholder="e.g. 72 Architects" /></div>
+      <div class="field"><label>Industry</label>
+        <select id="audit-industry">
+          <option value="">Select...</option>
+          <option value="architecture">Architecture / Design</option>
+          <option value="accounting">Accounting / Tax</option>
+          <option value="law">Law / Legal</option>
+          <option value="recruiting">Recruiting / Staffing</option>
+          <option value="consulting">Consulting / Advisory</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="real-estate">Real Estate</option>
+          <option value="restaurant">Restaurant / Food</option>
+          <option value="retail">Retail / E-commerce</option>
+          <option value="construction">Construction / Trades</option>
+          <option value="education">Education</option>
+          <option value="nonprofit">Nonprofit</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field"><label>What do you know about them? (pain points, workflow, size, etc.)</label>
+        <textarea id="audit-context" style="min-height:80px" placeholder="e.g. Small firm, 5 employees, owner spends too much time on proposals and client follow-ups..."></textarea>
+      </div>
+      <div class="field"><label>Your relationship to them</label>
+        <input type="text" id="audit-rel" placeholder="e.g. Family friend, known since I was 5" />
+      </div>
+      <button class="btn primary" onclick="runAudit()" id="auditBtn" style="width:100%;margin-top:8px">Generate Audit</button>
+    </div>
+    <div id="auditResult" style="margin-top:12px"></div>
+  </div>
+
+  <!-- EMAILS VIEW -->
+  <div class="view" id="view-emails">
+    <div class="card" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:4px">Email Search</div>
+          <div style="font-size:0.78rem;color:var(--text-2)">Search your Gmail for context on contacts and conversations</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;gap:8px">
+        <input type="text" id="emailSearchQ" placeholder="Search emails... (e.g. from:havard, subject:NGL)" style="flex:1" onkeydown="if(event.key==='Enter')searchEmails()" />
+        <select id="emailSearchMax" style="width:80px;font-size:0.75rem">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+        </select>
+        <button class="btn primary" onclick="searchEmails()">Search</button>
+      </div>
+    </div>
+    <div id="emailResults" style="margin-top:12px"></div>
+    <div id="emailThreadView" style="margin-top:12px;display:none"></div>
+  </div>
+
 <!-- P&L Modal -->
 <div class="modal-overlay" id="pnlModal">
   <div class="modal">
@@ -588,7 +652,7 @@ function switchTab(t){
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','audit','emails'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -941,6 +1005,147 @@ async function editPnl(id){
 async function deletePnl(id){
   await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
   loadPnl();
+}
+
+// ── Email Search ────────────────────────────────────────────────────────────
+async function searchEmails(){
+  const q=document.getElementById('emailSearchQ').value;
+  const max=document.getElementById('emailSearchMax').value;
+  if(!q)return;
+  document.getElementById('emailResults').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-3)">Searching...</div>';
+  document.getElementById('emailThreadView').style.display='none';
+  try{
+    const d=await fetch(`/api/emails/search?q=${encodeURIComponent(q)}&max=${max}`).then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+    document.getElementById('emailResults').innerHTML=d.results.length?`
+      <div class="card" style="padding:12px 16px;font-size:0.7rem;color:var(--text-3)">${d.total} results found</div>
+      ${d.results.map(e=>`
+        <div class="card" style="margin-top:4px;padding:14px 16px;cursor:pointer" onclick="viewThread('${e.threadId}')">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.8rem;font-weight:600;margin-bottom:2px">${esc(e.subject||'(no subject)')}</div>
+              <div style="font-size:0.7rem;color:var(--text-3);margin-bottom:4px">${esc(e.from)}</div>
+              <div style="font-size:0.72rem;color:var(--text-2)">${esc(e.snippet||'')}</div>
+            </div>
+            <div style="font-size:0.62rem;color:var(--text-3);white-space:nowrap">${e.date?new Date(e.date).toLocaleDateString():''}</div>
+          </div>
+        </div>
+      `).join('')}
+    `:'<div class="card" style="padding:20px;text-align:center"><div class="empty">No emails found for "'+esc(q)+'"</div></div>';
+  }catch(e){
+    document.getElementById('emailResults').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+async function viewThread(threadId){
+  document.getElementById('emailThreadView').style.display='block';
+  document.getElementById('emailThreadView').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-3)">Loading thread...</div>';
+  try{
+    const d=await fetch(`/api/emails/thread?id=${threadId}`).then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+    document.getElementById('emailThreadView').innerHTML=`
+      <div class="card" style="padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:0.7rem;font-weight:700;color:var(--primary);letter-spacing:0.1em;text-transform:uppercase">Full Thread (${d.messages.length} messages)</div>
+          <button class="btn" onclick="document.getElementById('emailThreadView').style.display='none'" style="font-size:0.6rem;padding:3px 8px">Close</button>
+        </div>
+        ${d.messages.map(m=>`
+          <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <div style="font-size:0.75rem;font-weight:600">${esc(m.from)}</div>
+              <div style="font-size:0.62rem;color:var(--text-3)">${m.date?new Date(m.date).toLocaleString():''}</div>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text-3);margin-bottom:6px">To: ${esc(m.to)}</div>
+            <div style="font-size:0.78rem;color:var(--text);white-space:pre-wrap;line-height:1.5;max-height:400px;overflow-y:auto">${esc(m.body)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }catch(e){
+    document.getElementById('emailThreadView').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+// ── Audit Tool ──────────────────────────────────────────────────────────────
+async function runAudit(){
+  const biz=document.getElementById('audit-biz').value;
+  const industry=document.getElementById('audit-industry').value;
+  const context=document.getElementById('audit-context').value;
+  const rel=document.getElementById('audit-rel').value;
+  if(!biz){alert('Enter a business name');return}
+
+  const btn=document.getElementById('auditBtn');
+  btn.textContent='Generating...';btn.disabled=true;
+  document.getElementById('auditResult').innerHTML='<div class="card" style="padding:30px;text-align:center;color:var(--text-3);font-size:0.82rem">Researching and building audit...</div>';
+
+  const prompt=`You are an AI automation consultant using the Rostam Method. Generate a business audit for a potential client.
+
+Business: ${biz}
+Industry: ${industry||'Unknown'}
+Context: ${context||'None provided'}
+Relationship: ${rel||'None specified'}
+
+Generate exactly 4 automation opportunities. For each one provide:
+1. A clear problem statement (in their language, no jargon)
+2. The AI/automation solution
+3. Estimated time/money saved per month
+4. How it works in one sentence
+
+Also provide:
+- A brief company research summary (what you'd learn about this type of business)
+- An opening line for the meeting (personal, referencing the relationship)
+- A closing line that frames the value
+
+Format your response as JSON:
+{
+  "research": "...",
+  "opening": "...",
+  "opportunities": [
+    {"problem": "...", "solution": "...", "impact": "...", "how": "..."},
+    ...
+  ],
+  "closing": "..."
+}
+
+Return ONLY valid JSON, no markdown.`;
+
+  try{
+    const r=await fetch('/api/audit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error);
+    const a=d.audit;
+    document.getElementById('auditResult').innerHTML=`
+      <div class="card" style="margin-top:0;padding:16px">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700">Company Research</div>
+        <div style="font-size:0.82rem;color:var(--text);line-height:1.5">${esc(a.research)}</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:3px solid var(--accent)">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;font-weight:700">Opening Line</div>
+        <div style="font-size:0.82rem;color:var(--text);font-style:italic">"${esc(a.opening)}"</div>
+      </div>
+      ${a.opportunities.map((o,i)=>`
+        <div class="card" style="padding:16px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--primary-glow);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:700;color:var(--primary);flex-shrink:0">${i+1}</div>
+            <div style="flex:1">
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:4px">${esc(o.problem)}</div>
+              <div style="font-size:0.78rem;color:var(--text-2);margin-bottom:6px">${esc(o.solution)}</div>
+              <div style="display:flex;gap:12px">
+                <span style="font-size:0.68rem;padding:3px 10px;border-radius:6px;background:var(--accent-glow);color:var(--accent);font-weight:600">${esc(o.impact)}</span>
+              </div>
+              <div style="font-size:0.72rem;color:var(--text-3);margin-top:6px;font-style:italic">${esc(o.how)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+      <div class="card" style="padding:16px;border-left:3px solid var(--warm)">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--warm);margin-bottom:6px;font-weight:700">Closing Line</div>
+        <div style="font-size:0.82rem;color:var(--text);font-style:italic">"${esc(a.closing)}"</div>
+      </div>
+    `;
+  }catch(e){
+    document.getElementById('auditResult').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }finally{btn.textContent='Generate Audit';btn.disabled=false}
 }
 
 // ── CRM Subtabs (Pipeline / Relationships) ─────────────────────────────────
