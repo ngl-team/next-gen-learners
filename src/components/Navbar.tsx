@@ -32,6 +32,15 @@ export default function Navbar() {
             <Link href="/lesson-planner" className="relative text-[#64748B] text-sm font-medium hover:text-[#4F46E5] transition-colors duration-200 cursor-pointer after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[2px] after:bg-[#4F46E5] after:scale-x-0 after:transition-transform after:duration-200 after:origin-center hover:after:scale-x-100">
               Lesson Planner
             </Link>
+            <Link href="/differentiation-engine" className="relative text-[#64748B] text-sm font-medium hover:text-[#4F46E5] transition-colors duration-200 cursor-pointer after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[2px] after:bg-[#4F46E5] after:scale-x-0 after:transition-transform after:duration-200 after:origin-center hover:after:scale-x-100">
+              Differentiation
+            </Link>
+            <Link href="/student-feedback" className="relative text-[#64748B] text-sm font-medium hover:text-[#4F46E5] transition-colors duration-200 cursor-pointer after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[2px] after:bg-[#4F46E5] after:scale-x-0 after:transition-transform after:duration-200 after:origin-center hover:after:scale-x-100">
+              Feedback
+            </Link>
+            <Link href="/parent-email" className="relative text-[#64748B] text-sm font-medium hover:text-[#4F46E5] transition-colors duration-200 cursor-pointer after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-[2px] after:bg-[#4F46E5] after:scale-x-0 after:transition-transform after:duration-200 after:origin-center hover:after:scale-x-100">
+              Parent Email
+            </Link>
           </div>
           <div className="hidden md:block">
             <Link href="/libraries#book-a-program">
@@ -65,6 +74,15 @@ export default function Navbar() {
             </Link>
             <Link href="/lesson-planner" onClick={() => setIsOpen(false)} className="text-[#1E1B4B] hover:text-[#4F46E5] hover:bg-indigo-50 block px-3 py-3 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200">
               Lesson Planner
+            </Link>
+            <Link href="/differentiation-engine" onClick={() => setIsOpen(false)} className="text-[#1E1B4B] hover:text-[#4F46E5] hover:bg-indigo-50 block px-3 py-3 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200">
+              Differentiation Engine
+            </Link>
+            <Link href="/student-feedback" onClick={() => setIsOpen(false)} className="text-[#1E1B4B] hover:text-[#4F46E5] hover:bg-indigo-50 block px-3 py-3 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200">
+              Student Feedback
+            </Link>
+            <Link href="/parent-email" onClick={() => setIsOpen(false)} className="text-[#1E1B4B] hover:text-[#4F46E5] hover:bg-indigo-50 block px-3 py-3 rounded-xl text-sm font-medium cursor-pointer transition-all duration-200">
+              Parent Email
             </Link>
             <div className="pt-4">
               <Link href="/libraries#book-a-program" onClick={() => setIsOpen(false)}>

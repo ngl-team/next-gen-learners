@@ -70,6 +70,17 @@ export async function initDb() {
     )
   `);
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS tool_outputs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      classroom_id INTEGER,
+      tool TEXT NOT NULL,
+      input_data TEXT DEFAULT '',
+      generated_output TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    )
+  `);
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS lesson_plans (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       classroom_id INTEGER,
@@ -274,4 +285,26 @@ export async function insertLessonPlan(data: { classroom_id: number; topic: stri
 export async function deleteLessonPlan(id: number) {
   await initDb();
   await db.execute({ sql: 'DELETE FROM lesson_plans WHERE id = ?', args: [id] });
+}
+
+// ── Tool Outputs ────────────────────────────────────────────────────
+export async function getToolOutputs(tool: string) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT t.*, c.name as classroom_name, c.grade, c.subject FROM tool_outputs t LEFT JOIN classrooms c ON t.classroom_id = c.id WHERE t.tool = ? ORDER BY t.created_at DESC', args: [tool] })).rows;
+}
+
+export async function getToolOutput(id: number) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT t.*, c.name as classroom_name, c.grade, c.subject, c.class_size, c.special_notes as classroom_notes FROM tool_outputs t LEFT JOIN classrooms c ON t.classroom_id = c.id WHERE t.id = ?', args: [id] })).rows[0];
+}
+
+export async function insertToolOutput(data: { classroom_id: number; tool: string; input_data: string; generated_output: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO tool_outputs (classroom_id,tool,input_data,generated_output) VALUES (?,?,?,?)', args: [data.classroom_id, data.tool, data.input_data, data.generated_output] });
+  return r.lastInsertRowid;
+}
+
+export async function deleteToolOutput(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM tool_outputs WHERE id = ?', args: [id] });
 }

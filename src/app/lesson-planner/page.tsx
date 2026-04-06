@@ -273,19 +273,19 @@ export default function LessonPlanner() {
               </div>
             )}
 
-            {/* Coming Soon Tools */}
+            {/* More Tools */}
             <h2 className="text-lg font-semibold text-[#1E1B4B] mt-10 mb-3">More Tools</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
-                { name: 'Differentiation Engine', desc: 'Adapt lessons for ELL, advanced, and IEP students' },
-                { name: 'Student Feedback Writer', desc: 'Draft growth-focused feedback on student work' },
-                { name: 'Parent Email Partner', desc: 'Draft professional parent communications' },
+                { name: 'Differentiation Engine', desc: 'Adapt lessons for ELL, advanced, and IEP students', href: '/differentiation-engine' },
+                { name: 'Student Feedback Writer', desc: 'Draft growth-focused feedback on student work', href: '/student-feedback' },
+                { name: 'Parent Email Partner', desc: 'Draft professional parent communications', href: '/parent-email' },
               ].map((tool) => (
-                <div key={tool.name} className="bg-white border border-[#E5E7EB] rounded-xl p-4 opacity-50">
+                <a key={tool.name} href={tool.href} className="bg-white border border-[#E5E7EB] rounded-xl p-4 hover:border-[#4F46E5] transition cursor-pointer">
                   <h3 className="font-semibold text-[#1E1B4B] text-sm">{tool.name}</h3>
                   <p className="text-xs text-[#9CA3AF] mt-1">{tool.desc}</p>
-                  <span className="inline-block mt-2 text-xs px-2 py-0.5 bg-[#F3F4F6] text-[#9CA3AF] rounded">Coming Soon</span>
-                </div>
+                  <span className="inline-block mt-2 text-xs px-2 py-0.5 bg-[#EEF2FF] text-[#4F46E5] rounded font-medium">Open</span>
+                </a>
               ))}
             </div>
           </>
