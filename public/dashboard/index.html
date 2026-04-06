@@ -101,6 +101,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('crm')">CRM</button>
     <button class="tab" onclick="switchTab('metrics')">Metrics</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
+    <button class="tab" onclick="switchTab('time')">Time</button>
   </div>
 </div>
 
@@ -150,6 +151,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="font-size:.82rem;font-weight:700">Forge</div>
           <div style="font-size:.65rem;color:var(--text-3)">CRM, Calendar & more</div>
         </a>
+        <div class="card dash-app" onclick="switchTab('time')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--secondary-glow)">⏱️</div>
+          <div style="font-size:.82rem;font-weight:700">Time Tracker</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Where your time goes</div>
+        </div>
       </div>
 
       <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin-bottom:14px;padding-left:4px">Quick Actions</div>
@@ -161,6 +167,10 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <div class="card" onclick="switchTab('pnl');setTimeout(()=>document.getElementById('pnlPeriod').value='month',300);setTimeout(loadPnl,400)" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:0">
           <span style="font-size:1.2rem">📈</span>
           <div><div style="font-size:.78rem;font-weight:600">This Month</div><div style="font-size:.62rem;color:var(--text-3)">View monthly P&L</div></div>
+        </div>
+        <div class="card" onclick="switchTab('time');setTimeout(openTimeLog,300)" style="padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:0">
+          <span style="font-size:1.2rem">⏱️</span>
+          <div><div style="font-size:.78rem;font-weight:600">Log Time</div><div style="font-size:.62rem;color:var(--text-3)">Track what you worked on</div></div>
         </div>
       </div>
     </div>
@@ -474,6 +484,81 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   </div>
 </div>
 
+<!-- TIME TRACKER VIEW -->
+<div class="view" id="view-time">
+  <div class="card" style="padding:14px 20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--secondary)">Time Tracker</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn" onclick="timeWeekOffset--;loadTime()" style="padding:5px 10px;font-size:0.72rem">&larr;</button>
+        <span id="timeWeekLabel" style="font-size:0.72rem;font-weight:600;color:var(--text-2);min-width:140px;text-align:center"></span>
+        <button class="btn" id="timeNextBtn" onclick="timeWeekOffset++;loadTime()" style="padding:5px 10px;font-size:0.72rem">&rarr;</button>
+        <button class="btn primary" onclick="openTimeLog()" style="padding:6px 14px;font-size:0.72rem">+ Log Time</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+    <div class="card" style="padding:12px;text-align:center;margin:0">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--secondary)" id="time-total">0h</div>
+      <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Total</div>
+    </div>
+    <div class="card" style="padding:12px;text-align:center;margin:0">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--primary)" id="time-entries-count">0</div>
+      <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Entries</div>
+    </div>
+    <div class="card" style="padding:12px;text-align:center;margin:0">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--accent)" id="time-top-cat">—</div>
+      <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Top Category</div>
+    </div>
+  </div>
+
+  <!-- Breakdown bars -->
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">Where Your Time Goes</div>
+    <div id="timeBreakdown"><div class="empty">No time logged this week.</div></div>
+  </div>
+
+  <!-- Entries list -->
+  <div class="card" style="margin-top:12px">
+    <div class="card-title">Entries</div>
+    <div id="timeEntries"><div class="empty">No entries yet.</div></div>
+  </div>
+</div>
+
+<!-- TIME LOG MODAL -->
+<div class="modal-overlay" id="timeLogModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTimeLog()">&times;</button>
+    <div class="modal-title">Log Time</div>
+    <div class="field">
+      <label>Category</label>
+      <select id="timeCategory">
+        <option>Teaching</option>
+        <option>Lesson Planning</option>
+        <option>Grading</option>
+        <option>Parent Communication</option>
+        <option>Admin / Paperwork</option>
+        <option>Professional Development</option>
+        <option>Meetings</option>
+        <option>Student Support</option>
+        <option>Outreach / Sales</option>
+        <option>Building Product</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field"><label>Description (optional)</label><input type="text" id="timeDesc" placeholder="e.g. Graded 6th grade quizzes" /></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label>Hours</label><input type="number" id="timeHours" min="0" max="24" value="0" /></div>
+      <div class="field"><label>Minutes</label><input type="number" id="timeMins" min="0" max="59" value="30" /></div>
+    </div>
+    <div class="field"><label>Date</label><input type="date" id="timeDate" /></div>
+    <div id="timeAlert" class="alert" style="margin-bottom:10px"></div>
+    <button class="btn primary" onclick="saveTimeEntry()" style="width:100%;margin-top:8px">Log Time</button>
+  </div>
+</div>
+
 <script>
 const API_BASE = ''; // Same origin — NGL's own API
 
@@ -498,11 +583,12 @@ function switchTab(t){
   if(t==='pnl')loadPnl();
   if(t==='crm')loadCRM();
   if(t==='metrics')loadMetrics();
+  if(t==='time')loadTime();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -957,6 +1043,97 @@ async function loadPriorities(){
   }catch(e){
     container.innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.8rem">Error: ${esc(e.message)}</div>`;
   }finally{btn.textContent='What should I focus on?';btn.disabled=false}
+}
+
+// ── Time Tracker ──────────────────────────────────────────────
+let timeWeekOffset=0;
+const timeCatColors={'Teaching':'#4F46E5','Lesson Planning':'#7C3AED','Grading':'#EC4899','Parent Communication':'#F59E0B','Admin / Paperwork':'#6B7280','Professional Development':'#10B981','Meetings':'#3B82F6','Student Support':'#14B8A6','Outreach / Sales':'#F97316','Building Product':'#8B5CF6','Other':'#9CA3AF'};
+
+function getTimeWeekRange(offset){
+  const now=new Date(),day=now.getDay();
+  const mon=new Date(now);mon.setDate(now.getDate()-(day===0?6:day-1)+offset*7);
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  return{from:mon.toISOString().slice(0,10),to:sun.toISOString().slice(0,10),label:mon.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' — '+sun.toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+}
+
+function fmtMin(m){const h=Math.floor(m/60),min=m%60;if(h===0)return min+'m';if(min===0)return h+'h';return h+'h '+min+'m'}
+
+async function loadTime(){
+  const w=getTimeWeekRange(timeWeekOffset);
+  document.getElementById('timeWeekLabel').textContent=w.label;
+  document.getElementById('timeNextBtn').disabled=timeWeekOffset>=0;
+  document.getElementById('timeNextBtn').style.opacity=timeWeekOffset>=0?'0.3':'1';
+  try{
+    const [entriesRes,summaryRes]=await Promise.all([
+      fetch(API_BASE+'/api/time-tracker?from='+w.from+'&to='+w.to),
+      fetch(API_BASE+'/api/time-tracker/summary?from='+w.from+'&to='+w.to)
+    ]);
+    const entries=entriesRes.ok?await entriesRes.json():[];
+    const summary=summaryRes.ok?await summaryRes.json():[];
+
+    const totalMins=summary.reduce((a,s)=>a+Number(s.total_minutes),0);
+    document.getElementById('time-total').textContent=fmtMin(totalMins);
+    document.getElementById('time-entries-count').textContent=entries.length;
+    document.getElementById('time-top-cat').textContent=summary.length>0?summary[0].category:'—';
+
+    // Breakdown bars
+    const bd=document.getElementById('timeBreakdown');
+    if(summary.length===0){bd.innerHTML='<div class="empty">No time logged this week.</div>';return}
+    bd.innerHTML=summary.map(s=>{
+      const mins=Number(s.total_minutes),pct=totalMins>0?(mins/totalMins*100):0,col=timeCatColors[s.category]||'#9CA3AF';
+      return`<div class="bar-row"><span class="bar-label">${esc(s.category)}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div><span style="font-size:0.68rem;color:var(--text-2);min-width:70px;text-align:right">${fmtMin(mins)} (${Math.round(pct)}%)</span></div>`;
+    }).join('');
+
+    // Entries list
+    const el=document.getElementById('timeEntries');
+    if(entries.length===0){el.innerHTML='<div class="empty">No entries yet.</div>';return}
+    el.innerHTML=entries.map(e=>{
+      const col=timeCatColors[e.category]||'#9CA3AF';
+      return`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:10px;height:10px;border-radius:50%;background:${col};flex-shrink:0"></div>
+          <div><div style="font-size:0.82rem;font-weight:600;color:var(--text)">${esc(e.category)}</div>${e.description?`<div style="font-size:0.7rem;color:var(--text-3)">${esc(e.description)}</div>`:''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="text-align:right"><div style="font-size:0.82rem;font-weight:600;color:var(--text)">${fmtMin(e.minutes)}</div><div style="font-size:0.62rem;color:var(--text-3)">${e.date}</div></div>
+          <button class="btn danger" onclick="deleteTimeEntry(${e.id})" style="padding:3px 8px;font-size:0.6rem">&times;</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){console.error('Time load error',e)}
+}
+
+function openTimeLog(){
+  document.getElementById('timeDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('timeLogModal').classList.add('show');
+}
+function closeTimeLog(){document.getElementById('timeLogModal').classList.remove('show')}
+
+async function saveTimeEntry(){
+  const cat=document.getElementById('timeCategory').value;
+  const desc=document.getElementById('timeDesc').value;
+  const hours=parseInt(document.getElementById('timeHours').value)||0;
+  const mins=parseInt(document.getElementById('timeMins').value)||0;
+  const date=document.getElementById('timeDate').value;
+  const totalMins=hours*60+mins;
+  if(totalMins<=0){showAlert('timeAlert','Enter a time greater than 0','err');return}
+  if(!date){showAlert('timeAlert','Date is required','err');return}
+  try{
+    const res=await fetch(API_BASE+'/api/time-tracker',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,description:desc,minutes:totalMins,date})});
+    if(res.ok){
+      closeTimeLog();
+      document.getElementById('timeDesc').value='';
+      document.getElementById('timeHours').value='0';
+      document.getElementById('timeMins').value='30';
+      loadTime();
+    }else{const d=await res.json();showAlert('timeAlert',d.error||'Failed to save','err')}
+  }catch(e){showAlert('timeAlert','Failed to save','err')}
+}
+
+async function deleteTimeEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  await fetch(API_BASE+'/api/time-tracker/'+id,{method:'DELETE'});
+  loadTime();
 }
 </script>
 </body>
