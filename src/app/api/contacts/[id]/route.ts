@@ -6,7 +6,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   const { id } = await params;
   const data = await req.json();
-  await updateContact(parseInt(id), { name: data.name, title: data.title || '', organization: data.organization || '', email: data.email || '', status: data.status || 'cold', notes: data.notes || '' });
+  await updateContact(parseInt(id), { name: data.name, title: data.title || '', organization: data.organization || '', email: data.email || '', status: data.status || 'cold', notes: data.notes || '', contact_type: data.contact_type || 'outreach', relationship_status: data.relationship_status || '' });
   return NextResponse.json({ success: true });
 }
 

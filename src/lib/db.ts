@@ -86,6 +86,8 @@ export async function initDb() {
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN revenue REAL DEFAULT 0"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN follow_up_date TEXT DEFAULT NULL"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN contact_type TEXT DEFAULT 'outreach'"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN relationship_status TEXT DEFAULT ''"); } catch {}
 
   initialized = true;
 }
@@ -168,9 +170,9 @@ export async function insertContact(data: { name: string; title: string; organiz
   return r.lastInsertRowid;
 }
 
-export async function updateContact(id: number, data: { name: string; title: string; organization: string; email: string; status: string; notes: string }) {
+export async function updateContact(id: number, data: { name: string; title: string; organization: string; email: string; status: string; notes: string; contact_type?: string; relationship_status?: string }) {
   await initDb();
-  await db.execute({ sql: 'UPDATE contacts SET name=?, title=?, organization=?, email=?, status=?, notes=? WHERE id=?', args: [data.name, data.title, data.organization, data.email, data.status, data.notes, id] });
+  await db.execute({ sql: 'UPDATE contacts SET name=?, title=?, organization=?, email=?, status=?, notes=?, contact_type=?, relationship_status=? WHERE id=?', args: [data.name, data.title, data.organization, data.email, data.status, data.notes, data.contact_type || 'outreach', data.relationship_status || '', id] });
 }
 
 export async function deleteContact(id: number) {

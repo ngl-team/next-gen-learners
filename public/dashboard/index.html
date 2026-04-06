@@ -184,11 +184,17 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   <div class="view" id="view-crm">
     <div class="card" style="padding:14px 20px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">CRM</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">CRM</div>
+          <div style="display:flex;gap:4px">
+            <button class="tab active" id="subtab-pipeline" onclick="switchCrmSubtab('pipeline')" style="padding:4px 12px;font-size:0.65rem">Pipeline</button>
+            <button class="tab" id="subtab-relationships" onclick="switchCrmSubtab('relationships')" style="padding:4px 12px;font-size:0.65rem">Relationships</button>
+          </div>
+        </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <input type="text" id="crmSearch" placeholder="Search..." oninput="renderContacts()" style="font-size:0.75rem;padding:5px 10px;max-width:200px" />
+          <input type="text" id="crmSearch" placeholder="Search..." oninput="renderContacts();renderRelationships()" style="font-size:0.75rem;padding:5px 10px;max-width:200px" />
           <button class="btn primary" onclick="openContactModal()" style="padding:6px 14px;font-size:0.72rem">+ Add</button>
-          <button class="btn" onclick="openComposeModal()" style="padding:6px 14px;font-size:0.72rem">Send Email</button>
+          <button class="btn" onclick="openComposeModal()" id="crmSendEmailBtn" style="padding:6px 14px;font-size:0.72rem">Send Email</button>
         </div>
       </div>
     </div>
@@ -221,10 +227,33 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </div>
     </div>
 
-    <!-- Contacts list -->
-    <div class="card" style="margin-top:12px;padding:16px">
-      <div id="contactsList"></div>
+    <!-- Pipeline sub-view -->
+    <div id="crm-pipeline-view">
+      <!-- Contacts list -->
+      <div class="card" style="margin-top:12px;padding:16px">
+        <div id="contactsList"></div>
+      </div>
     </div>
+
+    <!-- Relationships sub-view -->
+    <div id="crm-relationships-view" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px" id="relStatusCounts">
+        <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterRel('champion')">
+          <div style="font-size:1.2rem;font-weight:800;color:var(--accent)" id="rel-cnt-champion">0</div>
+          <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Champions</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterRel('warm')">
+          <div style="font-size:1.2rem;font-weight:800;color:var(--warm)" id="rel-cnt-warm">0</div>
+          <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Warm</div>
+        </div>
+        <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterRel('all')">
+          <div style="font-size:1.2rem;font-weight:800;color:var(--primary)" id="rel-cnt-all">0</div>
+          <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">All</div>
+        </div>
+      </div>
+      <div id="relationshipsList" style="margin-top:12px"></div>
+    </div>
+
     <div class="alert" id="crmAlert" style="margin-top:12px"></div>
   </div>
 
@@ -238,12 +267,26 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div class="field"><label>Title</label><input type="text" id="cf-title" /></div>
       <div class="field"><label>Organization</label><input type="text" id="cf-org" /></div>
       <div class="field"><label>Email</label><input type="email" id="cf-email" /></div>
+      <div class="field"><label>Type</label>
+        <select id="cf-contact-type" onchange="toggleRelFields()">
+          <option value="outreach">Outreach (Pipeline)</option>
+          <option value="relationship">Relationship</option>
+        </select>
+      </div>
       <div class="field"><label>Status</label>
         <select id="cf-status">
           <option value="cold">Cold</option>
           <option value="emailed">Emailed</option>
           <option value="replied">Replied</option>
           <option value="signed">Signed</option>
+        </select>
+      </div>
+      <div class="field" id="cf-relstatus-field" style="display:none"><label>Relationship Status</label>
+        <select id="cf-relstatus">
+          <option value="champion">Champion</option>
+          <option value="warm">Warm</option>
+          <option value="new">New</option>
+          <option value="needs-attention">Needs Attention</option>
         </select>
       </div>
       <div class="field"><label>Source (who reached out)</label>
@@ -492,12 +535,13 @@ async function loadCRM(){
 }
 
 function renderPipeline(){
+  const outreach=_contacts.filter(c=>(c.contact_type||'outreach')==='outreach');
   const counts={cold:0,emailed:0,replied:0};
-  _contacts.forEach(c=>{if(counts[c.status]!==undefined)counts[c.status]++});
+  outreach.forEach(c=>{if(counts[c.status]!==undefined)counts[c.status]++});
   document.getElementById('cnt-cold').textContent=counts.cold;
   document.getElementById('cnt-emailed').textContent=counts.emailed;
   document.getElementById('cnt-replied').textContent=counts.replied;
-  document.getElementById('cnt-all').textContent=_contacts.length;
+  document.getElementById('cnt-all').textContent=outreach.length;
 }
 
 function filterCRM(status){_crmFilter=status;renderContacts()}
@@ -505,6 +549,7 @@ function filterCRM(status){_crmFilter=status;renderContacts()}
 function renderContacts(){
   const search=(document.getElementById('crmSearch')?.value||'').toLowerCase();
   const filtered=_contacts.filter(c=>{
+    if((c.contact_type||'outreach')!=='outreach')return false;
     if(_crmFilter!=='all'&&c.status!==_crmFilter)return false;
     if(search&&!c.name.toLowerCase().includes(search)&&!(c.organization||'').toLowerCase().includes(search))return false;
     return true;
@@ -537,6 +582,9 @@ function openContactModal(){
   document.getElementById('cf-channel').value='';
   document.getElementById('cf-revenue').value='';
   document.getElementById('cf-notes').value='';
+  document.getElementById('cf-contact-type').value=_crmSubtab==='relationships'?'relationship':'outreach';
+  document.getElementById('cf-relstatus').value='warm';
+  toggleRelFields();
   document.getElementById('contactModal').classList.add('show');
 }
 function closeContactModal(){document.getElementById('contactModal').classList.remove('show')}
@@ -554,17 +602,21 @@ function editContact(id){
   document.getElementById('cf-channel').value=c.channel||'';
   document.getElementById('cf-revenue').value=c.revenue||'';
   document.getElementById('cf-notes').value=c.notes||'';
+  document.getElementById('cf-contact-type').value=c.contact_type||'outreach';
+  document.getElementById('cf-relstatus').value=c.relationship_status||'warm';
+  toggleRelFields();
   document.getElementById('contactModal').classList.add('show');
 }
 
 async function saveContact(){
   const editId=document.getElementById('contactEditId').value;
-  const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,source:document.getElementById('cf-source').value,channel:document.getElementById('cf-channel').value,revenue:parseFloat(document.getElementById('cf-revenue').value)||0,notes:document.getElementById('cf-notes').value};
+  const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,source:document.getElementById('cf-source').value,channel:document.getElementById('cf-channel').value,revenue:parseFloat(document.getElementById('cf-revenue').value)||0,notes:document.getElementById('cf-notes').value,contact_type:document.getElementById('cf-contact-type').value,relationship_status:document.getElementById('cf-relstatus').value};
   if(!data.name){showAlert('crmAlert','Name required','err');return}
   try{
     if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
     else{await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
     closeContactModal();loadCRM();
+    if(_crmSubtab==='relationships')renderRelationships();
   }catch(e){showAlert('crmAlert',e.message,'err')}
 }
 
@@ -803,6 +855,77 @@ async function editPnl(id){
 async function deletePnl(id){
   await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
   loadPnl();
+}
+
+// ── CRM Subtabs (Pipeline / Relationships) ─────────────────────────────────
+let _crmSubtab='pipeline';
+let _relFilter='all';
+
+function switchCrmSubtab(sub){
+  _crmSubtab=sub;
+  document.getElementById('subtab-pipeline').classList.toggle('active',sub==='pipeline');
+  document.getElementById('subtab-relationships').classList.toggle('active',sub==='relationships');
+  document.getElementById('crm-pipeline-view').style.display=sub==='pipeline'?'block':'none';
+  document.getElementById('crm-relationships-view').style.display=sub==='relationships'?'block':'none';
+  document.getElementById('crmPipeline').style.display=sub==='pipeline'?'grid':'none';
+  document.getElementById('gmailStatusBar').style.display=sub==='pipeline'?'block':'none';
+  if(sub==='relationships')renderRelationships();
+}
+
+function filterRel(status){_relFilter=status;renderRelationships()}
+
+function renderRelationships(){
+  const search=(document.getElementById('crmSearch')?.value||'').toLowerCase();
+  const rels=_contacts.filter(c=>(c.contact_type||'outreach')==='relationship');
+  const filtered=rels.filter(c=>{
+    if(_relFilter!=='all'&&(c.relationship_status||'warm')!==_relFilter)return false;
+    if(search&&!c.name.toLowerCase().includes(search)&&!(c.organization||'').toLowerCase().includes(search))return false;
+    return true;
+  });
+
+  // Update counts
+  const champions=rels.filter(c=>(c.relationship_status||'')==='champion').length;
+  const warm=rels.filter(c=>(c.relationship_status||'')==='warm'||(c.relationship_status||'')==='').length;
+  document.getElementById('rel-cnt-champion').textContent=champions;
+  document.getElementById('rel-cnt-warm').textContent=warm;
+  document.getElementById('rel-cnt-all').textContent=rels.length;
+
+  // Group by organization
+  const groups={};
+  filtered.forEach(c=>{
+    const org=c.organization||'Other';
+    if(!groups[org])groups[org]=[];
+    groups[org].push(c);
+  });
+
+  const relStatusColors={champion:'var(--accent)',warm:'var(--warm)',new:'var(--cyan)','needs-attention':'var(--red)'};
+  const relStatusLabels={champion:'Champion',warm:'Warm',new:'New','needs-attention':'Needs Attention'};
+  const orgKeys=Object.keys(groups).sort();
+
+  document.getElementById('relationshipsList').innerHTML=orgKeys.length?orgKeys.map(org=>`
+    <div class="card" style="margin-bottom:8px;padding:16px">
+      <div style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700">${esc(org)}</div>
+      ${groups[org].map(c=>{
+        const rs=c.relationship_status||'warm';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:var(--accent);flex-shrink:0">${esc(c.name.charAt(0))}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.82rem;font-weight:600">${esc(c.name)}</div>
+            <div style="font-size:0.7rem;color:var(--text-3)">${esc(c.title||'')}</div>
+            ${c.notes?`<div style="font-size:0.68rem;color:var(--text-2);margin-top:3px;line-height:1.4">${esc(c.notes).substring(0,100)}${c.notes.length>100?'...':''}</div>`:''}
+          </div>
+          <div style="font-size:0.6rem;padding:3px 8px;border-radius:4px;background:${relStatusColors[rs]||'var(--text-3)'}15;color:${relStatusColors[rs]||'var(--text-3)'};font-weight:600;text-transform:uppercase">${relStatusLabels[rs]||rs}</div>
+          ${c.email?`<button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="event.stopPropagation();quickEmail('${esc(c.email)}','${esc(c.name)}',${c.id})">Email</button>`:''}
+          <button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="editContact(${c.id})">Edit</button>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join(''):'<div class="card" style="padding:20px;text-align:center"><div class="empty">No relationships yet. Add contacts and set their type to "Relationship".</div></div>';
+}
+
+function toggleRelFields(){
+  const isRel=document.getElementById('cf-contact-type').value==='relationship';
+  document.getElementById('cf-relstatus-field').style.display=isRel?'block':'none';
 }
 
 // Priorities
