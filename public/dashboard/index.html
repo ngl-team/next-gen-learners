@@ -679,9 +679,9 @@ function switchTab(t){
 function updateDashClock(){
   const now=new Date(),h=now.getHours(),m=now.getMinutes(),h12=h%12||12;
   document.getElementById('dashClock').textContent=`${h12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
-  let msg='Good evening, Ryan.';
-  if(h<12)msg='Good morning, Ryan.';
-  else if(h<17)msg='Good afternoon, Ryan.';
+  let msg='Good evening, Ryan & Brayan.';
+  if(h<12)msg='Good morning, Ryan & Brayan.';
+  else if(h<17)msg='Good afternoon, Ryan & Brayan.';
   document.getElementById('dashGreet').textContent=msg;
 }
 updateDashClock();
