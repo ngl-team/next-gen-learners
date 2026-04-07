@@ -106,6 +106,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('activity')">Activity</button>
     <button class="tab" onclick="switchTab('audit')">Audit</button>
     <button class="tab" onclick="switchTab('emails')">Emails</button>
+    <button class="tab" onclick="switchTab('schools')">Schools</button>
     <button class="tab" onclick="switchTab('notes')">Notes</button>
   </div>
   <select id="currentUser" onchange="setCurrentUser(this.value)" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer">
@@ -550,6 +551,56 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <div id="emailThreadView" style="margin-top:12px;display:none"></div>
   </div>
 
+  <!-- SCHOOLS VIEW -->
+  <div class="view" id="view-schools">
+    <div class="card" style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:4px">School Finder</div>
+          <div style="font-size:0.78rem;color:var(--text-2)">Search US schools by state — find principals and add them to your CRM pipeline</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="schoolState" style="width:80px;font-size:0.75rem">
+          <option value="">State</option>
+          <option value="CT">CT</option>
+          <option value="FL">FL</option>
+          <option value="NY">NY</option>
+          <option value="NJ">NJ</option>
+          <option value="MA">MA</option>
+          <option value="PA">PA</option>
+          <option value="CA">CA</option>
+          <option value="TX">TX</option>
+          <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option><option value="AR">AR</option>
+          <option value="CO">CO</option><option value="DC">DC</option><option value="DE">DE</option><option value="GA">GA</option>
+          <option value="HI">HI</option><option value="ID">ID</option><option value="IL">IL</option><option value="IN">IN</option>
+          <option value="IA">IA</option><option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option>
+          <option value="ME">ME</option><option value="MD">MD</option><option value="MI">MI</option><option value="MN">MN</option>
+          <option value="MS">MS</option><option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option>
+          <option value="NV">NV</option><option value="NH">NH</option><option value="NM">NM</option><option value="NC">NC</option>
+          <option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option><option value="OR">OR</option>
+          <option value="RI">RI</option><option value="SC">SC</option><option value="SD">SD</option><option value="TN">TN</option>
+          <option value="UT">UT</option><option value="VT">VT</option><option value="VA">VA</option><option value="WA">WA</option>
+          <option value="WV">WV</option><option value="WI">WI</option><option value="WY">WY</option>
+        </select>
+        <input type="text" id="schoolCity" placeholder="City (optional)" style="width:120px" />
+        <input type="text" id="schoolQuery" placeholder="School name (optional)" style="flex:1" onkeydown="if(event.key==='Enter')searchSchools()" />
+        <select id="schoolLevel" style="width:90px;font-size:0.75rem">
+          <option value="">All levels</option>
+          <option value="elementary">Elementary</option>
+          <option value="middle">Middle</option>
+          <option value="high">High</option>
+        </select>
+        <button class="btn primary" onclick="searchSchools()">Search</button>
+      </div>
+    </div>
+    <div id="schoolResultInfo" style="margin-top:8px;font-size:0.7rem;color:var(--text-3);padding:0 4px"></div>
+    <div id="schoolResults" style="margin-top:4px"></div>
+    <div id="schoolPagination" style="margin-top:12px;text-align:center"></div>
+  </div>
+
 <!-- P&L Modal -->
 <div class="modal-overlay" id="pnlModal">
   <div class="modal">
@@ -813,12 +864,13 @@ function switchTab(t){
   if(t==='activity'){syncExternalActivity();loadActivity()}
   if(t==='research')loadResearch();
   if(t==='emails')loadEmails();
+  if(t==='schools')loadSchools();
   if(t==='notes')loadNotes();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes','schools'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -1242,6 +1294,88 @@ async function viewThread(threadId){
     `;
   }catch(e){
     document.getElementById('emailThreadView').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+// ── School Finder ──────────────────────────────────────────────────────────
+let _schoolPage=1;
+function loadSchools(){}
+
+async function searchSchools(page){
+  const state=document.getElementById('schoolState').value;
+  if(!state){document.getElementById('schoolResults').innerHTML='<div class="card" style="padding:16px;text-align:center;color:var(--text-3)">Select a state to search</div>';return}
+  _schoolPage=page||1;
+  const city=document.getElementById('schoolCity').value;
+  const q=document.getElementById('schoolQuery').value;
+  const level=document.getElementById('schoolLevel').value;
+  document.getElementById('schoolResults').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-3)">Searching schools...</div>';
+  document.getElementById('schoolResultInfo').textContent='';
+  document.getElementById('schoolPagination').innerHTML='';
+  try{
+    let url=`${API_BASE}/api/schools/search?state=${state}&page=${_schoolPage}`;
+    if(city)url+=`&city=${encodeURIComponent(city)}`;
+    if(q)url+=`&q=${encodeURIComponent(q)}`;
+    if(level)url+=`&level=${level}`;
+    const d=await fetch(url).then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+    if(!d.schools||d.schools.length===0){
+      document.getElementById('schoolResults').innerHTML='<div class="card" style="padding:20px;text-align:center"><div class="empty">No schools found. Try a different search.</div></div>';
+      return;
+    }
+    document.getElementById('schoolResultInfo').textContent=`Found ${d.total.toLocaleString()} schools — showing page ${d.page}`;
+    document.getElementById('schoolResults').innerHTML=d.schools.map(s=>{
+      const grades=s.grade_low!=null&&s.grade_high!=null?`Grades ${s.grade_low<0?'PK':s.grade_low}–${s.grade_high}`:'';
+      const tags=[];
+      if(s.charter)tags.push('Charter');
+      if(s.magnet)tags.push('Magnet');
+      if(s.title_i)tags.push('Title I');
+      const enrollment=s.enrollment?`${s.enrollment.toLocaleString()} students`:'';
+      const details=[grades,enrollment,...tags].filter(Boolean).join(' · ');
+      return `
+        <div class="card" style="margin-top:4px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:2px">${esc(s.name)}</div>
+              <div style="font-size:0.7rem;color:var(--text-3);margin-bottom:2px">${esc(s.district)}</div>
+              <div style="font-size:0.72rem;color:var(--text-2)">${esc(s.address)}, ${esc(s.city)}, ${esc(s.state)} ${esc(s.zip)}</div>
+              <div style="font-size:0.68rem;color:var(--text-3);margin-top:4px">${esc(details)}</div>
+              ${s.phone?`<div style="font-size:0.7rem;color:var(--text-2);margin-top:2px">📞 ${esc(s.phone)}</div>`:''}
+            </div>
+            <button class="btn primary" style="font-size:0.6rem;padding:5px 10px;white-space:nowrap" onclick='addSchoolToCRM(${JSON.stringify(s).replace(/'/g,"&#39;")})'>+ Add to CRM</button>
+          </div>
+        </div>`;
+    }).join('');
+    // Pagination
+    let pgHtml='';
+    if(_schoolPage>1)pgHtml+=`<button class="btn" style="font-size:.6rem;padding:4px 10px;margin:0 4px" onclick="searchSchools(${_schoolPage-1})">← Prev</button>`;
+    if(d.has_more)pgHtml+=`<button class="btn" style="font-size:.6rem;padding:4px 10px;margin:0 4px" onclick="searchSchools(${_schoolPage+1})">Next →</button>`;
+    document.getElementById('schoolPagination').innerHTML=pgHtml;
+  }catch(e){
+    document.getElementById('schoolResults').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+async function addSchoolToCRM(school){
+  if(!confirm(`Add ${school.name} to your CRM pipeline?`))return;
+  try{
+    await fetch(`${API_BASE}/api/contacts`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:school.name,
+        organization:school.district,
+        role:'School',
+        email:'',
+        phone:school.phone||'',
+        status:'cold',
+        contact_type:'outreach',
+        notes:`${school.address}, ${school.city}, ${school.state} ${school.zip}\n${school.enrollment?school.enrollment+' students':''}\nNCES ID: ${school.nces_id}`,
+        _actor:getCurrentUser(),
+      }),
+    });
+    alert(`${school.name} added to CRM!`);
+  }catch(e){
+    alert('Error adding to CRM: '+e.message);
   }
 }
 
