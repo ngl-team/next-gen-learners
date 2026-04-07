@@ -67,7 +67,7 @@ async function runResearch() {
   let allArticles = results.flat();
 
   if (allArticles.length === 0) {
-    return NextResponse.json({ ok: true, items: 0, message: 'No articles found' });
+    return NextResponse.json({ ok: true, items: 0, message: 'No articles found', topics: topics.map(t => t.query) });
   }
 
   // Deduplicate by title
@@ -113,7 +113,7 @@ Skip irrelevant articles. Quality over quantity. Return ONLY a valid JSON array.
 
     const jsonMatch = output.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      return NextResponse.json({ ok: true, items: 0, message: 'No relevant insights found' });
+      return NextResponse.json({ ok: true, items: 0, message: 'No relevant insights found', debug: { articleCount: allArticles.length, rawOutput: output.slice(0, 500) } });
     }
 
     const insights = JSON.parse(jsonMatch[0]);
