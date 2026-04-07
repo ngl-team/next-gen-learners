@@ -663,16 +663,42 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 
 <!-- ACTIVITY -->
 <div class="view" id="view-activity">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-    <h2 style="font-size:1.2rem;font-weight:800">Activity Feed</h2>
-    <div style="display:flex;gap:6px">
+  <!-- Header -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:2px">Activity Feed</h2>
+      <div id="activitySubtitle" style="font-size:.68rem;color:var(--text-3)">Real-time team activity</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <div id="actLiveIndicator" style="display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--accent);font-weight:600;margin-right:8px">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite"></span>LIVE
+      </div>
       <button class="btn" id="actFilterAll" onclick="filterActivity('all')" style="font-size:.65rem">All</button>
       <button class="btn" id="actFilterRyan" onclick="filterActivity('ryan')" style="font-size:.65rem">Ryan</button>
       <button class="btn" id="actFilterBrayan" onclick="filterActivity('brayan')" style="font-size:.65rem">Brayan</button>
     </div>
   </div>
+  <!-- Stats Bar -->
+  <div id="activityStats" style="display:flex;gap:12px;margin-bottom:20px"></div>
+  <!-- Feed -->
   <div id="activityList"></div>
 </div>
+<style>
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.act-item{animation:slideIn .3s ease}
+.act-avatar{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:white;flex-shrink:0;letter-spacing:.02em}
+.act-avatar.ryan{background:linear-gradient(135deg,#4F46E5,#7C3AED)}
+.act-avatar.brayan{background:linear-gradient(135deg,#10B981,#06B6D4)}
+.act-avatar.system{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+.act-icon-badge{position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:6px;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.55rem}
+.act-stat{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.act-stat-num{font-size:1.4rem;font-weight:800;letter-spacing:-.02em}
+.act-stat-label{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:600;margin-top:2px}
+.act-timestamp{font-size:.62rem;color:var(--text-3);white-space:nowrap;text-align:right;cursor:default}
+.act-timestamp:hover .act-time-full{display:block}
+.act-timestamp .act-time-full{display:none;position:absolute;right:0;top:100%;background:var(--text);color:white;padding:4px 8px;border-radius:6px;font-size:.58rem;white-space:nowrap;z-index:10;margin-top:4px}
+</style>
 
 <script>
 const API_BASE = ''; // Same origin — NGL's own API
@@ -1413,24 +1439,59 @@ async function deleteTimeEntry(id){
 
 // ── Activity Feed ───────────────────────────────────────────────────
 let _actFilter='all';
+let _actAutoRefresh=null;
 
-function actIcon(action,type){
-  if(action==='sent email')return '<span style="font-size:1.1rem">📧</span>';
-  if(type==='contact')return '<span style="font-size:1.1rem">👤</span>';
-  if(type==='pnl_entry')return '<span style="font-size:1.1rem">💰</span>';
-  if(type==='email')return '<span style="font-size:1.1rem">📧</span>';
-  return '<span style="font-size:1.1rem">📋</span>';
+const ACT_ICONS={
+  'sent email':'✉️','added':'➕','updated':'✏️','deleted':'🗑️',
+  'generated':'⚡','imported':'📥','found insights':'🔬',
+  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️',
+};
+const ACT_TYPE_ICONS={
+  contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
+  classroom:'🏫',tool_output:'🛠️',time_entry:'⏱️',research:'🔬',session:'🔄',
+};
+
+function actIconBadge(action,type){
+  const icon=ACT_ICONS[action]||ACT_TYPE_ICONS[type]||'📋';
+  return `<span style="font-size:.7rem">${icon}</span>`;
 }
 
-function actColor(person){
-  return person.toLowerCase()==='ryan'?'var(--primary)':'var(--accent)';
+function actAvatar(person){
+  const p=person.toLowerCase();
+  if(p==='ryan')return '<div class="act-avatar ryan">R</div>';
+  if(p==='brayan')return '<div class="act-avatar brayan">B</div>';
+  return '<div class="act-avatar system">⚙</div>';
+}
+
+function actDescription(a){
+  const name=esc(a.person);
+  const action=a.action||'';
+  const rn=a.resource_name?esc(a.resource_name):'';
+  const type=a.resource_type||'';
+
+  // Build human-readable sentence
+  const typeLabels={contact:'contact',pnl_entry:'P&L entry',email:'email',lesson_plan:'lesson plan',classroom:'classroom',tool_output:'tool output',time_entry:'time entry',research:'research',session:'session'};
+  const typeLabel=typeLabels[type]||type;
+
+  if(action==='sent email')return `sent an email${rn?' to <strong>'+rn+'</strong>':''}`;
+  if(action==='added'&&type==='contact')return `added a new contact: <strong>${rn}</strong>`;
+  if(action==='added')return `added ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
+  if(action==='updated')return `updated ${rn?'<strong>'+rn+'</strong>':'a '+typeLabel}`;
+  if(action==='deleted')return `removed ${rn?'<strong>'+rn+'</strong>':'a '+typeLabel}`;
+  if(action==='generated')return `generated ${rn?'<strong>'+rn+'</strong>':'a '+typeLabel}`;
+  if(action==='imported')return `imported ${rn?'<strong>'+rn+'</strong>':typeLabel+'s'}`;
+  if(action==='found insights')return `found ${rn||'new research insights'}`;
+  if(action==='switched to dashboard')return 'opened the dashboard';
+  if(action==='logged time')return `logged time${rn?' on <strong>'+rn+'</strong>':''}`;
+  if(action==='created')return `created ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
+  return `${esc(action)}${rn?' <strong>'+rn+'</strong>':''}`;
 }
 
 function timeAgo(dateStr){
-  if(!dateStr)return '';
+  if(!dateStr)return {relative:'',full:''};
   let d=new Date(dateStr+'Z');
   if(isNaN(d.getTime()))d=new Date(dateStr);
-  if(isNaN(d.getTime()))return '';
+  if(isNaN(d.getTime()))return {relative:'',full:''};
   const now=new Date();
   const diff=Math.floor((now-d)/1000);
   let ago='';
@@ -1438,12 +1499,43 @@ function timeAgo(dateStr){
   else if(diff<3600)ago=Math.floor(diff/60)+'m ago';
   else if(diff<86400)ago=Math.floor(diff/3600)+'h ago';
   else if(diff<604800)ago=Math.floor(diff/86400)+'d ago';
+  else ago=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   const h=d.getHours()%12||12;
   const m=String(d.getMinutes()).padStart(2,'0');
   const ampm=d.getHours()>=12?'PM':'AM';
-  const time=`${h}:${m} ${ampm}`;
-  const date=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  return `<div>${date} · ${time}</div>${ago?`<div style="color:var(--text-3)">${ago}</div>`:''}`;
+  const full=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+h+':'+m+' '+ampm;
+  return {relative:ago,full};
+}
+
+function renderActivityStats(data){
+  const stats=document.getElementById('activityStats');
+  const today=new Date().toISOString().slice(0,10);
+  let ryanToday=0,brayanToday=0,totalToday=0;
+  data.forEach(a=>{
+    const day=a.created_at?a.created_at.match(/\d{4}-\d{2}-\d{2}/):null;
+    if(day&&day[0]===today){
+      totalToday++;
+      if(a.person.toLowerCase()==='ryan')ryanToday++;
+      if(a.person.toLowerCase()==='brayan')brayanToday++;
+    }
+  });
+  stats.innerHTML=`
+    <div class="act-stat">
+      <div class="act-stat-num" style="color:var(--primary)">${ryanToday}</div>
+      <div class="act-stat-label">Ryan today</div>
+    </div>
+    <div class="act-stat">
+      <div class="act-stat-num" style="color:var(--accent)">${brayanToday}</div>
+      <div class="act-stat-label">Brayan today</div>
+    </div>
+    <div class="act-stat">
+      <div class="act-stat-num" style="color:var(--text)">${totalToday}</div>
+      <div class="act-stat-label">Total today</div>
+    </div>
+    <div class="act-stat">
+      <div class="act-stat-num" style="color:var(--warm)">${data.length}</div>
+      <div class="act-stat-label">All time</div>
+    </div>`;
 }
 
 async function loadActivity(){
@@ -1453,24 +1545,27 @@ async function loadActivity(){
     let url=API_BASE+'/api/activity?limit=100';
     if(_actFilter!=='all')url+='&person='+_actFilter;
     const data=await fetch(url).then(r=>r.json());
-    if(!data.length){list.innerHTML='<div class="empty">No activity yet</div>';return}
+    if(!data.length){list.innerHTML='<div class="empty" style="text-align:center;padding:40px 0"><div style="font-size:2rem;margin-bottom:8px">📭</div>No activity yet</div>';return}
+
+    renderActivityStats(data);
 
     // Group by date
     const today=new Date().toISOString().slice(0,10);
     const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
-    const groups={};
+    const groups={};const groupOrder=[];
     data.forEach(a=>{
       let day='unknown';
       if(a.created_at){
         const parts=a.created_at.match(/\d{4}-\d{2}-\d{2}/);
         if(parts)day=parts[0];
       }
-      if(!groups[day])groups[day]=[];
+      if(!groups[day]){groups[day]=[];groupOrder.push(day)}
       groups[day].push(a);
     });
 
     let html='';
-    for(const[day,items]of Object.entries(groups)){
+    for(const day of groupOrder){
+      const items=groups[day];
       let label=day;
       if(day===today)label='Today';
       else if(day===yesterday)label='Yesterday';
@@ -1478,18 +1573,29 @@ async function loadActivity(){
         const dd=new Date(day+'T00:00:00');
         label=isNaN(dd.getTime())?day:dd.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
       }
-      html+=`<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:20px 0 10px;padding-left:4px">${label}</div>`;
-      items.forEach(a=>{
-        html+=`<div class="card" style="padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:14px">
-          ${actIcon(a.action,a.resource_type)}
-          <div style="flex:1">
-            <div style="font-size:.82rem;font-weight:600">
-              <span style="color:${actColor(a.person)};font-weight:700">${esc(a.person)}</span>
-              ${esc(a.action)} ${a.resource_name?'<span style="color:var(--text-2)">'+esc(a.resource_name)+'</span>':''}
-            </div>
-            ${a.details?`<div style="font-size:.72rem;color:var(--text-3);margin-top:2px">${esc(a.details)}</div>`:''}
+      html+=`<div style="font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:24px 0 10px;padding-left:4px;display:flex;align-items:center;gap:8px">${label}<span style="flex:1;height:1px;background:var(--border)"></span><span style="font-weight:500;letter-spacing:.06em">${items.length} action${items.length!==1?'s':''}</span></div>`;
+      items.forEach((a,i)=>{
+        const t=timeAgo(a.created_at);
+        const desc=actDescription(a);
+        const personName=esc(a.person);
+        const personClass=a.person.toLowerCase()==='ryan'?'ryan':a.person.toLowerCase()==='brayan'?'brayan':'system';
+        const delay=i*0.04;
+        html+=`<div class="act-item" style="display:flex;align-items:center;gap:14px;padding:12px 16px;margin-bottom:4px;background:var(--surface);border:1px solid var(--border);border-radius:10px;animation-delay:${delay}s;transition:background .15s" onmouseenter="this.style.background='var(--surface-2)'" onmouseleave="this.style.background='var(--surface)'">
+          <div style="position:relative">
+            ${actAvatar(a.person)}
+            <div class="act-icon-badge">${actIconBadge(a.action,a.resource_type)}</div>
           </div>
-          <div style="font-size:.65rem;color:var(--text-3);white-space:nowrap;text-align:right">${timeAgo(a.created_at)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.8rem;line-height:1.4">
+              <span style="font-weight:700;color:${personClass==='ryan'?'var(--primary)':'var(--accent)'}">${personName}</span>
+              <span style="color:var(--text-2)"> ${desc}</span>
+            </div>
+            ${a.details?`<div style="font-size:.68rem;color:var(--text-3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.details)}</div>`:''}
+          </div>
+          <div class="act-timestamp" style="position:relative">
+            <div>${t.relative}</div>
+            <div class="act-time-full">${t.full}</div>
+          </div>
         </div>`;
       });
     }
@@ -1504,6 +1610,15 @@ function filterActivity(f){
   document.getElementById('actFilterBrayan').classList.toggle('primary',f==='brayan');
   loadActivity();
 }
+
+// Auto-refresh activity every 30 seconds when on the activity tab
+function startActivityAutoRefresh(){
+  if(_actAutoRefresh)return;
+  _actAutoRefresh=setInterval(()=>{
+    if(document.getElementById('view-activity').classList.contains('active'))loadActivity();
+  },30000);
+}
+startActivityAutoRefresh();
 
 // ── Research Feed ───────────────────────────────────────────────────
 let _resFilter='all';
