@@ -1460,7 +1460,7 @@ const ACT_ICONS={
   'generated':'⚡','imported':'📥','found insights':'🔬',
   'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬',
   'pushed code':'💻','sent email':'✉️','received email':'📩','deployed':'🚀','failed deploy':'❌','deploying':'🔄',
-  'merged PR':'🔀','opened PR':'📝','closed PR':'🔒',
+  'merged PR':'🔀','opened PR':'📝','closed PR':'🔒','updated Jarvis':'🤖',
 };
 const ACT_TYPE_ICONS={
   contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
@@ -1502,6 +1502,7 @@ function actDescription(a){
   if(action==='logged in')return 'logged into the dashboard';
   if(action==='ran research')return `ran the research agent${rn?' — '+rn:''}`;
   if(action==='pushed code')return `pushed code: <strong>${rn}</strong>`;
+  if(action==='updated Jarvis')return `updated Jarvis: <strong>${rn}</strong>`;
   if(action==='sent email'&&type==='email')return `sent an email to <strong>${rn}</strong>`;
   if(action==='received email')return `received an email from <strong>${rn}</strong>`;
   if(action==='deployed')return `deployed to production: <strong>${rn}</strong>`;

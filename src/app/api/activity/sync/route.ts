@@ -125,7 +125,11 @@ async function syncGmail(): Promise<{ synced: number; errors: string[] }> {
 async function syncGitHub(): Promise<{ synced: number; errors: string[] }> {
   let synced = 0;
   const errors: string[] = [];
-  const repo = 'ngl-team/next-gen-learners';
+  const repos = [
+    'ngl-team/next-gen-learners',
+    'ngl-team/ryan-jarvis',
+    'ngl-team/brayan-jarvis',
+  ];
   const ghHeaders: Record<string, string> = {
     'User-Agent': 'NGL-Activity-Sync',
     ...(process.env.GITHUB_TOKEN ? { 'Authorization': `token ${process.env.GITHUB_TOKEN}` } : {}),
@@ -134,46 +138,55 @@ async function syncGitHub(): Promise<{ synced: number; errors: string[] }> {
   try {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    // Sync commits
-    const commitResp = await fetch(
-      `https://api.github.com/repos/${repo}/commits?since=${since}&per_page=30`,
-      { headers: ghHeaders, next: { revalidate: 0 } },
-    );
+    for (const repo of repos) {
+      const repoShort = repo.split('/')[1];
+      const isJarvis = repoShort.includes('jarvis');
 
-    if (commitResp.ok) {
-      const commits = await commitResp.json();
-      for (const commit of commits) {
-        const sha = commit.sha?.slice(0, 7);
-        const authorName = commit.commit?.author?.name || '';
-        const authorDate = commit.commit?.author?.date || '';
-        const message = commit.commit?.message?.split('\n')[0] || '';
+      // Sync commits
+      const commitResp = await fetch(
+        `https://api.github.com/repos/${repo}/commits?since=${since}&per_page=20`,
+        { headers: ghHeaders, next: { revalidate: 0 } },
+      );
 
-        if (message.includes('Co-Authored-By: Claude')) continue;
+      if (commitResp.ok) {
+        const commits = await commitResp.json();
+        if (Array.isArray(commits)) {
+          for (const commit of commits) {
+            const sha = commit.sha?.slice(0, 7);
+            const authorName = commit.commit?.author?.name || '';
+            const authorDate = commit.commit?.author?.date || '';
+            const message = commit.commit?.message?.split('\n')[0] || '';
 
-        const person = identifyPerson(authorName);
-        let createdAt: string | undefined;
-        try {
-          const d = new Date(authorDate);
-          if (!isNaN(d.getTime())) createdAt = d.toISOString().replace('T', ' ').slice(0, 19);
-        } catch {}
+            if (message.includes('Co-Authored-By: Claude')) continue;
 
-        const added = await logActivityIfNew(`github:${commit.sha}`, {
-          person,
-          action: 'pushed code',
-          resource_type: 'github',
-          resource_name: message.slice(0, 80),
-          details: `Commit ${sha}`,
-          created_at: createdAt,
-        });
-        if (added) synced++;
+            const person = identifyPerson(authorName);
+            const action = isJarvis ? 'updated Jarvis' : 'pushed code';
+            let createdAt: string | undefined;
+            try {
+              const d = new Date(authorDate);
+              if (!isNaN(d.getTime())) createdAt = d.toISOString().replace('T', ' ').slice(0, 19);
+            } catch {}
+
+            const added = await logActivityIfNew(`github:${commit.sha}`, {
+              person,
+              action,
+              resource_type: 'github',
+              resource_name: message.slice(0, 80),
+              details: `${repoShort} · ${sha}`,
+              created_at: createdAt,
+            });
+            if (added) synced++;
+          }
+        }
       }
-    }
 
-    // Sync pull requests (open + recently closed)
-    const prResp = await fetch(
-      `https://api.github.com/repos/${repo}/pulls?state=all&sort=updated&direction=desc&per_page=10`,
-      { headers: ghHeaders, next: { revalidate: 0 } },
-    );
+      // Sync pull requests (skip for Jarvis repos — they don't use PRs)
+      if (isJarvis) continue;
+
+      const prResp = await fetch(
+        `https://api.github.com/repos/${repo}/pulls?state=all&sort=updated&direction=desc&per_page=10`,
+        { headers: ghHeaders, next: { revalidate: 0 } },
+      );
 
     if (prResp.ok) {
       const prs = await prResp.json();
@@ -206,6 +219,7 @@ async function syncGitHub(): Promise<{ synced: number; errors: string[] }> {
         if (added) synced++;
       }
     }
+    } // end for repos
   } catch (e) {
     errors.push(`GitHub: ${e instanceof Error ? e.message : 'Unknown error'}`);
   }
