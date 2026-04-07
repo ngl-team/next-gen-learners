@@ -686,9 +686,10 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite"></span>LIVE
       </div>
       <button class="btn" id="actSyncBtn" onclick="syncExternalActivity()" style="font-size:.6rem;padding:5px 10px" title="Pull latest from Gmail & GitHub">🔄 Sync</button>
-      <button class="btn" id="actFilterAll" onclick="filterActivity('all')" style="font-size:.65rem">All</button>
+      <button class="btn primary" id="actFilterAll" onclick="filterActivity('all')" style="font-size:.65rem">All</button>
       <button class="btn" id="actFilterRyan" onclick="filterActivity('ryan')" style="font-size:.65rem">Ryan</button>
       <button class="btn" id="actFilterBrayan" onclick="filterActivity('brayan')" style="font-size:.65rem">Brayan</button>
+      <button class="btn" id="actFilterInbox" onclick="filterActivity('inbox')" style="font-size:.65rem">Inbox</button>
     </div>
   </div>
   <!-- Stats Bar -->
@@ -1457,11 +1458,13 @@ let _actAutoRefresh=null;
 const ACT_ICONS={
   'sent email':'✉️','added':'➕','updated':'✏️','deleted':'🗑️',
   'generated':'⚡','imported':'📥','found insights':'🔬',
-  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬','pushed code':'💻','sent email':'✉️',
+  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬',
+  'pushed code':'💻','sent email':'✉️','received email':'📩','deployed':'🚀','failed deploy':'❌','deploying':'🔄',
+  'merged PR':'🔀','opened PR':'📝','closed PR':'🔒',
 };
 const ACT_TYPE_ICONS={
   contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
-  classroom:'🏫',tool_output:'🛠️',time_entry:'⏱️',research:'🔬',session:'🔄',github:'💻',
+  classroom:'🏫',tool_output:'🛠️',time_entry:'⏱️',research:'🔬',session:'🔄',github:'💻',vercel:'🚀',
 };
 
 function actIconBadge(action,type){
@@ -1473,6 +1476,7 @@ function actAvatar(person){
   const p=person.toLowerCase();
   if(p==='ryan')return '<div class="act-avatar ryan">R</div>';
   if(p==='brayan')return '<div class="act-avatar brayan">B</div>';
+  if(p==='inbox')return '<div class="act-avatar system" style="background:linear-gradient(135deg,#06B6D4,#3B82F6)">📩</div>';
   return '<div class="act-avatar system">⚙</div>';
 }
 
@@ -1499,6 +1503,12 @@ function actDescription(a){
   if(action==='ran research')return `ran the research agent${rn?' — '+rn:''}`;
   if(action==='pushed code')return `pushed code: <strong>${rn}</strong>`;
   if(action==='sent email'&&type==='email')return `sent an email to <strong>${rn}</strong>`;
+  if(action==='received email')return `received an email from <strong>${rn}</strong>`;
+  if(action==='deployed')return `deployed to production: <strong>${rn}</strong>`;
+  if(action==='failed deploy')return `deploy failed: <strong>${rn}</strong>`;
+  if(action==='merged PR')return `merged pull request: <strong>${rn}</strong>`;
+  if(action==='opened PR')return `opened pull request: <strong>${rn}</strong>`;
+  if(action==='closed PR')return `closed pull request: <strong>${rn}</strong>`;
   if(action==='logged time')return `logged time${rn?' on <strong>'+rn+'</strong>':''}`;
   if(action==='created')return `created ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
   return `${esc(action)}${rn?' <strong>'+rn+'</strong>':''}`;
@@ -1625,6 +1635,7 @@ function filterActivity(f){
   document.getElementById('actFilterAll').classList.toggle('primary',f==='all');
   document.getElementById('actFilterRyan').classList.toggle('primary',f==='ryan');
   document.getElementById('actFilterBrayan').classList.toggle('primary',f==='brayan');
+  document.getElementById('actFilterInbox').classList.toggle('primary',f==='inbox');
   loadActivity();
 }
 
