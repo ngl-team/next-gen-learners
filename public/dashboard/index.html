@@ -102,6 +102,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('metrics')">Metrics</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
     <button class="tab" onclick="switchTab('time')">Time</button>
+    <button class="tab" onclick="switchTab('research')">Research</button>
     <button class="tab" onclick="switchTab('activity')">Activity</button>
     <button class="tab" onclick="switchTab('audit')">Audit</button>
     <button class="tab" onclick="switchTab('emails')">Emails</button>
@@ -162,6 +163,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--secondary-glow)">⏱️</div>
           <div style="font-size:.82rem;font-weight:700">Time Tracker</div>
           <div style="font-size:.65rem;color:var(--text-3)">Where your time goes</div>
+        </div>
+        <div class="card dash-app" onclick="switchTab('research')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--cyan-glow)">🔬</div>
+          <div style="font-size:.82rem;font-weight:700">Research</div>
+          <div style="font-size:.65rem;color:var(--text-3)">AI & education insights</div>
         </div>
         <div class="card dash-app" onclick="switchTab('activity')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
           <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--warm-glow)">📋</div>
@@ -638,6 +644,23 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   </div>
 </div>
 
+<!-- RESEARCH -->
+<div class="view" id="view-research">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="font-size:1.2rem;font-weight:800">Research Agent</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span id="researchLastRun" style="font-size:.65rem;color:var(--text-3)"></span>
+      <button class="btn" id="resFilterAll" onclick="filterResearch('all')" style="font-size:.65rem">All</button>
+      <button class="btn" id="resFilterEdu" onclick="filterResearch('ai_education')" style="font-size:.65rem">AI in Ed</button>
+      <button class="btn" id="resFilterComp" onclick="filterResearch('competitors')" style="font-size:.65rem">Competitors</button>
+      <button class="btn" id="resFilterTrend" onclick="filterResearch('ai_trends')" style="font-size:.65rem">AI Trends</button>
+      <button class="btn" id="resFilterMarket" onclick="filterResearch('market_opportunity')" style="font-size:.65rem">Opportunities</button>
+      <button class="btn primary" onclick="runResearchNow()" style="font-size:.65rem">Run Now</button>
+    </div>
+  </div>
+  <div id="researchList"></div>
+</div>
+
 <!-- ACTIVITY -->
 <div class="view" id="view-activity">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -693,11 +716,12 @@ function switchTab(t){
   if(t==='metrics')loadMetrics();
   if(t==='time')loadTime();
   if(t==='activity')loadActivity();
+  if(t==='research')loadResearch();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time','activity','audit','emails'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -1480,6 +1504,80 @@ function filterActivity(f){
   document.getElementById('actFilterBrayan').classList.toggle('primary',f==='brayan');
   loadActivity();
 }
+
+// ── Research Feed ───────────────────────────────────────────────────
+let _resFilter='all';
+
+const resCatLabels={ai_education:'AI in Education',competitors:'Competitors',ai_trends:'AI Trends',market_opportunity:'Market Opportunity'};
+const resCatColors={ai_education:'var(--primary)',competitors:'var(--pink)',ai_trends:'var(--cyan)',market_opportunity:'var(--accent)'};
+
+async function loadResearch(){
+  const list=document.getElementById('researchList');
+  list.innerHTML='<div class="empty">Loading research...</div>';
+  try{
+    let url=API_BASE+'/api/research?limit=50';
+    if(_resFilter!=='all')url+='&category='+_resFilter;
+    const data=await fetch(url).then(r=>r.json());
+    if(data.error){list.innerHTML='<div class="empty">'+esc(data.error)+'</div>';return}
+    if(!data.length){list.innerHTML='<div class="empty">No research yet. Click "Run Now" to start the agent.</div>';return}
+
+    // Show last run time
+    const latest=data[0]?.created_at;
+    if(latest){
+      const d=new Date(latest+'Z');
+      if(!isNaN(d.getTime())){
+        document.getElementById('researchLastRun').textContent='Last updated: '+d.toLocaleString();
+      }
+    }
+
+    let html='';
+    data.forEach(r=>{
+      const catLabel=resCatLabels[r.category]||r.category;
+      const catColor=resCatColors[r.category]||'var(--text-2)';
+      html+=`<div class="card" style="padding:18px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px">
+          <div>
+            <span style="font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${catColor};background:${catColor}15;padding:3px 8px;border-radius:4px">${catLabel}</span>
+            ${r.source_name?`<span style="font-size:.62rem;color:var(--text-3);margin-left:8px">${esc(r.source_name)}</span>`:''}
+          </div>
+          <div style="font-size:.6rem;color:var(--text-3);white-space:nowrap">${r.created_at?new Date(r.created_at+'Z').toLocaleDateString('en-US',{month:'short',day:'numeric'}):''}</div>
+        </div>
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:6px">${r.source_url?`<a href="${esc(r.source_url)}" target="_blank" style="color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)">${esc(r.title)}</a>`:esc(r.title)}</div>
+        <div style="font-size:.78rem;color:var(--text-2);line-height:1.5;margin-bottom:8px">${esc(r.summary)}</div>
+        ${r.relevance?`<div style="font-size:.72rem;color:var(--primary);margin-bottom:4px"><strong>Why it matters:</strong> ${esc(r.relevance)}</div>`:''}
+        ${r.action_item?`<div style="font-size:.72rem;color:var(--accent);background:var(--accent-glow);padding:6px 10px;border-radius:6px;margin-top:6px"><strong>Action:</strong> ${esc(r.action_item)}</div>`:''}
+      </div>`;
+    });
+    list.innerHTML=html;
+  }catch(e){list.innerHTML='<div class="empty">Failed to load research</div>'}
+}
+
+function filterResearch(f){
+  _resFilter=f;
+  ['All','Edu','Comp','Trend','Market'].forEach(k=>{
+    const id='resFilter'+k;
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('primary',
+      (f==='all'&&k==='All')||(f==='ai_education'&&k==='Edu')||(f==='competitors'&&k==='Comp')||(f==='ai_trends'&&k==='Trend')||(f==='market_opportunity'&&k==='Market'));
+  });
+  loadResearch();
+}
+
+async function runResearchNow(){
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='Running...';
+  try{
+    const r=await fetch(API_BASE+'/api/research/run',{method:'POST'});
+    const d=await r.json();
+    if(d.error){alert('Error: '+d.error);btn.disabled=false;btn.textContent='Run Now';return}
+    btn.textContent=`Done! ${d.items} insights found`;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='Run Now'},3000);
+    loadResearch();
+  }catch(e){btn.disabled=false;btn.textContent='Run Now'}
+}
+
+// Auto-refresh research every 10 minutes
+setInterval(()=>{if(document.getElementById('view-research').classList.contains('active'))loadResearch()},600000);
 </script>
 </body>
 </html>

@@ -113,6 +113,19 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS research_feed (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL,
+      title TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      source_url TEXT DEFAULT '',
+      source_name TEXT DEFAULT '',
+      relevance TEXT DEFAULT '',
+      action_item TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
   // Migrations
   try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'ryan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
@@ -369,4 +382,25 @@ export async function getActivityLog(limit = 50) {
 export async function getActivityByPerson(person: string, limit = 50) {
   await initDb();
   return (await db.execute({ sql: 'SELECT * FROM activity_log WHERE person = ? ORDER BY created_at DESC LIMIT ?', args: [person, limit] })).rows;
+}
+
+// ── Research Feed ────────────────────────────────────────────────
+export async function getResearchFeed(limit = 50, category?: string) {
+  await initDb();
+  if (category) {
+    return (await db.execute({ sql: 'SELECT * FROM research_feed WHERE category = ? ORDER BY created_at DESC LIMIT ?', args: [category, limit] })).rows;
+  }
+  return (await db.execute({ sql: 'SELECT * FROM research_feed ORDER BY created_at DESC LIMIT ?', args: [limit] })).rows;
+}
+
+export async function insertResearchItem(data: { category: string; title: string; summary: string; source_url: string; source_name: string; relevance: string; action_item: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO research_feed (category, title, summary, source_url, source_name, relevance, action_item) VALUES (?,?,?,?,?,?,?)', args: [data.category, data.title, data.summary, data.source_url, data.source_name, data.relevance, data.action_item] });
+  return r.lastInsertRowid;
+}
+
+export async function getLatestResearchTime() {
+  await initDb();
+  const row = (await db.execute('SELECT created_at FROM research_feed ORDER BY created_at DESC LIMIT 1')).rows[0];
+  return row?.created_at as string | undefined;
 }
