@@ -107,6 +107,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('audit')">Audit</button>
     <button class="tab" onclick="switchTab('emails')">Emails</button>
     <button class="tab" onclick="switchTab('schools')">School Finder</button>
+    <button class="tab" onclick="switchTab('scanner')">Business Scanner</button>
     <button class="tab" onclick="switchTab('notes')">Notes</button>
   </div>
   <select id="currentUser" onchange="setCurrentUser(this.value)" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer">
@@ -604,6 +605,31 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <div id="schoolPagination" style="margin-top:12px;text-align:center"></div>
   </div>
 
+  <!-- BUSINESS SCANNER VIEW -->
+  <div class="view" id="view-scanner">
+    <div class="card" style="padding:20px">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:4px">Business Scanner</div>
+      <div style="font-size:0.78rem;color:var(--text-2)">Analyze any business and generate AI software proposals — find out exactly how you can help them</div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="scanBizName" placeholder="Business name *" style="flex:1" />
+          <input type="text" id="scanBizUrl" placeholder="Website URL (optional)" style="flex:1" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="scanBizIndustry" placeholder="Industry (e.g., restaurant, law firm, gym)" style="flex:1" />
+          <input type="text" id="scanBizNotes" placeholder="Extra context (optional)" style="flex:1" />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn primary" id="scanBizBtn" onclick="runBusinessScan()" style="white-space:nowrap">Scan Business</button>
+          <span style="font-size:0.68rem;color:var(--text-3)">AI will analyze their website and identify opportunities for custom software</span>
+        </div>
+      </div>
+    </div>
+    <div id="scanResults" style="margin-top:12px"></div>
+  </div>
+
 <!-- P&L Modal -->
 <div class="modal-overlay" id="pnlModal">
   <div class="modal">
@@ -876,7 +902,7 @@ function switchTab(t){
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes','schools'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes','schools','scanner'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -1473,6 +1499,117 @@ async function scanForDuplicates(){
   }finally{
     btn.disabled=false;
     setTimeout(()=>{btn.textContent='Scan Gmail for duplicates'},5000);
+  }
+}
+
+// ── Business Scanner ────────────────────────────────────────────────────────
+async function runBusinessScan(){
+  const name=document.getElementById('scanBizName').value.trim();
+  if(!name){alert('Enter a business name');return}
+  const url=document.getElementById('scanBizUrl').value.trim();
+  const industry=document.getElementById('scanBizIndustry').value.trim();
+  const notes=document.getElementById('scanBizNotes').value.trim();
+  const btn=document.getElementById('scanBizBtn');
+  btn.textContent='Scanning...';btn.disabled=true;
+  document.getElementById('scanResults').innerHTML='<div class="card" style="padding:24px;text-align:center;color:var(--text-3)"><div style="font-size:0.85rem;margin-bottom:8px">Analyzing '+esc(name)+'...</div><div style="font-size:0.72rem">Scanning website, identifying pain points, and building proposal</div></div>';
+  try{
+    const d=await fetch(`${API_BASE}/api/business-scan`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,url,industry,notes}),
+    }).then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+    const a=d.analysis;
+    const complexColors={simple:'#10b981',medium:'#f59e0b',complex:'#ef4444'};
+    const prioColors={high:'#ef4444',medium:'#f59e0b',low:'#6b7280'};
+    document.getElementById('scanResults').innerHTML=`
+      <div class="card" style="margin-top:0;padding:20px">
+        <div style="font-size:0.9rem;font-weight:800;margin-bottom:4px">${esc(name)}</div>
+        ${url?`<div style="font-size:0.7rem;color:var(--primary);margin-bottom:6px"><a href="${esc(url)}" target="_blank" style="color:var(--primary)">${esc(url)}</a></div>`:''}
+        <div style="font-size:0.78rem;color:var(--text-2);line-height:1.5">${esc(a.business_summary||'')}</div>
+        <div style="font-size:0.65rem;color:var(--text-3);margin-top:6px">Industry: ${esc(a.industry||industry||'Unknown')}</div>
+      </div>
+
+      <div class="card" style="margin-top:8px;padding:16px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">Pain Points</div>
+        ${(a.current_pain_points||[]).map(p=>`
+          <div style="margin-bottom:10px;padding:10px;background:var(--surface-2);border-radius:8px">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:2px">${esc(p.problem)}</div>
+            <div style="font-size:0.7rem;color:var(--text-3)">${esc(p.impact)}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card" style="margin-top:8px;padding:16px">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">AI / Software Opportunities</div>
+        ${(a.ai_opportunities||[]).map(o=>`
+          <div style="margin-bottom:12px;padding:12px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${prioColors[o.priority]||'#6b7280'}">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <div style="font-size:0.8rem;font-weight:700">${esc(o.solution)}</div>
+              <div style="display:flex;gap:6px">
+                <span style="font-size:0.55rem;padding:2px 6px;border-radius:4px;background:${complexColors[o.complexity]||'#6b7280'}22;color:${complexColors[o.complexity]||'#6b7280'};font-weight:600;text-transform:uppercase">${esc(o.complexity)}</span>
+                <span style="font-size:0.55rem;padding:2px 6px;border-radius:4px;background:${prioColors[o.priority]||'#6b7280'}22;color:${prioColors[o.priority]||'#6b7280'};font-weight:600;text-transform:uppercase">${esc(o.priority)} priority</span>
+              </div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:4px;line-height:1.4">${esc(o.description)}</div>
+            <div style="font-size:0.7rem;color:var(--accent);font-weight:600">Impact: ${esc(o.impact)}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card" style="margin-top:8px;padding:16px;background:var(--primary-glow)">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Your Pitch</div>
+        <div style="font-size:0.8rem;color:var(--text);line-height:1.6;font-style:italic">"${esc(a.proposal_pitch||'')}"</div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div class="card" style="flex:1;margin:0;padding:14px;text-align:center">
+          <div style="font-size:0.62rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Estimated Value</div>
+          <div style="font-size:0.85rem;font-weight:800;color:var(--accent)">${esc(a.estimated_value||'TBD')}</div>
+        </div>
+        <div class="card" style="flex:2;margin:0;padding:14px">
+          <div style="font-size:0.62rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Next Step</div>
+          <div style="font-size:0.78rem;color:var(--text);font-weight:600">${esc(a.next_step||'')}</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn primary" onclick="addScannedBizToCRM('${esc(name)}','${esc(url)}','${esc(a.industry||industry||'')}')">+ Add to CRM</button>
+        <button class="btn" onclick="copyProposalPitch()">Copy Pitch</button>
+      </div>
+    `;
+    window._lastPitch=a.proposal_pitch||'';
+  }catch(e){
+    document.getElementById('scanResults').innerHTML=`<div class="card" style="padding:16px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }finally{
+    btn.textContent='Scan Business';btn.disabled=false;
+  }
+}
+
+async function addScannedBizToCRM(name,url,industry){
+  try{
+    await fetch(`${API_BASE}/api/contacts`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name,
+        organization:industry,
+        role:'Business Lead',
+        email:'',
+        phone:'',
+        status:'cold',
+        contact_type:'outreach',
+        notes:`Website: ${url}\nSource: Business Scanner\nScanned: ${new Date().toLocaleDateString()}`,
+        _actor:getCurrentUser(),
+      }),
+    });
+    alert(name+' added to CRM!');
+  }catch(e){alert('Error: '+e.message)}
+}
+
+function copyProposalPitch(){
+  if(window._lastPitch){
+    navigator.clipboard.writeText(window._lastPitch).then(()=>alert('Pitch copied!'));
   }
 }
 
