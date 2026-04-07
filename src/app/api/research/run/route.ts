@@ -55,10 +55,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { isAuthenticated } = await import('@/lib/auth');
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  return runResearch();
+  let actor = 'ryan';
+  try { const body = await req.json(); actor = body._actor || 'ryan'; } catch {}
+  return runResearch(actor);
 }
 
-async function runResearch() {
+async function runResearch(triggeredBy = 'cron') {
   // Pick 2 random topics and fetch in parallel
   const shuffled = [...SEARCH_TOPICS].sort(() => Math.random() - 0.5);
   const topics = shuffled.slice(0, 2);
@@ -142,10 +144,10 @@ Return ONLY valid JSON, no other text.`
 
     if (saved > 0) {
       await logActivity({
-        person: 'research-agent',
-        action: 'found insights',
+        person: triggeredBy,
+        action: 'ran research',
         resource_type: 'research',
-        resource_name: `${saved} new items`,
+        resource_name: `${saved} new insights`,
         details: topics.map(t => t.category).join(', '),
       });
     }

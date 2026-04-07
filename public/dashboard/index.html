@@ -1456,7 +1456,7 @@ let _actAutoRefresh=null;
 const ACT_ICONS={
   'sent email':'✉️','added':'➕','updated':'✏️','deleted':'🗑️',
   'generated':'⚡','imported':'📥','found insights':'🔬',
-  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐',
+  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬',
 };
 const ACT_TYPE_ICONS={
   contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
@@ -1495,6 +1495,7 @@ function actDescription(a){
   if(action==='found insights')return `found ${rn||'new research insights'}`;
   if(action==='switched to dashboard')return 'opened the dashboard';
   if(action==='logged in')return 'logged into the dashboard';
+  if(action==='ran research')return `ran the research agent${rn?' — '+rn:''}`;
   if(action==='logged time')return `logged time${rn?' on <strong>'+rn+'</strong>':''}`;
   if(action==='created')return `created ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
   return `${esc(action)}${rn?' <strong>'+rn+'</strong>':''}`;
@@ -1724,7 +1725,7 @@ async function runResearchNow(){
   const btn=event.target;
   btn.disabled=true;btn.textContent='Running...';
   try{
-    const r=await fetch(API_BASE+'/api/research/run',{method:'POST'});
+    const r=await fetch(API_BASE+'/api/research/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_actor:getCurrentUser()})});
     const d=await r.json();
     if(d.error){alert('Error: '+d.error);btn.disabled=false;btn.textContent='Run Now';return}
     btn.textContent=d.items>0?`Done! ${d.items} insights found`:'No high-value insights this run';
