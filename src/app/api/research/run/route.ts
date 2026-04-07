@@ -6,45 +6,79 @@ export const maxDuration = 60;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
-// Rotate through different search topics each run
-const SEARCH_TOPICS = [
-  { query: 'AI education K-12 schools 2026', category: 'ai_education' },
-  { query: 'edtech artificial intelligence classroom tools', category: 'ai_education' },
-  { query: 'AI literacy curriculum schools', category: 'ai_education' },
-  { query: 'edtech startup funding education technology', category: 'competitors' },
-  { query: 'school district AI policy adoption', category: 'market_opportunity' },
-  { query: 'artificial intelligence new models capabilities 2026', category: 'ai_trends' },
-  { query: 'education technology grants schools RFP', category: 'market_opportunity' },
-  { query: 'AI tutoring personalized learning K12', category: 'competitors' },
-  { query: 'prompt engineering education students', category: 'ai_education' },
-  { query: 'AI ethics education critical thinking', category: 'ai_education' },
+// ── Source Feeds ────────────────────────────────────────────────────
+// Direct RSS from education-specific publications (high quality)
+const DIRECT_FEEDS = [
+  { url: 'https://www.edsurge.com/rss', source: 'EdSurge', category: 'ai_education' },
+  { url: 'https://www.k12dive.com/feeds/topic/technology/', source: 'K-12 Dive', category: 'ai_education' },
+  { url: 'https://thejournal.com/rss-feeds/all-articles.aspx', source: 'THE Journal', category: 'ai_education' },
 ];
 
-async function fetchGoogleNews(query: string): Promise<{ title: string; link: string; source: string; pubDate: string }[]> {
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
-  try {
-    const resp = await fetch(url, { headers: { 'User-Agent': 'NGL-Research/1.0' }, next: { revalidate: 0 } });
-    const xml = await resp.text();
+// Google News searches (broader coverage, more noise)
+const GOOGLE_NEWS_QUERIES = [
+  { query: 'AI education K-12 schools', category: 'ai_education' },
+  { query: 'AI literacy curriculum K12', category: 'ai_education' },
+  { query: 'edtech startup funding education', category: 'competitors' },
+  { query: 'school district AI policy adoption', category: 'market_opportunity' },
+  { query: 'education technology grants RFP schools', category: 'market_opportunity' },
+  { query: 'AI tutoring personalized learning K12', category: 'competitors' },
+  { query: '"Magic School" OR "Khanmigo" OR "SchoolAI" OR "Synthesis AI" education', category: 'competitors' },
+  { query: 'AI ethics education critical thinking K-12', category: 'ai_education' },
+];
 
-    const items: { title: string; link: string; source: string; pubDate: string }[] = [];
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match;
-    while ((match = itemRegex.exec(xml)) !== null && items.length < 5) {
-      const block = match[1];
-      const title = block.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim() || '';
-      const link = block.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() || '';
-      const source = block.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim() || '';
-      const pubDate = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() || '';
-      if (title) items.push({ title, link, source, pubDate });
-    }
-    return items;
+type Article = { title: string; link: string; source: string; pubDate: string; query_category: string };
+
+// ── RSS Parser ──────────────────────────────────────────────────────
+function parseRssItems(xml: string, maxItems = 8): { title: string; link: string; source: string; pubDate: string }[] {
+  const items: { title: string; link: string; source: string; pubDate: string }[] = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegex.exec(xml)) !== null && items.length < maxItems) {
+    const block = match[1];
+    const title = block.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim() || '';
+    const link = block.match(/<link\s*\/?>([\s\S]*?)<\/link>/)?.[1]?.trim()
+      || block.match(/<link[^>]*href="([^"]+)"/)?.[1]?.trim() || '';
+    const source = block.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim()
+      || block.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/)?.[1]?.replace(/<!\[CDATA\[|\]\]>/g, '').trim() || '';
+    const pubDate = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() || '';
+    if (title) items.push({ title, link, source, pubDate });
+  }
+  return items;
+}
+
+async function fetchRss(url: string): Promise<string> {
+  const resp = await fetch(url, {
+    headers: { 'User-Agent': 'NGL-Research/1.0' },
+    next: { revalidate: 0 },
+  });
+  return resp.text();
+}
+
+// ── Fetch from direct RSS feeds ─────────────────────────────────────
+async function fetchDirectFeed(feed: typeof DIRECT_FEEDS[0]): Promise<Article[]> {
+  try {
+    const xml = await fetchRss(feed.url);
+    const items = parseRssItems(xml, 6);
+    return items.map(a => ({ ...a, source: a.source || feed.source, query_category: feed.category }));
   } catch {
     return [];
   }
 }
 
+// ── Fetch from Google News ──────────────────────────────────────────
+async function fetchGoogleNews(query: string, category: string): Promise<Article[]> {
+  try {
+    const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+    const xml = await fetchRss(url);
+    const items = parseRssItems(xml, 5);
+    return items.map(a => ({ ...a, query_category: category }));
+  } catch {
+    return [];
+  }
+}
+
+// ── Routes ──────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
-  // Vercel Cron calls GET with Authorization header
   const authHeader = req.headers.get('authorization');
   if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
     return runResearch();
@@ -60,16 +94,27 @@ export async function POST(req: NextRequest) {
   return runResearch(actor);
 }
 
+// ── Main Research Logic ─────────────────────────────────────────────
 async function runResearch(triggeredBy = 'cron') {
-  // Pick 2 random topics and fetch in parallel
-  const shuffled = [...SEARCH_TOPICS].sort(() => Math.random() - 0.5);
-  const topics = shuffled.slice(0, 2);
+  // Fetch ALL direct feeds + 2 random Google News queries in parallel
+  const shuffled = [...GOOGLE_NEWS_QUERIES].sort(() => Math.random() - 0.5);
+  const googleTopics = shuffled.slice(0, 2);
 
-  const results = await Promise.all(topics.map(t => fetchGoogleNews(t.query).then(articles => articles.map(a => ({ ...a, query_category: t.category })))));
+  const fetches: Promise<Article[]>[] = [
+    ...DIRECT_FEEDS.map(f => fetchDirectFeed(f)),
+    ...googleTopics.map(t => fetchGoogleNews(t.query, t.category)),
+  ];
+
+  const results = await Promise.all(fetches);
   let allArticles = results.flat();
 
+  const sourceBreakdown = {
+    direct: results.slice(0, DIRECT_FEEDS.length).reduce((n, r) => n + r.length, 0),
+    google: results.slice(DIRECT_FEEDS.length).reduce((n, r) => n + r.length, 0),
+  };
+
   if (allArticles.length === 0) {
-    return NextResponse.json({ ok: true, items: 0, message: 'No articles found', topics: topics.map(t => t.query) });
+    return NextResponse.json({ ok: true, items: 0, message: 'No articles found', sources: sourceBreakdown });
   }
 
   // Deduplicate by title
@@ -81,8 +126,16 @@ async function runResearch(triggeredBy = 'cron') {
     return true;
   });
 
-  // Use Claude to analyze and extract insights
-  const articleList = allArticles.slice(0, 8).map((a, i) =>
+  // Build article list for Claude — prioritize direct feeds (higher quality)
+  const directArticles = allArticles.filter(a =>
+    DIRECT_FEEDS.some(f => a.source === f.source || a.source === '')
+  );
+  const googleArticles = allArticles.filter(a =>
+    !DIRECT_FEEDS.some(f => a.source === f.source)
+  );
+  const prioritized = [...directArticles, ...googleArticles].slice(0, 12);
+
+  const articleList = prioritized.map((a, i) =>
     `${i + 1}. [${a.query_category}] "${a.title}" — ${a.source} (${a.pubDate})\n   URL: ${a.link}`
   ).join('\n');
 
@@ -94,13 +147,13 @@ async function runResearch(triggeredBy = 'cron') {
         role: 'user',
         content: `You are a research analyst for Next Generation Learners (NGL). NGL teaches K-12 students AI literacy — prompt engineering, output verification, critical thinking with AI, and ethical reasoning. Based in Boca Raton, FL, founded by Ryan Vincent. NGL sells programs directly to schools, libraries, and districts.
 
-Here are recent articles:
+These articles come from EdSurge, K-12 Dive, THE Journal, and Google News:
 
 ${articleList}
 
 ONLY include an article if it meets at least ONE of these criteria:
 - A school district, library, or state is adopting AI education programs (potential customer)
-- A competitor is launching something NGL should know about
+- A competitor is launching something NGL should know about (Khanmigo, Magic School AI, SchoolAI, Synthesis)
 - There's a grant, RFP, or funding opportunity NGL could apply for
 - A new AI policy or regulation directly affects K-12 AI education
 - A specific trend Ryan should act on NOW (not general AI hype)
@@ -123,7 +176,7 @@ Return ONLY valid JSON, no other text.`
 
     const jsonMatch = output.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
-      return NextResponse.json({ ok: true, items: 0, message: 'No relevant insights found', debug: { articleCount: allArticles.length, rawOutput: output.slice(0, 500) } });
+      return NextResponse.json({ ok: true, items: 0, message: 'No relevant insights found', sources: sourceBreakdown, articleCount: allArticles.length });
     }
 
     const insights = JSON.parse(jsonMatch[0]);
@@ -148,11 +201,16 @@ Return ONLY valid JSON, no other text.`
         action: 'ran research',
         resource_type: 'research',
         resource_name: `${saved} new insights`,
-        details: topics.map(t => t.category).join(', '),
+        details: `Sources: ${sourceBreakdown.direct} from EdSurge/K12Dive/THEJournal, ${sourceBreakdown.google} from Google News`,
       });
     }
 
-    return NextResponse.json({ ok: true, items: saved, topics: topics.map(t => t.query), articleCount: allArticles.length, rawInsights: insights.length });
+    return NextResponse.json({
+      ok: true,
+      items: saved,
+      sources: sourceBreakdown,
+      articleCount: allArticles.length,
+    });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
     return NextResponse.json({ error: msg }, { status: 500 });
