@@ -84,7 +84,7 @@
 async function checkAuth(){
   const password=document.getElementById('authPass').value;
   try{
-    const resp=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password})});
+    const resp=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password,_actor:localStorage.getItem('ngl_user')||'unknown'})});
     if(resp.ok){document.getElementById('authGate').style.display='none';initApp()}
     else{document.getElementById('authError').style.display='block';document.getElementById('authPass').value=''}
   }catch(e){document.getElementById('authError').style.display='block'}
@@ -205,6 +205,18 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <button class="btn primary" onclick="loadPriorities()" id="nglPriorityBtn" style="font-size:0.65rem;padding:4px 12px">What should I focus on?</button>
       </div>
       <div id="nglPriorities"></div>
+    </div>
+
+    <!-- Recent Activity Ticker on Dashboard Home -->
+    <div style="max-width:620px;margin:24px auto 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--text-3);font-weight:700">Recent Activity</div>
+          <span style="width:5px;height:5px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite"></span>
+        </div>
+        <button class="btn" onclick="switchTab('activity')" style="font-size:.6rem;padding:4px 10px">View All</button>
+      </div>
+      <div id="dashActivityTicker" style="display:flex;flex-direction:column;gap:6px"></div>
     </div>
 
     <div style="text-align:center;padding:24px;border-top:1px solid var(--border);margin-top:24px">
@@ -1444,7 +1456,7 @@ let _actAutoRefresh=null;
 const ACT_ICONS={
   'sent email':'✉️','added':'➕','updated':'✏️','deleted':'🗑️',
   'generated':'⚡','imported':'📥','found insights':'🔬',
-  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️',
+  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐',
 };
 const ACT_TYPE_ICONS={
   contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
@@ -1482,6 +1494,7 @@ function actDescription(a){
   if(action==='imported')return `imported ${rn?'<strong>'+rn+'</strong>':typeLabel+'s'}`;
   if(action==='found insights')return `found ${rn||'new research insights'}`;
   if(action==='switched to dashboard')return 'opened the dashboard';
+  if(action==='logged in')return 'logged into the dashboard';
   if(action==='logged time')return `logged time${rn?' on <strong>'+rn+'</strong>':''}`;
   if(action==='created')return `created ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
   return `${esc(action)}${rn?' <strong>'+rn+'</strong>':''}`;
@@ -1619,6 +1632,35 @@ function startActivityAutoRefresh(){
   },30000);
 }
 startActivityAutoRefresh();
+
+// ── Dashboard Activity Ticker ──────────────────────────────────────
+async function loadDashTicker(){
+  const el=document.getElementById('dashActivityTicker');
+  if(!el)return;
+  try{
+    const data=await fetch(API_BASE+'/api/activity?limit=8').then(r=>r.json());
+    if(!data.length){el.innerHTML='<div class="empty" style="font-size:.72rem">No activity yet</div>';return}
+    // Filter out "switched to dashboard" and "logged in" noise
+    const meaningful=data.filter(a=>a.action!=='switched to dashboard'&&a.action!=='logged in').slice(0,5);
+    if(!meaningful.length){el.innerHTML='<div class="empty" style="font-size:.72rem">No activity yet</div>';return}
+    el.innerHTML=meaningful.map(a=>{
+      const t=timeAgo(a.created_at);
+      const desc=actDescription(a);
+      const pClass=a.person.toLowerCase()==='ryan'?'ryan':a.person.toLowerCase()==='brayan'?'brayan':'system';
+      const pColor=pClass==='ryan'?'var(--primary)':'var(--accent)';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+        ${actAvatar(a.person)}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.75rem;line-height:1.4"><span style="font-weight:700;color:${pColor}">${esc(a.person)}</span> <span style="color:var(--text-2)">${desc}</span></div>
+        </div>
+        <div style="font-size:.58rem;color:var(--text-3);white-space:nowrap">${t.relative}</div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+// Load ticker on page load and refresh every 30s
+loadDashTicker();
+setInterval(loadDashTicker,30000);
 
 // ── Research Feed ───────────────────────────────────────────────────
 let _resFilter='all';

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { hashPassword, generateSessionToken, signToken } from '@/lib/auth';
+import { logActivity } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
-  const { password } = await req.json();
+  const { password, _actor } = await req.json();
   if (!password) return NextResponse.json({ error: 'Password required' }, { status: 400 });
 
   const hash = hashPassword(password);
@@ -20,5 +21,9 @@ export async function POST(req: NextRequest) {
     maxAge: 7 * 24 * 60 * 60,
     path: '/',
   });
+
+  const person = _actor || 'unknown';
+  await logActivity({ person, action: 'logged in', resource_type: 'session', resource_name: '', details: '' });
+
   return response;
 }
