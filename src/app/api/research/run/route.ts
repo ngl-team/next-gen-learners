@@ -142,7 +142,7 @@ Skip irrelevant articles. Quality over quantity. Return ONLY a valid JSON array.
       });
     }
 
-    return NextResponse.json({ ok: true, items: saved, topics: topics.map(t => t.query) });
+    return NextResponse.json({ ok: true, items: saved, topics: topics.map(t => t.query), articleCount: allArticles.length, rawInsights: insights.length });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
     return NextResponse.json({ error: msg }, { status: 500 });

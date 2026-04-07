@@ -1570,7 +1570,11 @@ async function runResearchNow(){
     const r=await fetch(API_BASE+'/api/research/run',{method:'POST'});
     const d=await r.json();
     if(d.error){alert('Error: '+d.error);btn.disabled=false;btn.textContent='Run Now';return}
-    if(d.items===0&&d.debug){alert('Debug: '+JSON.stringify(d.debug));btn.disabled=false;btn.textContent='Run Now';return}
+    if(d.items===0){
+      const msg=JSON.stringify(d,null,2);
+      document.getElementById('researchList').innerHTML='<pre style="font-size:.7rem;background:var(--card);padding:16px;border-radius:8px;overflow:auto;max-height:300px">'+msg+'</pre>';
+      btn.disabled=false;btn.textContent='Run Now';return;
+    }
     btn.textContent=`Done! ${d.items} insights found`;
     setTimeout(()=>{btn.disabled=false;btn.textContent='Run Now'},3000);
     loadResearch();
