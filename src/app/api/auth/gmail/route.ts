@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const url = oauth2.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'openid', 'email'],
+    scope: ['https://www.googleapis.com/auth/gmail.readonly', 'openid', 'email'],
     state: user,
   });
   return NextResponse.redirect(url);
