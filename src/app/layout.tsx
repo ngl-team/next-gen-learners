@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import { LayoutShell } from "@/components/LayoutShell";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
@@ -44,20 +44,9 @@ export default function RootLayout({
         className={`${plusJakarta.variable} antialiased bg-[#FAFBFF] text-[#1E1B4B]`}
         style={{ fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}
       >
-        <Navbar />
-        <div className="relative z-[1]">
+        <LayoutShell>
           {children}
-        </div>
-        <footer className="relative z-[1] bg-gradient-to-br from-[#4F46E5] via-[#7C3AED] to-[#06B6D4] py-16 px-4">
-          <div className="max-w-5xl mx-auto text-center">
-            <p className="text-white text-sm font-bold uppercase tracking-[0.14em] mb-3">
-              Next Generation Learners
-            </p>
-            <p className="text-white/60 text-sm">
-              &copy; 2026 Next Generation Learners. Founded at Babson College.
-            </p>
-          </div>
-        </footer>
+        </LayoutShell>
       </body>
     </html>
   );
