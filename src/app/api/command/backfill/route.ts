@@ -23,91 +23,62 @@ export async function POST() {
     for (const contact of contacts) {
       const email = contact.email as string;
       const name = contact.name as string;
-      if (!email) continue;
+      if (!email && !name) continue;
 
       let totalSent = 0;
       let totalReceived = 0;
       let latestDate: Date | null = null;
 
-      for (const { gmail } of clients) {
-        // Count sent emails TO this contact
+      // Helper to get the latest date from the most recent message
+      async function getLatestFromMessages(gmail: any, messages: any[]): Promise<Date | null> {
+        if (messages.length === 0) return null;
         try {
-          const sentRes = await gmail.users.messages.list({
+          const msg = await gmail.users.messages.get({
             userId: 'me',
-            q: `to:${email} in:sent`,
-            maxResults: 100,
+            id: messages[0].id!,
+            format: 'metadata',
+            metadataHeaders: ['Date'],
           });
-          const sentMessages = sentRes.data.messages || [];
-          totalSent += sentMessages.length;
-
-          // Get the most recent sent date
-          if (sentMessages.length > 0) {
-            const msg = await gmail.users.messages.get({
-              userId: 'me',
-              id: sentMessages[0].id!,
-              format: 'metadata',
-              metadataHeaders: ['Date'],
-            });
-            const dateHeader = msg.data.payload?.headers?.find(h => h.name === 'Date');
-            if (dateHeader?.value) {
-              const d = new Date(dateHeader.value);
-              if (!latestDate || d > latestDate) latestDate = d;
-            }
-          }
+          const dateHeader = msg.data.payload?.headers?.find((h: any) => h.name === 'Date');
+          if (dateHeader?.value) return new Date(dateHeader.value);
         } catch {}
-
-        // Count received emails FROM this contact
-        try {
-          const recvRes = await gmail.users.messages.list({
-            userId: 'me',
-            q: `from:${email}`,
-            maxResults: 100,
-          });
-          const recvMessages = recvRes.data.messages || [];
-          totalReceived += recvMessages.length;
-
-          // Check if received is more recent
-          if (recvMessages.length > 0) {
-            const msg = await gmail.users.messages.get({
-              userId: 'me',
-              id: recvMessages[0].id!,
-              format: 'metadata',
-              metadataHeaders: ['Date'],
-            });
-            const dateHeader = msg.data.payload?.headers?.find(h => h.name === 'Date');
-            if (dateHeader?.value) {
-              const d = new Date(dateHeader.value);
-              if (!latestDate || d > latestDate) latestDate = d;
-            }
-          }
-        } catch {}
+        return null;
       }
 
-      // Also try searching by name if no email matches found
-      if (totalSent === 0 && totalReceived === 0 && name) {
-        for (const { gmail } of clients) {
-          try {
-            const nameRes = await gmail.users.messages.list({
-              userId: 'me',
-              q: `"${name}" in:sent`,
-              maxResults: 50,
-            });
-            const nameMessages = nameRes.data.messages || [];
-            totalSent += nameMessages.length;
+      // Track all unique message IDs to avoid double-counting across queries
+      const seenIds = new Set<string>();
 
-            if (nameMessages.length > 0) {
-              const msg = await gmail.users.messages.get({
-                userId: 'me',
-                id: nameMessages[0].id!,
-                format: 'metadata',
-                metadataHeaders: ['Date'],
-              });
-              const dateHeader = msg.data.payload?.headers?.find(h => h.name === 'Date');
-              if (dateHeader?.value) {
-                const d = new Date(dateHeader.value);
-                if (!latestDate || d > latestDate) latestDate = d;
-              }
-            }
+      for (const { gmail } of clients) {
+        // Build search queries — search by email AND name
+        const queries: { q: string; direction: 'sent' | 'received' }[] = [];
+        if (email) {
+          queries.push({ q: `to:${email} in:sent`, direction: 'sent' });
+          queries.push({ q: `from:${email}`, direction: 'received' });
+        }
+        if (name) {
+          // Always search by name too — catches emails where the contact field doesn't match
+          queries.push({ q: `to:"${name}" in:sent`, direction: 'sent' });
+          queries.push({ q: `from:"${name}"`, direction: 'received' });
+        }
+
+        for (const { q, direction } of queries) {
+          try {
+            const res = await gmail.users.messages.list({
+              userId: 'me',
+              q,
+              maxResults: 100,
+            });
+            const messages = (res.data.messages || []).filter((m: any) => {
+              if (seenIds.has(m.id)) return false;
+              seenIds.add(m.id);
+              return true;
+            });
+
+            if (direction === 'sent') totalSent += messages.length;
+            else totalReceived += messages.length;
+
+            const d = await getLatestFromMessages(gmail, messages);
+            if (d && (!latestDate || d > latestDate)) latestDate = d;
           } catch {}
         }
       }

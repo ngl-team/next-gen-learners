@@ -199,9 +199,26 @@ function ContactCard({
 }
 
 /* ═══════════════════════════════════════════
-   EDIT CONTACT MODAL
+   CONTACT PROFILE PANEL
    ═══════════════════════════════════════════ */
-function EditModal({
+interface EmailThread {
+  subject: string;
+  from: string;
+  to: string;
+  date: string;
+  snippet: string;
+}
+
+interface Interaction {
+  id: number;
+  type: string;
+  subject: string;
+  body: string;
+  notes: string;
+  created_at: string;
+}
+
+function ContactPanel({
   contact,
   onClose,
   onSave,
@@ -210,11 +227,49 @@ function EditModal({
   onClose: () => void;
   onSave: () => void;
 }) {
+  const [tab, setTab] = useState<"context" | "settings">("context");
   const [endGoal, setEndGoal] = useState(contact.end_goal || "");
   const [priority, setPriority] = useState(contact.priority || "pipeline");
   const [pipelineName, setPipelineName] = useState(contact.pipeline || "");
   const [autoFollowup, setAutoFollowup] = useState(contact.auto_followup !== 0);
   const [saving, setSaving] = useState(false);
+
+  // Context data
+  const [emails, setEmails] = useState<EmailThread[]>([]);
+  const [interactions, setInteractions] = useState<Interaction[]>([]);
+  const [loadingContext, setLoadingContext] = useState(true);
+  const [notes, setNotes] = useState(contact.notes || "");
+  const [savingNotes, setSavingNotes] = useState(false);
+
+  // Load email history + interactions on open
+  useEffect(() => {
+    async function loadContext() {
+      setLoadingContext(true);
+      const results = await Promise.allSettled([
+        // Search Gmail for emails with this contact
+        fetch(`/api/emails/search?q=${encodeURIComponent(contact.email || contact.name)}&max=15`).then(r => r.json()),
+        // Get logged interactions
+        fetch(`/api/contacts/${contact.id}/interactions`).then(r => r.json()),
+      ]);
+
+      if (results[0].status === "fulfilled" && results[0].value.results) {
+        setEmails(results[0].value.results.map((m: any) => ({
+          subject: m.subject || "(no subject)",
+          from: m.from || "",
+          to: m.to || "",
+          date: m.date || "",
+          snippet: m.snippet || "",
+        })));
+      }
+
+      if (results[1].status === "fulfilled" && Array.isArray(results[1].value)) {
+        setInteractions(results[1].value);
+      }
+
+      setLoadingContext(false);
+    }
+    loadContext();
+  }, [contact.id, contact.email, contact.name]);
 
   const save = async () => {
     setSaving(true);
@@ -233,100 +288,306 @@ function EditModal({
     onSave();
   };
 
+  const saveNotes = async () => {
+    setSavingNotes(true);
+    await fetch(`/api/contacts/${contact.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: contact.name,
+        title: contact.title,
+        organization: contact.organization,
+        email: contact.email,
+        status: contact.status,
+        notes,
+      }),
+    });
+    setSavingNotes(false);
+  };
+
+  const p = priorityColors[contact.priority] || priorityColors.pipeline;
+
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div
-          className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-lg p-6"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-white text-lg font-bold">{contact.name}</h2>
-            <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors">
+      {/* backdrop */}
+      <div
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
+      {/* slide-out panel */}
+      <div className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-2xl bg-[#0a0a0a] border-l border-white/10 overflow-y-auto">
+        {/* header */}
+        <div className="sticky top-0 z-10 bg-[#0a0a0a] border-b border-white/[0.06] px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.dot }} />
+              <h2 className="text-white text-xl font-bold">{contact.name}</h2>
+            </div>
+            <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors p-1">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">End Goal</label>
-              <textarea
-                value={endGoal}
-                onChange={(e) => setEndGoal(e.target.value)}
-                placeholder="What is the end goal with this person?"
-                className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 resize-none"
-                rows={3}
-              />
-            </div>
+          {/* contact meta */}
+          <div className="flex items-center gap-4 text-xs text-white/30">
+            {contact.title && <span>{contact.title}</span>}
+            {contact.organization && (
+              <>
+                {contact.title && <span className="text-white/10">|</span>}
+                <span>{contact.organization}</span>
+              </>
+            )}
+            {contact.email && (
+              <>
+                <span className="text-white/10">|</span>
+                <span className="text-cyan-400/50">{contact.email}</span>
+              </>
+            )}
+          </div>
 
-            <div>
-              <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">Priority</label>
-              <div className="flex gap-2">
-                {(["high-touch", "active-deal", "pipeline"] as const).map((p) => {
-                  const c = priorityColors[p];
-                  return (
-                    <button
-                      key={p}
-                      onClick={() => setPriority(p)}
-                      className="flex-1 px-3 py-2 rounded-lg text-xs font-medium border transition-all"
-                      style={{
-                        background: priority === p ? c.bg : "transparent",
-                        borderColor: priority === p ? c.border : "rgba(255,255,255,0.06)",
-                        color: priority === p ? c.text : "rgba(255,255,255,0.3)",
-                      }}
-                    >
-                      {p.replace("-", " ")}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">Pipeline</label>
-              <input
-                value={pipelineName}
-                onChange={(e) => setPipelineName(e.target.value)}
-                placeholder="e.g., library-outreach, superintendent, partnership"
-                className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20"
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setAutoFollowup(!autoFollowup)}
-                className="w-10 h-6 rounded-full transition-colors relative"
+          {/* stats row */}
+          <div className="flex items-center gap-5 mt-3">
+            <div className="flex items-center gap-1.5">
+              <span className="text-white/20 text-[10px] uppercase tracking-wider">Status</span>
+              <span
+                className="text-[10px] px-1.5 py-0.5 rounded font-medium"
                 style={{
-                  background: autoFollowup ? "rgba(6,182,212,0.4)" : "rgba(255,255,255,0.1)",
+                  background: `${statusColors[contact.status] || "#64748B"}20`,
+                  color: statusColors[contact.status] || "#64748B",
                 }}
               >
-                <span
-                  className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform"
-                  style={{ left: autoFollowup ? 18 : 2 }}
-                />
-              </button>
-              <span className="text-white/50 text-sm">Auto-send follow-ups (no approval needed)</span>
+                {contact.status}
+              </span>
+            </div>
+            <div className="text-[11px] text-white/30">
+              <span className="text-white/50 font-medium">{contact.times_contacted}</span> interactions
+            </div>
+            <div className="text-[11px] text-white/30">
+              Last: <span className="text-white/50">{daysAgoLabel(contact.last_contact_date)}</span>
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
-            <button
-              onClick={onClose}
-              className="flex-1 py-2.5 rounded-lg border border-white/10 text-white/40 text-sm hover:bg-white/[0.04] transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={save}
-              disabled={saving}
-              className="flex-1 py-2.5 rounded-lg bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-medium hover:bg-cyan-500/30 transition-colors disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save"}
-            </button>
+          {/* tabs */}
+          <div className="flex gap-1 mt-4">
+            {(["context", "settings"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                style={{
+                  background: tab === t ? "rgba(255,255,255,0.08)" : "transparent",
+                  color: tab === t ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)",
+                }}
+              >
+                {t === "context" ? "Context & History" : "Goal & Settings"}
+              </button>
+            ))}
           </div>
+        </div>
+
+        <div className="px-6 py-5">
+          {tab === "context" ? (
+            <div className="space-y-6">
+              {/* End goal (if set) */}
+              {contact.end_goal && (
+                <div className="p-3 rounded-xl bg-cyan-500/[0.06] border border-cyan-500/20">
+                  <p className="text-cyan-400/50 text-[10px] tracking-wider uppercase mb-1">End Goal</p>
+                  <p className="text-white/70 text-sm leading-relaxed">{contact.end_goal}</p>
+                </div>
+              )}
+
+              {/* Notes */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-white/50 text-xs tracking-wider uppercase">Notes</h3>
+                  {notes !== contact.notes && (
+                    <button
+                      onClick={saveNotes}
+                      disabled={savingNotes}
+                      className="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition-colors"
+                    >
+                      {savingNotes ? "saving..." : "save"}
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Add context about this person — who they are, how you met, what they care about..."
+                  className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5 text-white/60 text-sm placeholder:text-white/15 focus:outline-none focus:border-white/15 resize-none"
+                  rows={3}
+                />
+              </div>
+
+              {/* Email history from Gmail */}
+              <div>
+                <h3 className="text-white/50 text-xs tracking-wider uppercase mb-3">
+                  Email History
+                  {!loadingContext && <span className="text-white/20 ml-2 normal-case">({emails.length} found)</span>}
+                </h3>
+                {loadingContext ? (
+                  <div className="text-white/20 text-xs animate-pulse py-4 text-center">
+                    Searching Gmail...
+                  </div>
+                ) : emails.length === 0 ? (
+                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.04] text-center">
+                    <p className="text-white/20 text-xs">No emails found</p>
+                    <p className="text-white/10 text-[10px] mt-1">
+                      {contact.email ? "Check if the email address matches" : "No email address on file — add one in Settings"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {emails.map((e, i) => {
+                      const isFromMe = !e.from.toLowerCase().includes(contact.email?.toLowerCase() || "___");
+                      return (
+                        <div
+                          key={i}
+                          className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span
+                                  className="text-[9px] px-1.5 py-0.5 rounded font-medium tracking-wider"
+                                  style={{
+                                    background: isFromMe ? "rgba(59,130,246,0.15)" : "rgba(16,185,129,0.15)",
+                                    color: isFromMe ? "#60A5FA" : "#34D399",
+                                  }}
+                                >
+                                  {isFromMe ? "SENT" : "RECEIVED"}
+                                </span>
+                                <span className="text-white/60 text-xs font-medium truncate">
+                                  {e.subject}
+                                </span>
+                              </div>
+                              <p className="text-white/25 text-[11px] leading-relaxed line-clamp-2">
+                                {e.snippet}
+                              </p>
+                            </div>
+                            <span className="text-white/15 text-[10px] flex-shrink-0 whitespace-nowrap">
+                              {e.date ? new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Logged interactions */}
+              {interactions.length > 0 && (
+                <div>
+                  <h3 className="text-white/50 text-xs tracking-wider uppercase mb-3">
+                    Logged Interactions
+                    <span className="text-white/20 ml-2 normal-case">({interactions.length})</span>
+                  </h3>
+                  <div className="space-y-1.5">
+                    {interactions.map((int) => (
+                      <div key={int.id} className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-400 font-medium tracking-wider uppercase">
+                              {int.type}
+                            </span>
+                            {int.subject && (
+                              <span className="text-white/50 text-xs">{int.subject}</span>
+                            )}
+                          </div>
+                          <span className="text-white/15 text-[10px]">{timeAgo(int.created_at)}</span>
+                        </div>
+                        {int.notes && (
+                          <p className="text-white/25 text-[11px] mt-1">{int.notes}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* ── SETTINGS TAB ── */
+            <div className="space-y-4">
+              <div>
+                <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">End Goal</label>
+                <textarea
+                  value={endGoal}
+                  onChange={(e) => setEndGoal(e.target.value)}
+                  placeholder="What is the end goal with this person?"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20 resize-none"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">Priority</label>
+                <div className="flex gap-2">
+                  {(["high-touch", "active-deal", "pipeline"] as const).map((pr) => {
+                    const c = priorityColors[pr];
+                    return (
+                      <button
+                        key={pr}
+                        onClick={() => setPriority(pr)}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs font-medium border transition-all"
+                        style={{
+                          background: priority === pr ? c.bg : "transparent",
+                          borderColor: priority === pr ? c.border : "rgba(255,255,255,0.06)",
+                          color: priority === pr ? c.text : "rgba(255,255,255,0.3)",
+                        }}
+                      >
+                        {pr.replace("-", " ")}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-white/40 text-xs tracking-wider uppercase block mb-1.5">Pipeline</label>
+                <input
+                  value={pipelineName}
+                  onChange={(e) => setPipelineName(e.target.value)}
+                  placeholder="e.g., library-outreach, superintendent, partnership"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/20"
+                />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setAutoFollowup(!autoFollowup)}
+                  className="w-10 h-6 rounded-full transition-colors relative"
+                  style={{
+                    background: autoFollowup ? "rgba(6,182,212,0.4)" : "rgba(255,255,255,0.1)",
+                  }}
+                >
+                  <span
+                    className="absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                    style={{ left: autoFollowup ? 18 : 2 }}
+                  />
+                </button>
+                <span className="text-white/50 text-sm">Auto-send follow-ups (no approval needed)</span>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={onClose}
+                  className="flex-1 py-2.5 rounded-lg border border-white/10 text-white/40 text-sm hover:bg-white/[0.04] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={save}
+                  disabled={saving}
+                  className="flex-1 py-2.5 rounded-lg bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-medium hover:bg-cyan-500/30 transition-colors disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -940,9 +1201,9 @@ export default function CommandPage() {
         </footer>
       </div>
 
-      {/* ── EDIT MODAL ── */}
+      {/* ── CONTACT PANEL ── */}
       {editContact && (
-        <EditModal
+        <ContactPanel
           contact={editContact}
           onClose={() => setEditContact(null)}
           onSave={() => {
