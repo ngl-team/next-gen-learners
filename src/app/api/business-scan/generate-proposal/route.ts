@@ -89,13 +89,11 @@ Generate a JSON object with ALL of these sections. Be extremely specific to THIS
   "engagement_options": [
     {
       "tier": "Starter|Growth|Full Build",
-      "price_range": "$X - $X",
       "description": "what's included",
       "bullets": ["deliverable 1", "deliverable 2"]
     }
   ],
   "guarantee": "A bold guarantee statement specific to their business",
-  "estimated_value": "Estimated annual value this brings them",
   "cta_headline": "A compelling call to action headline",
   "cta_text": "1-2 sentences driving them to take action"
 }
@@ -193,7 +191,7 @@ function buildProposalHTML(businessName: string, businessUrl: string, p: Record<
     const tierFg: Record<string, string> = { Starter: 'var(--accent)', Growth: 'var(--primary)', 'Full Build': 'var(--secondary)' };
     return `
     <div class="engage-card fade-up">
-      <span class="engage-tag" style="background:${tierColors[e.tier as string] || 'var(--indigo-glow)'};color:${tierFg[e.tier as string] || 'var(--primary)'}">${esc(e.tier as string)} — ${esc(e.price_range as string)}</span>
+      <span class="engage-tag" style="background:${tierColors[e.tier as string] || 'var(--indigo-glow)'};color:${tierFg[e.tier as string] || 'var(--primary)'}">${esc(e.tier as string)}</span>
       <h4>${esc(e.tier as string)}</h4>
       <p>${esc(e.description as string)}</p>
       <ul>${(e.bullets as string[] || []).map(b => `<li>${esc(b)}</li>`).join('')}</ul>
