@@ -259,10 +259,39 @@ function go(n){
   document.getElementById('counter').style.color=bg==='light'?'#1E1B4B':'#fff';
 }
 
+// Back keys - everything else treated as "next"
+const backKeys=new Set(['ArrowLeft','ArrowUp','PageUp','Backspace','p','P']);
+const ignoreKeys=new Set(['f','F','Tab','Alt','Control','Shift','Meta','CapsLock','Escape']);
+
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'||e.key==='PageDown'||e.key==='ArrowDown'||e.key==='n'||e.key==='N'){e.preventDefault();go(cur+1)}
-  if(e.key==='ArrowLeft'||e.key==='Backspace'||e.key==='PageUp'||e.key==='ArrowUp'||e.key==='p'||e.key==='P'){e.preventDefault();go(cur-1)}
-  if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
+  if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();return}
+  if(ignoreKeys.has(e.key)||e.metaKey||e.ctrlKey||e.altKey)return;
+  e.preventDefault();
+  if(backKeys.has(e.key)){go(cur-1)}else{go(cur+1)}
+});
+
+// Also catch keyCode for clickers that send raw codes (33=PageUp, 34=PageDown, etc)
+document.addEventListener('keyup',e=>{
+  // Some clickers only fire keyup, not keydown
+  if(e.key==='Unidentified'||e.key===''){
+    e.preventDefault();
+    go(cur+1);
+  }
+});
+
+// Mouse wheel / scroll - some clickers send scroll events
+document.addEventListener('wheel',e=>{e.preventDefault();if(e.deltaY>0||e.deltaX>0)go(cur+1);else go(cur-1)},{passive:false});
+
+// Mouse buttons - some clickers register as mouse forward/back buttons
+document.addEventListener('mousedown',e=>{
+  if(e.button===3){e.preventDefault();go(cur-1)} // back button
+  if(e.button===4){e.preventDefault();go(cur+1)} // forward button
+});
+
+// Pointer events for HID clickers that send pointer rather than mouse
+document.addEventListener('pointerdown',e=>{
+  if(e.button===3){e.preventDefault();go(cur-1)}
+  if(e.button===4){e.preventDefault();go(cur+1)}
 });
 
 let tx=0;
