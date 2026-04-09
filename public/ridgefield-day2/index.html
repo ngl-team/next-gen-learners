@@ -260,8 +260,8 @@ function go(n){
 }
 
 document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();go(cur+1)}
-  if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();go(cur-1)}
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'||e.key==='PageDown'||e.key==='ArrowDown'||e.key==='n'||e.key==='N'){e.preventDefault();go(cur+1)}
+  if(e.key==='ArrowLeft'||e.key==='Backspace'||e.key==='PageUp'||e.key==='ArrowUp'||e.key==='p'||e.key==='P'){e.preventDefault();go(cur-1)}
   if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
 });
 
