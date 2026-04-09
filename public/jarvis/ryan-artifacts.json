@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-04-08-eiker-ad-tracking-tool",
+    "title": "Eiker Jacome — Ad Tracking Tool (Hyros Alternative)",
+    "date": "2026-04-08",
+    "person": "ryan",
+    "content": "# Eiker Jacome — Ad Tracking Tool Project\n*April 8, 2026 — Ryan Vincent*\n\n---\n\n## Source\nInstagram DM from Eiker Jacome.\n\n## The Ask\nBuild a custom ad tracking / attribution platform that replaces Hyros. Hyros is the current industry standard for ad tracking but has two major problems: inaccurate data and expensive pricing ($300-1000+/mo).\n\nEiker wants a tool that:\n1. **More accurate attribution** — track the full journey from ad click to sale without the data gaps Hyros has\n2. **More granular data** — not just \"this ad made $X\" but deeper breakdowns (which ad, which audience, which funnel step)\n3. **Backend client success stats** — not just front-end metrics (clicks, leads) but what happens after the sale: client retention, results, lifetime value\n4. **Cheaper than Hyros**\n\n## Follow-Up Questions (Need Answers Before Scoping)\n1. Which ad platforms? (Meta, Google, YouTube, TikTok?)\n2. What's the sales funnel? (Landing page → call booking → sale? Direct purchase?)\n3. What payment/CRM stack? (Stripe, GoHighLevel, Kajabi, ClickFunnels?)\n4. What specifically is broken with Hyros? (Misattribution? Missing sales? Overcounting?)\n5. What does \"client success\" mean in his business? (Retention, completion, revenue milestones?)\n6. Is this for his own use or a SaaS product he'd sell?\n\n## Scope Estimate\n- **Internal tool** (just for Eiker): weeks — connect ad APIs + Stripe + dashboard\n- **SaaS product** (sellable to others): months — needs multi-tenant, onboarding, billing, pixel infrastructure\n\n## Status\nDiscovery — waiting on follow-up answers from Eiker."
+  },
+  {
     "id": "2026-04-08-walter-kpi-meeting-notes",
     "title": "Walter Meeting \u2014 KPI Tracker Discovery",
     "date": "2026-04-08",
