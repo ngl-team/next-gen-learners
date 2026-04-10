@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice #NGL-2026-001 | Next Generation Learners LLC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:#fff;color:#1E1B4B;line-height:1.6;-webkit-font-smoothing:antialiased}
+    .invoice{max-width:800px;margin:0 auto;padding:60px 60px 40px}
+
+    /* Header */
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:48px;padding-bottom:32px;border-bottom:3px solid #4F46E5}
+    .brand{font-size:1.1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4F46E5}
+    .brand-sub{font-size:.78rem;color:#64748B;margin-top:4px;font-weight:400;letter-spacing:0}
+    .invoice-title{text-align:right}
+    .invoice-title h1{font-size:1.8rem;font-weight:800;color:#1E1B4B;letter-spacing:-.02em}
+    .invoice-num{font-size:.82rem;color:#64748B;margin-top:4px}
+
+    /* Info grid */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:48px}
+    .info-block label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#94A3B8;font-weight:700;display:block;margin-bottom:6px}
+    .info-block p{font-size:.88rem;color:#1E1B4B;line-height:1.6}
+    .info-block p.dim{color:#64748B}
+
+    /* Table */
+    .table-wrap{margin-bottom:40px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#94A3B8;font-weight:700;padding:12px 0;border-bottom:2px solid #E2E8F0}
+    thead th:last-child{text-align:right}
+    tbody td{padding:16px 0;border-bottom:1px solid #F1F5F9;font-size:.88rem;color:#1E1B4B;vertical-align:top}
+    tbody td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+    tbody td .item-title{font-weight:600;margin-bottom:4px}
+    tbody td .item-desc{font-size:.78rem;color:#64748B;line-height:1.5;max-width:480px}
+
+    /* Totals */
+    .totals{display:flex;justify-content:flex-end;margin-bottom:48px}
+    .totals-box{width:280px}
+    .totals-row{display:flex;justify-content:space-between;padding:10px 0;font-size:.88rem;border-bottom:1px solid #F1F5F9}
+    .totals-row.total{border-bottom:none;border-top:2px solid #1E1B4B;padding-top:14px;margin-top:4px;font-weight:800;font-size:1.1rem}
+    .totals-row .label{color:#64748B}
+    .totals-row.total .label{color:#1E1B4B}
+
+    /* Payment schedule */
+    .payment-schedule{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:40px}
+    .payment-schedule h3{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#4F46E5;font-weight:700;margin-bottom:16px}
+    .pay-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #E2E8F0;font-size:.85rem}
+    .pay-row:last-child{border-bottom:none}
+    .pay-row .pay-label{color:#64748B}
+    .pay-row .pay-amount{font-weight:700;color:#1E1B4B}
+    .pay-row .pay-due{font-size:.75rem;color:#94A3B8}
+
+    /* Notes */
+    .notes{margin-bottom:40px}
+    .notes h3{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#4F46E5;font-weight:700;margin-bottom:12px}
+    .notes p{font-size:.82rem;color:#64748B;line-height:1.7}
+
+    /* Footer */
+    .footer{border-top:1px solid #E2E8F0;padding-top:24px;text-align:center}
+    .footer p{font-size:.75rem;color:#94A3B8;line-height:1.6}
+    .footer a{color:#4F46E5;text-decoration:none}
+
+    @media print{
+      body{background:#fff}
+      .invoice{padding:40px 40px 20px}
+      .payment-schedule{break-inside:avoid}
+    }
+  </style>
+</head>
+<body>
+
+<div class="invoice">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="brand">Next Generation Learners LLC</div>
+      <div class="brand-sub">Brayan Tenesaca<br>brayan@nextgenerationlearners.com<br>nextgenerationlearners.com</div>
+    </div>
+    <div class="invoice-title">
+      <h1>Invoice</h1>
+      <div class="invoice-num">#NGL-2026-001 &middot; April 10, 2026</div>
+    </div>
+  </div>
+
+  <!-- Bill To / Details -->
+  <div class="info-grid">
+    <div>
+      <div class="info-block">
+        <label>Bill To</label>
+        <p>Christopher Roche, Superintendent<br>Woodstock Public Schools<br>24 Frog Pond Rd<br>Woodstock, CT 06281</p>
+      </div>
+    </div>
+    <div>
+      <div class="info-block" style="margin-bottom:20px">
+        <label>Invoice Date</label>
+        <p>April 10, 2026</p>
+      </div>
+      <div class="info-block" style="margin-bottom:20px">
+        <label>Payment Terms</label>
+        <p>50% due upon booking, 50% due upon completion (Net 30)</p>
+      </div>
+      <div class="info-block">
+        <label>Invoice Number</label>
+        <p>NGL-2026-001</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line Items -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="item-title">AI Leadership Efficiency System - Setup and Training</div>
+            <div class="item-desc">On-site implementation of AI-powered efficiency system for school leadership. Includes full workflow audit, system configuration, email management tools, meeting intelligence, and hands-on training session. All data remains local and confidential.</div>
+          </td>
+          <td>$2,500.00</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-title">30-Day Support and Optimization Window</div>
+            <div class="item-desc">Post-implementation support including troubleshooting, system tuning, and training questions via phone or screen share. Responses within one business day.</div>
+          </td>
+          <td>Included</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Totals -->
+  <div class="totals">
+    <div class="totals-box">
+      <div class="totals-row">
+        <span class="label">Subtotal</span>
+        <span>$2,500.00</span>
+      </div>
+      <div class="totals-row">
+        <span class="label">Tax</span>
+        <span>$0.00</span>
+      </div>
+      <div class="totals-row total">
+        <span class="label">Total Due</span>
+        <span>$2,500.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Schedule -->
+  <div class="payment-schedule">
+    <h3>Payment Schedule</h3>
+    <div class="pay-row">
+      <div>
+        <span class="pay-label">Deposit - 50% upon booking</span>
+      </div>
+      <div>
+        <span class="pay-amount">$1,250.00</span>
+        <span class="pay-due"> &middot; Due upon scheduling</span>
+      </div>
+    </div>
+    <div class="pay-row">
+      <div>
+        <span class="pay-label">Completion - 50% upon delivery</span>
+      </div>
+      <div>
+        <span class="pay-amount">$1,250.00</span>
+        <span class="pay-due"> &middot; Net 30 from completion</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes">
+    <h3>Notes</h3>
+    <p>
+      Budget category: Professional Learning / Administrative Efficiency.<br>
+      Vendor: Next Generation Learners LLC. W-9 and vendor registration available upon request.<br>
+      PO-friendly. Payment by check, PO, or Stripe accepted.<br>
+      All data remains local and confidential. No student data is accessed or stored.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      Next Generation Learners LLC &middot; <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a> &middot; <a href="https://nextgenerationlearners.com">nextgenerationlearners.com</a>
+    </p>
+    <p style="margin-top:8px">Thank you for your trust, Mr. Roche.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
