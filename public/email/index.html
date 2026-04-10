@@ -362,7 +362,7 @@
     </div>
 
     <div class="payback-bar fade-up">
-      <div class="pb-main" id="paybackText">At $800, this system pays for itself in 5 days.</div>
+      <div class="pb-main" id="paybackText">This system pays for itself almost immediately.</div>
       <div class="pb-sub">After that, every hour saved is pure return. For the rest of the year and every year after.</div>
     </div>
   </div>
@@ -376,7 +376,6 @@
     <div class="engage fade-up">
       <span class="e-tag">Email Command Center</span>
       <h3>Your Email, Under Control</h3>
-      <div class="price">$800</div>
       <p>I set up a complete email triage and response system on your computer. Built around your actual inbox, your contacts, and how you communicate. Private, secure, and yours to keep.</p>
       <ul>
         <li><strong>Email categorization engine</strong> - rules built from your actual inbox patterns. Urgent, needs response, FYI, noise, spam. Sorted before you look.</li>
@@ -422,7 +421,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px" class="fade-up">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700">Amount</div>
-          <p style="font-size:.85rem;color:var(--text-2);line-height:1.6"><strong style="color:var(--text)">$800 one-time.</strong> Under most district thresholds for superintendent discretionary spend. No board approval needed for contracted services under $1,000.</p>
+          <p style="font-size:.85rem;color:var(--text-2);line-height:1.6"><strong style="color:var(--text)">One-time contracted service.</strong> Falls under superintendent discretionary spend. No board approval needed.</p>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px">
           <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700">Data and Privacy</div>
@@ -462,7 +461,7 @@
 </footer>
 
 <script>
-const HOURLY=75,COST=800,WEEKS=52;
+const HOURLY=75,WEEKS=52;
 const SAVE_PCT=[0.85,0.75,0.75,1.0]; // % saved per category
 
 function calc(){
@@ -475,13 +474,12 @@ function calc(){
   }
   const annualHrs=Math.round(totalSaved*WEEKS);
   const annualVal=Math.round(totalSaved*WEEKS*HOURLY);
-  const paybackDays=Math.max(1,Math.round(COST/(totalSaved*HOURLY/5)));
 
   document.getElementById('weeklyHrs').textContent=totalSaved.toFixed(1);
   document.getElementById('weeklyDesc').textContent=totalSaved>=8?`That's a full workday back. Every week.`:totalSaved>=4?`Half a workday back. Every single week.`:`${totalSaved.toFixed(1)} hours back every week.`;
   document.getElementById('annualHrs').textContent=annualHrs.toLocaleString();
   document.getElementById('annualVal').textContent='$'+annualVal.toLocaleString();
-  document.getElementById('paybackText').textContent=`At $${COST}, this system pays for itself in ${paybackDays} day${paybackDays===1?'':'s'}.`;
+  document.getElementById('paybackText').textContent=`This system pays for itself almost immediately.`;
 }
 calc();
 
