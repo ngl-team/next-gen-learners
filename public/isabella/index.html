@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isabella's Study Tool - Fishbowl + Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#00703c;--gl:#e8f5e9;--gd:#004d26;--gold:#c5a94e;--red:#d32f2f;--orange:#f57c00;--bg:#f5f5f0;--card:#fff;--text:#1a1a1a;--tl:#555;--fish:#0d47a1;--fish-light:#e3f2fd;--fish-dark:#002171}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:800px;margin:0 auto;padding:20px}
+header{text-align:center;padding:30px 0 20px;border-bottom:3px solid var(--green)}
+header h1{font-size:1.8rem;color:var(--gd);font-weight:800}
+header p{color:var(--tl);margin-top:6px;font-size:0.95rem}
+.card{background:var(--card);border-radius:12px;padding:28px;margin:20px 0;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.btn{display:inline-block;padding:12px 28px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--gd)}
+.btn-fish{background:var(--fish);color:#fff}
+.btn-fish:hover{background:var(--fish-dark)}
+.btn-outline{background:transparent;border:2px solid var(--green);color:var(--green)}
+.btn-outline:hover{background:var(--gl)}
+.btn-sm{padding:8px 18px;font-size:0.85rem}
+.btn-full{width:100%;text-align:center}
+.btn-correct{background:#2e7d32;color:#fff}.btn-correct:hover{background:#1b5e20}
+.btn-wrong{background:var(--red);color:#fff}.btn-wrong:hover{background:#b71c1c}
+.btn-partial{background:var(--orange);color:#fff}.btn-partial:hover{background:#e65100}
+.tab-bar{display:flex;gap:0;margin:20px 0 0;border-radius:10px;overflow:hidden;border:2px solid var(--green)}
+.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:700;font-size:0.95rem;border:none;background:#fff;color:var(--green);transition:all 0.15s}
+.tab.active{background:var(--green);color:#fff}
+.tab:hover:not(.active){background:var(--gl)}
+.tab.fish-tab.active{background:var(--fish);color:#fff}
+.tab.fish-tab{color:var(--fish)}
+.module-grid{display:grid;gap:12px;margin:20px 0}
+.module-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card);border-radius:10px;border-left:4px solid var(--green);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.module-bar .label{flex:1;font-weight:600;font-size:0.9rem}
+.module-bar .stats{display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--tl)}
+.mastery-bar{width:100px;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}
+.mastery-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.mastery-fill.low{background:var(--red)}.mastery-fill.mid{background:var(--orange)}.mastery-fill.high{background:var(--green)}
+.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700;background:#fff3e0;color:var(--orange)}
+.overall-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.stat-box{text-align:center;padding:16px;background:var(--card);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.stat-box .num{font-size:1.8rem;font-weight:800;color:var(--green)}
+.stat-box .lbl{font-size:0.8rem;color:var(--tl);margin-top:2px}
+.screen{display:none}
+.screen.active{display:block}
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.q-module-tag{padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;background:var(--gl);color:var(--gd)}
+.q-count{font-size:0.85rem;color:var(--tl)}
+.q-text{font-size:1.15rem;font-weight:600;line-height:1.5;margin-bottom:24px}
+.options{display:grid;gap:10px}
+.option{padding:14px 18px;border:2px solid #e0e0e0;border-radius:10px;cursor:pointer;font-size:0.95rem;line-height:1.4;transition:all 0.15s;text-align:left;background:#fff}
+.option:hover{border-color:var(--green);background:var(--gl)}
+.option.correct{border-color:var(--green);background:#c8e6c9;font-weight:600}
+.option.wrong{border-color:var(--red);background:#ffcdd2}
+.option[disabled]{cursor:default;pointer-events:none}
+.explanation{margin-top:18px;padding:16px;background:#f5f5f5;border-radius:10px;font-size:0.9rem;line-height:1.5;border-left:4px solid var(--green);display:none}
+.explanation.visible{display:block}
+.q-actions{display:flex;gap:10px;margin-top:20px}
+.progress-strip{height:4px;background:#e0e0e0;border-radius:2px;margin-bottom:20px}
+.progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.3s}
+.fr-textarea{width:100%;min-height:120px;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:0.95rem;font-family:inherit;line-height:1.5;resize:vertical;transition:border-color 0.2s}
+.fr-textarea:focus{outline:none;border-color:var(--green)}
+.fr-answer-box{margin-top:18px;padding:18px;border-radius:10px;font-size:0.9rem;line-height:1.6;display:none}
+.fr-answer-box.visible{display:block}
+.fr-answer-box h4{margin-bottom:8px;color:var(--gd)}
+.fr-answer-box .correct-answer{background:var(--gl);padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid var(--green)}
+.fr-answer-box .key-points{background:#f5f5f5;padding:12px;border-radius:8px;border-left:4px solid var(--gold)}
+.fr-answer-box .key-points li{margin:4px 0 4px 16px;font-size:0.88rem}
+.fr-self-grade{margin-top:14px;padding:14px;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0}
+.fr-self-grade p{font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--tl)}
+.fr-grade-btns{display:flex;gap:8px;flex-wrap:wrap}
+.fr-your-answer{margin-top:12px;padding:12px;background:#fff3e0;border-radius:8px;border-left:4px solid var(--orange)}
+.fr-your-answer h4{margin-bottom:4px;font-size:0.85rem;color:var(--orange)}
+.result-icon{font-size:1.5rem;text-align:center;margin-bottom:10px;font-weight:700;color:var(--gd)}
+.result-score{text-align:center;font-size:2rem;font-weight:800;color:var(--green)}
+.result-sub{text-align:center;color:var(--tl);margin:8px 0 20px}
+.weak-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin:6px 0;background:#fff3e0;font-size:0.9rem}
+.weak-item .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.strong-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin:6px 0;background:var(--gl);font-size:0.9rem}
+.strong-item .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.mode-card{padding:20px;border:2px solid #e0e0e0;border-radius:12px;cursor:pointer;text-align:center;transition:all 0.15s}
+.mode-card:hover{border-color:var(--green);background:var(--gl)}
+.mode-card h3{color:var(--gd);margin-bottom:6px;font-size:1rem}
+.mode-card p{font-size:0.78rem;color:var(--tl)}
+.mode-card.active{border-color:var(--green);background:var(--gl)}
+.focus-chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.chip{padding:8px 16px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.8rem;cursor:pointer;font-weight:600;transition:all 0.15s}
+.chip:hover{border-color:var(--green)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chip .perf{font-weight:400;opacity:0.8;margin-left:4px}
+.format-toggle{display:flex;gap:0;margin:16px 0;border:2px solid var(--green);border-radius:8px;overflow:hidden}
+.format-btn{flex:1;padding:10px;text-align:center;cursor:pointer;font-weight:600;font-size:0.9rem;border:none;background:#fff;color:var(--green);transition:all 0.15s}
+.format-btn.active{background:var(--green);color:#fff}
+.format-btn:hover:not(.active){background:var(--gl)}
+.fish-card{background:var(--card);border-radius:12px;padding:28px;margin:20px 0;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-top:4px solid var(--fish)}
+.fish-scenario{background:var(--fish-light);padding:18px;border-radius:10px;margin-bottom:16px;border-left:4px solid var(--fish)}
+.fish-scenario h3{color:var(--fish-dark);font-size:0.85rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.fish-scenario p{font-size:1.05rem;line-height:1.5;color:var(--text)}
+.fish-concept{display:inline-block;padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:700;background:#e8eaf6;color:#283593;margin-bottom:16px}
+.fish-prompt{font-size:1.1rem;font-weight:600;line-height:1.5;margin-bottom:16px;color:var(--fish-dark)}
+.fish-textarea{width:100%;min-height:150px;padding:16px;border:2px solid #bbdefb;border-radius:10px;font-size:1rem;font-family:inherit;line-height:1.6;resize:vertical;transition:border-color 0.2s}
+.fish-textarea:focus{outline:none;border-color:var(--fish)}
+.fish-reveal{margin-top:18px;display:none}
+.fish-reveal.visible{display:block}
+.fish-good-answer{background:var(--gl);padding:16px;border-radius:10px;border-left:4px solid var(--green);margin-bottom:12px}
+.fish-good-answer h4{color:var(--gd);margin-bottom:8px}
+.fish-bad-answer{background:#ffebee;padding:16px;border-radius:10px;border-left:4px solid var(--red);margin-bottom:12px}
+.fish-bad-answer h4{color:var(--red);margin-bottom:8px}
+.fish-tips{background:#f5f5f5;padding:14px;border-radius:10px;border-left:4px solid var(--gold)}
+.fish-tips h4{color:#7b6c1a;margin-bottom:8px}
+.fish-tips li{margin:4px 0 4px 16px;font-size:0.88rem}
+.fish-your{background:#fff3e0;padding:14px;border-radius:10px;border-left:4px solid var(--orange);margin-bottom:14px}
+.fish-your h4{color:var(--orange);margin-bottom:6px;font-size:0.85rem}
+.fish-grade{margin-top:14px;padding:14px;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0}
+.fish-grade p{font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--tl)}
+.fish-grade-btns{display:flex;gap:8px;flex-wrap:wrap}
+.fish-history-item{padding:14px;border:1px solid #e0e0e0;border-radius:10px;margin:10px 0;background:#fff}
+.fish-history-item .fh-scenario{font-weight:600;font-size:0.9rem;margin-bottom:4px}
+.fish-history-item .fh-concept{font-size:0.8rem;color:var(--fish);margin-bottom:6px}
+.fish-history-item .fh-response{font-size:0.88rem;line-height:1.4;color:var(--text)}
+.fish-history-item .fh-grade{display:inline-block;padding:2px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;margin-top:6px}
+.fh-grade.got_it{background:var(--gl);color:var(--green)}
+.fh-grade.partial{background:#fff3e0;color:var(--orange)}
+.fh-grade.missed{background:#ffebee;color:var(--red)}
+.fish-counter{text-align:center;color:var(--tl);font-size:0.85rem;margin-bottom:16px}
+@media(max-width:600px){
+  .overall-stats{grid-template-columns:1fr}
+  .mode-grid{grid-template-columns:1fr}
+  .q-text{font-size:1.05rem}
+  .fr-grade-btns,.fish-grade-btns{flex-direction:column}
+  .tab{font-size:0.8rem;padding:10px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>ISABELLA'S STUDY TOOL</h1>
+<p>Babson College - Spring 2026</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('quiz-tab',this)">Quiz Mode</button>
+  <button class="tab fish-tab" onclick="switchTab('fish-tab',this)">Fishbowl</button>
+  <button class="tab" onclick="switchTab('history-tab',this)">My Responses</button>
+</div>
+
+<!-- QUIZ TAB -->
+<div id="quiz-tab" class="screen active">
+<div id="dashboard">
+<div class="overall-stats">
+  <div class="stat-box"><div class="num" id="totalAnswered">0</div><div class="lbl">Questions Done</div></div>
+  <div class="stat-box"><div class="num" id="overallAcc">0%</div><div class="lbl">Overall Accuracy</div></div>
+  <div class="stat-box"><div class="num" id="weakestMod">--</div><div class="lbl">Focus Area</div></div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:16px;color:var(--gd)">Module Mastery</h2>
+  <div class="module-grid" id="moduleGrid"></div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:4px;color:var(--gd)">Answer Format</h2>
+  <p style="font-size:0.8rem;color:var(--tl);margin-bottom:8px">MC tests recognition. Free response tests understanding. Fishbowl tests application.</p>
+  <div class="format-toggle">
+    <button class="format-btn active" onclick="setFormat('mc',this)">Multiple Choice</button>
+    <button class="format-btn" onclick="setFormat('fr',this)">Free Response</button>
+  </div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:12px;color:var(--gd)">Study Mode</h2>
+  <div class="mode-grid">
+    <div class="mode-card active" data-mode="adaptive" onclick="selectMode(this)"><h3>Adaptive</h3><p>Focuses on your weak spots</p></div>
+    <div class="mode-card" data-mode="random" onclick="selectMode(this)"><h3>Random</h3><p>All modules equally</p></div>
+    <div class="mode-card" data-mode="focus" onclick="selectMode(this)"><h3>Focus</h3><p>Pick specific modules</p></div>
+    <div class="mode-card" data-mode="weakest" onclick="selectMode(this)"><h3>Weakest First</h3><p>Lowest-scoring modules</p></div>
+  </div>
+  <div id="focusSelector" style="display:none">
+    <p style="font-size:0.85rem;color:var(--tl);margin-bottom:8px">Select modules:</p>
+    <div class="focus-chips" id="focusChips"></div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+    <label style="font-size:0.9rem;font-weight:600">Questions:</label>
+    <select id="qCountSel" style="padding:8px 12px;border-radius:8px;border:2px solid #e0e0e0;font-size:0.9rem">
+      <option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="999">All</option>
+    </select>
+  </div>
+  <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="startQuiz()">Start Studying</button>
+</div>
+<div style="text-align:center;margin:20px 0"><button class="btn btn-outline btn-sm" onclick="resetProgress()">Reset All Progress</button></div>
+</div>
+
+<div id="quizScreen" style="display:none">
+<div class="card">
+  <div class="progress-strip"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="q-header"><span class="q-module-tag" id="qModule"></span><span class="q-count" id="qCount2"></span></div>
+  <div class="q-text" id="qText"></div>
+  <div class="options" id="optionsBox"></div>
+  <div id="frArea" style="display:none">
+    <textarea class="fr-textarea" id="frInput" placeholder="Type your answer... explain in your own words."></textarea>
+    <div style="margin-top:14px"><button class="btn btn-primary btn-full" onclick="revealFR()">Show Answer</button></div>
+  </div>
+  <div class="fr-answer-box" id="frAnswerBox">
+    <div class="fr-your-answer" id="frYourAnswer"><h4>Your answer:</h4><div id="frYourText"></div></div>
+    <div class="correct-answer" id="frCorrectAnswer"></div>
+    <div class="key-points" id="frKeyPoints"></div>
+    <div class="fr-self-grade" id="frSelfGrade">
+      <p>How did you do? Be honest.</p>
+      <div class="fr-grade-btns">
+        <button class="btn btn-correct btn-sm" onclick="gradeFR('got_it')">Got it</button>
+        <button class="btn btn-partial btn-sm" onclick="gradeFR('partial')">Partial</button>
+        <button class="btn btn-wrong btn-sm" onclick="gradeFR('missed')">Missed it</button>
+      </div>
+    </div>
+  </div>
+  <div class="explanation" id="explanation"></div>
+  <div class="q-actions" id="qActions" style="display:none">
+    <button class="btn btn-primary" onclick="nextQuestion()" style="flex:1">Next</button>
+    <button class="btn btn-outline" onclick="endQuiz()" style="flex:0">End</button>
+  </div>
+</div>
+</div>
+
+<div id="resultsScreen" style="display:none">
+<div class="card">
+  <div class="result-icon" id="resultIcon"></div>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-sub" id="resultSub"></div>
+  <div id="resultBreakdown"></div>
+  <button class="btn btn-primary btn-full" style="margin-top:20px" onclick="goHome()">Back to Dashboard</button>
+</div>
+</div>
+</div>
+
+<!-- FISHBOWL TAB -->
+<div id="fish-tab" class="screen">
+<div id="fishHome">
+  <div class="fish-card">
+    <h2 style="color:var(--fish-dark);margin-bottom:8px">Fishbowl Mode</h2>
+    <p style="color:var(--tl);font-size:0.9rem;margin-bottom:16px">You get a real-world scenario + a concept. Apply the concept like you would in class. Show how you think, not what you memorized.</p>
+    <div style="background:var(--fish-light);padding:14px;border-radius:10px;margin-bottom:20px">
+      <p style="font-size:0.85rem;line-height:1.5"><strong>Bad answer:</strong> "I would use personal selling and CRM."<br>
+      <strong>Good answer:</strong> "I'd call her back within an hour, ask what problem she's actually trying to solve, then offer a free 2-week trial so she sees results before committing."</p>
+    </div>
+    <button class="btn btn-fish btn-full" onclick="startFishbowl()">Start Fishbowl Round</button>
+  </div>
+</div>
+
+<div id="fishActive" style="display:none">
+  <div class="fish-card">
+    <div class="fish-counter" id="fishCounter"></div>
+    <div class="fish-scenario" id="fishScenario"><h3>Scenario</h3><p></p></div>
+    <div class="fish-concept" id="fishConcept"></div>
+    <div class="fish-prompt" id="fishPrompt"></div>
+    <textarea class="fish-textarea" id="fishInput" placeholder="Answer like you're in the fishbowl. Be specific, practical, and show your thinking..."></textarea>
+    <div style="margin-top:14px"><button class="btn btn-fish btn-full" onclick="revealFishAnswer()">Show What a Good Answer Looks Like</button></div>
+    <div class="fish-reveal" id="fishReveal">
+      <div class="fish-your" id="fishYour"><h4>Your answer:</h4><div id="fishYourText"></div></div>
+      <div class="fish-good-answer" id="fishGood"><h4>Strong fishbowl answer:</h4><p></p></div>
+      <div class="fish-bad-answer" id="fishBad"><h4>Weak answer (just definitions):</h4><p></p></div>
+      <div class="fish-tips" id="fishTips"><h4>Key things to include:</h4><ul></ul></div>
+      <div class="fish-grade" id="fishGrade">
+        <p>Rate your response honestly:</p>
+        <div class="fish-grade-btns">
+          <button class="btn btn-correct btn-sm" onclick="gradeFish('got_it')">Nailed it - applied the concept well</button>
+          <button class="btn btn-partial btn-sm" onclick="gradeFish('partial')">Partial - had some application</button>
+          <button class="btn btn-wrong btn-sm" onclick="gradeFish('missed')">Missed - mostly definitions/vague</button>
+        </div>
+      </div>
+    </div>
+    <div class="q-actions" id="fishActions" style="display:none">
+      <button class="btn btn-fish" onclick="nextFish()" style="flex:1">Next Scenario</button>
+      <button class="btn btn-outline" onclick="endFishbowl()" style="flex:0">Done</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- HISTORY TAB -->
+<div id="history-tab" class="screen">
+<div class="card">
+  <h2 style="color:var(--gd);margin-bottom:8px">My Fishbowl Responses</h2>
+  <p style="color:var(--tl);font-size:0.85rem;margin-bottom:16px">Review your past fishbowl answers to see your improvement over time.</p>
+  <div id="historyList"></div>
+  <div id="historyEmpty" style="text-align:center;padding:40px;color:var(--tl)">No fishbowl responses yet. Go practice!</div>
+</div>
+</div>
+
+</div>
+
+<script>
+const MODULES=["Sales Planning","Running the Venture","Marketing","Experimentation","Financial Reporting","Operations","Sales Metrics","Venture Growth","Integrated Sustainability"];
+
+const QUESTIONS=[
+// MODULE 0: Sales Planning (15 questions)
+{m:0,q:"What is an advantage of personal selling in early customer engagement?",o:["It eliminates the need for marketing","It helps shape your market's value because value is co-created through conversations","It guarantees sales immediately","It replaces the need for a product"],a:1,e:"Early customer engagement through personal selling helps shape your market's value and builds confidence in defending that value, because value is co-created through conversations.",fr:"Explain why early customer engagement is an advantage of personal selling.",fp:["Value is co-created through conversations","Helps shape market's value","Builds confidence in defending value","First customers are strategic assets"]},
+{m:0,q:"Why are first customers considered strategic assets?",o:["They provide the most revenue","They are easy to acquire","They help validate and co-create value early on","They require no selling effort"],a:2,e:"First customers are strategic assets because they help validate your product and co-create value through early conversations and feedback.",fr:"Explain why first customers are considered strategic assets.",fp:["Help validate the product","Co-create value through conversations","Provide critical early feedback","Shape the direction of the business"]},
+{m:0,q:"What role does feedback play in personal selling?",o:["It slows down the sales process","Conversations reduce risk and accelerate product-market fit","It only matters after the sale","It replaces the need for a product"],a:1,e:"Feedback through sales conversations reduces risk and accelerates product-market fit. It requires humility to gain truth about customers' wanted value.",fr:"Describe the role of feedback in personal selling.",fp:["Reduces risk","Accelerates product-market fit","Requires humility to learn truth about customer value","Conversations are the vehicle for learning"]},
+{m:0,q:"Which personality type makes the best salespeople according to research?",o:["Extroverts","Introverts","Ambiverts","Type A personalities"],a:2,e:"Not all extroverts make good salespeople. Research shows ambiverts outperform both extroverts and introverts in sales.",fr:"Who makes the best salespeople and why?",fp:["Ambiverts outperform both extremes","Not all extroverts are good at sales","Balance of talking and listening","Adaptability is key"]},
+{m:0,q:"In Step 1 of the sales script, when should sales conversations begin?",o:["After the product is finalized","After the first prototype","As soon as the idea is conceived","After the first sale"],a:2,e:"Sales conversations begin as soon as the idea is conceived, not after the product is finalized. Learning is more important than closing at this stage.",fr:"When should sales conversations begin according to the sales guide?",fp:["As soon as the idea is conceived","Not after the product is finalized","LEARNING is more important than closing","Explore a solution and ask for their perspective"]},
+{m:0,q:"What is the primary goal in Step 2 of the sales script?",o:["Pitch the product aggressively","Explain all product features","Ask questions to identify pain points and validate assumptions","Close the deal quickly"],a:2,e:"Step 2 is about asking questions, not pitching. The goal is to identify pain points, understand workflows, and validate assumptions. Inquiry beats persuasion.",fr:"What should you focus on in Step 2 of the sales script?",fp:["Ask questions, don't pitch","Identify pain points","Understand current workflows","Validate assumptions","INQUIRY over persuasion"]},
+{m:0,q:"How does sales feedback inform business strategy (Step 3)?",o:["It only affects the sales team","Information from sales feeds into product design, pricing strategies, and positioning","It's used only for marketing","It doesn't affect strategy"],a:1,e:"Information gathered during sales calls feeds into product design, pricing strategies, and promotion/positioning. What you hear shapes what you sell next.",fr:"How does feedback from sales conversations shape business strategy?",fp:["Feeds into product design","Informs pricing strategies","Shapes promotion and positioning","What you hear shapes what you sell next"]},
+{m:0,q:"Which is NOT a way to address the objection 'You're too small'?",o:["Provide demos and trials","Show credibility through experience and advisors","Offer risk reduction like trial periods","Lower your price significantly"],a:3,e:"To address common startup objections, use proof (demos, samples, trials), credibility (experience, advisors), and risk reduction (trial periods, pay-on-delivery). Simply lowering price is not a strategic response.",fr:"What are the three ways to address common startup objections?",fp:["Proof: demos, samples, trials","Credibility: experience, advisors","Risk reduction: trial periods, pay-on-delivery","Anticipate objections and prepare responses"]},
+{m:0,q:"What is a conditional commitment in sales?",o:["A binding contract","Asking: 'If we deliver X by Y date at Z price, would you purchase?'","A verbal promise with no follow-up","An unconditional guarantee"],a:1,e:"Instead of closing immediately, founders ask conditional commitment questions to reduce pressure, test real market demand, and move toward commitment naturally.",fr:"Explain conditional commitment and why founders use it.",fp:["Ask: If we deliver X by Y at Z price, would you purchase?","Reduces pressure on the prospect","Tests real market demand","Moves toward commitment naturally"]},
+{m:0,q:"What does 'interrogative self-talk' mean in sales?",o:["Interrogating customers aggressively","Asking yourself 'Can I do this?' instead of affirming 'I can do this!'","Questioning your product's value","Asking competitors questions"],a:1,e:"Interrogative self-talk means asking yourself questions rather than making affirmations. Questions prompt strategy and outperform statements.",fr:"Define interrogative self-talk and why it matters in sales.",fp:["Ask 'Can I do this?' not 'I can do this!'","Questions prompt strategy","Outperform affirmations/statements","Prepares you mentally for sales interactions"]},
+{m:0,q:"What builds trust in early sales engagements?",o:["Aggressive closing techniques","Strategic mimicry of posture, tone, and language","Memorizing a sales pitch","Offering the lowest price"],a:1,e:"Strategic mimicry - matching posture, tone, and language - increases trust and persuasion in the trust-building phase of personal selling.",fr:"How do you build trust in early personal selling engagements?",fp:["Strategic mimicry builds trust","Match posture, tone, and language","Human connection and active listening","Perspective-taking helps persuade"]},
+{m:0,q:"Why is emotional resilience important in personal selling?",o:["It helps you avoid all rejection","It allows you to remain positive and creative when facing frequent 'no's'","It eliminates the need for preparation","It guarantees closing every deal"],a:1,e:"Personal selling involves frequent rejection. Without resilience, long-term success is undermined. Remaining positive and resilient is essential.",fr:"Why does emotional resilience matter in sales?",fp:["Personal selling involves frequent 'no's","Without resilience, long-term success is undermined","Remain positive in face of rejection","Failure without resilience kills momentum"]},
+{m:0,q:"What is the relationship between marketing and sales?",o:["They are the same thing","Marketing attracts and educates; sales personalizes and converts","Sales replaces marketing","Marketing handles everything"],a:1,e:"Marketing attracts customers and educates them; sales personalizes the interaction and converts prospects into customers.",fr:"Describe the relationship between marketing and sales.",fp:["Marketing attracts and educates customers","Sales personalizes and converts","Social media warms up prospects","Makes sales conversations more efficient"]},
+{m:0,q:"What does a CRM system do?",o:["Replaces the sales team","Organizes customer data, manages leads and pipelines, enables forecasting","Only tracks marketing campaigns","Only stores contact information"],a:1,e:"A CRM organizes and tracks customer data, helps manage leads and pipeline stages, enables forecasting through deal visibility, and improves sales-marketing coordination.",fr:"Describe what a CRM system does and why it matters.",fp:["Organizes and tracks customer data","Manages leads, pipeline stages, and follow-ups","Enables forecasting through deal visibility","Improves coordination between sales and marketing"]},
+{m:0,q:"How does social media support the sales process?",o:["It replaces personal selling entirely","It educates, engages, builds trust, and warms up prospects","It only works for large companies","It has no connection to sales"],a:1,e:"Social media creates content that educates, engages, and builds trust. It provides brand awareness, product value, and leads while enabling two-way interaction.",fr:"How does social media support sales planning?",fp:["Educates, engages, builds trust","Creates brand awareness and generates leads","Two-way interaction with customers","Warms up prospects for more efficient sales conversations"]},
+
+// MODULE 1: Running the Venture (12 questions)
+{m:1,q:"What is the purpose of back-office operations?",o:["To interact directly with customers","To ensure accuracy and efficiency so the customer-facing side can operate smoothly","To generate revenue directly","To replace the sales team"],a:1,e:"Back-office operations ensure accuracy and efficiency behind the scenes, reducing errors, financial risk, and bottlenecks so the customer-facing side runs smoothly.",fr:"Explain the purpose of back-office operations.",fp:["Ensures accuracy and efficiency","Customer-facing side operates smoothly","Reduces errors, financial risk, and bottlenecks","Functions reliably without customer interaction"]},
+{m:1,q:"Why must business functions be integrated?",o:["To reduce headcount","Because sales, marketing, operations, finance, and supply chain must share information and coordinate","Integration is optional for small businesses","Only large companies need integration"],a:1,e:"Integration ensures actions in one area align with capacity, inventory, and cash flow. It reduces silos and miscommunications across the organization.",fr:"Why is integration of business functions important?",fp:["Sales, marketing, operations, finance must share information","Actions in one area must align with capacity, inventory, cash flow","Reduces silos and miscommunications","Improves forecasting, decision-making, and execution"]},
+{m:1,q:"What is the correct order for processing a sales order?",o:["Ship first, invoice later","Order authorization, pricing approval, invoicing, and A/R recording","Skip verification and go straight to shipping","Only record revenue at year end"],a:1,e:"Sales orders follow: order authorization and verification, pricing and discounting approval, invoicing, and A/R recording. Proper documentation ensures accurate and timely revenue.",fr:"List the key steps for processing sales orders.",fp:["Order authorization and verification","Pricing and discounting approval","Invoicing","A/R recording","Prevents errors, fraud, and revenue leakage"]},
+{m:1,q:"Why are proper inventory procedures important?",o:["They are only important for retailers","Poor inventory controls can lead to stockouts, excess inventory, or financial misstatements","They only matter at year-end","Inventory manages itself automatically"],a:1,e:"Inventory must be properly received, inspected, recorded, stored, and tracked. Poor controls lead to stockouts, excess inventory, or financial misstatements.",fr:"Explain why proper inventory procedures matter.",fp:["Must be received, inspected, recorded, stored, and tracked","Verify quantity and condition against purchase orders","Update records when goods are received or shipped","Supports cost control, order fulfillment, and financial reporting"]},
+{m:1,q:"What do receiving procedures verify?",o:["Only the price paid","Quantity and condition against purchase orders","Only the supplier name","Nothing - just accept the shipment"],a:1,e:"Receiving procedures verify that the quantity and condition of goods match what was ordered on the purchase orders.",fr:"What should receiving procedures verify?",fp:["Quantity matches the purchase order","Condition of goods is acceptable","Records must be updated upon receipt","Catches discrepancies before they enter inventory"]},
+{m:1,q:"How does Sales use sales receipt data?",o:["Only for tax purposes","To improve forecasting and identify upselling and cross-selling opportunities","To replace marketing","Only for annual reports"],a:1,e:"Sales uses receipt data to improve forecasting and identify upselling and cross-selling opportunities.",fr:"How does the Sales department use sales receipt data?",fp:["Improve forecasting","Identify upselling opportunities","Identify cross-selling opportunities","Strengthens coordination with marketing"]},
+{m:1,q:"How does Marketing use sales receipt data?",o:["They don't use it","To evaluate campaign effectiveness and identify customer preferences","Only for budgeting","To replace the sales team"],a:1,e:"Marketing uses sales receipt data to evaluate campaign effectiveness and identify customer preferences and buying patterns.",fr:"How does Marketing use sales receipt data?",fp:["Evaluate campaign effectiveness","Identify customer preferences","Understand buying patterns","Shared data strengthens sales-marketing coordination"]},
+{m:1,q:"A venture runs best when all functions operate as what?",o:["Independent departments","One coordinated system","Competing teams","Separate profit centers"],a:1,e:"A venture runs best when all functions operate as one coordinated system, not in silos.",fr:"How should all business functions operate for the venture to run best?",fp:["As one coordinated system","Not as independent silos","Integrated systems improve forecasting","Coordinated decision-making and execution"]},
+{m:1,q:"What does strong back-office operations reduce?",o:["Revenue","Errors, financial risk, and bottlenecks","Customer satisfaction","Marketing spend"],a:1,e:"Strong back-office operations reduce errors, financial risk, and bottlenecks, keeping the business functioning reliably behind the scenes.",fr:"What are the benefits of strong back-office operations?",fp:["Reduces errors","Reduces financial risk","Reduces bottlenecks","Keeps business functioning reliably"]},
+{m:1,q:"What does proper sales order documentation prevent?",o:["Customer complaints only","Errors, fraud, and revenue leakage","Marketing failures","Supply chain issues only"],a:1,e:"Clear procedures and proper documentation of sales orders help prevent errors, fraud, and revenue leakage while ensuring revenue is recorded accurately and timely.",fr:"What does proper documentation of sales orders prevent?",fp:["Errors in recording","Fraud","Revenue leakage","Ensures accurate and timely revenue recording"]},
+{m:1,q:"Accurate inventory accounting supports which of the following?",o:["Only cost control","Cost control, order fulfillment, and financial reporting","Only order fulfillment","Only financial reporting"],a:1,e:"Accurate inventory accounting supports cost control, order fulfillment, and financial reporting.",fr:"What three things does accurate inventory accounting support?",fp:["Cost control","Order fulfillment","Financial reporting","All three are interconnected"]},
+{m:1,q:"Sales receipt data connects what two things?",o:["HR and IT","Customer behavior to sales and marketing strategy","Legal and compliance","R&D and manufacturing"],a:1,e:"Sales receipt data connects customer behavior to sales and marketing strategy, showing what sells, at what price, and to which customers.",fr:"What does sales receipt data connect?",fp:["Customer behavior to strategy","Shows what is selling","Shows at what price","Shows to which customers"]},
+
+// MODULE 2: Marketing (10 questions)
+{m:2,q:"What is a brand?",o:["Just a logo","A name, term, symbol, design, or combination intended to identify and differentiate goods/services","A marketing campaign","A company's mission statement"],a:1,e:"A brand is a name, term, symbol, design, or combination intended to identify goods/services of one seller and differentiate them from competitors.",fr:"Define what a brand is.",fp:["Name, term, symbol, design, or combination","Identifies goods/services of a seller","Differentiates from competitors","Makes memorable"]},
+{m:2,q:"What does SEO stand for?",o:["Sales Engagement Optimization","Search Engine Optimization","Social Enterprise Outreach","Strategic Email Operations"],a:1,e:"SEO stands for Search Engine Optimization - optimizing your website to rank higher in search engine results.",fr:"What is SEO and why does it matter for a website?",fp:["Search Engine Optimization","Helps website rank higher in search results","Drives organic traffic","Part of website strategy"]},
+{m:2,q:"How many senses should marketing content aim to engage?",o:["Only sight","Only sight and sound","All 5 senses","Only 3 senses"],a:2,e:"Best practices for content creation suggest engaging all 5 senses to create memorable, immersive brand experiences.",fr:"How many senses should marketing aim to engage and why?",fp:["All 5 senses","Creates memorable experiences","Immersive brand connection","Goes beyond just visual content"]},
+{m:2,q:"What is the real difference between sales and marketing?",o:["They are the same","Marketing sets the stage; sales converts","Sales is more important than marketing","Marketing replaces sales"],a:1,e:"Marketing sets the stage for sales by creating awareness and educating customers. Sales personalizes and converts. One sets the stage for the other.",fr:"Explain the real difference between sales and marketing.",fp:["Marketing sets the stage","Sales converts","Marketing educates and creates awareness","Sales personalizes the interaction"]},
+{m:2,q:"What are the 7 C's of website design?",o:["Cost, Competition, Customers, Content, Color, Code, Conversion","Context, Content, Community, Customization, Communication, Connection, Commerce","Create, Curate, Convert, Close, Collect, Count, Celebrate","None of these"],a:1,e:"The 7 C's of Website Design are Context, Content, Community, Customization, Communication, Connection, and Commerce.",fr:"Name and explain the 7 C's of website design.",fp:["Context","Content","Community","Customization","Communication","Connection","Commerce"]},
+{m:2,q:"Why is social media huge for the relationship between sales and marketing?",o:["It's cheap","It creates content that both sells and draws in customers","It replaces both sales and marketing","It only works for B2C"],a:1,e:"Social media is huge because it creates content to sell and draw in customers, serving as a bridge between marketing's attraction and sales' conversion.",fr:"Why is social media important for the sales-marketing relationship?",fp:["Creates content that sells and attracts","Bridges marketing and sales","Enables two-way interaction","Builds trust and awareness simultaneously"]},
+{m:2,q:"What does a good content strategy for a brand focus on?",o:["Posting as much as possible","Building a strategy aligned with brand identity and audience needs","Copying competitors' content","Only paid advertising"],a:1,e:"A good content strategy aligns with brand identity and audience needs, creating valuable content that builds trust and engagement.",fr:"What makes a good content strategy for a brand?",fp:["Aligned with brand identity","Addresses audience needs","Creates value and builds trust","Consistent and strategic"]},
+{m:2,q:"What makes a brand name memorable?",o:["Being as long as possible","Being short, simple, and easy to pronounce","Using complex technical jargon","Including numbers and symbols"],a:1,e:"A memorable brand name is short, simple, easy to pronounce, and creates an emotional connection with the audience.",fr:"What qualities make a brand name memorable?",fp:["Short and simple","Easy to pronounce","Creates emotional connection","Differentiates from competitors"]},
+{m:2,q:"What is the purpose of a tagline?",o:["To list all product features","To create a short, memorable phrase that captures the brand's essence","To replace the company name","To serve as the company's legal name"],a:1,e:"A tagline is a short, memorable phrase that captures the brand's essence and makes it instantly recognizable.",fr:"What is the purpose of a tagline and what makes one effective?",fp:["Short, memorable phrase","Captures brand essence","Makes brand recognizable","Examples: Nike 'Just do it'"]},
+{m:2,q:"What is the purpose of a logo?",o:["To take up space on products","To visually identify and differentiate the brand","To replace the brand name entirely","To list company services"],a:1,e:"A logo is a visual design element that helps identify and differentiate a brand, making it recognizable at a glance.",fr:"What role does a logo play in branding?",fp:["Visual identification","Differentiation from competitors","Immediate brand recognition","Part of the overall brand identity"]},
+
+// MODULE 3: Experimentation (12 questions)
+{m:3,q:"What is the goal of experimentation in ET&A?",o:["To guarantee success","To reduce uncertainty and lead to real-world decisions","To delay launching","To impress investors"],a:1,e:"The goal is to reduce uncertainty. Good experiments lead to real-world decisions and change how you spend money and time.",fr:"What is the goal of experimentation?",fp:["Reduce uncertainty","Lead to real-world decisions","Change how you spend money and time","Not real unless it changes what you do"]},
+{m:3,q:"An experiment is 'not real' unless it does what?",o:["Gets published","Changes what you do with money and time","Gets approved by management","Goes viral"],a:1,e:"An experiment is not real unless it changes what you do with money and time. It must lead to actual decisions.",fr:"When is an experiment considered 'real'?",fp:["Changes what you do with money and time","Leads to actual decisions","Not just academic exercise","Must have real consequences"]},
+{m:3,q:"Where should you start testing your business model first?",o:["Where it's easiest","Where your business model is most fragile","Where you'll get the best results","Start everywhere at once"],a:1,e:"Start where your business model is most fragile and test it first. This reduces the biggest risks early.",fr:"Where should you start when designing experiments for your business?",fp:["Where the business model is most fragile","Test the biggest risks first","Reduces uncertainty where it matters most","Could be value prop, channel, or monetization"]},
+{m:3,q:"What tests whether the problem is real and painful?",o:["Monetization experiments","Channel experiments","Value proposition experiments using surveys, sign-ups, and problem interviews","Product launch"],a:2,e:"Value proposition experiments test whether the problem is real and painful through surveys, sign-ups, and problem interviews.",fr:"How do you test your value proposition?",fp:["Surveys","Sign-ups","Problem interviews","Tests whether the problem is real and painful"]},
+{m:3,q:"What does a channel experiment test?",o:["Whether the product works","Whether you can reach your target market cost-effectively","Whether customers will pay","Whether employees like the product"],a:1,e:"Channel experiments test whether you can reach your target market cost-effectively through pop-ups, online, family and friends, etc.",fr:"What does a channel experiment test and how?",fp:["Can you reach your target market cost-effectively?","Methods: pop-ups, online, family and friends","Tests distribution and access","Different from value prop or monetization"]},
+{m:3,q:"What does a monetization experiment test?",o:["Whether the product is innovative","Whether customers will pay and at what price","Whether the logo is good","Whether the team is skilled"],a:1,e:"Monetization experiments test whether customers will actually pay and at what price, using pre-orders, bundling, and pricing experiments.",fr:"What does a monetization experiment test?",fp:["Whether customers will pay","At what price they'll pay","Methods: pre-orders, bundling, pricing experiments","Tests willingness to spend real money"]},
+{m:3,q:"What is the correct format for a hypothesis?",o:["We think this will work","If we do X, then Y will happen because Z","Our product is good","Customers will love this"],a:1,e:"A proper hypothesis follows: If we do X, then Y will happen because Z. This format makes the assumption explicit and testable.",fr:"What is the correct format for a hypothesis and why?",fp:["If we do X, then Y will happen because Z","Makes the assumption explicit","Testable and measurable","Z is the underlying reasoning"]},
+{m:3,q:"What is a success metric?",o:["Total revenue","A specific number that tells you whether you learned something","The number of experiments run","Customer satisfaction score"],a:1,e:"A success metric is a specific number or threshold that tells you whether you learned something from the experiment.",fr:"What is a success metric in experimentation?",fp:["A specific number","Tells you whether you learned something","Must be defined before the experiment","Objective, not subjective"]},
+{m:3,q:"What is a decision rule in experimentation?",o:["A company policy","What you will do based on the results - continue, pivot, or kill","A legal requirement","The CEO's final say"],a:1,e:"A decision rule determines what you will do based on results: continue, pivot, or kill. Set it BEFORE running the experiment.",fr:"What is a decision rule and when should you set it?",fp:["What you do based on results","Options: continue, pivot, or kill","Set BEFORE running the experiment","Prevents emotional decision-making"]},
+{m:3,q:"What is the correct order of the scientific method for experiments?",o:["Test, Ask, Conclude","Ask a question, gather background, develop hypothesis, test, analyze results, form conclusion","Analyze, Test, Hypothesize","Conclude, Test, Ask"],a:1,e:"The process: Ask a question, gather background information, develop a hypothesis, test your hypothesis, analyze results, form a conclusion.",fr:"List the steps of the experimentation process in order.",fp:["Ask a question","Gather background information","Develop a hypothesis","Test your hypothesis","Analyze results","Form a conclusion"]},
+{m:3,q:"Why must the experimentation process be well planned?",o:["To impress stakeholders","To support or reject a hypothesis reliably","To make it look official","Planning doesn't matter"],a:1,e:"The process must be well planned to reliably support or reject a hypothesis. Poor planning leads to inconclusive results.",fr:"Why is planning important in experimentation?",fp:["To support or reject a hypothesis","Poor planning leads to inconclusive results","Must isolate variables","Must have clear metrics and decision rules"]},
+{m:3,q:"What happens if your experiment doesn't change how you spend money or time?",o:["It's still valuable","It wasn't a real experiment","It means you succeeded","Nothing - experiments don't need to change anything"],a:1,e:"If an experiment doesn't change what you do with money and time, it wasn't a real experiment. The whole point is to inform real decisions.",fr:"What makes an experiment 'real' vs. just an exercise?",fp:["Must change what you do with money and time","Must inform real decisions","Not just academic","Has to lead to action: continue, pivot, or kill"]},
+
+// MODULE 4: Financial Reporting (10 questions)
+{m:4,q:"Why do you reconcile the bank statement with accounting records?",o:["It's optional","To uncover errors and determine the correct cash balance","Only for large businesses","To make the bank happy"],a:1,e:"Reconciliation uncovers errors, corrects the cash balance, accounts for time differences, and catches items you weren't aware of.",fr:"Why and how do you reconcile bank statement cash with accounting records?",fp:["Uncover errors and correct cash balance","Account for time differences (outstanding checks, cut-off times)","Catch items you're unaware of (bank fees, charges)","Find errors/omissions by the bank"]},
+{m:4,q:"What causes differences between bank statement and accounting records?",o:["Nothing - they should always match","Time differences, unaware charges, errors by bank or company, and incorrect entries","Only bank errors","Only company errors"],a:1,e:"Differences arise from time differences (outstanding checks), unaware charges (bank fees), errors by either party, and incorrect entries.",fr:"List the common causes of differences between bank and accounting records.",fp:["Time differences: outstanding checks, cut-off times","Unaware items: credit card fees, bank service charges","Errors/omissions by the bank","Incorrect entries or deposits in wrong account"]},
+{m:4,q:"What is an outstanding check in bank reconciliation?",o:["A check that bounced","A check you wrote that hasn't cleared the bank yet","A check from a customer","A canceled check"],a:1,e:"Outstanding checks are checks you've written and recorded, but that haven't cleared (been cashed/processed by) the bank yet.",fr:"What is an outstanding check and how does it affect reconciliation?",fp:["A check written but not yet cleared at the bank","Causes a time difference","Your books show lower cash than bank does","Adjusts the bank side of reconciliation"]},
+{m:4,q:"Why reconcile inventory balance between Operations and Accounting?",o:["It's not necessary","To verify how many units are on hand and ensure counts match records","Only at year-end","Only if there's a theft"],a:1,e:"Reconciling inventory between Operations and Accounting verifies units on hand, units on order, units sold, and units remaining.",fr:"Why do you reconcile inventory between Operations and Accounting?",fp:["Verify units on hand and on order","Confirm how many sold and how many left","Counts should be blind - look at what you actually have","Don't only rely on online tool counters"]},
+{m:4,q:"Why should inventory counts be 'blind'?",o:["To save time","So the person counting looks at what they actually have, not what records say they should have","It doesn't matter how you count","To confuse employees"],a:1,e:"Blind counts mean the counter looks at what they actually have without referencing what the records say. This catches discrepancies honestly.",fr:"What does it mean for inventory counts to be 'blind'?",fp:["Count what you actually have","Don't reference what records say you should have","Catches real discrepancies","More accurate than checking against a list"]},
+{m:4,q:"What types of bank charges might you be unaware of?",o:["None - banks always notify you","Credit card fees, insufficient fund charges, and bank service charges","Only credit card fees","Only overdraft fees"],a:1,e:"You may be unaware of credit card fees, insufficient fund charges, and bank service charges that the bank has deducted from your account.",fr:"List charges the bank may deduct that you might not know about.",fp:["Credit card fees","Insufficient fund charges","Bank service charges","These reduce your actual cash balance"]},
+{m:4,q:"What is a bank error in reconciliation?",o:["An error you made","When the bank puts a deposit into the wrong account or makes an incorrect entry","A rounding difference","A currency conversion issue"],a:1,e:"A bank error occurs when the bank makes a mistake, such as putting a deposit into the wrong account.",fr:"Give an example of a bank error in reconciliation.",fp:["Deposit put into wrong account","Incorrect entry by the bank","Must be reported to the bank for correction","Not your error - the bank's error"]},
+{m:4,q:"What is the purpose of recording accounting entries after reconciliation?",o:["Just for compliance","To adjust your books so the correct cash balance is reflected","To change the bank's records","To hide errors"],a:1,e:"After reconciliation, you record adjusting entries to bring your accounting records to the correct cash balance.",fr:"Why do you record accounting entries after reconciliation?",fp:["Adjust your books to correct cash balance","Record items you weren't aware of","Correct any errors found","Ensures financial statements are accurate"]},
+{m:4,q:"How does inventory reconciliation support financial reporting?",o:["It doesn't","It ensures the inventory dollar amount per Operations matches per Accounting","It only helps operations","It only helps tax filing"],a:1,e:"Inventory reconciliation ensures the inventory dollar amount reported by Operations matches what Accounting has recorded, supporting accurate financial statements.",fr:"How does inventory reconciliation support accurate financial reporting?",fp:["Operations and Accounting amounts must match","Supports accurate financial statements","Catches errors, theft, or miscounts","Ensures cost of goods sold is correct"]},
+{m:4,q:"Why should you not only rely on online tool counters for inventory?",o:["They're always accurate","Physical counts catch errors that digital systems miss","Online tools are too expensive","Physical counts take too long"],a:1,e:"You should count physically, not only rely on online tool counters. Physical counts catch errors, theft, and discrepancies that digital systems may miss.",fr:"Why are physical inventory counts important even with digital tracking?",fp:["Digital systems can have errors","Physical counts catch theft","Discrepancies between systems and reality","Count, do not only rely on online tools"]},
+
+// MODULE 5: Operations (12 questions)
+{m:5,q:"What is operations management?",o:["Only manufacturing","The conversion process by which inputs are transformed into useful products and services","Only customer service","Only logistics"],a:1,e:"Operations management is the conversion process by which inputs are transformed into useful products and services: Inputs -> Processes -> Outputs.",fr:"Define operations management.",fp:["Conversion process: inputs to outputs","Inputs: money, equipment, people","Processes: tasks from start to end","Outputs: products and services"]},
+{m:5,q:"What are the three components of operations?",o:["Plan, Do, Check","Inputs, Processes, Outputs","People, Technology, Money","Design, Build, Test"],a:1,e:"Operations follows: Inputs (money, equipment, people) -> Processes (tasks from start to end) -> Outputs (products and services, human and environmental impact).",fr:"Describe the three components of operations.",fp:["Inputs: money, equipment, people","Processes: tasks from start to end, done consistently","Outputs: products, services, human and environmental impact","Inputs must be specific to get desired output"]},
+{m:5,q:"Why must inputs be specific?",o:["To reduce costs","To ensure the process is the desired one, otherwise the output will be incorrect","Specificity doesn't matter","Only for manufacturing"],a:1,e:"Inputs must be specific to ensure the process is the desired one. If inputs are wrong, the output will be incorrect. Communication is key.",fr:"Why is input specificity important in operations?",fp:["Ensures the correct process runs","Wrong inputs lead to incorrect outputs","Communication is essential","Garbage in, garbage out"]},
+{m:5,q:"What does operations management include?",o:["Only inventory","Process design, capacity/scheduling, quality control, supply chain, and cost/efficiency","Only hiring","Only customer complaints"],a:1,e:"Operations management includes process design and workflows, capacity and scheduling, quality control, supply chain management, and cost and efficiency.",fr:"List 5 areas that operations management covers.",fp:["Process design and workflows","Capacity and scheduling","Quality control","Supply chain (cash, materials, information)","Cost and efficiency"]},
+{m:5,q:"Why does operations management matter?",o:["Only for large companies","It delivers consistent value, reduces waste, mitigates risks, and enables scaling","It's optional for startups","Only for manufacturing"],a:1,e:"Operations matters because it delivers consistent customer value, reduces waste, mitigates risks and costs, and scales production and service delivery.",fr:"Give 4 reasons why operations management matters.",fp:["Delivers consistent customer value and experience","Reduces waste","Mitigates risks and costs","Scales production and service delivery"]},
+{m:5,q:"What is process innovation?",o:["Inventing a new product","Eliminating operational friction by reengineering and optimizing current processes","Changing the company name","Hiring new people"],a:1,e:"Process innovation is a continuous effort to enhance efficiency, effectiveness, and value by reengineering and optimizing current processes.",fr:"Define process innovation.",fp:["Continuous effort to enhance efficiency and effectiveness","Reengineering and optimizing current processes","Eliminating operational friction","Most innovation is in the process, not the product"]},
+{m:5,q:"What changes more frequently - processes or products?",o:["Products change constantly","Processes change constantly, products change rarely","Both change at the same rate","Neither changes"],a:1,e:"Processes change constantly while products change rarely. Most innovation happens in the process, not the product.",fr:"What changes more frequently in a business - processes or products?",fp:["Processes change constantly","Products change rarely","Most innovation is in the process","Process must reflect company values"]},
+{m:5,q:"What is operational effectiveness?",o:["Being the cheapest","Doing the right things (effectiveness) and doing things right (efficiency)","Moving fast at any cost","Having the most employees"],a:1,e:"Operational effectiveness combines doing the right things (effectiveness) and doing things right (efficiency). You can offer the same service with different operations.",fr:"Explain operational effectiveness and efficiency.",fp:["Effectiveness: doing the right things","Efficiency: doing things right","Same service can be delivered with different operations","Goal is both effectiveness AND efficiency"]},
+{m:5,q:"What is a process flowchart?",o:["A financial document","A visual representation of the steps, decisions, and flow of a process","A marketing tool","An employee handbook"],a:1,e:"A process flowchart is a visual representation of how a process works, showing steps, decisions, responsible parties, and the flow of work.",fr:"What is a process flowchart and why is it useful?",fp:["Visual representation of a process","Shows steps, decisions, and flow","Identifies bottlenecks","Helps standardize and improve operations"]},
+{m:5,q:"What must processes reflect?",o:["Competitor strategies","Company values","Only cost considerations","Industry averages"],a:1,e:"Processes must reflect company values. How you do things operationally should align with what your company stands for.",fr:"What should processes reflect and why?",fp:["Company values","Operations reflect what the company stands for","Alignment between values and execution","Customer experience is shaped by processes"]},
+{m:5,q:"What are the inputs in operations?",o:["Only raw materials","Money, equipment, and people","Only technology","Only labor"],a:1,e:"The key inputs in operations are money, equipment, and people. These are transformed through processes into outputs.",fr:"What are the key inputs in the operations model?",fp:["Money","Equipment","People","These are transformed through processes into outputs"]},
+{m:5,q:"You can offer the same service with different what?",o:["Prices only","Operations","Customers","Products"],a:1,e:"You can offer the same service with different operations. There are multiple ways to deliver the same outcome, some more effective and efficient than others.",fr:"Explain why the same service can be delivered through different operations.",fp:["Multiple operational approaches exist","Same outcome, different methods","Some approaches more effective/efficient","Operational choices are strategic decisions"]},
+
+// MODULE 6: Sales Metrics (10 questions)
+{m:6,q:"What is a KPI?",o:["Key Product Indicator","Key Performance Indicator - a way to monitor performance","Key Profit Index","Key Process Inventory"],a:1,e:"KPI stands for Key Performance Indicator - metrics used to monitor and evaluate sales performance.",fr:"What is a KPI and why does it matter?",fp:["Key Performance Indicator","Monitors performance","Tracks progress toward goals","Enables data-driven decisions"]},
+{m:6,q:"What is a CRM in the context of sales metrics?",o:["Customer Review Manager","A tool that enables sales teams to move prospects from intent to purchase","Customer Retention Model","Cost Revenue Metric"],a:1,e:"A CRM is a tool that enables sales teams to move prospects from intent to purchase by storing leads, contacts, accounts, deals, and tracking interactions.",fr:"What does a CRM do for sales teams?",fp:["Enables moving prospects from intent to purchase","Stores leads, contacts, accounts, and deals","Tracks interactions: calls, emails, meetings","Helps sales teams do the work"]},
+{m:6,q:"What is a sales dashboard?",o:["A car dashboard for sales reps","A visual reporting layer to monitor sales performance","A list of sales targets","A customer complaint tracker"],a:1,e:"A sales dashboard is a visual reporting layer to monitor sales performance, displaying KPIs like revenue, win rate, pipeline health, and activity.",fr:"What is a sales dashboard and what does it display?",fp:["Visual reporting layer","Monitors sales performance","Displays KPIs: revenue, win rate, pipeline health, activity","Shows trends and progress toward goals"]},
+{m:6,q:"What should a sales dashboard support?",o:["Only revenue tracking","Decision making - what's working, what's broken, what to do next","Only commission calculations","Only lead counting"],a:1,e:"A dashboard should support decision making: understanding what's working, what's broken, and what needs to happen next.",fr:"What decisions should a sales dashboard support?",fp:["What's working","What's broken","What to do next","Helps leaders understand performance"]},
+{m:6,q:"What KPIs might a sales dashboard display?",o:["Only total revenue","Revenue, win rate, pipeline health, and activity metrics","Only number of calls made","Only customer satisfaction"],a:1,e:"A sales dashboard displays KPIs including revenue, win rate, pipeline health, and activity metrics, showing trends and progress toward goals.",fr:"List KPIs that a sales dashboard typically displays.",fp:["Revenue","Win rate","Pipeline health","Activity metrics"]},
+{m:6,q:"What does a CRM track?",o:["Only phone numbers","Leads, contacts, accounts, deals, and interactions like calls, emails, and meetings","Only sales totals","Only marketing campaigns"],a:1,e:"A CRM tracks leads, contacts, accounts, and deals while also tracking interactions like calls, emails, and meetings.",fr:"What information does a CRM system track?",fp:["Leads and contacts","Accounts and deals","Interactions: calls, emails, meetings","Pipeline stages and follow-ups"]},
+{m:6,q:"Why are sales dashboards important for leaders?",o:["They look impressive","They help leaders understand performance and make decisions","They replace meetings","They automate sales"],a:1,e:"Dashboards help leaders understand performance and make informed decisions based on data rather than intuition.",fr:"Why do sales leaders need dashboards?",fp:["Understand team performance","Make data-driven decisions","See trends and progress","Identify what needs attention"]},
+{m:6,q:"What is pipeline health in a sales dashboard?",o:["Physical plumbing status","The status and flow of deals through various stages from prospect to close","Employee health benefits","Product quality metrics"],a:1,e:"Pipeline health shows the status and flow of deals through various stages, helping predict future revenue and identify bottlenecks.",fr:"What is pipeline health and why does it matter?",fp:["Status of deals through stages","Helps predict future revenue","Identifies bottlenecks","Shows if pipeline is healthy or needs attention"]},
+{m:6,q:"What is win rate as a sales metric?",o:["How fast you respond to leads","The percentage of deals closed compared to total opportunities","Your best month's revenue","The number of new leads generated"],a:1,e:"Win rate is the percentage of deals successfully closed out of total opportunities, showing how effective the sales process is.",fr:"Define win rate and explain why it matters.",fp:["Percentage of deals closed vs. total opportunities","Measures sales effectiveness","Helps identify process improvements","Key KPI on dashboards"]},
+{m:6,q:"What is the relationship between CRM data and sales dashboards?",o:["They are unrelated","CRM data feeds into dashboards to create visual reports and enable decisions","Dashboards replace CRMs","CRMs replace dashboards"],a:1,e:"CRM data feeds into sales dashboards, which visualize that data into trends, KPIs, and actionable insights for decision-making.",fr:"How do CRM systems and sales dashboards work together?",fp:["CRM collects and stores the data","Dashboard visualizes the data","Together they enable data-driven decisions","CRM is the input, dashboard is the output"]},
+
+// MODULE 7: Venture Growth (12 questions)
+{m:7,q:"What are the phases of the organizational life cycle?",o:["Start, Middle, End","Start-up, Growth, Maturity, then Decline/Death or Renewal","Idea, Build, Launch","Seed, Series A, IPO"],a:1,e:"The organizational life cycle: Start-up -> Growth -> Maturity -> then either Decline/Death OR Renewal.",fr:"List the phases of the organizational life cycle.",fp:["Start-up","Growth","Maturity","Then either Decline/Death OR Renewal"]},
+{m:7,q:"What is the Bowling Alley framework?",o:["A recreational strategy","A go-to-market framework for targeting niche segments sequentially before going mainstream","A pricing model","A team-building exercise"],a:1,e:"The Bowling Alley framework is about targeting niche market segments sequentially (like bowling pins) before attempting to go mainstream.",fr:"Explain the Bowling Alley framework.",fp:["Target niche segments sequentially","Like knocking down bowling pins one by one","Build dominance in one niche before moving to next","Bridge from early adopters to mainstream"]},
+{m:7,q:"What are the challenges of aggressive growth?",o:["There are no challenges","Operational strain, cash flow issues, quality decline, and loss of culture","Growth is always positive","Only financial challenges"],a:2,e:"Aggressive growth brings challenges including operational strain, cash flow issues, quality decline, loss of company culture, and difficulty maintaining customer relationships.",fr:"Name the challenges and hazards of aggressive growth.",fp:["Operational strain","Cash flow issues","Quality decline","Loss of culture and customer relationships"]},
+{m:7,q:"What are the typical sources of funding over an organization's life cycle?",o:["Only bank loans","Angel investing, venture capital, and private equity at different stages","Only personal savings","Government grants only"],a:1,e:"Funding sources evolve over the life cycle: angel investing in early stages, venture capital during growth, and private equity at maturity.",fr:"Describe typical funding sources across the organizational life cycle.",fp:["Angel investing: early stage","Venture capital: growth stage","Private equity: maturity stage","Different stages need different funding types"]},
+{m:7,q:"What is angel investing?",o:["Investing in religious organizations","Early-stage funding from wealthy individuals who invest their own money","A type of bank loan","Government funding"],a:1,e:"Angel investing involves wealthy individuals investing their own money in early-stage companies, often in exchange for equity.",fr:"What is angel investing and when does it typically occur?",fp:["Wealthy individuals invest their own money","Early-stage funding","Often in exchange for equity","Higher risk, earlier involvement"]},
+{m:7,q:"What is venture capital?",o:["Money from a bank","Institutional funding for high-growth potential companies during growth phase","Personal savings","Government bonds"],a:1,e:"Venture capital is institutional funding from firms that invest in high-growth potential companies, typically during the growth phase of the life cycle.",fr:"Define venture capital and when it's used.",fp:["Institutional funding from VC firms","Targets high-growth potential companies","Typically during growth phase","In exchange for equity and board involvement"]},
+{m:7,q:"What is private equity?",o:["Public stock market investing","Investment in mature companies, often to restructure or take private","Angel investing","Crowdfunding"],a:1,e:"Private equity involves investment in mature companies, often to restructure, optimize, or take them private.",fr:"What is private equity and at what stage does it occur?",fp:["Investment in mature companies","Often to restructure or optimize","Takes companies private","Later stage of organizational life cycle"]},
+{m:7,q:"What does 'Crossing the Chasm' mean?",o:["A physical obstacle","The challenge of moving from early adopters to mainstream customers","Changing industries","Starting a new company"],a:1,e:"Crossing the Chasm refers to the difficult transition from early adopters (who love novelty) to the early majority (who want proven solutions).",fr:"Explain the concept of Crossing the Chasm.",fp:["Gap between early adopters and mainstream","Early adopters love novelty","Early majority wants proven solutions","Many companies fail at this transition"]},
+{m:7,q:"What are the 5 hazards of growing too quickly?",o:["Competition, regulation, technology, talent, funding","Misunderstanding financials, sales trumps everything, wrong hires, losing customer touch, receivables outrun sales","Market saturation, price wars, quality, legal, brand","Supply chain, HR, marketing, finance, operations"],a:1,e:"The 5 hazards: misunderstanding financials, thinking sales trumps everything, hiring wrong people, losing touch with customers, and receivables outrunning sales.",fr:"Name and explain the 5 hazards of growing too quickly.",fp:["Misunderstanding financials","Thinking sales trumps everything","Hiring wrong people","Losing touch with customers","Receivables outrunning sales"]},
+{m:7,q:"What happened with Krispy Kreme as a growth cautionary tale?",o:["They never had issues","They expanded too aggressively, diluting brand value and creating oversaturation","They were too conservative","They only sold online"],a:1,e:"Krispy Kreme is a cautionary tale of aggressive growth - expanding too fast, diluting brand exclusivity, and creating market oversaturation.",fr:"What does the Krispy Kreme case teach about venture growth?",fp:["Expanded too aggressively","Diluted brand value","Created market oversaturation","Growth without discipline destroys value"]},
+{m:7,q:"What is the key lesson from Elizabeth Holmes/Theranos for venture growth?",o:["Move fast and break things","Fraudulent growth and lack of controls leads to catastrophic failure","Technology always works","Investors don't verify claims"],a:1,e:"The Theranos story shows that fraudulent growth claims and lack of operational controls leads to catastrophic failure, legal consequences, and destroyed trust.",fr:"What does the Theranos story teach about venture growth?",fp:["Fraudulent growth claims are destructive","Lack of controls leads to catastrophic failure","Legal consequences are severe","Integrity and honesty are non-negotiable"]},
+{m:7,q:"Why doesn't more sales always equal more profit during growth?",o:["It always does","At different scales, expenses increase differently, and you might not make money while growing","Sales and profit are the same thing","Profit always follows sales"],a:1,e:"More sales doesn't always mean more profit because at different scales, expenses increase differently. You might not make money while growing.",fr:"Explain why more sales doesn't necessarily mean more profit.",fp:["Expenses increase differently at scale","Might not make money while growing","Revenue growth is not the same as profit growth","Must analyze multiple metrics, not just top line"]},
+
+// MODULE 8: Integrated Sustainability (5 questions)
+{m:8,q:"What is the triple bottom line?",o:["Three financial statements","Measuring success by people, planet, and profit","Three business models","Three types of customers"],a:1,e:"The triple bottom line measures organizational success across three dimensions: People (social), Planet (environmental), and Profit (economic).",fr:"Define the triple bottom line.",fp:["People: social impact","Planet: environmental impact","Profit: economic performance","All three matter, not just profit"]},
+{m:8,q:"What does 'replacement rate' mean in sustainability?",o:["Employee turnover rate","The rate at which resources are consumed vs. replenished","Customer churn rate","Product return rate"],a:1,e:"Replacement rate refers to whether resources are being consumed faster than they can be replenished - a core sustainability concern.",fr:"What is replacement rate in the context of sustainability?",fp:["Rate of consumption vs. replenishment","Are we using resources faster than they regenerate?","Core sustainability metric","Unsustainable if consumption exceeds replacement"]},
+{m:8,q:"What does 'Doing Good While Doing Well' mean?",o:["Charity replaces business","Businesses can be profitable AND have a positive social/environmental impact","Profit doesn't matter","Only nonprofits can do good"],a:1,e:"Doing Good While Doing Well means businesses can be profitable while simultaneously creating positive social and environmental impact.",fr:"Explain 'Doing Good While Doing Well.'",fp:["Profitability AND positive impact are compatible","Not charity - it's a business model","Social and environmental responsibility","Sustainable business practice"]},
+{m:8,q:"What does the Shein article illustrate about sustainability?",o:["Fast fashion is sustainable","The huge cost of unsustainable business practices on people and planet","Shein is environmentally friendly","Fast fashion has no impact"],a:1,e:"The Shein article illustrates the enormous cost of unsustainable fast fashion practices on both people (labor conditions) and planet (waste, pollution).",fr:"What does the Shein article teach about integrated sustainability?",fp:["Huge human and environmental cost","Fast fashion creates waste and pollution","Labor conditions are a concern","Popularity doesn't mean sustainability"]},
+{m:8,q:"What does the Good Business Index measure?",o:["Only profit","How well businesses integrate social and environmental responsibility into operations","Only customer satisfaction","Only stock price"],a:1,e:"The Good Business Index measures how well businesses integrate social and environmental responsibility alongside financial performance.",fr:"What does the Good Business Index measure?",fp:["Integration of social responsibility","Environmental responsibility","Financial performance","Holistic business assessment"]}
+];
+
+// FISHBOWL SCENARIOS
+const FISHBOWL=[
+{scenario:"You're a founder with a working prototype but no customers yet. A potential client says: 'Sounds interesting, but I've never heard of you. Why would I trust a brand-new company?'",concept:"Apply: Sales Script Steps 4 & 5 (Address Objections + Seek Conditional Commitment) + Trust-Building in Personal Selling",prompt:"Identify the objection type, handle it using the sales guide framework, and seek a conditional commitment.",good:"This is a trust/credibility objection - they're skeptical of a new company. Using Step 4, I'd address it with credibility and risk reduction: 'That's completely fair. Here's what I can offer: a free 2-week pilot so you can see results with zero risk. Our advisor is [name], who built [relevant company]. If the pilot delivers X result by Y date, would you be open to a 3-month contract at Z price?' That last part is Step 5 - conditional commitment. I'm not pushing for an immediate close. I'm reducing pressure, testing real demand, and moving toward commitment naturally. The strategic mimicry here is matching her cautious tone rather than being overly enthusiastic.",bad:"I would build trust and address her objection by explaining our product is really good.",tips:["Name the objection type: trust/credibility/skepticism","Use Step 4 tools: proof (demo/trial), credibility (advisors/experience), risk reduction (trial period)","Apply Step 5: 'If we deliver X by Y at Z price, would you purchase?'","Show trust-building tactics: strategic mimicry, tone matching, listening"]},
+{scenario:"Your venture's inventory records show 200 units, but Operations physically counted only 185 units. Meanwhile, your bank statement shows $3,200 but your accounting books show $2,900.",concept:"Apply: Bank & Inventory Reconciliation + Proper Procedures for Receiving/Recording Inventory",prompt:"Walk through how you would reconcile both discrepancies. What could have caused each one?",good:"For the 15-unit inventory gap: I'd first check if any sales weren't recorded - maybe someone sold units but didn't update the system. That's why you don't only rely on online tool counters - you physically count. I'd check receiving procedures: were all shipments verified against purchase orders? Could units have been damaged or returned without being logged? The count should be blind - the counter shouldn't see what records say. For the $300 cash gap: I'd reconcile bank to books. The bank might have deducted credit card fees, bank service charges, or insufficient fund charges we weren't notified about. There could be outstanding checks we wrote that cleared, or deposits we recorded that haven't hit the bank yet. I'd record adjusting entries for any bank charges we missed.",bad:"We need to reconcile our records and fix the discrepancies.",tips:["Explain inventory reconciliation: blind counts, verify against POs, check for unrecorded sales","Explain bank reconciliation: outstanding checks, deposits in transit, unaware charges","Name specific causes: bank fees, credit card charges, errors, timing differences","Describe the corrective actions: adjusting entries, updating records, improving procedures"]},
+{scenario:"Your team just launched a campus food product. Week 1 sales were promising but Week 2 dropped 40%. Your co-founder says 'Let's just spend $500 on Instagram ads to fix it.'",concept:"Apply: Experimentation (Hypothesis + Decision Rule) + Sales Planning (Feedback in Step 3) + CRM/Dashboard Metrics",prompt:"Design a proper experiment instead of blindly spending money. Use the frameworks from class.",good:"Before spending $500, we need a hypothesis: 'If we do X, then Y will happen because Z.' Maybe: 'If we offer a buy-one-get-one deal at the student center from 11am-1pm, then sales will increase by 30% this week, because students are price-sensitive and we're testing a high-traffic time slot.' My success metric is units sold per day. Decision rule: if we sell 15+ units/day for 3 days, we continue; if 8-14, we pivot the offer; if under 8, we kill that channel. Per Step 3 of the sales guide, I'd also use feedback from actual conversations - ask 10 people who bought Week 1 why they didn't come back. That feedback feeds into product design and positioning. I'd track everything in our CRM and build a dashboard showing daily sales, conversion rate, and which pitch works best. The experiment must change what we do with money and time - otherwise it's not real.",bad:"We should test different approaches and see what works best.",tips:["Write a full hypothesis: If X, then Y, because Z","Set a success metric with specific numbers","Define a decision rule: continue/pivot/kill at what threshold","Reference Step 3: use feedback to refine value","Mention CRM/dashboard tracking"]},
+{scenario:"Your startup is growing fast. You went from $2,000/month to $8,000/month in revenue over 3 months. Your co-founder wants to hire 3 people, lease an office, and expand to two new cities.",concept:"Apply: 5 Hazards of Growing Too Quickly + Organizational Life Cycle + Funding Sources",prompt:"Using the venture growth frameworks, evaluate this expansion plan. Which specific hazards apply?",good:"At least 3 of the 5 hazards apply here. Hazard 1 - Misunderstanding financials: $8K revenue doesn't mean $8K profit. What are our margins? Can we actually afford 3 salaries plus office rent? Hazard 3 - Wrong hires: hiring 3 people fast under pressure often means hiring wrong. Hazard 4 - Losing customer touch: expanding to new cities means we lose the direct relationships that got us to $8K. We're still in the start-up phase of the organizational life cycle - we haven't even proven our model is repeatable. Before expanding, we should stabilize operations in our current market. For funding, if we do need capital, we should look at angel investing since we're early-stage, not take on debt. A better plan: hire 1 person, keep working remotely, and prove the model works in one new city before two.",bad:"We should be careful about growing too fast and think about the risks.",tips:["Name at least 3 of the 5 hazards BY NAME with specific application","Reference the organizational life cycle stage (start-up vs. growth)","Mention appropriate funding sources for the stage","Propose a measured alternative to the aggressive plan"]},
+{scenario:"Your campus venture sells custom phone cases. You've been making them yourself, storing them in your dorm, and keeping track of orders on a notepad. Last week you lost 2 orders and a customer got the wrong case.",concept:"Apply: Operations Management (Inputs, Processes, Outputs) + Process Innovation + Operational Effectiveness vs. Efficiency",prompt:"Using operations frameworks, diagnose what's broken and design a better system.",good:"The problem is our operations are neither effective (doing the right things) nor efficient (doing things right). Let me map this: INPUTS are materials, orders, and my time. PROCESSES are where it breaks down - there's no standardized process for order intake, production, or fulfillment. OUTPUTS should be correct cases delivered on time, but we're getting wrong cases and lost orders. Fix: I need process innovation - not a new product, but a new process. Step 1: Replace the notepad with a free CRM or spreadsheet that tracks order details, status, and customer info. Step 2: Create a process flowchart: order received -> confirmed with customer -> materials checked -> produced -> quality checked -> delivered -> payment recorded. Step 3: Separate custody (who holds inventory) from record keeping (who logs orders). Most innovation is in the process, not the product - our cases are fine, our operations are broken.",bad:"We need better organization and should use a spreadsheet.",tips:["Define inputs, processes, and outputs for this specific business","Identify whether the problem is effectiveness, efficiency, or both","Propose process innovation - the process needs fixing, not the product","Include a process flowchart with specific steps","Reference that processes change constantly, products change rarely"]},
+{scenario:"You're building a tutoring startup. You believe college students will pay $25/hour for peer tutoring in STEM subjects. You have $200 to spend on validation.",concept:"Apply: Experimentation Steps (Hypothesis, Success Metric, Decision Rule) + Value Proposition, Channel, and Monetization Testing",prompt:"Design three experiments - one for each of value proposition, channel, and monetization. Use proper hypothesis format.",good:"Experiment 1 - Value Proposition: Hypothesis: If I interview 20 STEM students about their study habits, then at least 12 will describe a pain point that peer tutoring could solve, because office hours are limited and professional tutors are expensive. Metric: 12/20 confirm the pain. Decision: If yes, continue. If 8-11, pivot the framing. Under 8, kill it. Cost: $0, 2 days. Experiment 2 - Channel: Hypothesis: If I post in 5 campus group chats and put flyers in 3 STEM buildings, then I'll get at least 15 sign-ups for a free trial session, because students are already in those spaces looking for help. Metric: 15 sign-ups. Decision: Under 5, kill the channel. Cost: $30 for flyers. Experiment 3 - Monetization: Hypothesis: If I offer the first session free and then ask for a $25 commitment for the next 3 sessions, then at least 5 students will prepay, because they've experienced the value. Metric: 5 prepaid commitments. Decision: Under 3, test $15 pricing. Cost: my time for free sessions. Total: under $200, and each experiment changes what I do with my money and time.",bad:"I would test if students want tutoring by asking around and seeing if people would pay.",tips:["Write three separate hypotheses in If X, then Y, because Z format","One each for value proposition, channel, and monetization","Include specific success metrics with numbers","Define decision rules: continue/pivot/kill","Show that each experiment changes what you do with money and time"]},
+{scenario:"Your e-commerce startup's Instagram has 500 followers but your website gets only 10 visits per week. Your brand name is 'TechFlow Solutions' and your tagline is 'We provide technology-based solutions for modern businesses.'",concept:"Apply: Branding (Name, Logo, Tagline) + Website Strategy & SEO + Social Media Content Creation + 5 Senses",prompt:"Evaluate the current branding and propose specific improvements using marketing frameworks.",good:"First, the tagline 'We provide technology-based solutions for modern businesses' is terrible - it's generic, forgettable, and could describe any company. A good tagline is short, simple, clear, memorable, and universally understood. Better: 'Tech that just works.' or 'Flow into the future.' For SEO, 10 visits/week means the website isn't optimized - we need keyword research, meta descriptions, quality content, and mobile optimization per Google's SEO best practices. The 7 C's of website design: is our Context clear? Is Content valuable? Is there Community (reviews, forums)? Customization? Communication (chat, contact)? Connection (links to social)? Commerce (easy checkout)? For social media, we need to engage all 5 senses in our content - video demos (sight, sound), describe the tactile experience, use food/coffee imagery in workspace photos (taste, smell). The brand name 'TechFlow Solutions' is OK but 'Solutions' is generic dead weight. Social media should bridge marketing (attraction) and sales (conversion) - post content that educates, engages, and builds trust, not just ads.",bad:"We should improve our branding and website to get more traffic.",tips:["Evaluate the tagline against the criteria: short, simple, clear, memorable, universally understood","Apply the 7 C's of website design","Reference SEO best practices","Mention the 5 senses in content creation","Connect social media to the sales-marketing relationship"]},
+{scenario:"Your team sells handmade candles. Marketing ran an Instagram campaign last month that got 2,000 impressions. Sales says they had 15 new customers. But nobody knows if the campaign actually drove those sales.",concept:"Apply: CRM + Sales Dashboard + Sales Receipt Data Analysis + Integration of Business Functions",prompt:"Design a system that connects marketing efforts to sales results using the tools from class.",good:"The core problem is lack of integration between sales and marketing - they're operating in silos. Here's my fix: First, set up a CRM that tracks every customer interaction from first touch to purchase. When someone DMs us from Instagram, log it as a lead with source = 'IG Campaign March.' Track the pipeline: lead -> conversation -> quote -> purchase. Second, build a sales dashboard showing KPIs: revenue by source, conversion rate by channel, cost per acquisition. This tells us what's working and what's broken. Third, use sales receipt data: analyze what those 15 customers bought, at what price, and whether they came from Instagram or elsewhere. Marketing uses this to evaluate campaign effectiveness. Sales uses it to forecast and identify cross-sell opportunities. Use unique discount codes per campaign (e.g., IGMARCH10) so every sale can be traced back. A CRM organizes the data, the dashboard visualizes it, and sales receipt analysis connects customer behavior to strategy.",bad:"We should track our marketing and sales better.",tips:["Design a CRM workflow: lead source tracking through to purchase","Build a dashboard with specific KPIs","Show how sales receipt data connects marketing to sales","Reference integration of business functions - reduce silos","Propose a concrete tracking mechanism (discount codes, UTM links, etc.)"]},
+{scenario:"A fast-fashion competitor is selling similar products at half your price. Your team wants to match their pricing to stay competitive.",concept:"Apply: Integrated Sustainability (Triple Bottom Line, Replacement Rate, Doing Good While Doing Well) + Branding Differentiation",prompt:"Using sustainability frameworks and branding, argue why matching the competitor's price might be the wrong move.",good:"The Shein article showed us exactly what happens when companies race to the bottom on price - massive environmental damage and labor exploitation. Our competitor's low price likely means they're failing on 2 of the 3 parts of the triple bottom line: People (labor conditions) and Planet (waste, pollution), while only optimizing for Profit. Their replacement rate is likely unsustainable - consuming resources faster than they can be replenished. We should do the opposite: 'Doing Good While Doing Well.' Our brand differentiation IS our sustainability. Instead of matching their price, I'd lean into our story: ethically sourced, sustainable materials, fair labor. Our tagline could highlight this. The Good Business Index shows consumers increasingly value responsible businesses. Our branding should make our values visible - that's how we differentiate. Competing on price against a fast-fashion model is a race to the bottom we can't win. Competing on values is a race we're already winning.",bad:"We should think about sustainability and not just focus on price.",tips:["Reference the triple bottom line: People, Planet, Profit","Discuss replacement rate and resource consumption","Apply 'Doing Good While Doing Well'","Cite the Shein article as a cautionary example","Connect sustainability to branding differentiation"]},
+{scenario:"You're three months into your venture. Sales are steady but you notice your back-office is a mess: invoices go out late, inventory counts are off, and your bank account doesn't match your books.",concept:"Apply: Running the Venture (Back-Office Operations + Integration + Sales Order & Inventory Procedures + Bank Reconciliation)",prompt:"Diagnose the problems and design proper procedures using frameworks from class.",good:"Three separate but connected problems, all pointing to weak back-office operations. Problem 1 - Late invoices: We need a standard sales order process. Key steps: order authorization and verification, pricing approval, invoicing within 24 hours, and A/R recording. Controls prevent revenue leakage. Problem 2 - Inventory discrepancy: We need proper receiving procedures - verify quantity and condition against POs when goods arrive. Update records immediately when goods are received OR shipped. Do blind physical counts weekly - don't rely only on the system. Reconcile Operations' inventory count with Accounting's records monthly. Problem 3 - Bank doesn't match books: Run a bank reconciliation. Check for outstanding checks, deposits in transit, bank fees we weren't notified about, and any recording errors. Record adjusting entries to correct the books. The root cause is lack of integration - sales, operations, finance, and accounting aren't sharing information. A venture runs best when all functions operate as one coordinated system. I'd set up a weekly 15-minute sync where each function shares updates, and implement a shared system (even a spreadsheet) that everyone updates in real time.",bad:"We need to organize our back-office and keep better records.",tips:["Address each problem separately with specific procedures","Reference sales order steps: authorization, pricing, invoicing, A/R","Reference inventory procedures: receiving verification, blind counts, reconciliation","Walk through bank reconciliation: outstanding checks, deposits in transit, fees","Connect everything to integration of business functions"]}
+];
+
+// STATE
+let state=loadState();
+let fishHistory=loadFishHistory();
+let currentMode='adaptive',answerFormat='mc',focusModules=[];
+let quizQuestions=[],quizIndex=0,quizCorrect=0,quizPartial=0,quizResults=[];
+let fishIndex=0,fishCount=0;
+
+function defaultState(){return{moduleStats:MODULES.map(()=>({correct:0,total:0,streak:0,partial:0})),totalCorrect:0,totalAnswered:0,totalPartial:0}}
+function loadState(){try{const s=localStorage.getItem('isabella_v1');return s?JSON.parse(s):defaultState()}catch(e){return defaultState()}}
+function saveState(){localStorage.setItem('isabella_v1',JSON.stringify(state))}
+function loadFishHistory(){try{const s=localStorage.getItem('isabella_fish');return s?JSON.parse(s):[]}catch(e){return[]}}
+function saveFishHistory(){localStorage.setItem('isabella_fish',JSON.stringify(fishHistory))}
+function resetProgress(){if(confirm('Reset all progress?')){state=defaultState();saveState();renderDashboard()}}
+function getMastery(s){return s.total===0?0:Math.round(((s.correct+s.partial*0.5)/s.total)*100)}
+function getWeakest(){let min=101,idx=0;state.moduleStats.forEach((s,i)=>{const m=s.total===0?0:getMastery(s);if(m<min||(m===min&&s.total<state.moduleStats[idx].total)){min=m;idx=i}});return idx}
+
+// TABS
+function switchTab(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='history-tab')renderHistory();
+  if(id==='quiz-tab')renderDashboard();
+}
+
+// QUIZ DASHBOARD
+function setFormat(f,btn){answerFormat=f;document.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function selectMode(el){document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');currentMode=el.dataset.mode;document.getElementById('focusSelector').style.display=currentMode==='focus'?'block':'none'}
+function toggleFocus(i){const idx=focusModules.indexOf(i);if(idx>=0)focusModules.splice(idx,1);else focusModules.push(i);renderFocusChips()}
+
+function renderDashboard(){
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('resultsScreen').style.display='none';
+  document.getElementById('totalAnswered').textContent=state.totalAnswered;
+  const acc=state.totalAnswered?Math.round(((state.totalCorrect+state.totalPartial*0.5)/state.totalAnswered)*100):0;
+  document.getElementById('overallAcc').textContent=acc+'%';
+  const w=getWeakest();
+  document.getElementById('weakestMod').textContent=state.totalAnswered?MODULES[w].split('&')[0].trim():'--';
+  const grid=document.getElementById('moduleGrid');grid.innerHTML='';
+  MODULES.forEach((name,i)=>{const s=state.moduleStats[i];const m=getMastery(s);const cls=m<50?'low':m<75?'mid':'high';const qc=QUESTIONS.filter(q=>q.m===i).length;
+    grid.innerHTML+=`<div class="module-bar"><span class="label">${name}</span><span class="stats">${s.total}/${qc}<div class="mastery-bar"><div class="mastery-fill ${cls}" style="width:${m}%"></div></div>${m}%${s.streak>=3?`<span class="streak-badge">${s.streak}</span>`:''}</span></div>`;
+  });
+  renderFocusChips();
+}
+function renderFocusChips(){const box=document.getElementById('focusChips');box.innerHTML='';MODULES.forEach((n,i)=>{const m=getMastery(state.moduleStats[i]);box.innerHTML+=`<div class="chip ${focusModules.includes(i)?'active':''}" onclick="toggleFocus(${i})">${n}<span class="perf">${m}%</span></div>`})}
+
+function selectQuestions(){
+  const count=parseInt(document.getElementById('qCountSel').value);let pool=[...QUESTIONS];
+  if(currentMode==='adaptive'){const w=state.moduleStats.map(s=>{const m=getMastery(s);if(s.total===0)return 5;if(m<40)return 5;if(m<60)return 4;if(m<75)return 3;if(m<90)return 2;return 1});let wt=[];pool.forEach(q=>{for(let i=0;i<w[q.m];i++)wt.push(q)});pool=wt}
+  else if(currentMode==='focus'){if(focusModules.length>0)pool=pool.filter(q=>focusModules.includes(q.m))}
+  else if(currentMode==='weakest'){const s2=[...state.moduleStats.map((s,i)=>({i,m:getMastery(s),t:s.total}))].sort((a,b)=>a.m-b.m||a.t-b.t);pool=pool.filter(q=>s2.slice(0,3).map(x=>x.i).includes(q.m))}
+  const sh=pool.sort(()=>Math.random()-0.5);const seen=new Set,sel=[];
+  for(const q of sh){if(!seen.has(q.q)){seen.add(q.q);sel.push(q);if(sel.length>=count)break}}return sel;
+}
+
+function startQuiz(){quizQuestions=selectQuestions();if(!quizQuestions.length){alert('No questions available.');return}quizIndex=0;quizCorrect=0;quizPartial=0;quizResults=[];document.getElementById('dashboard').style.display='none';document.getElementById('quizScreen').style.display='block';renderQuestion()}
+
+function renderQuestion(){
+  const q=quizQuestions[quizIndex];
+  document.getElementById('qModule').textContent=MODULES[q.m];
+  document.getElementById('qCount2').textContent=`${quizIndex+1}/${quizQuestions.length}`;
+  document.getElementById('progressFill').style.width=((quizIndex)/quizQuestions.length*100)+'%';
+  document.getElementById('explanation').classList.remove('visible');document.getElementById('qActions').style.display='none';
+  if(answerFormat==='mc'){
+    document.getElementById('qText').textContent=q.q;document.getElementById('optionsBox').style.display='grid';document.getElementById('frArea').style.display='none';document.getElementById('frAnswerBox').classList.remove('visible');
+    const box=document.getElementById('optionsBox');box.innerHTML='';q.o.forEach((o,i)=>box.innerHTML+=`<button class="option" onclick="answer(${i})">${o}</button>`);
+  }else{
+    document.getElementById('qText').textContent=q.fr||q.q;document.getElementById('optionsBox').style.display='none';document.getElementById('frArea').style.display='block';document.getElementById('frAnswerBox').classList.remove('visible');
+    document.getElementById('frInput').value='';document.getElementById('frInput').disabled=false;document.getElementById('frArea').querySelector('button').disabled=false;
+  }
+}
+
+function answer(idx){
+  const q=quizQuestions[quizIndex];const ok=idx===q.a;const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===idx&&!ok)b.classList.add('wrong')});
+  const ms=state.moduleStats[q.m];ms.total++;state.totalAnswered++;
+  if(ok){ms.correct++;ms.streak++;state.totalCorrect++;quizCorrect++}else{ms.streak=0}
+  quizResults.push({m:q.m,score:ok?1:0});saveState();
+  const exp=document.getElementById('explanation');exp.textContent=(ok?'Correct! ':'Incorrect. ')+q.e;exp.classList.add('visible');document.getElementById('qActions').style.display='flex';
+}
+
+function revealFR(){
+  const q=quizQuestions[quizIndex];document.getElementById('frArea').querySelector('button').disabled=true;document.getElementById('frInput').disabled=true;
+  document.getElementById('frYourText').textContent=document.getElementById('frInput').value.trim()||'(no answer)';
+  document.getElementById('frCorrectAnswer').innerHTML='<h4>Correct Answer:</h4>'+q.e;
+  if(q.fp){let h='<h4>Key Points:</h4><ul>';q.fp.forEach(p=>h+=`<li>${p}</li>`);document.getElementById('frKeyPoints').innerHTML=h+'</ul>'}
+  document.getElementById('frAnswerBox').classList.add('visible');
+  document.getElementById('frSelfGrade').innerHTML='<p>How did you do?</p><div class="fr-grade-btns"><button class="btn btn-correct btn-sm" onclick="gradeFR(\'got_it\')">Got it</button><button class="btn btn-partial btn-sm" onclick="gradeFR(\'partial\')">Partial</button><button class="btn btn-wrong btn-sm" onclick="gradeFR(\'missed\')">Missed</button></div>';
+}
+
+function gradeFR(g){
+  const q=quizQuestions[quizIndex];const ms=state.moduleStats[q.m];ms.total++;state.totalAnswered++;
+  if(g==='got_it'){ms.correct++;ms.streak++;state.totalCorrect++;quizCorrect++;quizResults.push({m:q.m,score:1})}
+  else if(g==='partial'){ms.partial++;ms.streak=0;state.totalPartial++;quizPartial++;quizResults.push({m:q.m,score:0.5})}
+  else{ms.streak=0;quizResults.push({m:q.m,score:0})}
+  saveState();document.getElementById('frSelfGrade').innerHTML=`<p style="color:var(--gd);font-weight:700">${g==='got_it'?'Marked correct':g==='partial'?'Marked partial':'Marked missed - will come up more'}</p>`;
+  document.getElementById('qActions').style.display='flex';
+}
+
+function nextQuestion(){quizIndex++;if(quizIndex>=quizQuestions.length){endQuiz();return}renderQuestion()}
+
+function endQuiz(){
+  document.getElementById('quizScreen').style.display='none';document.getElementById('resultsScreen').style.display='block';
+  const ts=quizResults.reduce((s,r)=>s+r.score,0);const pct=quizQuestions.length?Math.round((ts/quizQuestions.length)*100):0;
+  document.getElementById('resultIcon').textContent=pct>=80?'Strong work.':pct>=60?'Getting there.':'Keep grinding.';
+  document.getElementById('resultScore').textContent=`${Math.round(ts*10)/10}/${quizQuestions.length} (${pct}%)`;
+  document.getElementById('resultSub').textContent=answerFormat==='fr'?'Free response':'Multiple choice';
+  const mp={};quizResults.forEach(r=>{if(!mp[r.m])mp[r.m]={s:0,t:0};mp[r.m].t++;mp[r.m].s+=r.score});
+  let h='<h3 style="margin:16px 0 8px;color:var(--gd)">By Module</h3>';
+  Object.entries(mp).sort((a,b)=>(a[1].s/a[1].t)-(b[1].s/b[1].t)).forEach(([m,p])=>{const p2=Math.round((p.s/p.t)*100);h+=`<div class="${p2<70?'weak-item':'strong-item'}"><span class="dot"></span><strong>${MODULES[m]}</strong>: ${Math.round(p.s*10)/10}/${p.t} (${p2}%)</div>`});
+  h+='<h3 style="margin:20px 0 8px;color:var(--gd)">Overall Weak Spots</h3>';
+  const aw=[...state.moduleStats.map((s,i)=>({i,m:getMastery(s),t:s.total}))].filter(s=>s.m<70||s.t<3).sort((a,b)=>a.m-b.m);
+  if(!aw.length)h+='<div class="strong-item"><span class="dot"></span>No major weak spots</div>';
+  aw.forEach(s=>h+=`<div class="weak-item"><span class="dot"></span><strong>${MODULES[s.i]}</strong>: ${s.m}% (${s.t} done)</div>`);
+  document.getElementById('resultBreakdown').innerHTML=h;
+}
+function goHome(){renderDashboard()}
+
+// FISHBOWL
+let fishPool=[];
+function startFishbowl(){
+  fishPool=[...FISHBOWL].sort(()=>Math.random()-0.5);fishIndex=0;fishCount=0;
+  document.getElementById('fishHome').style.display='none';document.getElementById('fishActive').style.display='block';
+  renderFish();
+}
+
+function renderFish(){
+  const f=fishPool[fishIndex%fishPool.length];fishCount++;
+  document.getElementById('fishCounter').textContent=`Scenario ${fishCount}`;
+  document.getElementById('fishScenario').querySelector('p').textContent=f.scenario;
+  document.getElementById('fishConcept').textContent=f.concept;
+  document.getElementById('fishPrompt').textContent=f.prompt;
+  document.getElementById('fishInput').value='';document.getElementById('fishInput').disabled=false;
+  document.getElementById('fishReveal').classList.remove('visible');
+  document.getElementById('fishActions').style.display='none';
+  document.getElementById('fishActive').querySelector('.btn-fish').disabled=false;
+  document.getElementById('fishInput').focus();
+}
+
+function revealFishAnswer(){
+  const f=fishPool[fishIndex%fishPool.length];
+  document.getElementById('fishInput').disabled=true;
+  document.getElementById('fishActive').querySelector('.btn-fish').disabled=true;
+  document.getElementById('fishYourText').textContent=document.getElementById('fishInput').value.trim()||'(no answer)';
+  document.getElementById('fishGood').querySelector('p').textContent=f.good;
+  document.getElementById('fishBad').querySelector('p').textContent=f.bad;
+  let ul='';f.tips.forEach(t=>ul+=`<li>${t}</li>`);document.getElementById('fishTips').querySelector('ul').innerHTML=ul;
+  document.getElementById('fishReveal').classList.add('visible');
+  document.getElementById('fishGrade').innerHTML=`<p>Rate your response honestly:</p><div class="fish-grade-btns"><button class="btn btn-correct btn-sm" onclick="gradeFish('got_it')">Nailed it</button><button class="btn btn-partial btn-sm" onclick="gradeFish('partial')">Partial</button><button class="btn btn-wrong btn-sm" onclick="gradeFish('missed')">Missed</button></div>`;
+}
+
+function gradeFish(g){
+  const f=fishPool[fishIndex%fishPool.length];
+  const entry={date:new Date().toISOString(),scenario:f.scenario,concept:f.concept,prompt:f.prompt,response:document.getElementById('fishInput').value.trim(),grade:g,goodAnswer:f.good};
+  fishHistory.unshift(entry);saveFishHistory();
+  document.getElementById('fishGrade').innerHTML=`<p style="color:var(--fish-dark);font-weight:700">${g==='got_it'?'Nice - applied thinking, not just definitions':g==='partial'?'Getting there - try to be more specific next time':'Review the strong answer above and try again later'}</p>`;
+  document.getElementById('fishActions').style.display='flex';
+}
+
+function nextFish(){fishIndex++;renderFish()}
+function endFishbowl(){document.getElementById('fishActive').style.display='none';document.getElementById('fishHome').style.display='block'}
+
+// HISTORY
+function renderHistory(){
+  const list=document.getElementById('historyList');const empty=document.getElementById('historyEmpty');
+  if(!fishHistory.length){list.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none';
+  list.innerHTML=fishHistory.map((h,i)=>{
+    const d=new Date(h.date);const ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return`<div class="fish-history-item"><div style="display:flex;justify-content:space-between;align-items:center"><div class="fh-scenario">${h.scenario.substring(0,80)}${h.scenario.length>80?'...':''}</div><span style="font-size:0.75rem;color:var(--tl)">${ds}</span></div><div class="fh-concept">${h.concept}</div><div class="fh-response">${h.response||'(no answer)'}</div><span class="fh-grade ${h.grade}">${h.grade==='got_it'?'Nailed it':h.grade==='partial'?'Partial':'Missed'}</span></div>`;
+  }).join('');
+}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>
