@@ -338,26 +338,26 @@
       <div class="section-label">Discovery Phases</div>
 
       <div class="phase-tabs">
-        <button class="phase-tab active" onclick="showPhase(1)">Phase 1: Club Directors</button>
-        <button class="phase-tab locked" id="tab2" onclick="showPhase(2)">Phase 2: Parents</button>
-        <button class="phase-tab locked" id="tab3" onclick="showPhase(3)">Phase 3: Players</button>
+        <button class="phase-tab active" onclick="showPhase(1)">Phase 1: Coaches + Parents</button>
+        <button class="phase-tab locked" id="tab2" onclick="showPhase(2)">Phase 2: Players</button>
+        <button class="phase-tab locked" id="tab3" onclick="showPhase(3)">Phase 3: Semi-Pro</button>
       </div>
 
       <!-- PHASE 1 -->
       <div class="phase-content active" id="phase1">
         <div class="phase-status status-active"><div class="status-dot"></div> Active Now</div>
 
-        <h2 class="section-title">Phase 1: Coaches and Club Directors</h2>
-        <p class="section-sub">You know these people. You've competed against them, won championships alongside them, and built trust with them over 13 years. Nobody else can pick up the phone and get 20+ directors to answer. That's why we start here. Your relationships are the foundation of everything we build.</p>
+        <h2 class="section-title">Phase 1: Coaches and Parents</h2>
+        <p class="section-sub">These are the people you're around every single day. You're at practice with coaches, you're talking to parents on the sideline. You don't need to schedule special meetings for this. Just steer the conversations you're already having and listen.</p>
 
-        <div class="discovery-group">
+        <div class="discovery-group" style="margin-bottom: 20px;">
           <div class="discovery-group-header">
-            <div><span class="group-badge badge-blue">Phase 1</span></div>
+            <div><span class="group-badge badge-blue">Phase 1A</span></div>
             <div class="group-count">Talk to 5-10 directors</div>
           </div>
           <h3>Coaches and Club Directors</h3>
           <div class="group-target">Target: ECNL and MLS Next club directors first, then top travel/EDP directors. If you can reach any USL2 or USL Academy coaches, even better.</div>
-          <div class="group-why">You already have these conversations every day. You know what it's like to need a goalkeeper and have no way to find one beyond word of mouth. Now you're hearing it from other directors too. These are conversations you're built for. Just steer them a little and listen for the answers.</div>
+          <div class="group-why">You already have these conversations every day. You know what it's like to need a goalkeeper and have no way to find one beyond word of mouth. These are conversations you're built for. Just steer them a little and listen for the answers.</div>
           <ol class="question-list">
             <li>"When you need to fill a roster spot mid-season, how do you find players right now?"</li>
             <li>"How many players or parents reach out to your club per month wanting to join? How do they find you?"</li>
@@ -368,30 +368,18 @@
           </ol>
           <div class="tells-us">
             <div class="tells-us-label">What This Tells Us</div>
-            <p>Whether clubs have a real problem finding players or whether word of mouth is good enough. This determines if the supply side of the platform has demand. It also tells us exactly what a player profile needs to include, because directors will tell us what they look at. Once we have this data, we know how to frame Phase 2 questions to parents.</p>
+            <p>Whether clubs have a real problem finding players or whether word of mouth is good enough. This determines if the supply side of the platform has demand. It also tells us exactly what a player profile needs to include, because directors will tell us what they look at.</p>
           </div>
         </div>
 
-        <div style="background: var(--surface-2); border-radius: 10px; padding: 20px; margin-top: 24px;">
-          <p style="font-size: 0.85rem; color: var(--muted);">Target: 5-10 conversations completed, then send Brayan the notes. Once Phase 1 data is in, Phase 2 unlocks.</p>
-        </div>
-      </div>
-
-      <!-- PHASE 2 -->
-      <div class="phase-content" id="phase2">
-        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 1</div>
-
-        <h2 class="section-title">Phase 2: Parents</h2>
-        <p class="section-sub">Once we know what clubs want, we talk to the demand side. Parents are the ones who pay, who Google at midnight trying to find a club after a move, who feel stuck when their kid is unhappy. Phase 1 data shapes how we ask these questions.</p>
-
         <div class="discovery-group">
           <div class="discovery-group-header">
-            <div><span class="group-badge badge-green">Phase 2</span></div>
+            <div><span class="group-badge badge-green">Phase 1B</span></div>
             <div class="group-count">Talk to 5-10 parents</div>
           </div>
           <h3>Parents</h3>
           <div class="group-target">Target: Parents of U14-U18 players at ECNL, MLS Next, or top travel level.</div>
-          <div class="group-why">Parents are the buyers. They make the decisions, they pay the fees, they drive the kids to practice. If parents don't feel the pain of finding clubs, the demand side of the platform isn't there.</div>
+          <div class="group-why">You see these parents every day at practice, at games, on the sideline. They're the ones who pay the fees, drive the kids, and make the decisions. If they don't feel the pain of finding clubs, the demand side of the platform isn't there.</div>
           <ol class="question-list">
             <li>"How did you find your kid's current club? What was that process like?"</li>
             <li>"If your family had to relocate tomorrow, how would you go about finding a new club?"</li>
@@ -402,21 +390,25 @@
           </ol>
           <div class="tells-us">
             <div class="tells-us-label">What This Tells Us</div>
-            <p>Whether parents actually feel the pain of discovery or whether they're fine with the current system. Combined with Phase 1 data from directors, we'll know both sides of the marketplace: do clubs need players AND do families need clubs? If both sides confirm the pain, we build.</p>
+            <p>Whether parents actually feel the pain of discovery or whether they're fine with the current system. Combined with coach data, we'll know both sides of the marketplace: do clubs need players AND do families need clubs? If both sides confirm the pain, we build.</p>
           </div>
+        </div>
+
+        <div style="background: var(--surface-2); border-radius: 10px; padding: 20px; margin-top: 24px;">
+          <p style="font-size: 0.85rem; color: var(--muted);">Target: 10-20 conversations total (coaches + parents), then send Brayan the notes. Once Phase 1 data is in, Phase 2 unlocks.</p>
         </div>
       </div>
 
-      <!-- PHASE 3 -->
-      <div class="phase-content" id="phase3">
-        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 2</div>
+      <!-- PHASE 2 -->
+      <div class="phase-content" id="phase2">
+        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 1</div>
 
-        <h2 class="section-title">Phase 3: Players</h2>
-        <p class="section-sub">The final validation. By now we know what clubs want and what parents need. This phase tells us if players themselves would actually create profiles and use the platform. This also includes the semi-pro market, which has the sharpest pain and zero competition.</p>
+        <h2 class="section-title">Phase 2: Youth Players</h2>
+        <p class="section-sub">Once we know what coaches want and what parents need, we talk to the players themselves. Do they feel trapped? Do they know what's out there? Would they actually create a profile?</p>
 
-        <div class="discovery-group" style="margin-bottom: 20px;">
+        <div class="discovery-group">
           <div class="discovery-group-header">
-            <div><span class="group-badge badge-orange">Phase 3A</span></div>
+            <div><span class="group-badge badge-orange">Phase 2</span></div>
             <div class="group-count">Talk to 3-5 players</div>
           </div>
           <h3>Youth Players (High School Age)</h3>
@@ -431,18 +423,26 @@
           </ol>
           <div class="tells-us">
             <div class="tells-us-label">What This Tells Us</div>
-            <p>Whether players feel informed or in the dark about their options. If kids say "I'd put a profile up in a second," that's demand from the user side. Combined with Phase 1 and 2, we'll have validated all three sides: clubs, parents, and players.</p>
+            <p>Whether players feel informed or in the dark about their options. If kids say "I'd put a profile up in a second," that's demand from the user side. Combined with Phase 1, we'll have validated all three sides: clubs, parents, and players.</p>
           </div>
         </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="phase-content" id="phase3">
+        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 2</div>
+
+        <h2 class="section-title">Phase 3: Semi-Pro Players</h2>
+        <p class="section-sub">The market with zero competition and the sharpest pain. These are 18-23 year olds trying to go pro with literally no tools. AC Connecticut's USL2 team gives you a direct line into this world.</p>
 
         <div class="discovery-group">
           <div class="discovery-group-header">
-            <div><span class="group-badge badge-purple">Phase 3B</span></div>
+            <div><span class="group-badge badge-purple">Phase 3</span></div>
             <div class="group-count">Talk to 2-3 players</div>
           </div>
           <h3>Semi-Pro / Pre-Professional Players</h3>
           <div class="group-target">Target: 18-23 year olds playing or trying to play USL2, NPSL, or USL Academy.</div>
-          <div class="group-why">This is the group with the sharpest pain. These are players trying to go pro with literally zero tools. No portal exists. They DM clubs on Instagram and hope for a response. If this group validates, it could be a separate product or the first market we attack because there is zero competition.</div>
+          <div class="group-why">This is the group with the sharpest pain. No portal exists. They DM clubs on Instagram and hope for a response. If this group validates, it could be the market we attack first because there is zero competition. You have a direct line to these players through AC Connecticut's USL2 team.</div>
           <ol class="question-list">
             <li>"How did you find your current team? What was the process?"</li>
             <li>"When you were looking for a USL2 or NPSL team, what tools did you use? Was there any platform or was it all word of mouth?"</li>
