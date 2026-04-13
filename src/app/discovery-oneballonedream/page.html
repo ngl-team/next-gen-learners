@@ -40,7 +40,6 @@
 
     .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 
-    /* NAV */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: rgba(10,10,10,0.9);
@@ -54,21 +53,54 @@
     .nav-links a { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
     .nav-links a:hover { color: var(--text); }
 
-    /* HERO */
     .hero { padding: 80px 0 60px; text-align: center; }
     .hero-badge { display: inline-block; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); background: var(--accent-glow); padding: 6px 16px; border-radius: 20px; margin-bottom: 24px; font-weight: 600; }
     .hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
     .hero h1 span { color: var(--accent); }
     .hero p { font-size: 1.05rem; color: var(--muted); max-width: 600px; margin: 0 auto; line-height: 1.8; }
 
-    /* SECTION */
     section { padding: 60px 0; }
     .section-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 12px; }
     .section-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
     .section-sub { font-size: 0.95rem; color: var(--muted); margin-bottom: 32px; max-width: 650px; }
     .divider { height: 1px; background: var(--border); }
 
-    /* MARKET COMPARISON */
+    /* PHASE TABS */
+    .phase-tabs { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+    .phase-tab {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+    .phase-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+    .phase-tab.locked { opacity: 0.4; cursor: default; }
+    .phase-tab:hover:not(.locked):not(.active) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    .phase-content { display: none; }
+    .phase-content.active { display: block; }
+
+    /* PHASE STATUS */
+    .phase-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      font-weight: 700; margin-bottom: 20px;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-active .status-dot { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-active { color: var(--green); }
+    .status-locked .status-dot { background: rgba(255,255,255,0.2); }
+    .status-locked { color: var(--muted); }
+
+    /* MARKET CARDS */
     .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
     .market-card {
       background: var(--surface);
@@ -82,34 +114,22 @@
     .market-card.youth .market-card-label { color: var(--green); }
     .market-card.semipro .market-card-label { color: var(--purple); }
     .market-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; }
-
     .stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .stat-row:last-child { border-bottom: none; }
     .stat-label { font-size: 0.8rem; color: var(--muted); }
     .stat-value { font-size: 0.85rem; font-weight: 700; }
 
-    /* TAM TABLE */
     .tam-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
     .tam-table th {
       font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
       color: var(--muted); text-align: left; padding: 12px 16px;
       border-bottom: 1px solid var(--border); font-weight: 600;
     }
-    .tam-table td {
-      padding: 14px 16px; border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
+    .tam-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .tam-table tr:last-child td { border-bottom: none; }
     .tam-table .label-col { color: var(--muted); font-size: 0.8rem; font-weight: 500; }
     .tam-table .youth-col { color: var(--green); font-weight: 700; }
     .tam-table .semipro-col { color: var(--purple); font-weight: 700; }
-
-    /* COMPARISON ROW */
-    .compare-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 32px 0; }
-    .compare-cell { background: var(--surface); padding: 20px; }
-    .compare-cell.header { background: var(--surface-2); }
-    .compare-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
-    .compare-value { font-size: 0.9rem; font-weight: 600; }
 
     /* PAIN POINTS */
     .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
@@ -126,7 +146,7 @@
     .severity-4 { background: var(--orange-glow); color: var(--orange); }
     .severity-3 { background: var(--accent-glow); color: var(--accent); }
 
-    /* DISCOVERY SECTION */
+    /* DISCOVERY GROUP */
     .discovery-group {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -178,7 +198,7 @@
     .tells-us-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
     .tells-us p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
 
-    /* AFTER DISCOVERY */
+    /* STEPS */
     .step-list { list-style: none; counter-reset: step; }
     .step-list li {
       counter-increment: step;
@@ -201,7 +221,7 @@
     .step-list li h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
     .step-list li p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 
-    /* TOOL SECTION */
+    /* TOOL */
     .tool-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -218,7 +238,18 @@
     .tool-steps { margin-top: 12px; }
     .tool-steps li { font-size: 0.82rem; color: var(--muted); padding: 4px 0; list-style: decimal; margin-left: 16px; }
 
-    /* FOOTER */
+    /* LOCKED OVERLAY */
+    .locked-overlay {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 32px;
+      text-align: center;
+    }
+    .locked-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
+    .locked-overlay h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--muted); }
+    .locked-overlay p { font-size: 0.85rem; color: rgba(255,255,255,0.35); max-width: 450px; margin: 0 auto; }
+
     footer {
       border-top: 1px solid var(--border);
       padding: 40px 0;
@@ -229,7 +260,6 @@
 
     @media (max-width: 768px) {
       .market-grid, .pain-grid { grid-template-columns: 1fr; }
-      .compare-grid { grid-template-columns: 1fr; }
       .tool-card { flex-direction: column; }
       .nav-links { display: none; }
     }
@@ -241,10 +271,8 @@
     <div class="container nav-inner">
       <div class="nav-logo">One Ball One Dream</div>
       <div class="nav-links">
+        <a href="#phases">Phases</a>
         <a href="#market">Market</a>
-        <a href="#pain">Pain Points</a>
-        <a href="#discovery">Discovery</a>
-        <a href="#after">What's Next</a>
         <a href="#tools">Tools</a>
       </div>
     </div>
@@ -254,19 +282,149 @@
   <div class="hero">
     <div class="container">
       <div class="hero-badge">Discovery Plan - April 2026</div>
-      <h1>Two Markets. <span>Zero Tools.</span></h1>
-      <p>Youth soccer and semi-pro soccer have no centralized platform for player discovery. This is the research, the plan, and the questions that tell us which market to attack first.</p>
+      <h1>Discovery in <span>Three Phases</span></h1>
+      <p>We don't need to do everything at once. Each phase builds on the last. Complete one, then move to the next. Phase 1 is live now.</p>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- MARKET SIZE -->
+  <!-- PHASES -->
+  <section id="phases">
+    <div class="container">
+      <div class="section-label">Discovery Phases</div>
+
+      <div class="phase-tabs">
+        <button class="phase-tab active" onclick="showPhase(1)">Phase 1: Club Directors</button>
+        <button class="phase-tab locked" id="tab2" onclick="showPhase(2)">Phase 2: Parents</button>
+        <button class="phase-tab locked" id="tab3" onclick="showPhase(3)">Phase 3: Players</button>
+      </div>
+
+      <!-- PHASE 1 -->
+      <div class="phase-content active" id="phase1">
+        <div class="phase-status status-active"><div class="status-dot"></div> Active Now</div>
+
+        <h2 class="section-title">Phase 1: Coaches and Club Directors</h2>
+        <p class="section-sub">This is the foundation. If clubs don't need a tool to find players, nothing else matters. A platform with players but no clubs is dead on arrival. Your 20+ director relationships are the most valuable asset we have. Start here.</p>
+
+        <div class="discovery-group">
+          <div class="discovery-group-header">
+            <div><span class="group-badge badge-blue">Phase 1</span></div>
+            <div class="group-count">Talk to 5-10 directors</div>
+          </div>
+          <h3>Coaches and Club Directors</h3>
+          <div class="group-target">Target: ECNL and MLS Next club directors first, then top travel/EDP directors. If you can reach any USL2 or USL Academy coaches, even better.</div>
+          <div class="group-why">Clubs are the supply side of this platform. We need to know if they actually struggle to find players, what information matters to them, and whether they'd use a tool to solve it. If directors say "I wish I had a way to search for a goalkeeper in a 20 mile radius," we know exactly what to build.</div>
+          <ol class="question-list">
+            <li>"When you need to fill a roster spot mid-season, how do you find players right now?"</li>
+            <li>"How many players or parents reach out to your club per month wanting to join? How do they find you?"</li>
+            <li>"When someone emails you about their kid, what do you need to see before you'd bring them in for a trial? What's on your checklist?"</li>
+            <li>"What's your biggest challenge when it comes to building rosters?"</li>
+            <li>"If there was a free platform where you could search for available players by position, age, location, and level, would you use it?"</li>
+            <li>"Would you list your club on a platform where relocating families or players looking for opportunities could find you?"</li>
+          </ol>
+          <div class="tells-us">
+            <div class="tells-us-label">What This Tells Us</div>
+            <p>Whether clubs have a real problem finding players or whether word of mouth is good enough. This determines if the supply side of the platform has demand. It also tells us exactly what a player profile needs to include, because directors will tell us what they look at. Once we have this data, we know how to frame Phase 2 questions to parents.</p>
+          </div>
+        </div>
+
+        <div style="background: var(--surface-2); border-radius: 10px; padding: 20px; margin-top: 24px;">
+          <p style="font-size: 0.85rem; color: var(--muted);">Target: 5-10 conversations completed, then send Brayan the notes. Once Phase 1 data is in, Phase 2 unlocks.</p>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="phase-content" id="phase2">
+        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 1</div>
+
+        <h2 class="section-title">Phase 2: Parents</h2>
+        <p class="section-sub">Once we know what clubs want, we talk to the demand side. Parents are the ones who pay, who Google at midnight trying to find a club after a move, who feel stuck when their kid is unhappy. Phase 1 data shapes how we ask these questions.</p>
+
+        <div class="discovery-group">
+          <div class="discovery-group-header">
+            <div><span class="group-badge badge-green">Phase 2</span></div>
+            <div class="group-count">Talk to 5-10 parents</div>
+          </div>
+          <h3>Parents</h3>
+          <div class="group-target">Target: Parents of U14-U18 players at ECNL, MLS Next, or top travel level.</div>
+          <div class="group-why">Parents are the buyers. They make the decisions, they pay the fees, they drive the kids to practice. If parents don't feel the pain of finding clubs, the demand side of the platform isn't there.</div>
+          <ol class="question-list">
+            <li>"How did you find your kid's current club? What was that process like?"</li>
+            <li>"If your family had to relocate tomorrow, how would you go about finding a new club?"</li>
+            <li>"What's the most frustrating part about navigating the youth soccer system?"</li>
+            <li>"Has your kid ever wanted to switch clubs? What happened? How did you figure out what else was out there?"</li>
+            <li>"What information would you need to see about a club before you'd even reach out? Cost? Level? Coaching staff? Location?"</li>
+            <li>"How much do you spend per year on your kid's soccer total? Club fees, travel, showcases, ID clinics, everything."</li>
+          </ol>
+          <div class="tells-us">
+            <div class="tells-us-label">What This Tells Us</div>
+            <p>Whether parents actually feel the pain of discovery or whether they're fine with the current system. Combined with Phase 1 data from directors, we'll know both sides of the marketplace: do clubs need players AND do families need clubs? If both sides confirm the pain, we build.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="phase-content" id="phase3">
+        <div class="phase-status status-locked"><div class="status-dot"></div> Unlocks After Phase 2</div>
+
+        <h2 class="section-title">Phase 3: Players</h2>
+        <p class="section-sub">The final validation. By now we know what clubs want and what parents need. This phase tells us if players themselves would actually create profiles and use the platform. This also includes the semi-pro market, which has the sharpest pain and zero competition.</p>
+
+        <div class="discovery-group" style="margin-bottom: 20px;">
+          <div class="discovery-group-header">
+            <div><span class="group-badge badge-orange">Phase 3A</span></div>
+            <div class="group-count">Talk to 3-5 players</div>
+          </div>
+          <h3>Youth Players (High School Age)</h3>
+          <div class="group-target">Target: Juniors, sophomores, freshmen at ECNL or MLS Next clubs.</div>
+          <div class="group-why">Players are the ones who feel trapped. They don't know what's out there. If they say "I'd put a profile up in a second," we have demand from all three sides of the marketplace.</div>
+          <ol class="question-list">
+            <li>"If you were unhappy at your current club, what would you do? How would you find a new one?"</li>
+            <li>"Do you know what other clubs are in your area? How did you find out?"</li>
+            <li>"Have you ever wanted to try out for a higher-level club like ECNL or MLS Next? How would you even go about that?"</li>
+            <li>"If you could put up a profile with your highlights, stats, and position for any club in the country to see, would you do it?"</li>
+            <li>"What would you want a coach to know about you before you show up to a trial?"</li>
+          </ol>
+          <div class="tells-us">
+            <div class="tells-us-label">What This Tells Us</div>
+            <p>Whether players feel informed or in the dark about their options. If kids say "I'd put a profile up in a second," that's demand from the user side. Combined with Phase 1 and 2, we'll have validated all three sides: clubs, parents, and players.</p>
+          </div>
+        </div>
+
+        <div class="discovery-group">
+          <div class="discovery-group-header">
+            <div><span class="group-badge badge-purple">Phase 3B</span></div>
+            <div class="group-count">Talk to 2-3 players</div>
+          </div>
+          <h3>Semi-Pro / Pre-Professional Players</h3>
+          <div class="group-target">Target: 18-23 year olds playing or trying to play USL2, NPSL, or USL Academy.</div>
+          <div class="group-why">This is the group with the sharpest pain. These are players trying to go pro with literally zero tools. No portal exists. They DM clubs on Instagram and hope for a response. If this group validates, it could be a separate product or the first market we attack because there is zero competition.</div>
+          <ol class="question-list">
+            <li>"How did you find your current team? What was the process?"</li>
+            <li>"When you were looking for a USL2 or NPSL team, what tools did you use? Was there any platform or was it all word of mouth?"</li>
+            <li>"How do you put yourself out there to be seen by clubs? Highlights on YouTube? DMs on Instagram? Emails?"</li>
+            <li>"If there was a platform where you could create a profile and every USL2, NPSL, and USL Academy club could find you and reach out, would you use it?"</li>
+            <li>"What's the hardest part about finding opportunities at this level?"</li>
+          </ol>
+          <div class="tells-us">
+            <div class="tells-us-label">What This Tells Us</div>
+            <p>Whether the semi-pro market is as broken as the research suggests. If these players say "I literally DM clubs on Instagram and hope they respond," we've confirmed a wide-open market. This data combined with everything from Phases 1 and 2 gives us the complete picture to decide: youth, semi-pro, or both.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- MARKET -->
   <section id="market">
     <div class="container">
       <div class="section-label">Market Analysis</div>
       <h2 class="section-title">TAM / SAM / SOM</h2>
-      <p class="section-sub">Two markets side by side. Youth is 120x bigger by player count. Semi-pro has zero competition.</p>
+      <p class="section-sub">Two markets side by side. Youth is 120x bigger by player count. Semi-pro has zero competition. Discovery tells us which one to attack first.</p>
 
       <div class="market-grid">
         <div class="market-card youth">
@@ -293,267 +451,17 @@
 
       <table class="tam-table">
         <thead>
-          <tr>
-            <th></th>
-            <th>Youth</th>
-            <th>Semi-Pro</th>
-          </tr>
+          <tr><th></th><th>Youth</th><th>Semi-Pro</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="label-col">Serviceable Players</td>
-            <td class="youth-col">500,000</td>
-            <td class="semipro-col">7,000</td>
-          </tr>
-          <tr>
-            <td class="label-col">Serviceable Clubs</td>
-            <td class="youth-col">2,000</td>
-            <td class="semipro-col">250</td>
-          </tr>
-          <tr>
-            <td class="label-col">Year 1 Reachable Players</td>
-            <td class="youth-col">5,000</td>
-            <td class="semipro-col">1,000</td>
-          </tr>
-          <tr>
-            <td class="label-col">Year 1 Reachable Clubs</td>
-            <td class="youth-col">50</td>
-            <td class="semipro-col">30</td>
-          </tr>
-          <tr>
-            <td class="label-col">Spend Per Player on Discovery</td>
-            <td class="youth-col">$1,000-3,000/yr</td>
-            <td class="semipro-col">$5,000-15,000/yr</td>
-          </tr>
-          <tr>
-            <td class="label-col">Network Strength</td>
-            <td class="youth-col">Strong (20+ directors)</td>
-            <td class="semipro-col">Needs building</td>
-          </tr>
+          <tr><td class="label-col">Serviceable Players</td><td class="youth-col">500,000</td><td class="semipro-col">7,000</td></tr>
+          <tr><td class="label-col">Serviceable Clubs</td><td class="youth-col">2,000</td><td class="semipro-col">250</td></tr>
+          <tr><td class="label-col">Year 1 Reachable Players</td><td class="youth-col">5,000</td><td class="semipro-col">1,000</td></tr>
+          <tr><td class="label-col">Year 1 Reachable Clubs</td><td class="youth-col">50</td><td class="semipro-col">30</td></tr>
+          <tr><td class="label-col">Spend Per Player on Discovery</td><td class="youth-col">$1,000-3,000/yr</td><td class="semipro-col">$5,000-15,000/yr</td></tr>
+          <tr><td class="label-col">Network Strength</td><td class="youth-col">Strong (20+ directors)</td><td class="semipro-col">Needs building</td></tr>
         </tbody>
       </table>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- PAIN POINTS -->
-  <section id="pain">
-    <div class="container">
-      <div class="section-label">Pain Point Analysis</div>
-      <h2 class="section-title">What's Broken</h2>
-      <p class="section-sub">Both markets rely on Google, word of mouth, and hope. But the severity is different.</p>
-
-      <div class="section-label" style="margin-top:32px; color: var(--green);">Youth Soccer Pain Points</div>
-      <div class="pain-grid">
-        <div class="pain-card">
-          <div class="pain-severity severity-5">Severity: 5/5</div>
-          <h4>Relocation Nightmare</h4>
-          <p>Family moves, kid has zero way to find clubs. Google and hoping someone answers the phone. Steve confirmed: "People are moving all the time and yet they're relying on Google."</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-4">Severity: 4/5</div>
-          <h4>No Mid-Season Discovery</h4>
-          <p>Club needs a goalkeeper. No system to search for one. Word of mouth only. Steve: "There's no portal for clubs."</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-4">Severity: 4/5</div>
-          <h4>Players Feel Trapped</h4>
-          <p>Kids and parents don't know what else is out there. Clubs exploit this with false promises. No way to compare options.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-4">Severity: 4/5</div>
-          <h4>Information Asymmetry</h4>
-          <p>Parents don't understand the difference between ECNL, ECRL, EDP. No tool to compare clubs, costs, or levels.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-3">Severity: 3/5</div>
-          <h4>Tryout-Only Entry</h4>
-          <p>Most clubs only accept players at annual tryouts. Mid-season movement is ad hoc and random.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-3">Severity: 3/5</div>
-          <h4>Cost Opacity</h4>
-          <p>Parents don't know what clubs cost until deep in the process. No way to compare fees across clubs.</p>
-        </div>
-      </div>
-
-      <div class="section-label" style="margin-top:40px; color: var(--purple);">Semi-Pro Pain Points</div>
-      <div class="pain-grid">
-        <div class="pain-card">
-          <div class="pain-severity severity-5">Severity: 5/5</div>
-          <h4>No Portal Exists. Period.</h4>
-          <p>Zero infrastructure. Players DM clubs on Instagram. Clubs post open tryouts on random websites. Nothing centralized.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-5">Severity: 5/5</div>
-          <h4>Careers On the Line</h4>
-          <p>These are 17-23 year olds trying to go pro. Missing an opportunity isn't disappointing. It's career-ending. Every missed connection is a door that closes.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-5">Severity: 5/5</div>
-          <h4>Clubs Can't Scout</h4>
-          <p>USL2 and NPSL clubs are small operations with tiny budgets. They can't afford scouts. They need players to come to them, but players have no way to find them.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-4">Severity: 4/5</div>
-          <h4>Seasonal Urgency</h4>
-          <p>USL2 is a summer league (May-July). Rosters get built in spring. Narrow window. Miss it and you wait a full year.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-4">Severity: 4/5</div>
-          <h4>Geographic Fragmentation</h4>
-          <p>130+ USL2 teams spread across the country. A player in CT has no idea what's available in Virginia, or even New Jersey.</p>
-        </div>
-        <div class="pain-card">
-          <div class="pain-severity severity-3">Severity: 3/5</div>
-          <h4>Eligibility Confusion</h4>
-          <p>USL2 preserves NCAA eligibility. Many college players don't know this. Clubs need to communicate it but have no channel.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- DISCOVERY QUESTIONS -->
-  <section id="discovery">
-    <div class="container">
-      <div class="section-label">Discovery Framework</div>
-      <h2 class="section-title">The Questions</h2>
-      <p class="section-sub">Four groups. Each designed to pull out specific data. Don't read these word for word. Just steer the conversation naturally and listen.</p>
-
-      <!-- GROUP 1: PARENTS -->
-      <div class="discovery-group">
-        <div class="discovery-group-header">
-          <div>
-            <span class="group-badge badge-green">Group 1</span>
-          </div>
-          <div class="group-count">Talk to 5-10</div>
-        </div>
-        <h3>Parents</h3>
-        <div class="group-target">Target: Parents of U14-U18 players at ECNL, MLS Next, or top travel level</div>
-        <div class="group-why">Parents are the ones who pay. They're the ones who Google at midnight trying to find a club after a move. They're the ones who feel stuck when their kid is unhappy. If parents don't feel this pain, we don't have a product.</div>
-        <ol class="question-list">
-          <li>"How did you find your kid's current club? What was that process like?"</li>
-          <li>"If your family had to relocate tomorrow, how would you go about finding a new club?"</li>
-          <li>"What's the most frustrating part about navigating the youth soccer system?"</li>
-          <li>"Has your kid ever wanted to switch clubs? What happened? How did you figure out what else was out there?"</li>
-          <li>"What information would you need to see about a club before you'd even reach out? Cost? Level? Coaching staff? Location?"</li>
-          <li>"How much do you spend per year on your kid's soccer total? Club fees, travel, showcases, ID clinics, everything."</li>
-        </ol>
-        <div class="tells-us">
-          <div class="tells-us-label">What This Tells Us</div>
-          <p>Whether parents actually feel the pain of discovery or whether they're fine with the current system. If 8 out of 10 parents say "finding a club was a nightmare," we have a product. If they say "it was fine, we just asked around," the pain isn't there for this group.</p>
-        </div>
-      </div>
-
-      <!-- GROUP 2: DIRECTORS -->
-      <div class="discovery-group">
-        <div class="discovery-group-header">
-          <div>
-            <span class="group-badge badge-blue">Group 2</span>
-          </div>
-          <div class="group-count">Talk to 5-10</div>
-        </div>
-        <h3>Coaches and Club Directors</h3>
-        <div class="group-target">Target: ECNL and MLS Next club directors first, then top travel/EDP directors</div>
-        <div class="group-why">Clubs are the supply side. A platform with players but no clubs is useless. We need to know if clubs actually struggle to find players and if they'd use a tool to do it.</div>
-        <ol class="question-list">
-          <li>"When you need to fill a roster spot mid-season, how do you find players right now?"</li>
-          <li>"How many players or parents reach out to your club per month wanting to join? How do they find you?"</li>
-          <li>"When someone emails you about their kid, what do you need to see before you'd bring them in for a trial? What's on your checklist?"</li>
-          <li>"What's your biggest challenge when it comes to building rosters?"</li>
-          <li>"If there was a free platform where you could search for available players by position, age, location, and level, would you use it?"</li>
-          <li>"Would you list your club on a platform where relocating families or players looking for opportunities could find you?"</li>
-        </ol>
-        <div class="tells-us">
-          <div class="tells-us-label">What This Tells Us</div>
-          <p>Whether clubs have a real problem finding players or whether word of mouth is good enough. If directors say "I wish I had a way to search for a goalkeeper in a 20 mile radius," we know exactly what to build. If they say "word of mouth works fine," the club side might not be where the pain is.</p>
-        </div>
-      </div>
-
-      <!-- GROUP 3: YOUTH PLAYERS -->
-      <div class="discovery-group">
-        <div class="discovery-group-header">
-          <div>
-            <span class="group-badge badge-orange">Group 3</span>
-          </div>
-          <div class="group-count">Talk to 3-5</div>
-        </div>
-        <h3>Youth Players (High School Age)</h3>
-        <div class="group-target">Target: Juniors, sophomores, freshmen at ECNL or MLS Next clubs</div>
-        <div class="group-why">Players are the ones who feel trapped. They're the ones who don't know what's out there. If players say "I'd love to put myself out there for other clubs to see me," we have demand.</div>
-        <ol class="question-list">
-          <li>"If you were unhappy at your current club, what would you do? How would you find a new one?"</li>
-          <li>"Do you know what other clubs are in your area? How did you find out?"</li>
-          <li>"Have you ever wanted to try out for a higher-level club like ECNL or MLS Next? How would you even go about that?"</li>
-          <li>"If you could put up a profile with your highlights, stats, and position for any club in the country to see, would you do it?"</li>
-          <li>"What would you want a coach to know about you before you show up to a trial?"</li>
-        </ol>
-        <div class="tells-us">
-          <div class="tells-us-label">What This Tells Us</div>
-          <p>Whether players feel informed or in the dark about their options. If kids say "I'd put a profile up in a second," that's demand. If they say "I'm fine where I am," we know this group isn't the entry point.</p>
-        </div>
-      </div>
-
-      <!-- GROUP 4: SEMI-PRO -->
-      <div class="discovery-group">
-        <div class="discovery-group-header">
-          <div>
-            <span class="group-badge badge-purple">Group 4</span>
-          </div>
-          <div class="group-count">Talk to 2-3</div>
-        </div>
-        <h3>Semi-Pro / Pre-Professional Players</h3>
-        <div class="group-target">Target: 18-23 year olds playing or trying to play USL2, NPSL, or USL Academy</div>
-        <div class="group-why">This is the group with the sharpest pain. These are players trying to go pro. They need summer minutes in USL2, they're trying to get seen by USL Academy clubs, and there is literally nothing out there for them. Zero competition exists in this market.</div>
-        <ol class="question-list">
-          <li>"How did you find your current team? What was the process?"</li>
-          <li>"When you were looking for a USL2 or NPSL team, what tools did you use? Was there any platform or was it all word of mouth?"</li>
-          <li>"How do you put yourself out there to be seen by clubs? Highlights on YouTube? DMs on Instagram? Emails?"</li>
-          <li>"If there was a platform where you could create a profile and every USL2, NPSL, and USL Academy club could find you and reach out, would you use it?"</li>
-          <li>"What's the hardest part about finding opportunities at this level?"</li>
-        </ol>
-        <div class="tells-us">
-          <div class="tells-us-label">What This Tells Us</div>
-          <p>Whether the semi-pro market is as broken as the research suggests. If these players say "I literally DM clubs on Instagram and hope they respond," we've found a wide-open market with zero competition and real urgency. This is the group where a platform could genuinely change careers.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- AFTER DISCOVERY -->
-  <section id="after">
-    <div class="container">
-      <div class="section-label">After Discovery</div>
-      <h2 class="section-title">What Happens With the Data</h2>
-      <p class="section-sub">Once all conversations are done, the data drives every decision from here.</p>
-
-      <ol class="step-list">
-        <li>
-          <h4>Pattern Recognition</h4>
-          <p>Every response gets compiled. We identify what keeps coming up across all four groups. If 8 out of 10 parents say "finding a club was impossible when we moved," that's a pattern. If 6 out of 10 directors say "I need a way to search for players," that's a pattern.</p>
-        </li>
-        <li>
-          <h4>Pain Ranking</h4>
-          <p>Which group has the most pain? Parents? Directors? Youth players? Semi-pro players? The group with the sharpest pain is who we build for first.</p>
-        </li>
-        <li>
-          <h4>Market Decision</h4>
-          <p>Based on the data, we decide: youth soccer, semi-pro, or both from day one. The conversations tell us the answer. Not assumptions.</p>
-        </li>
-        <li>
-          <h4>Feature Definition</h4>
-          <p>The things people say they need become the features we build. Not what we think looks cool. What they actually asked for. Profiles, search, matching, communication - shaped by real demand.</p>
-        </li>
-        <li>
-          <h4>Build</h4>
-          <p>Once we know who we're building for and what they need, the platform goes live in weeks. Not months. Weeks. The architecture is the same for both markets - profiles, search, matching, communication. The only difference is the user base and the league taxonomy.</p>
-        </li>
-      </ol>
     </div>
   </section>
 
@@ -563,15 +471,14 @@
   <section id="tools">
     <div class="container">
       <div class="section-label">Tools</div>
-      <h2 class="section-title">How to Capture the Conversations</h2>
+      <h2 class="section-title">How to Capture Conversations</h2>
       <p class="section-sub">Use Granola so you can focus on the conversation, not on taking notes.</p>
 
       <div class="tool-card">
         <div class="tool-icon">&#127793;</div>
         <div>
           <h3>Granola - AI Note Taker</h3>
-          <p>Granola runs in the background during your conversations and automatically creates organized notes from what was said. You don't have to type anything. Just talk naturally and Granola captures it.</p>
-          <p style="margin-top: 8px;">This means you can be fully present in the conversation. Eye contact, listening, reacting naturally. The notes write themselves.</p>
+          <p>Granola runs in the background during your conversations and automatically creates organized notes from what was said. You don't have to type anything. Just talk naturally and Granola captures it. Be fully present. Eye contact, listening, reacting naturally. The notes write themselves.</p>
           <ol class="tool-steps">
             <li>Download Granola at granola.so (free tier available)</li>
             <li>Open it before your conversation starts</li>
@@ -579,13 +486,12 @@
             <li>When you're done, Granola gives you clean notes with the key points organized</li>
             <li>Forward those notes to Brayan after each conversation</li>
           </ol>
-          <p style="margin-top: 12px;">If you're doing in-person conversations, just have your phone nearby with Granola running. It picks up the audio and does the rest. The whole point is that you focus on being Coach Steve, not on writing things down.</p>
+          <p style="margin-top: 12px;">If you're doing in-person conversations, just have your phone nearby with Granola running. It picks up the audio and does the rest.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer>
     <div class="container">
       <div class="footer-logo">One Ball One Dream</div>
@@ -593,6 +499,16 @@
       <p class="footer-sub" style="margin-top: 8px;"><a href="mailto:brayan@nextgenerationlearners.com" style="color: var(--accent); text-decoration: none;">brayan@nextgenerationlearners.com</a></p>
     </div>
   </footer>
+
+  <script>
+    function showPhase(n) {
+      // Allow clicking locked tabs to preview
+      document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.phase-content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.phase-tab:nth-child(${n})`).classList.add('active');
+      document.getElementById('phase' + n).classList.add('active');
+    }
+  </script>
 
 </body>
 </html>
