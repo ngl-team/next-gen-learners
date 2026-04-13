@@ -109,6 +109,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('schools')">School Finder</button>
     <button class="tab" onclick="switchTab('scanner')">Business Scanner</button>
     <button class="tab" onclick="switchTab('notes')">Notes</button>
+    <button class="tab" onclick="switchTab('deals')">Deals</button>
   </div>
   <select id="currentUser" onchange="setCurrentUser(this.value)" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer">
     <option value="ryan">Ryan</option>
@@ -157,6 +158,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="font-size:.82rem;font-weight:700">After School</div>
           <div style="font-size:.65rem;color:var(--text-3)">Program page</div>
         </a>
+        <div class="card dash-app" onclick="switchTab('deals')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--warm-glow)">💰</div>
+          <div style="font-size:.82rem;font-weight:700">Deals</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Pipeline & opportunities</div>
+        </div>
         <div class="card dash-app" onclick="switchTab('time')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
           <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--secondary-glow)">⏱️</div>
           <div style="font-size:.82rem;font-weight:700">Time Tracker</div>
@@ -811,6 +817,87 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 #noteModalContent th{background:var(--surface-2);font-weight:700}
 </style>
 
+<!-- DEALS -->
+<div class="view" id="view-deals">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:2px">Deal Board</h2>
+      <div style="font-size:.68rem;color:var(--text-3)">Drag cards between stages. Click to edit.</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="btn primary" id="dealsFilterAll" onclick="filterDeals('all')" style="font-size:.65rem">All</button>
+      <button class="btn" id="dealsFilterBrayan" onclick="filterDeals('brayan')" style="font-size:.65rem">Brayan</button>
+      <button class="btn" id="dealsFilterRyan" onclick="filterDeals('ryan')" style="font-size:.65rem">Ryan</button>
+      <button class="btn" onclick="openDealModal()" style="font-size:.65rem;background:var(--primary);color:white;border-color:var(--primary)">+ Add Deal</button>
+    </div>
+  </div>
+  <div id="dealsTotalBar" style="display:flex;gap:12px;margin-bottom:20px"></div>
+  <div id="dealsBoard" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;overflow-x:auto;min-height:400px"></div>
+</div>
+
+<!-- Deal modal -->
+<div class="modal-overlay" id="dealModal">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="closeDealModal()">&times;</button>
+    <div class="modal-title" id="dealModalTitle">New Deal</div>
+    <div class="field"><label>Person / Company</label><input id="deal-name" placeholder="e.g. Christopher Roche"></div>
+    <div class="field"><label>Opportunity</label><input id="deal-opp" placeholder="e.g. Superintendent Jarvis"></div>
+    <div class="field"><label>Value</label><input id="deal-value" placeholder="e.g. $2,500 or Equity"></div>
+    <div class="field"><label>Owner</label>
+      <select id="deal-owner"><option value="brayan">Brayan</option><option value="ryan">Ryan</option></select>
+    </div>
+    <div class="field"><label>Type</label>
+      <select id="deal-type">
+        <option value="education">Education</option>
+        <option value="equity">Equity</option>
+        <option value="side-project">Side Project</option>
+        <option value="networking">Networking</option>
+        <option value="library">Library</option>
+      </select>
+    </div>
+    <div class="field"><label>Stage</label>
+      <select id="deal-stage">
+        <option value="lead">Lead</option>
+        <option value="discovery">Discovery</option>
+        <option value="proposal">Proposal</option>
+        <option value="closing">Closing</option>
+        <option value="signed">Signed</option>
+      </select>
+    </div>
+    <div class="field"><label>Next Action</label><input id="deal-next" placeholder="e.g. Follow up email"></div>
+    <div class="field"><label>Notes</label><textarea id="deal-notes" style="min-height:60px" placeholder="Any context..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn primary" onclick="saveDeal()" style="flex:1">Save</button>
+      <button class="btn danger" id="dealDeleteBtn" onclick="deleteDeal()" style="display:none">Delete</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.deal-col{background:var(--surface-2);border-radius:10px;padding:10px;min-height:350px}
+.deal-col-header{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:10px;padding:4px 8px;display:flex;justify-content:space-between;align-items:center}
+.deal-col-count{font-size:.55rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:2px 8px;font-weight:600}
+.deal-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:grab;transition:all .15s;user-select:none}
+.deal-card:hover{border-color:var(--border-2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.deal-card:active{cursor:grabbing;opacity:.8}
+.deal-card.dragging{opacity:.4;transform:scale(.95)}
+.deal-card-name{font-size:.78rem;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-card-opp{font-size:.68rem;color:var(--text-2);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deal-card-value{font-size:.72rem;font-weight:700;margin-bottom:4px}
+.deal-card-next{font-size:.62rem;color:var(--text-3);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.deal-card-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.deal-badge{font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:4px;font-weight:700}
+.deal-badge.education{background:rgba(59,130,246,.12);color:#3B82F6}
+.deal-badge.equity{background:rgba(139,92,246,.12);color:#8B5CF6}
+.deal-badge.side-project{background:rgba(245,158,11,.12);color:#F59E0B}
+.deal-badge.networking{background:rgba(16,185,129,.12);color:#10B981}
+.deal-badge.library{background:rgba(236,72,153,.12);color:#EC4899}
+.deal-owner-dot{width:8px;height:8px;border-radius:50%}
+.deal-owner-dot.brayan{background:#10B981}
+.deal-owner-dot.ryan{background:#4F46E5}
+.deal-col.drag-over{background:rgba(79,70,229,.06);border:2px dashed var(--primary)}
+</style>
+
 <!-- ACTIVITY -->
 <div class="view" id="view-activity">
   <!-- Header -->
@@ -898,11 +985,12 @@ function switchTab(t){
   if(t==='emails')loadEmails();
   if(t==='schools')loadSchools();
   if(t==='notes')loadNotes();
+  if(t==='deals')loadDeals();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes','schools','scanner'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','activity','research','audit','emails','notes','schools','scanner','deals'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -2407,6 +2495,177 @@ function renderMarkdown(md){
     // Clean up empty paragraphs
     .replace(/<p><\/p>/g,'');
   return html;
+}
+
+// ── Deals Board ────────────────────────────────────────────────────
+const DEAL_STAGES=['lead','discovery','proposal','closing','signed'];
+const DEAL_STAGE_LABELS={lead:'Lead',discovery:'Discovery',proposal:'Proposal',closing:'Closing',signed:'Signed'};
+const DEAL_STAGE_COLORS={lead:'var(--text-3)',discovery:'var(--cyan)',proposal:'var(--warm)',closing:'var(--primary)',signed:'var(--accent)'};
+let _deals=[];
+let _dealsFilter='all';
+let _editDealId=null;
+let _dragDealId=null;
+
+const DEFAULT_DEALS=[
+  {id:'d1',name:'Christopher Roche',opp:'Superintendent Jarvis',value:'$2,500',owner:'brayan',type:'education',stage:'signed',next:'Friday April 25 at 11am, in-person build',notes:'First pilot client. Double price to $5K after this.'},
+  {id:'d2',name:'Ridgefield Library',opp:'AI Club Program',value:'$300',owner:'brayan',type:'library',stage:'signed',next:'Check arriving in mail this week',notes:'3 sessions completed April 8-10'},
+  {id:'d3',name:'Matt Byrnes',opp:'AI Framework Wooster K-12',value:'$10K-$25K',owner:'brayan',type:'education',stage:'proposal',next:'Bump email. Meeting April 14 1pm Babson.',notes:'Private school, Head of School. Discretionary budget.'},
+  {id:'d4',name:'Coach Steve',opp:'One Ball One Dream (50% equity)',value:'Equity',owner:'brayan',type:'equity',stage:'discovery',next:'Text him who he is around most, then send discovery email',notes:'Multi-billion dollar market. Zero competition. Steven Carneiro, Director Youth Dev at AC CT.'},
+  {id:'d5',name:'Furfect Match (Zach/Eli)',opp:'CTO Role + Equity',value:'Equity TBD',owner:'brayan',type:'equity',stage:'discovery',next:'Friday 8pm EST meeting with Zach, Eli, Brayan, Ryan',notes:'Replacing current CTO (8%). App on GitHub. Need full picture meeting.'},
+  {id:'d6',name:'Danbury Public Schools',opp:'Language Tool',value:'$5K-$15K',owner:'brayan',type:'education',stage:'discovery',next:'Follow up with Zaleta. Build language tool prototype.',notes:'90+ languages. Current tools only support Spanish. Zaleta upset ball got dropped.'},
+  {id:'d7',name:'Jeff Carlson',opp:'Personal Jarvis',value:'$2K-$5K',owner:'brayan',type:'education',stage:'proposal',next:'Apply his advice (DPAs, SOC 2, SSO). Get back to him.',notes:'Head of Ed Strategy at Clever. Proposal page live.'},
+  {id:'d8',name:'Roche Network',opp:'Superintendent Jarvis x Network',value:'$5K each',owner:'brayan',type:'education',stage:'lead',next:'After April 25 pilot succeeds, Roche introduces to network',notes:'Scale play. Double price after successful pilot.'},
+  {id:'d9',name:'Chelen Reyes',opp:'Union Savings Bank',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Respond to her email. She said yes to meeting.',notes:'President/CEO, $3B bank. Intro from Frank Rowella.'},
+  {id:'d10',name:'Nelson Merchan',opp:'Chamber of Commerce AI Specialist',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Respond to his email. July B2B event. WestConn president intro.',notes:'AI specialist for leadership program. Monthly sessions. Mike Koshny co-working space.'},
+  {id:'d11',name:'Jim Mustich',opp:'Apple Books President - EdTech Support',value:'TBD',owner:'brayan',type:'networking',stage:'discovery',next:'Schedule second call. He asked for one.',notes:'Wants to support edtech focus.'},
+  {id:'d12',name:'Greg Goehner',opp:'Legatus Gateway (5,000 Catholic CEOs)',value:'TBD',owner:'brayan',type:'networking',stage:'discovery',next:'Follow-up email + schedule next call',notes:'Growth Consultant at Hallow. Legatus San Diego chapter.'},
+  {id:'d13',name:'Danbury Library',opp:'Summer AI Program',value:'$300-$400',owner:'brayan',type:'library',stage:'closing',next:'Confirm summer dates',notes:'4-week program confirmed'},
+  {id:'d14',name:'Xavier',opp:'Real Estate Section 8 Software',value:'TBD',owner:'ryan',type:'side-project',stage:'discovery',next:'Meeting tomorrow 3pm',notes:''},
+  {id:'d15',name:'Jack',opp:'Insurance Software',value:'TBD',owner:'ryan',type:'side-project',stage:'discovery',next:'Meeting Sunday noon',notes:''},
+  {id:'d16',name:'Alex',opp:'Tailored Workout App (Doctor-backed)',value:'TBD',owner:'ryan',type:'side-project',stage:'lead',next:'Still scheduling meeting',notes:'Brazilian, 39yo, backed by doctor. Body scanning fitness app.'},
+  {id:'d17',name:'Walter',opp:'KPI Tracker + Wholesale Connections',value:'TBD',owner:'ryan',type:'side-project',stage:'proposal',next:'Pitching to mentor within a week. Connections to 50+ person agencies.',notes:'KPI tracker built. Life insurance and wholesale industry connections.'},
+  {id:'d18',name:'Ms. Marino',opp:'Lesson Planner Tool',value:'TBD',owner:'ryan',type:'education',stage:'lead',next:'She is sending more details tonight',notes:''},
+  {id:'d19',name:'Tennis Coach',opp:'Tailored Tennis Programs',value:'TBD',owner:'ryan',type:'side-project',stage:'lead',next:'Need to contact him. 56K Instagram followers.',notes:'Already running programs and getting paid.'},
+  {id:'d20',name:'Eric',opp:'Ad Software Tool',value:'TBD',owner:'ryan',type:'side-project',stage:'proposal',next:'Continue building software, send Rossman free value pitch',notes:'Focused on scaling and fulfillment side'},
+];
+
+function getDeals(){
+  try{const d=localStorage.getItem('ngl_deals');if(d)return JSON.parse(d)}catch(e){}
+  return null;
+}
+function saveDeals(){localStorage.setItem('ngl_deals',JSON.stringify(_deals))}
+
+function loadDeals(){
+  const stored=getDeals();
+  _deals=stored||[...DEFAULT_DEALS];
+  if(!stored)saveDeals();
+  renderDeals();
+}
+
+function filterDeals(f){
+  _dealsFilter=f;
+  document.querySelectorAll('[id^="dealsFilter"]').forEach(b=>{b.classList.remove('primary');b.classList.add('btn')});
+  const btn=document.getElementById('dealsFilter'+f.charAt(0).toUpperCase()+f.slice(1));
+  if(btn){btn.classList.add('primary')}
+  renderDeals();
+}
+
+function renderDeals(){
+  const board=document.getElementById('dealsBoard');
+  const bar=document.getElementById('dealsTotalBar');
+  const filtered=_dealsFilter==='all'?_deals:_deals.filter(d=>d.owner===_dealsFilter);
+
+  // Stats bar
+  let totalSigned=0,totalPipeline=0,signedCount=0,pipelineCount=0;
+  filtered.forEach(d=>{
+    const num=parseFloat((d.value||'').replace(/[^0-9.]/g,''));
+    if(!isNaN(num)){
+      if(d.stage==='signed'){totalSigned+=num;signedCount++}
+      else{totalPipeline+=num;pipelineCount++}
+    }
+  });
+  bar.innerHTML=`
+    <div class="act-stat"><div class="act-stat-num" style="color:var(--accent)">$${totalSigned.toLocaleString()}</div><div class="act-stat-label">Signed (${signedCount})</div></div>
+    <div class="act-stat"><div class="act-stat-num" style="color:var(--primary)">$${totalPipeline.toLocaleString()}</div><div class="act-stat-label">Pipeline (${pipelineCount})</div></div>
+    <div class="act-stat"><div class="act-stat-num">${filtered.length}</div><div class="act-stat-label">Total Deals</div></div>
+  `;
+
+  // Board columns
+  board.innerHTML='';
+  DEAL_STAGES.forEach(stage=>{
+    const col=document.createElement('div');
+    col.className='deal-col';
+    col.dataset.stage=stage;
+    const stageDeals=filtered.filter(d=>d.stage===stage);
+    col.innerHTML=`<div class="deal-col-header" style="color:${DEAL_STAGE_COLORS[stage]}">${DEAL_STAGE_LABELS[stage]}<span class="deal-col-count">${stageDeals.length}</span></div>`;
+    stageDeals.forEach(d=>{
+      const card=document.createElement('div');
+      card.className='deal-card';
+      card.draggable=true;
+      card.dataset.id=d.id;
+      card.innerHTML=`
+        <div class="deal-card-name">${esc(d.name)}</div>
+        <div class="deal-card-opp">${esc(d.opp)}</div>
+        <div class="deal-card-value" style="color:${d.value==='Equity'||d.value==='Equity TBD'?'var(--secondary)':'var(--accent)'}">${esc(d.value||'TBD')}</div>
+        <div class="deal-card-next">${esc(d.next||'')}</div>
+        <div class="deal-card-meta">
+          <span class="deal-badge ${d.type}">${d.type.replace('-',' ')}</span>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div class="deal-owner-dot ${d.owner}"></div>
+            <span style="font-size:.55rem;color:var(--text-3)">${d.owner}</span>
+          </div>
+        </div>
+      `;
+      card.addEventListener('dragstart',e=>{_dragDealId=d.id;card.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+      card.addEventListener('dragend',()=>{card.classList.remove('dragging');_dragDealId=null;document.querySelectorAll('.deal-col').forEach(c=>c.classList.remove('drag-over'))});
+      card.addEventListener('click',()=>openDealModal(d.id));
+      col.appendChild(card);
+    });
+    col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drag-over')});
+    col.addEventListener('dragleave',()=>col.classList.remove('drag-over'));
+    col.addEventListener('drop',e=>{
+      e.preventDefault();col.classList.remove('drag-over');
+      if(!_dragDealId)return;
+      const deal=_deals.find(d=>d.id===_dragDealId);
+      if(deal){deal.stage=stage;saveDeals();renderDeals()}
+    });
+    board.appendChild(col);
+  });
+}
+
+function openDealModal(id){
+  _editDealId=id||null;
+  document.getElementById('dealModalTitle').textContent=id?'Edit Deal':'New Deal';
+  document.getElementById('dealDeleteBtn').style.display=id?'inline-block':'none';
+  if(id){
+    const d=_deals.find(x=>x.id===id);
+    if(!d)return;
+    document.getElementById('deal-name').value=d.name;
+    document.getElementById('deal-opp').value=d.opp;
+    document.getElementById('deal-value').value=d.value;
+    document.getElementById('deal-owner').value=d.owner;
+    document.getElementById('deal-type').value=d.type;
+    document.getElementById('deal-stage').value=d.stage;
+    document.getElementById('deal-next').value=d.next||'';
+    document.getElementById('deal-notes').value=d.notes||'';
+  }else{
+    ['deal-name','deal-opp','deal-value','deal-next','deal-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('deal-owner').value=getCurrentUser();
+    document.getElementById('deal-type').value='education';
+    document.getElementById('deal-stage').value='lead';
+  }
+  document.getElementById('dealModal').style.display='flex';
+}
+
+function closeDealModal(){document.getElementById('dealModal').style.display='none';_editDealId=null}
+
+function saveDeal(){
+  const name=document.getElementById('deal-name').value.trim();
+  if(!name){alert('Name is required');return}
+  const data={
+    name,
+    opp:document.getElementById('deal-opp').value.trim(),
+    value:document.getElementById('deal-value').value.trim(),
+    owner:document.getElementById('deal-owner').value,
+    type:document.getElementById('deal-type').value,
+    stage:document.getElementById('deal-stage').value,
+    next:document.getElementById('deal-next').value.trim(),
+    notes:document.getElementById('deal-notes').value.trim(),
+  };
+  if(_editDealId){
+    const idx=_deals.findIndex(d=>d.id===_editDealId);
+    if(idx>=0)Object.assign(_deals[idx],data);
+  }else{
+    data.id='d'+Date.now();
+    _deals.push(data);
+  }
+  saveDeals();closeDealModal();renderDeals();
+}
+
+function deleteDeal(){
+  if(!_editDealId||!confirm('Delete this deal?'))return;
+  _deals=_deals.filter(d=>d.id!==_editDealId);
+  saveDeals();closeDealModal();renderDeals();
 }
 </script>
 </body>
