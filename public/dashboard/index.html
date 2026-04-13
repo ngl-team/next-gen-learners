@@ -2513,7 +2513,6 @@ const DEFAULT_DEALS=[
   {id:'d4',name:'Coach Steve',opp:'One Ball One Dream (50% equity)',value:'Equity',owner:'brayan',type:'equity',stage:'discovery',next:'Text him who he is around most, then send discovery email',notes:'Multi-billion dollar market. Zero competition. Steven Carneiro, Director Youth Dev at AC CT.'},
   {id:'d5',name:'Furfect Match (Zach/Eli)',opp:'CTO Role + Equity',value:'Equity TBD',owner:'brayan',type:'equity',stage:'discovery',next:'Friday 8pm EST meeting with Zach, Eli, Brayan, Ryan',notes:'Replacing current CTO (8%). App on GitHub. Need full picture meeting.'},
   {id:'d6',name:'Danbury Public Schools',opp:'Language Tool',value:'$5K-$15K',owner:'brayan',type:'education',stage:'discovery',next:'Follow up with Zaleta. Build language tool prototype.',notes:'90+ languages. Current tools only support Spanish. Zaleta upset ball got dropped.'},
-  {id:'d7',name:'Jeff Carlson',opp:'Apply His Advice (DPAs, SOC 2, SSO)',value:'$0',owner:'brayan',type:'networking',stage:'lead',next:'Implement his advice on school sales strategy. Not building for him.',notes:'Head of Ed Strategy at Clever. Knowledge source, not a client. Advised on DPAs, SOC 2, SSO, pilot sites, public vs private school pricing.'},
   {id:'d8',name:'Roche Network',opp:'Superintendent Jarvis x Network',value:'$5K each',owner:'brayan',type:'education',stage:'lead',next:'After April 25 pilot succeeds, Roche introduces to network',notes:'Scale play. Double price after successful pilot.'},
   {id:'d9',name:'Chelen Reyes',opp:'Union Savings Bank',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Respond to her email. She said yes to meeting.',notes:'President/CEO, $3B bank. Intro from Frank Rowella.'},
   {id:'d10',name:'Nelson Merchan',opp:'Chamber of Commerce AI Specialist',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Respond to his email. July B2B event. WestConn president intro.',notes:'AI specialist for leadership program. Monthly sessions. Mike Koshny co-working space.'},
@@ -2558,7 +2557,8 @@ function renderDeals(){
   // Stats bar
   let totalSigned=0,totalPipeline=0,signedCount=0,pipelineCount=0;
   filtered.forEach(d=>{
-    const rawVal=(d.value||'');const valParts=rawVal.split(/[-–]/);const num=parseFloat((valParts[0]||'').replace(/[^0-9.]/g,''));
+    function parseDealValue(v){if(!v)return NaN;const p=v.split(/[-–]/)[0];const m=p.match(/([\d.]+)\s*([kKmM])?/);if(!m)return NaN;let n=parseFloat(m[1]);if(m[2]&&/[kK]/.test(m[2]))n*=1000;if(m[2]&&/[mM]/.test(m[2]))n*=1000000;return n;}
+    const num=parseDealValue(d.value);
     if(!isNaN(num)){
       if(d.stage==='signed'){totalSigned+=num;signedCount++}
       else{totalPipeline+=num;pipelineCount++}
