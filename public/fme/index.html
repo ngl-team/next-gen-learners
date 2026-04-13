@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FME Study Tool - Fishbowl + Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#00703c;--gl:#e8f5e9;--gd:#004d26;--gold:#c5a94e;--red:#d32f2f;--orange:#f57c00;--bg:#f5f5f0;--card:#fff;--text:#1a1a1a;--tl:#555;--fish:#0d47a1;--fish-light:#e3f2fd;--fish-dark:#002171}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.container{max-width:800px;margin:0 auto;padding:20px}
+header{text-align:center;padding:30px 0 20px;border-bottom:3px solid var(--green)}
+header h1{font-size:1.8rem;color:var(--gd);font-weight:800}
+header p{color:var(--tl);margin-top:6px;font-size:0.95rem}
+.card{background:var(--card);border-radius:12px;padding:28px;margin:20px 0;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.btn{display:inline-block;padding:12px 28px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--gd)}
+.btn-fish{background:var(--fish);color:#fff}
+.btn-fish:hover{background:var(--fish-dark)}
+.btn-outline{background:transparent;border:2px solid var(--green);color:var(--green)}
+.btn-outline:hover{background:var(--gl)}
+.btn-sm{padding:8px 18px;font-size:0.85rem}
+.btn-full{width:100%;text-align:center}
+.btn-correct{background:#2e7d32;color:#fff}.btn-correct:hover{background:#1b5e20}
+.btn-wrong{background:var(--red);color:#fff}.btn-wrong:hover{background:#b71c1c}
+.btn-partial{background:var(--orange);color:#fff}.btn-partial:hover{background:#e65100}
+
+/* Tabs */
+.tab-bar{display:flex;gap:0;margin:20px 0 0;border-radius:10px;overflow:hidden;border:2px solid var(--green)}
+.tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:700;font-size:0.95rem;border:none;background:#fff;color:var(--green);transition:all 0.15s}
+.tab.active{background:var(--green);color:#fff}
+.tab:hover:not(.active){background:var(--gl)}
+.tab.fish-tab.active{background:var(--fish);color:#fff}
+.tab.fish-tab{color:var(--fish)}
+
+/* Dashboard */
+.module-grid{display:grid;gap:12px;margin:20px 0}
+.module-bar{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card);border-radius:10px;border-left:4px solid var(--green);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.module-bar .label{flex:1;font-weight:600;font-size:0.9rem}
+.module-bar .stats{display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--tl)}
+.mastery-bar{width:100px;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}
+.mastery-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.mastery-fill.low{background:var(--red)}.mastery-fill.mid{background:var(--orange)}.mastery-fill.high{background:var(--green)}
+.streak-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700;background:#fff3e0;color:var(--orange)}
+.overall-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.stat-box{text-align:center;padding:16px;background:var(--card);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.stat-box .num{font-size:1.8rem;font-weight:800;color:var(--green)}
+.stat-box .lbl{font-size:0.8rem;color:var(--tl);margin-top:2px}
+
+/* Quiz */
+.screen{display:none}
+.screen.active{display:block}
+.q-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.q-module-tag{padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;background:var(--gl);color:var(--gd)}
+.q-count{font-size:0.85rem;color:var(--tl)}
+.q-text{font-size:1.15rem;font-weight:600;line-height:1.5;margin-bottom:24px}
+.options{display:grid;gap:10px}
+.option{padding:14px 18px;border:2px solid #e0e0e0;border-radius:10px;cursor:pointer;font-size:0.95rem;line-height:1.4;transition:all 0.15s;text-align:left;background:#fff}
+.option:hover{border-color:var(--green);background:var(--gl)}
+.option.correct{border-color:var(--green);background:#c8e6c9;font-weight:600}
+.option.wrong{border-color:var(--red);background:#ffcdd2}
+.option[disabled]{cursor:default;pointer-events:none}
+.explanation{margin-top:18px;padding:16px;background:#f5f5f5;border-radius:10px;font-size:0.9rem;line-height:1.5;border-left:4px solid var(--green);display:none}
+.explanation.visible{display:block}
+.q-actions{display:flex;gap:10px;margin-top:20px}
+.progress-strip{height:4px;background:#e0e0e0;border-radius:2px;margin-bottom:20px}
+.progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.3s}
+
+/* Free response */
+.fr-textarea{width:100%;min-height:120px;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:0.95rem;font-family:inherit;line-height:1.5;resize:vertical;transition:border-color 0.2s}
+.fr-textarea:focus{outline:none;border-color:var(--green)}
+.fr-answer-box{margin-top:18px;padding:18px;border-radius:10px;font-size:0.9rem;line-height:1.6;display:none}
+.fr-answer-box.visible{display:block}
+.fr-answer-box h4{margin-bottom:8px;color:var(--gd)}
+.fr-answer-box .correct-answer{background:var(--gl);padding:12px;border-radius:8px;margin-bottom:12px;border-left:4px solid var(--green)}
+.fr-answer-box .key-points{background:#f5f5f5;padding:12px;border-radius:8px;border-left:4px solid var(--gold)}
+.fr-answer-box .key-points li{margin:4px 0 4px 16px;font-size:0.88rem}
+.fr-self-grade{margin-top:14px;padding:14px;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0}
+.fr-self-grade p{font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--tl)}
+.fr-grade-btns{display:flex;gap:8px;flex-wrap:wrap}
+.fr-your-answer{margin-top:12px;padding:12px;background:#fff3e0;border-radius:8px;border-left:4px solid var(--orange)}
+.fr-your-answer h4{margin-bottom:4px;font-size:0.85rem;color:var(--orange)}
+
+/* Results */
+.result-icon{font-size:1.5rem;text-align:center;margin-bottom:10px;font-weight:700;color:var(--gd)}
+.result-score{text-align:center;font-size:2rem;font-weight:800;color:var(--green)}
+.result-sub{text-align:center;color:var(--tl);margin:8px 0 20px}
+.weak-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin:6px 0;background:#fff3e0;font-size:0.9rem}
+.weak-item .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.strong-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin:6px 0;background:var(--gl);font-size:0.9rem}
+.strong-item .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* Mode selector */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+.mode-card{padding:20px;border:2px solid #e0e0e0;border-radius:12px;cursor:pointer;text-align:center;transition:all 0.15s}
+.mode-card:hover{border-color:var(--green);background:var(--gl)}
+.mode-card h3{color:var(--gd);margin-bottom:6px;font-size:1rem}
+.mode-card p{font-size:0.78rem;color:var(--tl)}
+.mode-card.active{border-color:var(--green);background:var(--gl)}
+.focus-chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.chip{padding:8px 16px;border-radius:20px;border:2px solid #e0e0e0;font-size:0.8rem;cursor:pointer;font-weight:600;transition:all 0.15s}
+.chip:hover{border-color:var(--green)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chip .perf{font-weight:400;opacity:0.8;margin-left:4px}
+.format-toggle{display:flex;gap:0;margin:16px 0;border:2px solid var(--green);border-radius:8px;overflow:hidden}
+.format-btn{flex:1;padding:10px;text-align:center;cursor:pointer;font-weight:600;font-size:0.9rem;border:none;background:#fff;color:var(--green);transition:all 0.15s}
+.format-btn.active{background:var(--green);color:#fff}
+.format-btn:hover:not(.active){background:var(--gl)}
+
+/* FISHBOWL */
+.fish-card{background:var(--card);border-radius:12px;padding:28px;margin:20px 0;box-shadow:0 2px 12px rgba(0,0,0,0.06);border-top:4px solid var(--fish)}
+.fish-scenario{background:var(--fish-light);padding:18px;border-radius:10px;margin-bottom:16px;border-left:4px solid var(--fish)}
+.fish-scenario h3{color:var(--fish-dark);font-size:0.85rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.fish-scenario p{font-size:1.05rem;line-height:1.5;color:var(--text)}
+.fish-concept{display:inline-block;padding:6px 16px;border-radius:20px;font-size:0.85rem;font-weight:700;background:#e8eaf6;color:#283593;margin-bottom:16px}
+.fish-prompt{font-size:1.1rem;font-weight:600;line-height:1.5;margin-bottom:16px;color:var(--fish-dark)}
+.fish-textarea{width:100%;min-height:150px;padding:16px;border:2px solid #bbdefb;border-radius:10px;font-size:1rem;font-family:inherit;line-height:1.6;resize:vertical;transition:border-color 0.2s}
+.fish-textarea:focus{outline:none;border-color:var(--fish)}
+.fish-reveal{margin-top:18px;display:none}
+.fish-reveal.visible{display:block}
+.fish-good-answer{background:var(--gl);padding:16px;border-radius:10px;border-left:4px solid var(--green);margin-bottom:12px}
+.fish-good-answer h4{color:var(--gd);margin-bottom:8px}
+.fish-bad-answer{background:#ffebee;padding:16px;border-radius:10px;border-left:4px solid var(--red);margin-bottom:12px}
+.fish-bad-answer h4{color:var(--red);margin-bottom:8px}
+.fish-tips{background:#f5f5f5;padding:14px;border-radius:10px;border-left:4px solid var(--gold)}
+.fish-tips h4{color:#7b6c1a;margin-bottom:8px}
+.fish-tips li{margin:4px 0 4px 16px;font-size:0.88rem}
+.fish-your{background:#fff3e0;padding:14px;border-radius:10px;border-left:4px solid var(--orange);margin-bottom:14px}
+.fish-your h4{color:var(--orange);margin-bottom:6px;font-size:0.85rem}
+.fish-grade{margin-top:14px;padding:14px;background:#fafafa;border-radius:10px;border:1px solid #e0e0e0}
+.fish-grade p{font-size:0.85rem;font-weight:600;margin-bottom:10px;color:var(--tl)}
+.fish-grade-btns{display:flex;gap:8px;flex-wrap:wrap}
+.fish-history-item{padding:14px;border:1px solid #e0e0e0;border-radius:10px;margin:10px 0;background:#fff}
+.fish-history-item .fh-scenario{font-weight:600;font-size:0.9rem;margin-bottom:4px}
+.fish-history-item .fh-concept{font-size:0.8rem;color:var(--fish);margin-bottom:6px}
+.fish-history-item .fh-response{font-size:0.88rem;line-height:1.4;color:var(--text)}
+.fish-history-item .fh-grade{display:inline-block;padding:2px 10px;border-radius:12px;font-size:0.75rem;font-weight:700;margin-top:6px}
+.fh-grade.got_it{background:var(--gl);color:var(--green)}
+.fh-grade.partial{background:#fff3e0;color:var(--orange)}
+.fh-grade.missed{background:#ffebee;color:var(--red)}
+.fish-counter{text-align:center;color:var(--tl);font-size:0.85rem;margin-bottom:16px}
+
+@media(max-width:600px){
+  .overall-stats{grid-template-columns:1fr}
+  .mode-grid{grid-template-columns:1fr}
+  .q-text{font-size:1.05rem}
+  .fr-grade-btns,.fish-grade-btns{flex-direction:column}
+  .tab{font-size:0.8rem;padding:10px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>FME STUDY TOOL</h1>
+<p>Babson College - Spring 2026</p>
+</header>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('quiz-tab',this)">Quiz Mode</button>
+  <button class="tab fish-tab" onclick="switchTab('fish-tab',this)">Fishbowl</button>
+  <button class="tab" onclick="switchTab('history-tab',this)">My Responses</button>
+</div>
+
+<!-- ==================== QUIZ TAB ==================== -->
+<div id="quiz-tab" class="screen active">
+
+<div id="dashboard">
+<div class="overall-stats">
+  <div class="stat-box"><div class="num" id="totalAnswered">0</div><div class="lbl">Questions Done</div></div>
+  <div class="stat-box"><div class="num" id="overallAcc">0%</div><div class="lbl">Overall Accuracy</div></div>
+  <div class="stat-box"><div class="num" id="weakestMod">--</div><div class="lbl">Focus Area</div></div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:16px;color:var(--gd)">Module Mastery</h2>
+  <div class="module-grid" id="moduleGrid"></div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:4px;color:var(--gd)">Answer Format</h2>
+  <p style="font-size:0.8rem;color:var(--tl);margin-bottom:8px">MC tests recognition. Free response tests understanding. Fishbowl tests application.</p>
+  <div class="format-toggle">
+    <button class="format-btn active" onclick="setFormat('mc',this)">Multiple Choice</button>
+    <button class="format-btn" onclick="setFormat('fr',this)">Free Response</button>
+  </div>
+</div>
+<div class="card">
+  <h2 style="margin-bottom:12px;color:var(--gd)">Study Mode</h2>
+  <div class="mode-grid">
+    <div class="mode-card active" data-mode="adaptive" onclick="selectMode(this)"><h3>Adaptive</h3><p>Focuses on your weak spots</p></div>
+    <div class="mode-card" data-mode="random" onclick="selectMode(this)"><h3>Random</h3><p>All modules equally</p></div>
+    <div class="mode-card" data-mode="focus" onclick="selectMode(this)"><h3>Focus</h3><p>Pick specific modules</p></div>
+    <div class="mode-card" data-mode="weakest" onclick="selectMode(this)"><h3>Weakest First</h3><p>Lowest-scoring modules</p></div>
+  </div>
+  <div id="focusSelector" style="display:none">
+    <p style="font-size:0.85rem;color:var(--tl);margin-bottom:8px">Select modules:</p>
+    <div class="focus-chips" id="focusChips"></div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:10px;align-items:center">
+    <label style="font-size:0.9rem;font-weight:600">Questions:</label>
+    <select id="qCountSel" style="padding:8px 12px;border-radius:8px;border:2px solid #e0e0e0;font-size:0.9rem">
+      <option value="5">5</option><option value="10" selected>10</option><option value="15">15</option><option value="20">20</option><option value="999">All</option>
+    </select>
+  </div>
+  <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="startQuiz()">Start Studying</button>
+</div>
+<div style="text-align:center;margin:20px 0"><button class="btn btn-outline btn-sm" onclick="resetProgress()">Reset All Progress</button></div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="quizScreen" style="display:none">
+<div class="card">
+  <div class="progress-strip"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="q-header"><span class="q-module-tag" id="qModule"></span><span class="q-count" id="qCount2"></span></div>
+  <div class="q-text" id="qText"></div>
+  <div class="options" id="optionsBox"></div>
+  <div id="frArea" style="display:none">
+    <textarea class="fr-textarea" id="frInput" placeholder="Type your answer... explain in your own words."></textarea>
+    <div style="margin-top:14px"><button class="btn btn-primary btn-full" onclick="revealFR()">Show Answer</button></div>
+  </div>
+  <div class="fr-answer-box" id="frAnswerBox">
+    <div class="fr-your-answer" id="frYourAnswer"><h4>Your answer:</h4><div id="frYourText"></div></div>
+    <div class="correct-answer" id="frCorrectAnswer"></div>
+    <div class="key-points" id="frKeyPoints"></div>
+    <div class="fr-self-grade" id="frSelfGrade">
+      <p>How did you do? Be honest.</p>
+      <div class="fr-grade-btns">
+        <button class="btn btn-correct btn-sm" onclick="gradeFR('got_it')">Got it</button>
+        <button class="btn btn-partial btn-sm" onclick="gradeFR('partial')">Partial</button>
+        <button class="btn btn-wrong btn-sm" onclick="gradeFR('missed')">Missed it</button>
+      </div>
+    </div>
+  </div>
+  <div class="explanation" id="explanation"></div>
+  <div class="q-actions" id="qActions" style="display:none">
+    <button class="btn btn-primary" onclick="nextQuestion()" style="flex:1">Next</button>
+    <button class="btn btn-outline" onclick="endQuiz()" style="flex:0">End</button>
+  </div>
+</div>
+</div>
+
+<!-- RESULTS -->
+<div id="resultsScreen" style="display:none">
+<div class="card">
+  <div class="result-icon" id="resultIcon"></div>
+  <div class="result-score" id="resultScore"></div>
+  <div class="result-sub" id="resultSub"></div>
+  <div id="resultBreakdown"></div>
+  <button class="btn btn-primary btn-full" style="margin-top:20px" onclick="goHome()">Back to Dashboard</button>
+</div>
+</div>
+</div>
+
+<!-- ==================== FISHBOWL TAB ==================== -->
+<div id="fish-tab" class="screen">
+<div id="fishHome">
+  <div class="fish-card">
+    <h2 style="color:var(--fish-dark);margin-bottom:8px">Fishbowl Mode</h2>
+    <p style="color:var(--tl);font-size:0.9rem;margin-bottom:16px">You get a real-world scenario + a concept. Apply the concept like you would in class. Show how you think, not what you memorized.</p>
+    <div style="background:var(--fish-light);padding:14px;border-radius:10px;margin-bottom:20px">
+      <p style="font-size:0.85rem;line-height:1.5"><strong>Bad answer:</strong> "I would test feasibility and desirability."<br>
+      <strong>Good answer:</strong> "I'd start by asking students if they'd use late-night delivery, then try a small test run one night to see if people actually order."</p>
+    </div>
+    <button class="btn btn-fish btn-full" onclick="startFishbowl()">Start Fishbowl Round</button>
+  </div>
+</div>
+
+<div id="fishActive" style="display:none">
+  <div class="fish-card">
+    <div class="fish-counter" id="fishCounter"></div>
+    <div class="fish-scenario" id="fishScenario"><h3>Scenario</h3><p></p></div>
+    <div class="fish-concept" id="fishConcept"></div>
+    <div class="fish-prompt" id="fishPrompt"></div>
+    <textarea class="fish-textarea" id="fishInput" placeholder="Answer like you're in the fishbowl. Be specific, practical, and show your thinking..."></textarea>
+    <div style="margin-top:14px"><button class="btn btn-fish btn-full" onclick="revealFishAnswer()">Show What a Good Answer Looks Like</button></div>
+    <div class="fish-reveal" id="fishReveal">
+      <div class="fish-your" id="fishYour"><h4>Your answer:</h4><div id="fishYourText"></div></div>
+      <div class="fish-good-answer" id="fishGood"><h4>Strong fishbowl answer:</h4><p></p></div>
+      <div class="fish-bad-answer" id="fishBad"><h4>Weak answer (just definitions):</h4><p></p></div>
+      <div class="fish-tips" id="fishTips"><h4>Key things to include:</h4><ul></ul></div>
+      <div class="fish-grade" id="fishGrade">
+        <p>Rate your response honestly:</p>
+        <div class="fish-grade-btns">
+          <button class="btn btn-correct btn-sm" onclick="gradeFish('got_it')">Nailed it - applied the concept well</button>
+          <button class="btn btn-partial btn-sm" onclick="gradeFish('partial')">Partial - had some application</button>
+          <button class="btn btn-wrong btn-sm" onclick="gradeFish('missed')">Missed - mostly definitions/vague</button>
+        </div>
+      </div>
+    </div>
+    <div class="q-actions" id="fishActions" style="display:none">
+      <button class="btn btn-fish" onclick="nextFish()" style="flex:1">Next Scenario</button>
+      <button class="btn btn-outline" onclick="endFishbowl()" style="flex:0">Done</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== HISTORY TAB ==================== -->
+<div id="history-tab" class="screen">
+<div class="card">
+  <h2 style="color:var(--gd);margin-bottom:8px">My Fishbowl Responses</h2>
+  <p style="color:var(--tl);font-size:0.85rem;margin-bottom:16px">Review your past fishbowl answers to see your improvement over time.</p>
+  <div id="historyList"></div>
+  <div id="historyEmpty" style="text-align:center;padding:40px;color:var(--tl)">No fishbowl responses yet. Go practice!</div>
+</div>
+</div>
+
+</div>
+
+<script>
+// ===== MODULES & QUESTIONS (same as before) =====
+const MODULES=["Creaction & ET&A","Experimentation","Selling","Marketing & Branding","Operations & Controls","Running the Venture","Financial Reporting","Sales Metrics","Venture Growth"];
+
+const QUESTIONS=[
+{m:0,q:"What is Creaction?",o:["Predicting the future using data","Acting your way into the future when it's unknowable","Creating a business plan before starting","Copying successful entrepreneurs"],a:1,e:"Creaction is based on acting and creating evidence rather than thinking and analysis. It's the approach used when the future is unknowable.",fr:"Define Creaction and explain when you would use it instead of Prediction.",fp:["Acting your way into the future","Used when the future is unknowable","Based on creating evidence, not just thinking","Complements Prediction"]},
+{m:0,q:"What are the three parts of the Creaction cycle?",o:["Plan, Execute, Review","Think, Analyze, Decide","Act, Learn, Build","Research, Hypothesize, Test"],a:2,e:"The Creaction cycle is Act (take a smart step), Learn (reflect on what happened), Build (incorporate learning into next step).",fr:"Describe the three parts of the Creaction cycle.",fp:["Act - take a smart step","Learn - reflect on what happened","Build - incorporate learning","Repeating cycle"]},
+{m:0,q:"What is a 'smart step'?",o:["A calculated risk based on research","An action using means at hand within acceptable loss","The first step in a business plan","Any revenue-generating action"],a:1,e:"A smart step uses means at hand, stays within acceptable loss, and brings others along.",fr:"Explain what makes a step 'smart' in Creaction.",fp:["Uses means at hand","Stays within acceptable loss","Brings others along"]},
+{m:0,q:"What does ET&A stand for?",o:["Entrepreneurial Testing & Assessment","Entrepreneurial Thought & Action","Economic Theory & Application","Enterprise Technology & Analytics"],a:1,e:"ET&A = Entrepreneurial Thought & Action. Combines Prediction and Creaction.",fr:"What does ET&A stand for and what two things does it combine?",fp:["Entrepreneurial Thought & Action","Combines Prediction with Creaction"]},
+{m:0,q:"What is 'acceptable loss'?",o:["Maximum before bankruptcy","Amount you're willing to lose if things fail","Expected loss from competition","Insurance coverage"],a:1,e:"Never invest more than you're willing to lose - time, money, reputation.",fr:"Define acceptable loss and why it matters.",fp:["Amount willing to lose","Includes time, money, reputation","Guard rail on risk"]},
+{m:1,q:"What are the 4 elements of a good experiment?",o:["Budget, Timeline, Team, Tools","Clear Hypothesis, Data Collection, Careful Execution, Decision Rule","Product, Price, Place, Promotion","Research, Design, Launch, Review"],a:1,e:"Hypothesis (If X then Y because Z), Data Collection, Careful Execution (isolate variables), Decision Rule (persist/pivot/kill).",fr:"Name and explain the 4 elements of a good experiment.",fp:["Clear Hypothesis - If X then Y because Z","Good Data Collection","Careful Execution - isolate variables","Decision Rule - persist/pivot/kill threshold"]},
+{m:1,q:"What is a 'Wizard of Oz' experiment?",o:["A trick to fool investors","Service appears automated but is manual behind scenes","An A/B test","A focus group"],a:1,e:"Customers think it's automated but it's manually executed. Tests demand without building.",fr:"Explain Wizard of Oz experiment and why startups use it.",fp:["Appears automated to customers","Actually manual behind scenes","Tests demand without full build","Saves time and money"]},
+{m:1,q:"What are the 3 questions every startup must test?",o:["Product, Price, Place","Value Proposition, Channel, Monetization","Team, Timing, Tech","Vision, Mission, Strategy"],a:1,e:"Value Proposition (problem real?), Channel (reach market?), Monetization (will they pay?).",fr:"What 3 things must every startup test through experiments?",fp:["Value Proposition - is problem real and painful?","Channel - can you reach market cost-effectively?","Monetization - will customers pay and at what price?"]},
+{m:2,q:"According to Daniel Pink, who makes the best salespeople?",o:["Extroverts","Introverts","Ambiverts","Executives"],a:2,e:"Ambiverts balance talking and listening.",fr:"Who makes the best salesperson according to Pink and why?",fp:["Ambiverts","Balance talking and listening","Outperform both extroverts and introverts"]},
+{m:2,q:"What does NO = Navigation toward Opportunity mean?",o:["Never take no","Every no moves toward understanding what makes a yes","Only say no to bad deals","Navigate around competition"],a:1,e:"Most no's are 'no for now.' Find out the type of NO and why, then flip it ON.",fr:"Explain NO = Navigation toward Opportunity.",fp:["Most no's are temporary","Find out type of NO and WHY","Objections are signs of interest","Work to flip NO to ON"]},
+{m:2,q:"What should be at the CENTER of the sales honeycomb?",o:["Product features","Ask questions, Listen, Paraphrase, Tell stories","Pricing","Competitive advantages"],a:1,e:"These four skills are at the center of every sales step.",fr:"What 4 skills sit at the center of the sales honeycomb?",fp:["Ask questions","Listen","Paraphrase","Tell stories"]},
+{m:3,q:"What does SMILE stand for?",o:["Simple, Meaningful, Innovative, Lasting, Exciting","Suggestive, Memorable, Imagery, Legs, Emotional","Strategic, Marketable, Interesting, Loud, Engaging","Short, Modern, Impressive, Lucky, Easy"],a:1,e:"SMILE = Suggestive, Memorable, Imagery, Legs, Emotional.",fr:"What does SMILE stand for in brand naming?",fp:["Suggestive","Memorable","Imagery","Legs","Emotional"]},
+{m:3,q:"What are the 6 steps to building a brand?",o:["Research, Plan, Launch, Market, Sell, Grow","Name, Logo, Tagline, Story, Become the Brand, Check In","Product, Price, Place, Promotion, People, Process","Idea, Prototype, Test, Launch, Scale, Exit"],a:1,e:"Name, Logo, Tagline, Story, Become the Brand, Check In with Customer.",fr:"List and explain the 6 steps to building a brand.",fp:["Create a Name","Design a Logo","Write a Tagline","Tell Your Story","Become the Brand","Check In with Customer"]},
+{m:3,q:"Traditional vs entrepreneurial marketing?",o:["Budget only","Traditional finds customers for products; Entrepreneurial finds products for customers","Traditional=digital; Entrepreneurial=print","No difference"],a:1,e:"Traditional: product-focused, big budget. Entrepreneurial: customer-focused, creativity.",fr:"Compare traditional and entrepreneurial marketing.",fp:["Traditional: find customers for products","Entrepreneurial: find products for customers","Traditional: big budget","Entrepreneurial: creativity over budget"]},
+{m:4,q:"What does CAR stand for?",o:["Cost, Allocation, Revenue","Custody, Authorization, Record keeping","Control, Assessment, Review","Cash, Accounts, Reconciliation"],a:1,e:"Custody, Authorization, Record keeping. Must be split among different people.",fr:"What does CAR stand for and why must they be separated?",fp:["Custody - physical possession of assets","Authorization - who initiates transactions","Record keeping - who maintains records","Must be separated to prevent fraud"]},
+{m:4,q:"Effectiveness vs Efficiency?",o:["Same thing","Effectiveness=doing right things; Efficiency=doing things right","Effectiveness=speed; Efficiency=quality","Effectiveness=profit; Efficiency=revenue"],a:1,e:"Effectiveness = doing the right things. Efficiency = doing things right.",fr:"Define effectiveness and efficiency in operations.",fp:["Effectiveness = doing the RIGHT things","Efficiency = doing things RIGHT","Goal is both: right things done right"]},
+{m:4,q:"What are operational controls?",o:["Government regs","Rules about HOW and BY WHOM to PROTECT assets","Software only","Performance reviews"],a:1,e:"Rules about how processes should be done and by whom to protect assets.",fr:"Define operational controls.",fp:["Rules for HOW processes are done","And BY WHOM","Purpose: PROTECT assets"]},
+{m:5,q:"What 3 systems must every FME business have?",o:["CRM, ERP, HR","Notification, Inventory tracking, Accounting","Website, Social, Email","POS, Payroll, Banking"],a:1,e:"Notification system, Inventory tracking, Accounting system.",fr:"What 3 systems does every FME business need?",fp:["Notification system","Inventory tracking","Accounting system"]},
+{m:8,q:"What are the 5 hazards of growing too quickly?",o:["Competition, regulation, technology, talent, funding","Misunderstanding financials, sales trumps everything, wrong hires, losing customer touch, receivables outrun sales","Market saturation, price wars, quality, legal, brand","Supply chain, HR, marketing, finance, ops"],a:1,e:"Misunderstanding financials, thinking sales trumps everything, wrong hires, losing customer touch, receivables outrunning sales.",fr:"Name the 5 hazards of growing too quickly.",fp:["Misunderstanding financials","Thinking sales growth trumps everything","Hiring the wrong people","Losing touch with the customer","Receivables outrunning sales growth"]},
+{m:8,q:"What is Crossing the Chasm?",o:["Physical obstacle","Challenge of moving from early adopters to mainstream","Changing industries","Startup to IPO"],a:1,e:"Transition from early adopters (love novelty) to early majority (want proven solutions).",fr:"Explain Crossing the Chasm.",fp:["Gap between early adopters and mainstream","Early adopters love novelty","Early majority wants proven solutions","Many startups fail here"]},
+{m:8,q:"What was Peloton's fatal mistake?",o:["Not raising prices","Scaling too fast, sacrificing quality, couldn't adjust when demand reversed","Not marketing","Staying too small"],a:1,e:"Scaled manufacturing during COVID, quality dropped, couldn't adjust when demand reversed.",fr:"Describe Peloton's rise and fall.",fp:["Scaled too fast during COVID","Quality dropped, recalls, child death","Couldn't adjust when people returned to gyms","Stock dropped 97.7% from peak"]}
+];
+
+// ===== FISHBOWL SCENARIOS =====
+const FISHBOWL=[
+{scenario:"Your FME team just launched a new snack product on campus but sales have been flat for 2 weeks.",concept:"Experimentation",prompt:"How would you design an experiment to figure out what's going wrong?",good:"I'd run an A/B test this week - half of our sales team pitches it as a healthy study snack, the other half pitches it as a treat. We track which pitch gets more sales over 3 days. If neither works, the problem might be the product itself, not the pitch. Decision rule: if either pitch gets 15+ sales in 3 days, we double down on that angle. If both flop, we survey 10 people who said no and ask why.",bad:"I would test our assumptions and run an experiment to see what works.",tips:["Name a SPECIFIC experiment type (A/B test, preselling, etc.)","State a clear hypothesis","Define a decision rule with numbers","Show what you'd learn from the results"]},
+{scenario:"You're pitching your FME product to a local store owner and she says 'I've never heard of your brand, why would my customers want this?'",concept:"Selling - Handling Objections",prompt:"How would you respond to this objection?",good:"That's a fair point - you want products your customers will actually buy. Here's what I'd suggest: let me leave 10 units on consignment for a week. If they sell, we'll talk about a regular order. If they don't, I'll take them back, no cost to you. We've already sold 50 units on campus in 2 weeks, so there is demand. The risk to you is zero.",bad:"Our product is really good and people like it. You should give it a try.",tips:["Acknowledge the objection, don't get defensive","Identify it as skepticism/uncertainty","Provide evidence or proof","Reduce the prospect's risk","Make a specific, low-risk ask"]},
+{scenario:"Your FME team's Instagram has 200 followers but gets almost no engagement. You need to drive sales through social media.",concept:"Entrepreneurial Marketing & Branding",prompt:"What specific actions would you take this week to improve engagement and drive sales?",good:"First, I'd post a 15-second Reel showing the product being used - not just a photo. Then I'd run a 48-hour flash sale only for Instagram followers with a unique discount code. I'd track exactly how many people use the code to measure if Instagram actually drives sales. I'd also DM 20 followers personally asking what content they want to see.",bad:"I would improve our branding and create a social media campaign.",tips:["Name SPECIFIC content types (Reels, stories, polls)","Include a measurable action (discount code, link clicks)","Show you understand entrepreneurial marketing is dialogue, not monologue","Mention checking in with customers"]},
+{scenario:"Your FME team realized that your inventory counts don't match your accounting records. You're missing 8 units.",concept:"Operations & Controls - Segregation of Duties",prompt:"What happened and how would you fix the process going forward?",good:"The most likely issue is that whoever handles the inventory is also the one recording transactions. I'd immediately separate custody and record keeping - one person counts physical inventory, a different person records it in the books. Going forward, we do a weekly reconciliation where both people compare their numbers. For the missing 8, I'd check if any sales weren't logged, if units were damaged and thrown out without recording, or if someone took them.",bad:"We need better controls and should reconcile more often.",tips:["Reference CAR (Custody, Authorization, Record keeping)","Identify WHICH duty separation failed","Propose a specific fix, not just 'better controls'","Explain how to investigate the discrepancy"]},
+{scenario:"Your FME business has been selling well on campus. A friend suggests you start selling on Amazon to 'go national.'",concept:"Venture Growth - Hazards of Growing Too Quickly",prompt:"How would you evaluate this decision? What risks should you consider?",good:"I'd pump the brakes. Going to Amazon means we need way more inventory, shipping logistics, customer service for returns, and listing fees we haven't budgeted for. That's exactly the 'misunderstanding financials' hazard. Right now our receivables are clean because we sell face-to-face for cash. Amazon payments take 2 weeks - receivables could outrun our cash. I'd rather grow by expanding to 2-3 more campus locations first where our operations already work, then consider Amazon when we have the cash cushion and team to handle it.",bad:"We should be careful about growing too fast and make sure we're ready.",tips:["Reference specific hazards from the 5 hazards framework","Name the financial/operational risks of the new channel","Suggest a more measured growth alternative","Show you understand that growing WELL is harder than just growing"]},
+{scenario:"You're starting a new FME business and your team is debating between three completely different product ideas. Nobody can agree.",concept:"Creaction - Smart Steps & Acceptable Loss",prompt:"How would you break the deadlock using Creaction thinking?",good:"Instead of debating forever, I'd say: let's test all three this week. Each person takes one idea and does a presell - go talk to 20 people and try to get actual commitments to buy. Cap the test at $50 and 3 days per idea - that's our acceptable loss. On Thursday we compare results. The idea with the most actual commitments wins. If none get commitments, we learn something and try different ideas. The point is to act and get evidence instead of sitting in a room arguing.",bad:"We should use the Creaction framework and take smart steps.",tips:["Propose ACTING, not more discussion","Define the acceptable loss (time, money)","Design a quick test for each idea","Set a deadline and decision rule","Show that evidence beats opinions"]},
+{scenario:"Your FME snack brand is called 'XQ7 Bites.' You're wondering why nobody remembers your brand name.",concept:"Marketing - SMILE and SCRATCH",prompt:"Evaluate the name 'XQ7 Bites' and suggest how to improve it.",good:"XQ7 fails the SMILE test completely. It's not suggestive - nobody knows what XQ7 means. It's not memorable or emotional. And it's basically a SCRATCH deal breaker - it's tame, it could be anything, and there's a curse of knowledge since only the founders know what XQ7 stands for. I'd rename it something like 'CrunchTime' - it's suggestive (snacking during study time), it has imagery, it has legs for campaigns like 'It's CrunchTime!' and it connects emotionally to student life.",bad:"The name doesn't pass the SMILE test. We should change it to something more suggestive and memorable.",tips:["Apply SMILE criteria specifically to the name","Identify which SCRATCH deal breakers apply","Suggest a specific alternative name","Explain WHY the new name works using SMILE"]},
+{scenario:"A customer bought your product last week and messaged saying it arrived broken. Your teammate says 'just ignore it, it's one customer.'",concept:"Selling - Customer Retention & Brand Trust",prompt:"How would you handle this and why does your teammate's approach matter?",good:"Absolutely not ignoring it. I'd message back within an hour apologizing and offering a free replacement plus a small discount on their next order. One unhappy customer tells 10 people. But a customer whose problem gets solved quickly becomes your most loyal advocate. This also goes back to Zig Ziglar - trust makes people do business with you. If we handle this well, we build trust. If we ghost them, we lose them and everyone they tell.",bad:"Customer service is important and we should respond to the customer.",tips:["Show urgency in response time","Propose a specific remedy","Connect to brand trust and the Zig Ziglar principle","Explain the ripple effect of bad service","Reference hunting (acquisition) vs farming (retention)"]},
+{scenario:"Your team is about to launch but nobody has documented how you actually make and deliver the product. Everyone just 'knows' what to do.",concept:"Operations - Process Mapping",prompt:"Why is this a problem and what would you do about it?",good:"This is a ticking time bomb. What happens when someone is sick or we need to train a new person? I'd sit the team down for 30 minutes and create a process map - from the moment we receive inventory to the moment cash hits our account. We'd use a flowchart showing who does what, in what order, and where decisions happen (like: is the customer paying cash or card?). This also helps us spot bottlenecks before launch instead of discovering them when customers are waiting.",bad:"We should document our processes and create a process map.",tips:["Explain the RISK of not documenting","Describe what the process map would include (steps, roles, decisions)","Give a specific example of what could go wrong","Show how it prevents bottlenecks"]},
+{scenario:"Your FME business had a great first month - $500 in sales. Your teammate wants to take a $2,000 loan to buy 5x more inventory for next month.",concept:"Venture Growth & Acceptable Loss",prompt:"How would you evaluate this decision?",good:"$500 is great but one month isn't a pattern. Taking a $2,000 loan to 5x our inventory means if sales don't grow proportionally, we're stuck with product we can't sell AND debt. That violates the acceptable loss principle - are we willing to lose $2,000? I'd rather grow incrementally. Order 50% more inventory for month 2 using our revenue, not debt. If month 2 grows, we order more for month 3. That's Act-Learn-Build. The Forbes article was clear: more sales doesn't always mean more profit, and misunderstanding your financials is hazard number one.",bad:"We should be careful about growing too fast and make sure we understand the risks.",tips:["Apply acceptable loss to the specific dollar amount","Reference Act-Learn-Build cycle","Mention specific growth hazards","Propose an alternative, more measured approach","Show the math/logic of why 5x is risky"]}
+];
+
+// ===== STATE =====
+let state=loadState();
+let fishHistory=loadFishHistory();
+let currentMode='adaptive',answerFormat='mc',focusModules=[];
+let quizQuestions=[],quizIndex=0,quizCorrect=0,quizPartial=0,quizResults=[];
+let fishIndex=0,fishCount=0;
+
+function defaultState(){return{moduleStats:MODULES.map(()=>({correct:0,total:0,streak:0,partial:0})),totalCorrect:0,totalAnswered:0,totalPartial:0}}
+function loadState(){try{const s=localStorage.getItem('fme_v3');return s?JSON.parse(s):defaultState()}catch(e){return defaultState()}}
+function saveState(){localStorage.setItem('fme_v3',JSON.stringify(state))}
+function loadFishHistory(){try{const s=localStorage.getItem('fme_fish');return s?JSON.parse(s):[]}catch(e){return[]}}
+function saveFishHistory(){localStorage.setItem('fme_fish',JSON.stringify(fishHistory))}
+function resetProgress(){if(confirm('Reset all progress?')){state=defaultState();saveState();renderDashboard()}}
+function getMastery(s){return s.total===0?0:Math.round(((s.correct+s.partial*0.5)/s.total)*100)}
+function getWeakest(){let min=101,idx=0;state.moduleStats.forEach((s,i)=>{const m=s.total===0?0:getMastery(s);if(m<min||(m===min&&s.total<state.moduleStats[idx].total)){min=m;idx=i}});return idx}
+
+// ===== TABS =====
+function switchTab(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='history-tab')renderHistory();
+  if(id==='quiz-tab')renderDashboard();
+}
+
+// ===== QUIZ DASHBOARD =====
+function setFormat(f,btn){answerFormat=f;document.querySelectorAll('.format-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function selectMode(el){document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');currentMode=el.dataset.mode;document.getElementById('focusSelector').style.display=currentMode==='focus'?'block':'none'}
+function toggleFocus(i){const idx=focusModules.indexOf(i);if(idx>=0)focusModules.splice(idx,1);else focusModules.push(i);renderFocusChips()}
+
+function renderDashboard(){
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('quizScreen').style.display='none';
+  document.getElementById('resultsScreen').style.display='none';
+  document.getElementById('totalAnswered').textContent=state.totalAnswered;
+  const acc=state.totalAnswered?Math.round(((state.totalCorrect+state.totalPartial*0.5)/state.totalAnswered)*100):0;
+  document.getElementById('overallAcc').textContent=acc+'%';
+  const w=getWeakest();
+  document.getElementById('weakestMod').textContent=state.totalAnswered?MODULES[w].split('&')[0].trim():'--';
+  const grid=document.getElementById('moduleGrid');grid.innerHTML='';
+  MODULES.forEach((name,i)=>{const s=state.moduleStats[i];const m=getMastery(s);const cls=m<50?'low':m<75?'mid':'high';const qc=QUESTIONS.filter(q=>q.m===i).length;
+    grid.innerHTML+=`<div class="module-bar"><span class="label">${name}</span><span class="stats">${s.total}/${qc}<div class="mastery-bar"><div class="mastery-fill ${cls}" style="width:${m}%"></div></div>${m}%${s.streak>=3?`<span class="streak-badge">${s.streak}</span>`:''}</span></div>`;
+  });
+  renderFocusChips();
+}
+function renderFocusChips(){const box=document.getElementById('focusChips');box.innerHTML='';MODULES.forEach((n,i)=>{const m=getMastery(state.moduleStats[i]);box.innerHTML+=`<div class="chip ${focusModules.includes(i)?'active':''}" onclick="toggleFocus(${i})">${n}<span class="perf">${m}%</span></div>`})}
+
+function selectQuestions(){
+  const count=parseInt(document.getElementById('qCountSel').value);let pool=[...QUESTIONS];
+  if(currentMode==='adaptive'){const w=state.moduleStats.map(s=>{const m=getMastery(s);if(s.total===0)return 5;if(m<40)return 5;if(m<60)return 4;if(m<75)return 3;if(m<90)return 2;return 1});let wt=[];pool.forEach(q=>{for(let i=0;i<w[q.m];i++)wt.push(q)});pool=wt}
+  else if(currentMode==='focus'){if(focusModules.length>0)pool=pool.filter(q=>focusModules.includes(q.m))}
+  else if(currentMode==='weakest'){const s2=[...state.moduleStats.map((s,i)=>({i,m:getMastery(s),t:s.total}))].sort((a,b)=>a.m-b.m||a.t-b.t);pool=pool.filter(q=>s2.slice(0,3).map(x=>x.i).includes(q.m))}
+  const sh=pool.sort(()=>Math.random()-0.5);const seen=new Set,sel=[];
+  for(const q of sh){if(!seen.has(q.q)){seen.add(q.q);sel.push(q);if(sel.length>=count)break}}return sel;
+}
+
+function startQuiz(){quizQuestions=selectQuestions();if(!quizQuestions.length){alert('No questions available.');return}quizIndex=0;quizCorrect=0;quizPartial=0;quizResults=[];document.getElementById('dashboard').style.display='none';document.getElementById('quizScreen').style.display='block';renderQuestion()}
+
+function renderQuestion(){
+  const q=quizQuestions[quizIndex];
+  document.getElementById('qModule').textContent=MODULES[q.m];
+  document.getElementById('qCount2').textContent=`${quizIndex+1}/${quizQuestions.length}`;
+  document.getElementById('progressFill').style.width=((quizIndex)/quizQuestions.length*100)+'%';
+  document.getElementById('explanation').classList.remove('visible');document.getElementById('qActions').style.display='none';
+  if(answerFormat==='mc'){
+    document.getElementById('qText').textContent=q.q;document.getElementById('optionsBox').style.display='grid';document.getElementById('frArea').style.display='none';document.getElementById('frAnswerBox').classList.remove('visible');
+    const box=document.getElementById('optionsBox');box.innerHTML='';q.o.forEach((o,i)=>box.innerHTML+=`<button class="option" onclick="answer(${i})">${o}</button>`);
+  }else{
+    document.getElementById('qText').textContent=q.fr||q.q;document.getElementById('optionsBox').style.display='none';document.getElementById('frArea').style.display='block';document.getElementById('frAnswerBox').classList.remove('visible');
+    document.getElementById('frInput').value='';document.getElementById('frInput').disabled=false;document.getElementById('frArea').querySelector('button').disabled=false;
+  }
+}
+
+function answer(idx){
+  const q=quizQuestions[quizIndex];const ok=idx===q.a;const btns=document.querySelectorAll('.option');
+  btns.forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add('correct');if(i===idx&&!ok)b.classList.add('wrong')});
+  const ms=state.moduleStats[q.m];ms.total++;state.totalAnswered++;
+  if(ok){ms.correct++;ms.streak++;state.totalCorrect++;quizCorrect++}else{ms.streak=0}
+  quizResults.push({m:q.m,score:ok?1:0});saveState();
+  const exp=document.getElementById('explanation');exp.textContent=(ok?'Correct! ':'Incorrect. ')+q.e;exp.classList.add('visible');document.getElementById('qActions').style.display='flex';
+}
+
+function revealFR(){
+  const q=quizQuestions[quizIndex];document.getElementById('frArea').querySelector('button').disabled=true;document.getElementById('frInput').disabled=true;
+  document.getElementById('frYourText').textContent=document.getElementById('frInput').value.trim()||'(no answer)';
+  document.getElementById('frCorrectAnswer').innerHTML='<h4>Correct Answer:</h4>'+q.e;
+  if(q.fp){let h='<h4>Key Points:</h4><ul>';q.fp.forEach(p=>h+=`<li>${p}</li>`);document.getElementById('frKeyPoints').innerHTML=h+'</ul>'}
+  document.getElementById('frAnswerBox').classList.add('visible');
+  document.getElementById('frSelfGrade').innerHTML='<p>How did you do?</p><div class="fr-grade-btns"><button class="btn btn-correct btn-sm" onclick="gradeFR(\'got_it\')">Got it</button><button class="btn btn-partial btn-sm" onclick="gradeFR(\'partial\')">Partial</button><button class="btn btn-wrong btn-sm" onclick="gradeFR(\'missed\')">Missed</button></div>';
+}
+
+function gradeFR(g){
+  const q=quizQuestions[quizIndex];const ms=state.moduleStats[q.m];ms.total++;state.totalAnswered++;
+  if(g==='got_it'){ms.correct++;ms.streak++;state.totalCorrect++;quizCorrect++;quizResults.push({m:q.m,score:1})}
+  else if(g==='partial'){ms.partial++;ms.streak=0;state.totalPartial++;quizPartial++;quizResults.push({m:q.m,score:0.5})}
+  else{ms.streak=0;quizResults.push({m:q.m,score:0})}
+  saveState();document.getElementById('frSelfGrade').innerHTML=`<p style="color:var(--gd);font-weight:700">${g==='got_it'?'Marked correct':g==='partial'?'Marked partial':'Marked missed - will come up more'}</p>`;
+  document.getElementById('qActions').style.display='flex';
+}
+
+function nextQuestion(){quizIndex++;if(quizIndex>=quizQuestions.length){endQuiz();return}renderQuestion()}
+
+function endQuiz(){
+  document.getElementById('quizScreen').style.display='none';document.getElementById('resultsScreen').style.display='block';
+  const ts=quizResults.reduce((s,r)=>s+r.score,0);const pct=quizQuestions.length?Math.round((ts/quizQuestions.length)*100):0;
+  document.getElementById('resultIcon').textContent=pct>=80?'Strong work.':pct>=60?'Getting there.':'Keep grinding.';
+  document.getElementById('resultScore').textContent=`${Math.round(ts*10)/10}/${quizQuestions.length} (${pct}%)`;
+  document.getElementById('resultSub').textContent=answerFormat==='fr'?'Free response':'Multiple choice';
+  const mp={};quizResults.forEach(r=>{if(!mp[r.m])mp[r.m]={s:0,t:0};mp[r.m].t++;mp[r.m].s+=r.score});
+  let h='<h3 style="margin:16px 0 8px;color:var(--gd)">By Module</h3>';
+  Object.entries(mp).sort((a,b)=>(a[1].s/a[1].t)-(b[1].s/b[1].t)).forEach(([m,p])=>{const p2=Math.round((p.s/p.t)*100);h+=`<div class="${p2<70?'weak-item':'strong-item'}"><span class="dot"></span><strong>${MODULES[m]}</strong>: ${Math.round(p.s*10)/10}/${p.t} (${p2}%)</div>`});
+  h+='<h3 style="margin:20px 0 8px;color:var(--gd)">Overall Weak Spots</h3>';
+  const aw=[...state.moduleStats.map((s,i)=>({i,m:getMastery(s),t:s.total}))].filter(s=>s.m<70||s.t<3).sort((a,b)=>a.m-b.m);
+  if(!aw.length)h+='<div class="strong-item"><span class="dot"></span>No major weak spots</div>';
+  aw.forEach(s=>h+=`<div class="weak-item"><span class="dot"></span><strong>${MODULES[s.i]}</strong>: ${s.m}% (${s.t} done)</div>`);
+  document.getElementById('resultBreakdown').innerHTML=h;
+}
+function goHome(){renderDashboard()}
+
+// ===== FISHBOWL =====
+let fishPool=[];
+function startFishbowl(){
+  fishPool=[...FISHBOWL].sort(()=>Math.random()-0.5);fishIndex=0;fishCount=0;
+  document.getElementById('fishHome').style.display='none';document.getElementById('fishActive').style.display='block';
+  renderFish();
+}
+
+function renderFish(){
+  const f=fishPool[fishIndex%fishPool.length];fishCount++;
+  document.getElementById('fishCounter').textContent=`Scenario ${fishCount}`;
+  document.getElementById('fishScenario').querySelector('p').textContent=f.scenario;
+  document.getElementById('fishConcept').textContent=f.concept;
+  document.getElementById('fishPrompt').textContent=f.prompt;
+  document.getElementById('fishInput').value='';document.getElementById('fishInput').disabled=false;
+  document.getElementById('fishReveal').classList.remove('visible');
+  document.getElementById('fishActions').style.display='none';
+  document.getElementById('fishActive').querySelector('.btn-fish').disabled=false;
+  document.getElementById('fishInput').focus();
+}
+
+function revealFishAnswer(){
+  const f=fishPool[fishIndex%fishPool.length];
+  document.getElementById('fishInput').disabled=true;
+  document.getElementById('fishActive').querySelector('.btn-fish').disabled=true;
+  document.getElementById('fishYourText').textContent=document.getElementById('fishInput').value.trim()||'(no answer)';
+  document.getElementById('fishGood').querySelector('p').textContent=f.good;
+  document.getElementById('fishBad').querySelector('p').textContent=f.bad;
+  let ul='';f.tips.forEach(t=>ul+=`<li>${t}</li>`);document.getElementById('fishTips').querySelector('ul').innerHTML=ul;
+  document.getElementById('fishReveal').classList.add('visible');
+  document.getElementById('fishGrade').innerHTML=`<p>Rate your response honestly:</p><div class="fish-grade-btns"><button class="btn btn-correct btn-sm" onclick="gradeFish('got_it')">Nailed it</button><button class="btn btn-partial btn-sm" onclick="gradeFish('partial')">Partial</button><button class="btn btn-wrong btn-sm" onclick="gradeFish('missed')">Missed</button></div>`;
+}
+
+function gradeFish(g){
+  const f=fishPool[fishIndex%fishPool.length];
+  const entry={date:new Date().toISOString(),scenario:f.scenario,concept:f.concept,prompt:f.prompt,response:document.getElementById('fishInput').value.trim(),grade:g,goodAnswer:f.good};
+  fishHistory.unshift(entry);saveFishHistory();
+  document.getElementById('fishGrade').innerHTML=`<p style="color:var(--fish-dark);font-weight:700">${g==='got_it'?'Nice - applied thinking, not just definitions':g==='partial'?'Getting there - try to be more specific next time':'Review the strong answer above and try again later'}</p>`;
+  document.getElementById('fishActions').style.display='flex';
+}
+
+function nextFish(){fishIndex++;renderFish()}
+function endFishbowl(){document.getElementById('fishActive').style.display='none';document.getElementById('fishHome').style.display='block'}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const list=document.getElementById('historyList');const empty=document.getElementById('historyEmpty');
+  if(!fishHistory.length){list.innerHTML='';empty.style.display='block';return}
+  empty.style.display='none';
+  list.innerHTML=fishHistory.map((h,i)=>{
+    const d=new Date(h.date);const ds=d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return`<div class="fish-history-item"><div style="display:flex;justify-content:space-between;align-items:center"><div class="fh-scenario">${h.scenario.substring(0,80)}${h.scenario.length>80?'...':''}</div><span style="font-size:0.75rem;color:var(--tl)">${ds}</span></div><div class="fh-concept">${h.concept}</div><div class="fh-response">${h.response||'(no answer)'}</div><span class="fh-grade ${h.grade}">${h.grade==='got_it'?'Nailed it':h.grade==='partial'?'Partial':'Missed'}</span></div>`;
+  }).join('');
+}
+
+// Init
+renderDashboard();
+</script>
+</body>
+</html>
