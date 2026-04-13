@@ -2558,7 +2558,7 @@ function renderDeals(){
   // Stats bar
   let totalSigned=0,totalPipeline=0,signedCount=0,pipelineCount=0;
   filtered.forEach(d=>{
-    const num=parseFloat((d.value||'').replace(/[^0-9.]/g,''));
+    const rawVal=(d.value||'');const valParts=rawVal.split(/[-–]/);const num=parseFloat((valParts[0]||'').replace(/[^0-9.]/g,''));
     if(!isNaN(num)){
       if(d.stage==='signed'){totalSigned+=num;signedCount++}
       else{totalPipeline+=num;pipelineCount++}
