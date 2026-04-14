@@ -2564,13 +2564,25 @@ async function syncSingleDealEmails(dealId){
   const deal=_deals.find(d=>d.id===dealId);
   if(!deal)return null;
   try{
-    // Search the deal owner's Gmail account
-    const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5&user=${deal.owner}`);
-    if(!res.ok)return null;
-    const data=await res.json();
-    if(!data.results||data.results.length===0)return null;
+    // Try the deal owner's Gmail first, then fall back to the other account
+    const owners=[deal.owner, deal.owner==='brayan'?'ryan':'brayan'];
+    let allResults=[];
+    for(const owner of owners){
+      try{
+        const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5&user=${owner}`);
+        if(!res.ok){console.log(`Deal sync ${deal.name} (${owner}):`,res.status,await res.text());continue}
+        const data=await res.json();
+        if(data.results&&data.results.length>0)allResults.push(...data.results);
+      }catch(e){console.log(`Deal sync ${deal.name} (${owner}) error:`,e)}
+      if(allResults.length>0)break;
+    }
+    if(allResults.length===0)return null;
 
-    const emailLines=data.results.map(e=>{
+    // Dedupe by subject+date and take latest 5
+    const seen=new Set();
+    const unique=allResults.filter(e=>{const k=(e.subject||'')+(e.date||'');if(seen.has(k))return false;seen.add(k);return true}).slice(0,5);
+
+    const emailLines=unique.map(e=>{
       const date=e.date?new Date(e.date).toISOString().split('T')[0]:'unknown';
       const fromLower=(e.from||'').toLowerCase();
       const nameWords=deal.name.toLowerCase().split(/\s+/);
@@ -2588,6 +2600,7 @@ async function syncSingleDealEmails(dealId){
     saveDeals();
     return emailBlock;
   }catch(e){
+    console.log('Deal sync error:',e);
     return null;
   }
 }
@@ -2697,12 +2710,12 @@ function openDealModal(id){
 
     // Show loading state and fetch fresh emails
     syncEl.style.display='block';
-    linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">Syncing emails...</span>';
+    linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">Syncing emails for '+esc(d.name)+' ('+d.owner+')...</span>';
     syncSingleDealEmails(id).then(emailBlock=>{
       if(emailBlock){
         linesEl.textContent=emailBlock;
       }else if(!synced){
-        linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">No emails found</span>';
+        linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">No emails found for "'+esc(d.name)+'" in '+d.owner+'\'s Gmail. Check console for details.</span>';
       }else{
         linesEl.textContent=synced;
       }
