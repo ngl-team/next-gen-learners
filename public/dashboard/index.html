@@ -2557,69 +2557,37 @@ function loadDeals(){
   _deals=stored||[...DEFAULT_DEALS];
   if(!stored)saveDeals();
   renderDeals();
-  syncDealEmails();
 }
 
-async function syncDealEmails(){
-  // For each deal, search Gmail for recent emails with that person and auto-update notes
-  const uniqueNames=new Map();
-  _deals.forEach(d=>{
-    // Use first+last name for search (e.g. "Matt Byrnes" not "Dr. Casimiro")
-    const key=d.name.toLowerCase();
-    if(!uniqueNames.has(key))uniqueNames.set(key,[]);
-    uniqueNames.get(key).push(d);
-  });
+// Fetch emails for a single deal and update its notes
+async function syncSingleDealEmails(dealId){
+  const deal=_deals.find(d=>d.id===dealId);
+  if(!deal)return null;
+  try{
+    const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5`);
+    if(!res.ok)return null;
+    const data=await res.json();
+    if(!data.results||data.results.length===0)return null;
 
-  let updated=0;
-  for(const [,deals] of uniqueNames){
-    const deal=deals[0];
-    try{
-      const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5`);
-      if(!res.ok)continue;
-      const data=await res.json();
-      if(!data.results||data.results.length===0)continue;
+    const emailLines=data.results.map(e=>{
+      const date=e.date?new Date(e.date).toISOString().split('T')[0]:'unknown';
+      const fromLower=(e.from||'').toLowerCase();
+      const nameWords=deal.name.toLowerCase().split(/\s+/);
+      const isFromThem=nameWords.some(w=>w.length>2&&fromLower.includes(w));
+      const dir=isFromThem?'Received':'Sent';
+      const subj=(e.subject||'(no subject)').slice(0,80);
+      return `[${date}] ${dir}: ${subj}`;
+    });
 
-      // Build email log lines
-      const emailLines=data.results.map(e=>{
-        const date=e.date?new Date(e.date).toISOString().split('T')[0]:'unknown';
-        const fromLower=(e.from||'').toLowerCase();
-        const nameWords=deal.name.toLowerCase().split(/\s+/);
-        const isFromThem=nameWords.some(w=>w.length>2&&fromLower.includes(w));
-        const dir=isFromThem?'Received':'Sent';
-        const subj=(e.subject||'(no subject)').slice(0,80);
-        return `[${date}] ${dir}: ${subj}`;
-      });
-
-      const emailBlock=emailLines.join('\n');
-
-      // Update all deals with this name
-      deals.forEach(d=>{
-        const existing=d.notes||'';
-        // Strip old auto-synced block if present
-        const marker='--- EMAIL SYNC ---';
-        const markerEnd='--- END SYNC ---';
-        let manualNotes=existing;
-        if(existing.includes(marker)){
-          const startIdx=existing.indexOf(marker);
-          const endIdx=existing.indexOf(markerEnd);
-          if(endIdx>=0) manualNotes=existing.substring(endIdx+markerEnd.length).trim();
-          else manualNotes=existing.substring(0,startIdx).trim();
-        }
-
-        const newNotes=`${marker}\n${emailBlock}\n${markerEnd}${manualNotes?'\n'+manualNotes:''}`;
-        if(d.notes!==newNotes){
-          d.notes=newNotes;
-          updated++;
-        }
-      });
-    }catch(e){
-      // Skip failures silently
-    }
-  }
-
-  if(updated>0){
+    const emailBlock=emailLines.join('\n');
+    const marker='--- EMAIL SYNC ---';
+    const markerEnd='--- END SYNC ---';
+    const{manual}=splitDealNotes(deal.notes);
+    deal.notes=`${marker}\n${emailBlock}\n${markerEnd}${manual?'\n'+manual:''}`;
     saveDeals();
-    renderDeals();
+    return emailBlock;
+  }catch(e){
+    return null;
   }
 }
 
@@ -2711,6 +2679,8 @@ function openDealModal(id){
   _editDealId=id||null;
   document.getElementById('dealModalTitle').textContent=id?'Edit Deal':'New Deal';
   document.getElementById('dealDeleteBtn').style.display=id?'inline-block':'none';
+  const syncEl=document.getElementById('deal-email-sync');
+  const linesEl=document.getElementById('deal-email-lines');
   if(id){
     const d=_deals.find(x=>x.id===id);
     if(!d)return;
@@ -2721,23 +2691,27 @@ function openDealModal(id){
     document.getElementById('deal-type').value=d.type;
     document.getElementById('deal-stage').value=d.stage;
     document.getElementById('deal-next').value=d.next||'';
-    // Split synced emails from manual notes
     const{synced,manual}=splitDealNotes(d.notes);
     document.getElementById('deal-notes').value=manual;
-    const syncEl=document.getElementById('deal-email-sync');
-    const linesEl=document.getElementById('deal-email-lines');
-    if(synced){
-      linesEl.textContent=synced;
-      syncEl.style.display='block';
-    }else{
-      syncEl.style.display='none';
-    }
+
+    // Show loading state and fetch fresh emails
+    syncEl.style.display='block';
+    linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">Syncing emails...</span>';
+    syncSingleDealEmails(id).then(emailBlock=>{
+      if(emailBlock){
+        linesEl.textContent=emailBlock;
+      }else if(!synced){
+        linesEl.innerHTML='<span style="color:var(--text-3);font-style:italic">No emails found</span>';
+      }else{
+        linesEl.textContent=synced;
+      }
+    });
   }else{
     ['deal-name','deal-opp','deal-value','deal-next','deal-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('deal-owner').value=getCurrentUser();
     document.getElementById('deal-type').value='education';
     document.getElementById('deal-stage').value='lead';
-    document.getElementById('deal-email-sync').style.display='none';
+    syncEl.style.display='none';
   }
   document.getElementById('dealModal').style.display='flex';
 }
