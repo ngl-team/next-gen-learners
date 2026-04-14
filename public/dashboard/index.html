@@ -865,6 +865,13 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </select>
     </div>
     <div class="field"><label>Next Action</label><input id="deal-next" placeholder="e.g. Follow up email"></div>
+    <div id="deal-email-sync" style="display:none;margin-bottom:8px">
+      <label style="font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--text-3);display:flex;align-items:center;gap:6px;margin-bottom:6px">
+        <span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block"></span>
+        Email Activity (auto-synced)
+      </label>
+      <div id="deal-email-lines" style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.68rem;line-height:1.6;color:var(--text-2);max-height:150px;overflow-y:auto;white-space:pre-line"></div>
+    </div>
     <div class="field"><label>Notes</label><textarea id="deal-notes" style="min-height:60px" placeholder="Any context..."></textarea></div>
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn primary" onclick="saveDeal()" style="flex:1">Save</button>
@@ -2550,6 +2557,70 @@ function loadDeals(){
   _deals=stored||[...DEFAULT_DEALS];
   if(!stored)saveDeals();
   renderDeals();
+  syncDealEmails();
+}
+
+async function syncDealEmails(){
+  // For each deal, search Gmail for recent emails with that person and auto-update notes
+  const uniqueNames=new Map();
+  _deals.forEach(d=>{
+    // Use first+last name for search (e.g. "Matt Byrnes" not "Dr. Casimiro")
+    const key=d.name.toLowerCase();
+    if(!uniqueNames.has(key))uniqueNames.set(key,[]);
+    uniqueNames.get(key).push(d);
+  });
+
+  let updated=0;
+  for(const [,deals] of uniqueNames){
+    const deal=deals[0];
+    try{
+      const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5`);
+      if(!res.ok)continue;
+      const data=await res.json();
+      if(!data.results||data.results.length===0)continue;
+
+      // Build email log lines
+      const emailLines=data.results.map(e=>{
+        const date=e.date?new Date(e.date).toISOString().split('T')[0]:'unknown';
+        const fromLower=(e.from||'').toLowerCase();
+        const nameWords=deal.name.toLowerCase().split(/\s+/);
+        const isFromThem=nameWords.some(w=>w.length>2&&fromLower.includes(w));
+        const dir=isFromThem?'Received':'Sent';
+        const subj=(e.subject||'(no subject)').slice(0,80);
+        return `[${date}] ${dir}: ${subj}`;
+      });
+
+      const emailBlock=emailLines.join('\n');
+
+      // Update all deals with this name
+      deals.forEach(d=>{
+        const existing=d.notes||'';
+        // Strip old auto-synced block if present
+        const marker='--- EMAIL SYNC ---';
+        const markerEnd='--- END SYNC ---';
+        let manualNotes=existing;
+        if(existing.includes(marker)){
+          const startIdx=existing.indexOf(marker);
+          const endIdx=existing.indexOf(markerEnd);
+          if(endIdx>=0) manualNotes=existing.substring(endIdx+markerEnd.length).trim();
+          else manualNotes=existing.substring(0,startIdx).trim();
+        }
+
+        const newNotes=`${marker}\n${emailBlock}\n${markerEnd}${manualNotes?'\n'+manualNotes:''}`;
+        if(d.notes!==newNotes){
+          d.notes=newNotes;
+          updated++;
+        }
+      });
+    }catch(e){
+      // Skip failures silently
+    }
+  }
+
+  if(updated>0){
+    saveDeals();
+    renderDeals();
+  }
 }
 
 function filterDeals(f){
@@ -2624,6 +2695,18 @@ function renderDeals(){
   });
 }
 
+function splitDealNotes(raw){
+  const marker='--- EMAIL SYNC ---';
+  const markerEnd='--- END SYNC ---';
+  if(!raw||!raw.includes(marker))return{synced:'',manual:raw||''};
+  const startIdx=raw.indexOf(marker);
+  const endIdx=raw.indexOf(markerEnd);
+  if(endIdx<0)return{synced:'',manual:raw};
+  const synced=raw.substring(startIdx+marker.length,endIdx).trim();
+  const manual=raw.substring(endIdx+markerEnd.length).trim();
+  return{synced,manual};
+}
+
 function openDealModal(id){
   _editDealId=id||null;
   document.getElementById('dealModalTitle').textContent=id?'Edit Deal':'New Deal';
@@ -2638,12 +2721,23 @@ function openDealModal(id){
     document.getElementById('deal-type').value=d.type;
     document.getElementById('deal-stage').value=d.stage;
     document.getElementById('deal-next').value=d.next||'';
-    document.getElementById('deal-notes').value=d.notes||'';
+    // Split synced emails from manual notes
+    const{synced,manual}=splitDealNotes(d.notes);
+    document.getElementById('deal-notes').value=manual;
+    const syncEl=document.getElementById('deal-email-sync');
+    const linesEl=document.getElementById('deal-email-lines');
+    if(synced){
+      linesEl.textContent=synced;
+      syncEl.style.display='block';
+    }else{
+      syncEl.style.display='none';
+    }
   }else{
     ['deal-name','deal-opp','deal-value','deal-next','deal-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('deal-owner').value=getCurrentUser();
     document.getElementById('deal-type').value='education';
     document.getElementById('deal-stage').value='lead';
+    document.getElementById('deal-email-sync').style.display='none';
   }
   document.getElementById('dealModal').style.display='flex';
 }
@@ -2653,6 +2747,18 @@ function closeDealModal(){document.getElementById('dealModal').style.display='no
 function saveDeal(){
   const name=document.getElementById('deal-name').value.trim();
   if(!name){alert('Name is required');return}
+  const manualNotes=document.getElementById('deal-notes').value.trim();
+  // Preserve existing synced email block if editing
+  let notes=manualNotes;
+  if(_editDealId){
+    const existing=_deals.find(d=>d.id===_editDealId);
+    if(existing){
+      const{synced}=splitDealNotes(existing.notes);
+      if(synced){
+        notes=`--- EMAIL SYNC ---\n${synced}\n--- END SYNC ---${manualNotes?'\n'+manualNotes:''}`;
+      }
+    }
+  }
   const data={
     name,
     opp:document.getElementById('deal-opp').value.trim(),
@@ -2661,7 +2767,7 @@ function saveDeal(){
     type:document.getElementById('deal-type').value,
     stage:document.getElementById('deal-stage').value,
     next:document.getElementById('deal-next').value.trim(),
-    notes:document.getElementById('deal-notes').value.trim(),
+    notes,
   };
   if(_editDealId){
     const idx=_deals.findIndex(d=>d.id===_editDealId);

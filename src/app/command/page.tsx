@@ -401,12 +401,7 @@ function ContactPanel({
               {/* Notes */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-white/50 text-xs tracking-wider uppercase">Notes</h3>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400/60 border border-emerald-500/15">
-                      auto-synced from email
-                    </span>
-                  </div>
+                  <h3 className="text-white/50 text-xs tracking-wider uppercase">Notes</h3>
                   {notes !== contact.notes && (
                     <button
                       onClick={saveNotes}
@@ -420,9 +415,9 @@ function ContactPanel({
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Auto-populated from email activity. You can also add manual notes here..."
+                  placeholder="Add context about this person — who they are, how you met, what they care about..."
                   className="w-full bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2.5 text-white/60 text-sm placeholder:text-white/15 focus:outline-none focus:border-white/15 resize-none"
-                  rows={6}
+                  rows={3}
                 />
               </div>
 
