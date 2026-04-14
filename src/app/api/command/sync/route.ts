@@ -96,6 +96,18 @@ export async function GET() {
 
                 // Only update if this is newer
                 if (!contactLastDate || dateOnly >= contactLastDate) {
+                  // Build auto-note from email
+                  const direction = isSent ? 'Sent' : 'Received';
+                  const subjectSnippet = subject.slice(0, 100) || '(no subject)';
+                  const autoNote = `[${dateOnly}] ${direction}: ${subjectSnippet}`;
+                  const existingNotes = (contact.notes as string) || '';
+                  // Only append if this exact note isn't already there
+                  const updatedNotes = existingNotes.includes(autoNote)
+                    ? existingNotes
+                    : existingNotes
+                      ? `${autoNote}\n${existingNotes}`
+                      : autoNote;
+
                   const updateParts = [
                     `last_contact_date = '${dateOnly}'`,
                     'times_contacted = times_contacted + 1',
@@ -107,9 +119,12 @@ export async function GET() {
                   }
 
                   await db.execute({
-                    sql: `UPDATE contacts SET ${updateParts.join(', ')} WHERE id = ?`,
-                    args: [contact.id as number],
+                    sql: `UPDATE contacts SET ${updateParts.join(', ')}, notes = ? WHERE id = ?`,
+                    args: [updatedNotes, contact.id as number],
                   });
+
+                  // Keep in-memory notes in sync
+                  contact.notes = updatedNotes;
 
                   // Update in-memory contact so subsequent matches don't double-count
                   contact.last_contact_date = dateOnly;
