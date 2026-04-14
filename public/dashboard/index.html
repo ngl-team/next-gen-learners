@@ -2564,7 +2564,8 @@ async function syncSingleDealEmails(dealId){
   const deal=_deals.find(d=>d.id===dealId);
   if(!deal)return null;
   try{
-    const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5`);
+    // Search the deal owner's Gmail account
+    const res=await fetch(`/api/emails/search?q=${encodeURIComponent(deal.name)}&max=5&user=${deal.owner}`);
     if(!res.ok)return null;
     const data=await res.json();
     if(!data.results||data.results.length===0)return null;

@@ -7,9 +7,10 @@ export async function GET(req: NextRequest) {
 
   const q = req.nextUrl.searchParams.get('q');
   const maxResults = parseInt(req.nextUrl.searchParams.get('max') || '10');
+  const user = req.nextUrl.searchParams.get('user') || undefined;
   if (!q) return NextResponse.json({ error: 'Query parameter "q" required' }, { status: 400 });
 
-  const gmail = await getGmailClient();
+  const gmail = await getGmailClient(user);
   if (!gmail) return NextResponse.json({ error: 'Gmail not connected' }, { status: 500 });
 
   try {
