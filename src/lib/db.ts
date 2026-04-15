@@ -387,6 +387,23 @@ export async function deleteToolOutput(id: number) {
   await db.execute({ sql: 'DELETE FROM tool_outputs WHERE id = ?', args: [id] });
 }
 
+export async function getToolOutputByKey(tool: string, key: string) {
+  await initDb();
+  const r = await db.execute({ sql: 'SELECT * FROM tool_outputs WHERE tool = ? AND input_data = ? ORDER BY created_at DESC LIMIT 1', args: [tool, key] });
+  return r.rows[0] as unknown as { id: number; tool: string; input_data: string; generated_output: string; created_at: string } | undefined;
+}
+
+export async function upsertToolOutputByKey(tool: string, key: string, output: string) {
+  await initDb();
+  const existing = await getToolOutputByKey(tool, key);
+  if (existing) {
+    await db.execute({ sql: 'UPDATE tool_outputs SET generated_output = ? WHERE id = ?', args: [output, existing.id] });
+    return existing.id;
+  }
+  const r = await db.execute({ sql: 'INSERT INTO tool_outputs (classroom_id, tool, input_data, generated_output) VALUES (?, ?, ?, ?)', args: [0, tool, key, output] });
+  return r.lastInsertRowid;
+}
+
 // ── Time Tracker ───────────────────────────────────────────────────
 export async function getTimeEntries(from?: string, to?: string) {
   await initDb();

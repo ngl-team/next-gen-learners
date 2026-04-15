@@ -6,9 +6,10 @@ export async function GET(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const threadId = req.nextUrl.searchParams.get('id');
+  const user = req.nextUrl.searchParams.get('user') || undefined;
   if (!threadId) return NextResponse.json({ error: 'Thread ID required' }, { status: 400 });
 
-  const gmail = await getGmailClient();
+  const gmail = await getGmailClient(user);
   if (!gmail) return NextResponse.json({ error: 'Gmail not connected' }, { status: 500 });
 
   try {

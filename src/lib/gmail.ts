@@ -75,3 +75,28 @@ export async function sendEmail(to: string, subject: string, body: string) {
   ).toString('base64url');
   await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
 }
+
+export async function sendEmailAsUser(
+  user: string,
+  to: string,
+  subject: string,
+  body: string,
+  options?: { threadId?: string; messageId?: string; references?: string }
+) {
+  const gmail = await getGmailClient(user);
+  if (!gmail) throw new Error(`Gmail not connected for ${user}`);
+
+  let headers = `To: ${to}\r\nSubject: ${subject}\r\nContent-Type: text/plain; charset=utf-8\r\n`;
+  if (options?.messageId) {
+    headers += `In-Reply-To: ${options.messageId}\r\n`;
+    headers += `References: ${options.references || options.messageId}\r\n`;
+  }
+  headers += `\r\n${body}`;
+
+  const raw = Buffer.from(headers).toString('base64url');
+  const result = await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: { raw, threadId: options?.threadId },
+  });
+  return result.data;
+}

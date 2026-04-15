@@ -6,14 +6,15 @@ import Navbar from './Navbar';
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isGame = pathname.startsWith('/games');
+  const isSuperintendent = pathname.startsWith('/superintendent');
 
   return (
     <>
-      {!isGame && <Navbar />}
+      {!isGame && !isSuperintendent && <Navbar />}
       <div className="relative z-[1]">
         {children}
       </div>
-      {!isGame && (
+      {!isGame && !isSuperintendent && (
         <footer className="relative z-[1] bg-gradient-to-br from-[#4F46E5] via-[#7C3AED] to-[#06B6D4] py-16 px-4">
           <div className="max-w-5xl mx-auto text-center">
             <p className="text-white text-sm font-bold uppercase tracking-[0.14em] mb-3">
