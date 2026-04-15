@@ -825,6 +825,9 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div style="font-size:.68rem;color:var(--text-3)">Drag cards between stages. Click to edit.</div>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
+      <span id="dealsGmailLabel" style="font-size:.6rem;color:var(--text-3)"></span>
+      <a href="/api/auth/gmail" class="btn primary" id="dealsGmailConnectBtn" style="font-size:0.6rem;padding:3px 8px;text-decoration:none;display:none">Connect Gmail</a>
+      <span style="color:var(--border);font-size:.8rem">|</span>
       <button class="btn primary" id="dealsFilterAll" onclick="filterDeals('all')" style="font-size:.65rem">All</button>
       <button class="btn" id="dealsFilterBrayan" onclick="filterDeals('brayan')" style="font-size:.65rem">Brayan</button>
       <button class="btn" id="dealsFilterRyan" onclick="filterDeals('ryan')" style="font-size:.65rem">Ryan</button>
@@ -2557,6 +2560,26 @@ function loadDeals(){
   _deals=stored||[...DEFAULT_DEALS];
   if(!stored)saveDeals();
   renderDeals();
+  checkDealsGmail();
+}
+
+async function checkDealsGmail(){
+  const user=getCurrentUser();
+  try{
+    const gs=await fetch('/api/auth/gmail/status?user='+user).then(r=>r.json()).catch(()=>({connected:false}));
+    const label=document.getElementById('dealsGmailLabel');
+    const btn=document.getElementById('dealsGmailConnectBtn');
+    if(gs.connected){
+      label.textContent='Gmail: '+gs.email;
+      label.style.color='var(--accent)';
+      btn.style.display='none';
+    }else{
+      label.textContent='Gmail not connected';
+      label.style.color='var(--warm)';
+      btn.href='/api/auth/gmail?user='+user;
+      btn.style.display='inline-block';
+    }
+  }catch(e){console.log('Deals Gmail check error:',e)}
 }
 
 // Fetch emails for a single deal and update its notes
