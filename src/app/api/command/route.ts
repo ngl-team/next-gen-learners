@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getCommandContacts, getOverdueFollowups, getGoingCold, getQuickLogs, getBrainDumps, getActivityByPerson } from '@/lib/db';
+import { getCommandContacts, getOverdueFollowups, getGoingCold, getQuickLogs, getBrainDumps, getActivityByPerson, getShelvedContacts } from '@/lib/db';
 
 export async function GET() {
   try {
-    const [contacts, overdue, goingCold, quickLogs, brainDumps, brayanActivity, ryanActivity] = await Promise.all([
+    const [contacts, overdue, goingCold, quickLogs, brainDumps, brayanActivity, ryanActivity, shelved] = await Promise.all([
       getCommandContacts(),
       getOverdueFollowups(),
       getGoingCold(5),
@@ -11,6 +11,7 @@ export async function GET() {
       getBrainDumps(10),
       getActivityByPerson('brayan', 15),
       getActivityByPerson('ryan', 15),
+      getShelvedContacts(),
     ]);
 
     // Split contacts by priority
@@ -30,7 +31,7 @@ export async function GET() {
         goingCold,
         overdueCount: overdue.length,
       },
-      contacts: { highTouch, activeDeals, pipeline, all: contacts },
+      contacts: { highTouch, activeDeals, pipeline, all: contacts, shelved },
       quickLogs,
       brainDumps,
       activity: { brayan: brayanActivity, ryan: ryanActivity },

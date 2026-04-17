@@ -23,6 +23,7 @@ interface Contact {
   channel: string;
   contact_type: string;
   relationship_status: string;
+  shelved: number;
 }
 
 interface BrainDump {
@@ -63,6 +64,7 @@ interface DashboardData {
     activeDeals: Contact[];
     pipeline: Contact[];
     all: Contact[];
+    shelved: Contact[];
   };
   quickLogs: QuickLog[];
   brainDumps: BrainDump[];
@@ -225,7 +227,7 @@ function ContactPanel({
 }: {
   contact: Contact;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (action?: string) => void;
 }) {
   const [tab, setTab] = useState<"context" | "settings">("context");
   const [endGoal, setEndGoal] = useState(contact.end_goal || "");
@@ -586,6 +588,32 @@ function ContactPanel({
                   {saving ? "Saving..." : "Save"}
                 </button>
               </div>
+
+              {/* Shelf / Unshelf */}
+              <div className="mt-6 pt-6 border-t border-white/[0.06]">
+                <button
+                  onClick={async () => {
+                    await fetch("/api/command/shelve", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ id: contact.id, shelved: !contact.shelved }),
+                    });
+                    onSave("shelved");
+                  }}
+                  className={`w-full py-2.5 rounded-lg border text-sm font-medium transition-colors ${
+                    contact.shelved
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                      : "bg-white/[0.03] border-white/10 text-white/40 hover:bg-white/[0.06] hover:text-white/60"
+                  }`}
+                >
+                  {contact.shelved ? "Bring Back to Active" : "Shelf This Deal"}
+                </button>
+                <p className="text-white/15 text-[10px] mt-2 text-center">
+                  {contact.shelved
+                    ? "Move this deal back into your active view"
+                    : "Hide from your main view -- you can bring it back anytime"}
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -857,7 +885,7 @@ export default function CommandPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editContact, setEditContact] = useState<Contact | null>(null);
-  const [contactFilter, setContactFilter] = useState<"all" | "high-touch" | "active-deal" | "pipeline">("all");
+  const [contactFilter, setContactFilter] = useState<"all" | "high-touch" | "active-deal" | "pipeline" | "shelved">("all");
   const [activityTab, setActivityTab] = useState<"brayan" | "ryan">("brayan");
   const [syncing, setSyncing] = useState(false);
   const [backfilling, setBackfilling] = useState(false);
@@ -943,6 +971,8 @@ export default function CommandPage() {
   const filteredContacts =
     contactFilter === "all"
       ? data.contacts.all
+      : contactFilter === "shelved"
+      ? data.contacts.shelved
       : data.contacts.all.filter((c) => (c.priority || "pipeline") === contactFilter);
 
   const totalContacts = data.contacts.all.length;
@@ -1154,17 +1184,17 @@ export default function CommandPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-white font-bold text-sm tracking-tight">Relationships</h2>
                 <div className="flex gap-1">
-                  {(["all", "high-touch", "active-deal", "pipeline"] as const).map((f) => (
+                  {(["all", "high-touch", "active-deal", "pipeline", "shelved"] as const).map((f) => (
                     <button
                       key={f}
                       onClick={() => setContactFilter(f)}
                       className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                       style={{
-                        background: contactFilter === f ? "rgba(255,255,255,0.08)" : "transparent",
-                        color: contactFilter === f ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.25)",
+                        background: contactFilter === f ? (f === "shelved" ? "rgba(100,116,139,0.15)" : "rgba(255,255,255,0.08)") : "transparent",
+                        color: contactFilter === f ? (f === "shelved" ? "#94A3B8" : "rgba(255,255,255,0.7)") : "rgba(255,255,255,0.25)",
                       }}
                     >
-                      {f === "all" ? "All" : f.replace("-", " ")}
+                      {f === "all" ? "All" : f === "shelved" ? `Shelved (${data.contacts.shelved.length})` : f.replace("-", " ")}
                     </button>
                   ))}
                 </div>
@@ -1173,8 +1203,14 @@ export default function CommandPage() {
               <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-1">
                 {filteredContacts.length === 0 ? (
                   <div className="p-8 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center">
-                    <p className="text-white/25 text-sm">No contacts in this category yet.</p>
-                    <p className="text-white/15 text-xs mt-1">Click a contact to set its priority and end goal.</p>
+                    <p className="text-white/25 text-sm">
+                      {contactFilter === "shelved" ? "No shelved deals." : "No contacts in this category yet."}
+                    </p>
+                    <p className="text-white/15 text-xs mt-1">
+                      {contactFilter === "shelved"
+                        ? "Deals you shelf will appear here, out of your main view."
+                        : "Click a contact to set its priority and end goal."}
+                    </p>
                   </div>
                 ) : (
                   filteredContacts.map((c) => (
