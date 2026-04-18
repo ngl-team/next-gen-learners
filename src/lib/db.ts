@@ -179,8 +179,33 @@ export async function initDb() {
     )
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS nst_users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS nst_answers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      question_id TEXT NOT NULL,
+      class_key TEXT NOT NULL,
+      answer TEXT DEFAULT '',
+      correct INTEGER,
+      mode TEXT DEFAULT 'study',
+      updated_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(user_id, question_id, mode),
+      FOREIGN KEY (user_id) REFERENCES nst_users(id) ON DELETE CASCADE
+    )
+  `);
+
   initialized = true;
 }
+
+export { db };
 
 export async function getPnlEntries(from?: string, to?: string) {
   await initDb();

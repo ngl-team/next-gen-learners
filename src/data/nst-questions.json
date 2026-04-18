@@ -1,0 +1,262 @@
+{
+  "classes": {
+    "1": {
+      "title": "Welcome to Science & Tech of Space / Defining Science",
+      "questions": [
+        {"id": "c1_q1", "type": "mc", "prompt": "What is a hypothesis?", "choices": ["A rigorously tested and confirmed explanation for a phenomenon", "A suggested explanation for an event that can be tested but has not yet been rigorously studied", "A generalized pattern in nature that has been confirmed", "A mathematical equation describing motion"], "answer": 1},
+        {"id": "c1_q2", "type": "mc", "prompt": "What best describes a scientific theory?", "choices": ["A guess about how something works", "A rigorously tested and confirmed explanation for WHY something happens", "A description of a pattern without explaining why", "An opinion held by most scientists"], "answer": 1},
+        {"id": "c1_q3", "type": "mc", "prompt": "A scientific LAW does which of the following?", "choices": ["Explains WHY a phenomenon occurs", "Describes a generalized pattern in nature without explaining why", "Is an untested guess", "Is a belief accepted without evidence"], "answer": 1},
+        {"id": "c1_q4", "type": "mc", "prompt": "Which learning outcome is emphasized in 'Scientific Literacy' for this course?", "choices": ["Memorizing every constellation", "Interpreting graphs/data accurately and drawing appropriate conclusions", "Writing software to simulate rockets", "Designing a physical telescope"], "answer": 1},
+        {"id": "c1_q5", "type": "mc", "prompt": "What is the primary focus of NST1010?", "choices": ["Business applications of telecoms", "The science and technology of space, with a focus on origins and potential for life beyond Earth", "History of warfare", "Advanced organic chemistry"], "answer": 1}
+      ]
+    },
+    "2": {
+      "title": "Philosophy of Science",
+      "questions": [
+        {"id": "c2_q1", "type": "mc", "prompt": "Which is NOT an ideal property of a scientific discipline?", "choices": ["Empirical", "Objective", "Subjective to the researcher's beliefs", "Repeatable"], "answer": 2},
+        {"id": "c2_q2", "type": "mc", "prompt": "'Underdetermination' in science means:", "choices": ["Data is fabricated", "Data often supports more than one possible explanation", "There's never enough funding", "The hypothesis was too narrow"], "answer": 1},
+        {"id": "c2_q3", "type": "mc", "prompt": "A controlled experiment requires:", "choices": ["Only one group with many variables changing", "At least two groups (control + experimental) with one independent variable varying", "Observation without any manipulation", "A theoretical model only"], "answer": 1},
+        {"id": "c2_q4", "type": "mc", "prompt": "Observational science CANNOT definitively establish:", "choices": ["Patterns", "Correlations", "Causation", "Systematic observations"], "answer": 2},
+        {"id": "c2_q5", "type": "mc", "prompt": "Karl Popper's test of science is based on:", "choices": ["Verification", "Falsification", "Consensus", "Repetition"], "answer": 1},
+        {"id": "c2_q6", "type": "mc", "prompt": "In deductive logic: If A then B. Which is valid?", "choices": ["B means A", "not B means not A", "A means not B", "B always follows from C"], "answer": 1},
+        {"id": "c2_q7", "type": "mc", "prompt": "The 1919 eclipse test supported which hypothesis?", "choices": ["The sun emits radio waves", "Massive objects deform spacetime (General Relativity)", "Stars are made of iron", "Light has no mass"], "answer": 1},
+        {"id": "c2_q8", "type": "mc", "prompt": "The null hypothesis (H0) usually states:", "choices": ["There is a significant relationship", "No statistical significance; differences are due to random chance", "The experiment failed", "Only alternative explanations are valid"], "answer": 1}
+      ]
+    },
+    "3": {
+      "title": "Our Cosmic Address & Drake's Equation",
+      "questions": [
+        {"id": "c3_q1", "type": "mc", "prompt": "In the northern hemisphere, the angle between Polaris and the horizon equals:", "choices": ["The observer's longitude", "The observer's latitude", "The time of year", "The observer's altitude above sea level"], "answer": 1},
+        {"id": "c3_q2", "type": "mc", "prompt": "The Earth rotates at approximately:", "choices": ["15 degrees per hour", "1 degree per hour", "360 degrees per hour", "90 degrees per hour"], "answer": 0},
+        {"id": "c3_q3", "type": "mc", "prompt": "A sidereal day (relative to the stars) is:", "choices": ["Exactly 24 hours", "About 23h 56m", "About 25 hours", "About 12 hours"], "answer": 1},
+        {"id": "c3_q4", "type": "mc", "prompt": "The ecliptic is:", "choices": ["The sun's apparent path across the sky", "The path of the Moon", "The Milky Way as seen from Earth", "The celestial equator"], "answer": 0},
+        {"id": "c3_q5", "type": "mc", "prompt": "What causes the seasons?", "choices": ["Earth getting closer to the sun in summer", "How directly the sun shines on Earth (axial tilt)", "The Moon's phases", "Solar flares"], "answer": 1},
+        {"id": "c3_q6", "type": "mc", "prompt": "The Copernican Principle states:", "choices": ["We are the center of the universe", "We are NOT the center of the universe", "Only Earth has life", "All planets orbit the Moon"], "answer": 1},
+        {"id": "c3_q7", "type": "mc", "prompt": "The Fermi Paradox asks:", "choices": ["Why is the sky dark at night?", "If intelligent life is likely common, where is everybody?", "Why does time move forward?", "Why do stars twinkle?"], "answer": 1}
+      ]
+    },
+    "4": {
+      "title": "Forces and Energy of the Universe",
+      "questions": [
+        {"id": "c4_q1", "type": "mc", "prompt": "Whose laws describe planetary motion in elliptical orbits?", "choices": ["Newton", "Kepler", "Einstein", "Galileo"], "answer": 1},
+        {"id": "c4_q2", "type": "mc", "prompt": "The Law of Conservation of Energy states that energy:", "choices": ["Can be created but not destroyed", "Cannot be created or destroyed, only transformed", "Can be destroyed but not created", "Is always lost as heat"], "answer": 1},
+        {"id": "c4_q3", "type": "mc", "prompt": "Which four fundamental forces exist in the universe?", "choices": ["Push, pull, friction, gravity", "Gravity, electromagnetism, strong nuclear, weak nuclear", "Kinetic, potential, mechanical, thermal", "Light, heat, sound, motion"], "answer": 1},
+        {"id": "c4_q4", "type": "mc", "prompt": "Newton's 'Philosophiae Naturalis Principia Mathematica' presented:", "choices": ["The theory of evolution", "The laws of motion and universal gravitation", "Quantum mechanics", "Thermodynamics"], "answer": 1},
+        {"id": "c4_q5", "type": "mc", "prompt": "General Relativity, Quantum Mechanics, and Thermodynamics are examples of:", "choices": ["Discredited theories", "Branches of evolving physics", "Biology subfields", "Engineering disciplines"], "answer": 1}
+      ]
+    },
+    "5": {
+      "title": "Light",
+      "questions": [
+        {"id": "c5_q1", "type": "mc", "prompt": "Wavelength is defined as:", "choices": ["The number of waves per second", "The distance between the same point on successive waves (e.g., crest to crest)", "The height of a wave", "The speed of the wave"], "answer": 1},
+        {"id": "c5_q2", "type": "mc", "prompt": "Frequency is measured in:", "choices": ["Meters", "Joules", "Hertz (cycles per second)", "Watts"], "answer": 2},
+        {"id": "c5_q3", "type": "mc", "prompt": "The speed of electromagnetic waves in a vacuum is approximately:", "choices": ["3.00 x 10^6 m/s", "2.99 x 10^8 m/s", "1.00 x 10^10 m/s", "9.80 m/s"], "answer": 1},
+        {"id": "c5_q4", "type": "mc", "prompt": "Planck's equation (E = hf) relates:", "choices": ["Mass and energy", "Photon energy to frequency", "Force and acceleration", "Voltage and current"], "answer": 1},
+        {"id": "c5_q5", "type": "mc", "prompt": "In the Bohr model of hydrogen, electrons:", "choices": ["Orbit at any distance", "Only occupy specific energy levels", "Are located in the nucleus", "Move faster than light"], "answer": 1},
+        {"id": "c5_q6", "type": "mc", "prompt": "The relationship for electromagnetic waves is:", "choices": ["speed = wavelength + frequency", "speed = wavelength x frequency", "speed = wavelength / frequency", "speed = frequency / wavelength"], "answer": 1},
+        {"id": "c5_q7", "type": "mc", "prompt": "Emission and absorption spectra tell us about:", "choices": ["An object's mass only", "The composition and energy levels of the atoms involved", "The object's velocity only", "Nothing useful"], "answer": 1}
+      ]
+    },
+    "6": {
+      "title": "EM Spectrum & Instrumentation",
+      "questions": [
+        {"id": "c6_q1", "type": "mc", "prompt": "Which wavelengths track the HOTTEST, highest-energy objects like black hole accretion disks?", "choices": ["Radio/microwave", "Infrared", "Visible", "X-ray and gamma ray"], "answer": 3},
+        {"id": "c6_q2", "type": "mc", "prompt": "Infrared light is best for observing:", "choices": ["Very hot plasmas", "Cool stars, cool gas clouds, and star formation regions", "Gamma-ray bursts", "Electrical currents on Earth"], "answer": 1},
+        {"id": "c6_q3", "type": "mc", "prompt": "What do telescopes primarily do?", "choices": ["Create light", "Collect, organize, and detect light at chosen wavelengths", "Amplify sound", "Measure temperature only"], "answer": 1},
+        {"id": "c6_q4", "type": "mc", "prompt": "A refracting telescope uses:", "choices": ["Only mirrors", "Only lenses", "Magnets", "Radio antennas"], "answer": 1},
+        {"id": "c6_q5", "type": "mc", "prompt": "Adaptive optics compensates for:", "choices": ["Lens cracks", "Rapidly changing image distortions from Earth's atmospheric turbulence", "Light pollution from cities", "Cosmic rays"], "answer": 1},
+        {"id": "c6_q6", "type": "mc", "prompt": "The JWST primary mirror is:", "choices": ["2.4 meters", "6.5 meters", "10 meters", "100 meters"], "answer": 1},
+        {"id": "c6_q7", "type": "mc", "prompt": "LIGO detects:", "choices": ["Gamma rays", "Gravitational waves", "Neutrinos", "Solar wind"], "answer": 1},
+        {"id": "c6_q8", "type": "mc", "prompt": "Photometry vs spectroscopy: spectroscopy measures:", "choices": ["Photon count (brightness)", "Light's interactions with matter (wavelength-dependent info)", "Temperature only", "Mass of the telescope"], "answer": 1},
+        {"id": "c6_q9", "type": "mc", "prompt": "Why must X-ray observatories like Chandra be in space?", "choices": ["They're too heavy for Earth", "Earth's atmosphere blocks X-rays", "Ground is too noisy", "Gravity is too strong"], "answer": 1}
+      ]
+    },
+    "9": {
+      "title": "Planet Formation and Exoplanets",
+      "questions": [
+        {"id": "c9_q1", "type": "mc", "prompt": "A nebula is:", "choices": ["A type of star", "A cloud of gas and/or dust", "A black hole", "A planet without a sun"], "answer": 1},
+        {"id": "c9_q2", "type": "mc", "prompt": "The OBAFGKM spectral classification goes from:", "choices": ["Cool to hot stars", "Hot to cool stars", "Small to large stars", "Young to old stars"], "answer": 1},
+        {"id": "c9_q3", "type": "mc", "prompt": "Hydrostatic equilibrium in the sun means:", "choices": ["The sun doesn't rotate", "Outward pressure balances inward gravitational pull", "The sun is cooling down", "All fuel has burned out"], "answer": 1},
+        {"id": "c9_q4", "type": "mc", "prompt": "The 'frost line' in a solar system is where:", "choices": ["Light stops", "Water freezes (~273 K), so ices can become solid", "The sun's gravity ends", "Planets stop forming"], "answer": 1},
+        {"id": "c9_q5", "type": "mc", "prompt": "Outer planets became gas giants mainly because:", "choices": ["They're older", "Beyond the frost line, larger solid cores formed and captured more gas", "They collided with asteroids", "They orbited the sun faster"], "answer": 1},
+        {"id": "c9_q6", "type": "mc", "prompt": "Conservation of angular momentum explains why protostars:", "choices": ["Collapse into black holes immediately", "Form a rotating disk of gas around them", "Shoot out straight beams only", "Stop rotating once they form"], "answer": 1},
+        {"id": "c9_q7", "type": "mc", "prompt": "The Kepler mission primarily detects exoplanets via:", "choices": ["Direct imaging", "Transit method (dimming of stars)", "Radio signals", "Gravitational lensing"], "answer": 1},
+        {"id": "c9_q8", "type": "mc", "prompt": "The radial velocity method detects exoplanets by:", "choices": ["Blocking stellar light", "Measuring Doppler shifts of the parent star", "Listening for radio emissions", "X-ray signatures"], "answer": 1},
+        {"id": "c9_q9", "type": "mc", "prompt": "Current estimates of star formation rate in the Milky Way:", "choices": ["1000 per year", "About 5 to 10 stars per year", "0 per year", "1 million per year"], "answer": 1},
+        {"id": "c9_q10", "type": "mc", "prompt": "Escape velocity depends on:", "choices": ["The object's color", "Mass and radius of the body being escaped from", "The time of day", "The object's age"], "answer": 1}
+      ]
+    },
+    "10": {
+      "title": "Origin of Life: Early Earth and Asteroids",
+      "questions": [
+        {"id": "c10_q1", "type": "mc", "prompt": "The Heavy Bombardment Period is evidenced by:", "choices": ["The age of Earth's oceans", "Heavy cratering on the Moon, Mercury, and other inner solar system bodies", "The orbits of outer planets", "Earth's magnetic field"], "answer": 1},
+        {"id": "c10_q2", "type": "mc", "prompt": "OSIRIS-REx returned samples from which asteroid in 2023?", "choices": ["Psyche", "Ceres", "Bennu", "Vesta"], "answer": 2},
+        {"id": "c10_q3", "type": "mc", "prompt": "Samples from Bennu contained which of the following?", "choices": ["Only iron and nickel", "14 of the 20 amino acids life uses, plus 5 nucleobases from DNA/RNA", "Pure water ice only", "No organic compounds"], "answer": 1},
+        {"id": "c10_q4", "type": "mc", "prompt": "Which asteroid/meteorite type contains the most organic material?", "choices": ["Iron meteorites", "Stony-iron meteorites", "Carbonaceous chondrites", "Pallasites"], "answer": 2},
+        {"id": "c10_q5", "type": "mc", "prompt": "In Bennu samples, ammonia + formaldehyde are significant because they:", "choices": ["Prove Bennu had life", "Can react to form complex molecules like amino acids under the right conditions", "Came from Earth contamination", "Indicate liquid water inside Bennu today"], "answer": 1},
+        {"id": "c10_q6", "type": "mc", "prompt": "What is the 'exogenous' hypothesis for the origin of life's building blocks?", "choices": ["They were made only on early Earth", "They were delivered by meteorites, comets, and asteroids from space", "They came from the Sun", "They formed in Earth's mantle"], "answer": 1},
+        {"id": "c10_q7", "type": "mc", "prompt": "The Miller-Urey (endogenous) hypothesis suggests building blocks were made by:", "choices": ["Energy input (lightning/UV) on early Earth's atmospheric gases", "Volcanoes ejecting them from the mantle", "Comet impacts only", "Meteorites only"], "answer": 0},
+        {"id": "c10_q1_open", "type": "open", "prompt": "Describe the Heavy Bombardment Period and its potential significance for the origin of life on Earth.", "rubric": "Key points: (1) Period ~4.1-3.8 Bya when early Earth and inner planets were heavily cratered by asteroids/comets. (2) Evidence visible on Moon and Mercury craters. (3) May have delivered water and organic building blocks (amino acids, nucleobases) via carbonaceous asteroids. (4) Could have both sterilized and re-seeded the young Earth."},
+        {"id": "c10_q2_open", "type": "open", "prompt": "Explain how asteroids like Bennu support the hypothesis that building blocks of life were delivered to Earth.", "rubric": "Key points: (1) OSIRIS-REx returned samples from Bennu (2023). (2) Samples contained 14 of 20 amino acids life uses, plus 5 nucleobases used in DNA/RNA. (3) Ammonia + formaldehyde found together — precursors to amino acids. (4) Shows organic chemistry needed for life existed in early solar system, not unique to Earth."},
+        {"id": "c10_q3_open", "type": "open", "prompt": "Name and briefly describe the three main asteroid/meteorite classification types.", "rubric": "Key points: (1) Stony (chondrites + achondrites) — silicate rich, most common. (2) Iron — mostly iron-nickel, dense, from differentiated cores. (3) Stony-iron — mixture of silicate and metal (e.g., pallasites with olivine + iron). Carbonaceous chondrites are especially important for organics."},
+        {"id": "c10_q4_open", "type": "open", "prompt": "Compare the roles of endogenous (Earth-made) vs exogenous (space-delivered) sources of life's building blocks.", "rubric": "Key points: (1) Endogenous: Miller-Urey-style chemistry on Earth — lightning, heat, UV on atmospheric gases. (2) Exogenous: delivered by meteorites/comets carrying amino acids, nucleobases. (3) Most likely BOTH contributed. (4) Bennu evidence strongly supports exogenous contribution."}
+      ]
+    },
+    "11": {
+      "title": "Origin of Life Part II: Building Blocks & First Life",
+      "questions": [
+        {"id": "c11_q1", "type": "mc", "prompt": "Which six elements are the core essentials for life on Earth (CHNOPS)?", "choices": ["Carbon, helium, nitrogen, oxygen, phosphorus, silicon", "Carbon, hydrogen, nitrogen, oxygen, phosphorus, sulfur", "Calcium, hydrogen, neon, oxygen, potassium, silicon", "Cobalt, hydrogen, nickel, oxygen, phosphorus, sodium"], "answer": 1},
+        {"id": "c11_q2", "type": "mc", "prompt": "Carbon is central to biological molecules because:", "choices": ["It is the most abundant element in the universe", "It has 4 valence electrons allowing 4 stable covalent bonds, forming chains and rings", "It is magnetic", "It dissolves easily in salt water"], "answer": 1},
+        {"id": "c11_q3", "type": "mc", "prompt": "Which is NOT a characteristic of life (biological definition)?", "choices": ["Reproduction", "Homeostasis", "Energy processing", "Magnetism"], "answer": 3},
+        {"id": "c11_q4", "type": "mc", "prompt": "Life on Earth uses which chirality?", "choices": ["L-amino acids and D-nucleic acids", "D-amino acids and L-nucleic acids", "Both chiralities equally", "Neither — chirality doesn't apply"], "answer": 0},
+        {"id": "c11_q5", "type": "mc", "prompt": "Why is water considered essential for life?", "choices": ["It is radioactive", "It's a polar molecule that dissolves ions, has high heat capacity, and enables hydrogen bonding", "It conducts electricity perfectly", "It is an element"], "answer": 1},
+        {"id": "c11_q6", "type": "mc", "prompt": "Astronomers' three requirements for a habitable location are:", "choices": ["Gold, silver, copper", "Liquid water, nutrients, energy", "Fire, air, earth", "Hydrogen, helium, oxygen"], "answer": 1},
+        {"id": "c11_q7", "type": "mc", "prompt": "The Miller-Urey experiment (1953) demonstrated that:", "choices": ["Life can only come from life", "Amino acids can form abiotically from simple inorganic molecules with an energy source", "Water boils at 100 C", "The Earth is billions of years old"], "answer": 1},
+        {"id": "c11_q8", "type": "mc", "prompt": "Which is NOT one of the four mechanisms of evolution?", "choices": ["Natural selection", "Mutation", "Magnetism", "Gene flow"], "answer": 2},
+        {"id": "c11_q9", "type": "mc", "prompt": "Prokaryotes are characterized by:", "choices": ["Having a nucleus and multiple cells", "Being single-celled without a nucleus, taking 3 shapes (cocci, bacilli, spirilli)", "Having organelles but no DNA", "Only living in hot springs"], "answer": 1},
+        {"id": "c11_q10", "type": "mc", "prompt": "Assembly Theory (Sharma, Cronin, Walker 2023) attempts to:", "choices": ["Build Lego rockets", "Explain how complex objects (and life) arise from simple ones via selection and evolution", "Prove life is impossible", "Classify stars"], "answer": 1},
+        {"id": "c11_q1_open", "type": "open", "prompt": "List the six main elements essential for life (CHNOPS) and explain why carbon is central.", "rubric": "Key points: (1) C, H, N, O, P, S. (2) Carbon central because it has 4 valence electrons enabling 4 stable covalent bonds. (3) Forms chains and rings (hydrocarbons). (4) Functional groups attach and determine molecule behavior. (5) Versatility enables enormous biomolecule diversity."},
+        {"id": "c11_q2_open", "type": "open", "prompt": "Why is liquid water considered essential for habitability? List at least 4 of its special properties.", "rubric": "Key points: (1) Polar molecule, hydrogen bonds. (2) Excellent solvent for ions and polar molecules. (3) High heat capacity stabilizes temperature. (4) High heat of vaporization enables cooling. (5) Cohesion/adhesion, surface tension, capillary action. (6) Buffered pH for homeostasis."},
+        {"id": "c11_q3_open", "type": "open", "prompt": "List the four mechanisms of evolution and briefly define each.", "rubric": "Four mechanisms: (1) Natural selection — differential survival/reproduction based on heritable traits. (2) Mutation — random change in genetic code; source of new variation. (3) Genetic drift — random changes in allele frequencies, especially in small populations. (4) Gene flow — movement of alleles between populations via migration/interbreeding."},
+        {"id": "c11_q4_open", "type": "open", "prompt": "Describe the Miller-Urey experiment and what it demonstrated.", "rubric": "Key points: (1) 1953 experiment simulating hypothesized early Earth atmosphere (water vapor, methane, ammonia, hydrogen). (2) Applied electrical sparks (lightning analog). (3) Produced amino acids abiotically. (4) Demonstrated that organic building blocks can form from inorganic precursors with energy input under primitive Earth-like conditions."}
+      ]
+    },
+    "12": {
+      "title": "Limits of Life: Evolution and Extinction",
+      "questions": [
+        {"id": "c12_q1", "type": "mc", "prompt": "Why is the 'tree' (not ladder) analogy better for describing evolution?", "choices": ["Trees are prettier", "Because evolution is branching with common ancestors — not linear progress toward humans", "Because a tree has leaves", "Because ladders are not natural"], "answer": 1},
+        {"id": "c12_q2", "type": "mc", "prompt": "The background extinction rate is approximately:", "choices": ["1 in 1,000 species per year", "1 in 1 million species per year", "1 in 100 species per year", "0 — species never naturally go extinct"], "answer": 1},
+        {"id": "c12_q3", "type": "mc", "prompt": "How many major mass extinctions does the fossil record show?", "choices": ["Two", "Three", "Five", "Ten"], "answer": 2},
+        {"id": "c12_q4", "type": "mc", "prompt": "In the Drake Equation, L represents:", "choices": ["The distance between stars", "The lifetime of a civilization releasing detectable signals", "The luminosity of the sun", "The total number of galaxies"], "answer": 1},
+        {"id": "c12_q5", "type": "mc", "prompt": "If all Drake Equation terms except L equal 1, the equation simplifies to:", "choices": ["N = 0", "N = L", "N = infinity", "N = R*"], "answer": 1},
+        {"id": "c12_q6", "type": "mc", "prompt": "Extremophiles are:", "choices": ["Organisms that live in extreme environments like high temp, pH, pressure, salinity, or radiation", "Rare dinosaurs", "Star systems outside the habitable zone", "Humans who explore space"], "answer": 0},
+        {"id": "c12_q7", "type": "mc", "prompt": "Convergent evolution of intelligence (Roth 2015) suggests:", "choices": ["Only humans can become intelligent", "Similar complex brains evolved independently in multiple lineages — intelligence is a repeatable evolutionary outcome", "Intelligence is impossible to evolve", "Octopuses are not intelligent"], "answer": 1},
+        {"id": "c12_q8", "type": "mc", "prompt": "Why is the fossil record necessary for studying life's history?", "choices": ["It's the only source of direct evidence of organisms that no longer exist", "It proves the Earth is flat", "Fossils predict the future", "Fossils are made of DNA"], "answer": 0},
+        {"id": "c12_q1_open", "type": "open", "prompt": "Explain extinction and the significance of mass extinctions in Earth's history.", "rubric": "Key points: (1) Background extinction rate ~1 in 1 million species per year. (2) Fossil record shows 5 mass extinctions. (3) Mass extinctions involve much higher rates. (4) Current rates may be comparable (possible 6th extinction). (5) Mass extinctions reshape biodiversity and open niches for new radiations."},
+        {"id": "c12_q2_open", "type": "open", "prompt": "What is 'L' in the Drake Equation and why is it the most uncertain term?", "rubric": "Key points: (1) L = lifetime (years) of a civilization releasing detectable signals. (2) Earth has had radio for ~100 years. (3) Could be centuries (if civ destroys itself) to billions (if stable). (4) Massive uncertainty (1,000 to 5 billion). (5) If all other Drake terms equal 1, N = L."},
+        {"id": "c12_q3_open", "type": "open", "prompt": "Describe extremophiles and give at least 3 environmental extremes they can tolerate. Why are they relevant to astrobiology?", "rubric": "Key points: Extremophiles survive/thrive in extreme environments. At least 3 of: (1) Temperature — thermophiles (hot), psychrophiles (cold). (2) pH — acidophiles, alkaliphiles. (3) Pressure — piezophiles/barophiles. (4) Salinity — halophiles. (5) Radiation — radioresistant organisms. Relevance: broadens habitable zone for astrobiology."}
+      ]
+    },
+    "13": {
+      "title": "Space Transportation: Rockets",
+      "questions": [
+        {"id": "c13_q1", "type": "mc", "prompt": "Newton's THIRD law applied to rockets says:", "choices": ["Heavier rockets go faster", "Expelling hot gas downward creates an equal and opposite upward thrust", "Rockets don't work in vacuum", "Fuel burns at constant rate"], "answer": 1},
+        {"id": "c13_q2", "type": "mc", "prompt": "Mass vs weight: a rocket on the Moon has:", "choices": ["Less mass but the same weight", "The same mass but about 1/6 of its Earth weight", "Half its Earth mass", "Zero mass"], "answer": 1},
+        {"id": "c13_q3", "type": "mc", "prompt": "Mars gravity is approximately what fraction of Earth's?", "choices": ["1/6", "1/3", "1/2", "Equal"], "answer": 1},
+        {"id": "c13_q4", "type": "mc", "prompt": "Weight on a rocket acts through which point?", "choices": ["Center of pressure", "Center of gravity", "Nose cone tip", "Engine nozzle"], "answer": 1},
+        {"id": "c13_q5", "type": "mc", "prompt": "Which type of drag is caused by the rocket's shape and pressure differences (including base drag)?", "choices": ["Skin friction drag", "Form drag", "Induced drag", "Wave drag"], "answer": 1},
+        {"id": "c13_q6", "type": "mc", "prompt": "Rocket staging is used because:", "choices": ["It looks cool", "Dropping empty stages reduces mass so remaining stages accelerate more efficiently", "It saves fuel storage on Earth", "Each stage has different physics"], "answer": 1},
+        {"id": "c13_q7", "type": "mc", "prompt": "Falcon 9 launch cost (~$2,600/kg) is notable because:", "choices": ["It's the most expensive rocket", "It's roughly half the cost of comparable traditional rockets", "It doesn't reach orbit", "It is only for satellites"], "answer": 1},
+        {"id": "c13_q8", "type": "mc", "prompt": "Starship's goal for reusability is to reduce cost per kg to orbit to:", "choices": ["Under $100/kg", "About $10,000/kg", "About $500,000/kg", "Under $1/kg"], "answer": 0},
+        {"id": "c13_q9", "type": "mc", "prompt": "Earth's escape velocity is approximately:", "choices": ["1.2 km/s", "11.2 km/s", "110 km/s", "1100 km/s"], "answer": 1},
+        {"id": "c13_q10", "type": "mc", "prompt": "Rocket engines can gimbal (tilt) to:", "choices": ["Save fuel only", "Create torque to steer the rocket", "Reduce noise", "Cool the engine"], "answer": 1},
+        {"id": "c13_q1_open", "type": "open", "prompt": "State Newton's three laws of motion and explain how each applies to a rocket launch.", "rubric": "Key points: (1) First law (inertia) — rocket at rest stays unless force applied; drag/gravity must be overcome. (2) Second law F=ma — thrust must exceed weight to accelerate; as fuel burns, mass decreases so acceleration increases. (3) Third law — action/reaction: expelling hot gas downward produces upward thrust. All three essential."},
+        {"id": "c13_q2_open", "type": "open", "prompt": "What forces act on a rocket in flight? Name at least 4 and describe each.", "rubric": "Key points: (1) Thrust — from engine, along long axis, can gimbal. (2) Weight — gravity pulling toward Earth center, acts at center of gravity. (3) Lift — aerodynamic, sideways, stabilizing, generated by nose/body/fins. (4) Drag — skin friction + form drag, opposes motion. (5) Torque — rotational effect when forces don't pass through center of gravity."},
+        {"id": "c13_q3_open", "type": "open", "prompt": "How has SpaceX's business model affected its ability to innovate rocket technology? Use Falcon 9/Heavy/Starship cost data.", "rubric": "Key points: (1) Self-funded (not traditional government contracts) enables faster iteration and risk tolerance. (2) Falcon 9 ~ $2,600/kg — roughly half comparable rockets. (3) Falcon Heavy ~ $1,500/kg. (4) Starship (reusable both stages) aims under $100/kg. (5) MAHD / rapid iteration culture. (6) Reusability = primary cost driver."}
+      ]
+    },
+    "14": {
+      "title": "Scientific Payload",
+      "questions": [
+        {"id": "c14_q1", "type": "mc", "prompt": "Remote sensing instruments:", "choices": ["Touch the surface directly", "Record characteristics of objects at a distance by gathering/focusing light", "Only work on Earth", "Destroy their targets"], "answer": 1},
+        {"id": "c14_q2", "type": "mc", "prompt": "Direct sensing (contact science) instruments:", "choices": ["Measure phenomena in immediate vicinity of the instrument", "Work across light-years", "Only measure temperature", "Require a human operator"], "answer": 0},
+        {"id": "c14_q3", "type": "mc", "prompt": "Sojourner's APXS (alpha-particle X-ray spectrometer) is an example of:", "choices": ["Remote sensing", "Direct/contact science", "A telescope", "A propulsion system"], "answer": 1},
+        {"id": "c14_q4", "type": "mc", "prompt": "Voyager I and II carried how many science investigations?", "choices": ["11 (10 instruments + radio science)", "2", "50", "200"], "answer": 0},
+        {"id": "c14_q5", "type": "mc", "prompt": "Which Artemis-era payload measures lunar subsurface heat flow by drilling?", "choices": ["EMILIA-3D", "LISTER", "SELINE", "OSIRIS"], "answer": 1},
+        {"id": "c14_q6", "type": "mc", "prompt": "SELINE's purpose is to:", "choices": ["Image the lunar surface in 3D thermal", "Measure the lunar radiation environment (cosmic rays + interactions with regolith)", "Drill for water", "Launch new missions"], "answer": 1},
+        {"id": "c14_q1_open", "type": "open", "prompt": "Compare remote sensing and direct sensing instruments. Give an example of each.", "rubric": "Key points: (1) Remote sensing — measures from a distance by gathering/focusing light; examples: cameras, telescopes, Cassini optical remote sensing. (2) Direct sensing / contact science — measures phenomena in immediate vicinity; examples: Sojourner's APXS (alpha-particle X-ray spectrometer), mass spectrometers. (3) Missions typically use both to maximize science return."},
+        {"id": "c14_q2_open", "type": "open", "prompt": "Pick any location in the Solar System (e.g., Titan, Europa, Enceladus) and describe what payload instruments you would include to search for life there. Justify each choice.", "rubric": "Good answers should: (1) Name the target and its conditions (e.g., Europa's subsurface ocean, Titan's methane lakes). (2) List 3-5 instruments with rationale: imagers for surface/plumes, spectrometers for composition, radar for subsurface, mass spectrometers for organics, magnetometer for ocean confirmation, seismometers, thermal imagers. (3) Tie each instrument to habitability/biosignature detection."},
+        {"id": "c14_q3_open", "type": "open", "prompt": "When designing a mission, how do scientific goals drive payload selection, and how do cost/mass constraints affect what you can include?", "rubric": "Key points: (1) Goals come first — 'what question are we answering?'. (2) Instruments chosen to measure relevant signals. (3) Every instrument has mass, power, data budget. (4) Rocket payload capacity limits total mass. (5) Trade-offs: more instruments = heavier/more expensive rocket. (6) Justification required for each inclusion."}
+      ]
+    },
+    "15": {
+      "title": "Searching for Life in the Solar System",
+      "questions": [
+        {"id": "c15_q1", "type": "mc", "prompt": "Titan's atmosphere is approximately:", "choices": ["95% oxygen, 5% nitrogen", "95% nitrogen, 5% methane (with carbon-rich compounds)", "50% CO2, 50% methane", "100% hydrogen"], "answer": 1},
+        {"id": "c15_q2", "type": "mc", "prompt": "Titan's atmospheric density compared to Earth's:", "choices": ["About 4x DENSER than Earth's", "Equal to Earth's", "1/100 of Earth's", "Nonexistent"], "answer": 0},
+        {"id": "c15_q3", "type": "mc", "prompt": "Titan's surface features liquid:", "choices": ["Water oceans", "Methane and ethane rivers, lakes, and seas", "Liquid iron", "Nothing — it's totally dry"], "answer": 1},
+        {"id": "c15_q4", "type": "mc", "prompt": "The Huygens probe (2005):", "choices": ["Orbited Mercury", "Parachuted to Titan's surface, measuring winds/atmosphere and imaging terrain", "Landed on Mars", "Left the solar system"], "answer": 1},
+        {"id": "c15_q5", "type": "mc", "prompt": "Enceladus is notable for:", "choices": ["Being the largest body in the solar system", "Tiger stripes releasing plumes of water vapor, CO2, methane, ammonia, salts, and organics", "Lacking any water", "Its bright red color"], "answer": 1},
+        {"id": "c15_q6", "type": "mc", "prompt": "Evidence for Enceladus's subsurface ocean includes:", "choices": ["Only visible light images", "Gravity/wobble measurements + silica nanograins in Saturn's E ring suggesting hydrothermal vents", "Radio signals from life", "Its rotation rate"], "answer": 1},
+        {"id": "c15_q7", "type": "mc", "prompt": "Europa is a moon of which planet?", "choices": ["Saturn", "Jupiter", "Uranus", "Neptune"], "answer": 1},
+        {"id": "c15_q8", "type": "mc", "prompt": "Galileo was intentionally crashed into Jupiter at end of mission to:", "choices": ["Save fuel", "Avoid contaminating Europa with Earth microbes (planetary protection)", "Produce fireworks", "Study Jupiter's atmosphere"], "answer": 1},
+        {"id": "c15_q9", "type": "mc", "prompt": "Which Europa Clipper instrument uses radar to probe ice thickness and detect the ocean?", "choices": ["EIS", "MASPEX", "REASON", "SUDA"], "answer": 2},
+        {"id": "c15_q10", "type": "mc", "prompt": "Europa Clipper's MASPEX is a:", "choices": ["Magnetometer", "Mass spectrometer analyzing gases and plumes", "Wide-angle camera", "Dust detector"], "answer": 1},
+        {"id": "c15_q1_open", "type": "open", "prompt": "Why is Titan considered a promising target for astrobiology? Describe its composition and surface features.", "rubric": "Key points: (1) Largest moon of Saturn. (2) Atmosphere ~95% nitrogen, ~5% methane, plus carbon-rich compounds (prebiotic chemistry). (3) Atmosphere ~4x denser than Earth's; gravity ~1/7 Earth. (4) Has rivers, lakes, seas of liquid methane/ethane. (5) Sand dunes, vast plains. (6) Methane acts like water on Earth. (7) Complex organics abundant."},
+        {"id": "c15_q2_open", "type": "open", "prompt": "Why is Enceladus a compelling target for finding life? Describe the evidence for its subsurface ocean and activity.", "rubric": "Key points: (1) Icy moon of Saturn, most reflective body in solar system. (2) Tiger stripes — warm fractures near south pole releasing plumes of water vapor, CO2, methane, ammonia, salts, organics. (3) Organic density 20x higher than expected. (4) Gravity/wobble measurements show liquid water beneath ice. (5) Silica nanograins in E ring suggest hydrothermal vents at ~90C. (6) Plumes sampled by Cassini — proxy for ocean composition without drilling."},
+        {"id": "c15_q3_open", "type": "open", "prompt": "Compare Titan, Europa, and Enceladus as targets for finding life. Which would you prioritize and why?", "rubric": "Strong answers should: (1) Compare habitability factors. (2) Discuss accessibility — Enceladus plumes are sample-ready without drilling; Europa requires ice penetration; Titan requires entry/landing. (3) Justify prioritization with tradeoffs between science return and mission cost/risk."}
+      ]
+    }
+  },
+  "labs": {
+    "lab1": {
+      "title": "Lab 1 - Finding Relationships (Pendulums)",
+      "questions": [
+        {"id": "lab1_q1", "type": "mc", "prompt": "In Lab 1, which pendulum variable turned out to be the RELEVANT independent variable affecting the period?", "choices": ["Amplitude of oscillation", "Hanging mass", "Length of the pendulum", "Color of the string"], "answer": 2},
+        {"id": "lab1_q2", "type": "mc", "prompt": "Why do you time FIVE oscillations and divide by 5 to get the period?", "choices": ["It's required by the lab rubric", "To reduce the effect of human reaction-time error on a single-period measurement", "Pendulums only work past 5 swings", "To use up more stopwatch battery"], "answer": 1},
+        {"id": "lab1_q3", "type": "mc", "prompt": "Accuracy vs precision: a measurement that is always wrong by the same amount is:", "choices": ["Accurate but not precise", "Precise but not accurate", "Both accurate and precise", "Neither"], "answer": 1},
+        {"id": "lab1_q4", "type": "mc", "prompt": "The theoretical period of a pendulum is given by:", "choices": ["T = m*g*L", "T = 2*pi*sqrt(L/g)", "T = L/(g^2)", "T = g*L^2"], "answer": 1},
+        {"id": "lab1_q5", "type": "mc", "prompt": "Given T = 2*pi*sqrt(L/g), which mathematical form best describes T vs L?", "choices": ["Proportional (T = m*L)", "Square (T = A*L^2)", "Square-root (T = A*L^0.5)", "Exponential"], "answer": 2},
+        {"id": "lab1_q6", "type": "mc", "prompt": "Percent error compares your measured value to:", "choices": ["Your average value", "The accepted/true value", "The largest measurement", "The smallest measurement"], "answer": 1},
+        {"id": "lab1_q1_open", "type": "open", "prompt": "Explain the difference between accuracy and precision, and how you determined the uncertainty of your timing measurements in Lab 1.", "rubric": "Key points: (1) Accuracy = how close to the true value. (2) Precision = how repeatable/close measurements are to each other. (3) Stopwatch measures to 0.01 s, but human reaction time dominates. (4) Used 'Reaction Time' sticks — 10 trials averaged; used the standard deviation as timing uncertainty. (5) For length/mass/angle, used smallest scale division of the instrument."},
+        {"id": "lab1_q2_open", "type": "open", "prompt": "The Foucault pendulum at the Museum of Science Boston has a swing period of 8.75 seconds. Using T = 2*pi*sqrt(L/g) with g = 9.8 m/s^2, calculate its length.", "rubric": "Setup: L = g * (T / (2*pi))^2. Plug in T = 8.75 s: T/(2*pi) ~ 1.393 s. Square ~ 1.940. Multiply by 9.8: L ~ 19.0 meters. Full credit requires showing work and units."}
+      ]
+    },
+    "lab2": {
+      "title": "Lab 2 - Light Spectra",
+      "questions": [
+        {"id": "lab2_q1", "type": "mc", "prompt": "Which type of spectrum is produced by a glowing dense solid, liquid, or dense gas?", "choices": ["Continuous spectrum", "Emission spectrum", "Absorption spectrum", "Radio spectrum"], "answer": 0},
+        {"id": "lab2_q2", "type": "mc", "prompt": "Emission (bright line) spectra come from:", "choices": ["A cool gas in front of a bright source", "A hot, low-density gas radiating at wavelengths specific to the element", "A lightbulb filament", "A mirror"], "answer": 1},
+        {"id": "lab2_q3", "type": "mc", "prompt": "Wien's Displacement Law relates:", "choices": ["Photon energy and frequency", "Temperature and peak emission wavelength (lambda_peak * T = constant)", "Mass and energy", "Refractive index and speed"], "answer": 1},
+        {"id": "lab2_q4", "type": "mc", "prompt": "Hotter blackbodies emit more light at:", "choices": ["Longer wavelengths", "Shorter wavelengths (higher frequencies)", "Only infrared", "Only visible red"], "answer": 1},
+        {"id": "lab2_q5", "type": "mc", "prompt": "The Balmer series in hydrogen corresponds to electron transitions to which energy level?", "choices": ["N = 1 (Lyman)", "N = 2", "N = 3 (Paschen)", "N = 4"], "answer": 1},
+        {"id": "lab2_q6", "type": "mc", "prompt": "Would the Balmer limit (n -> infinity to N=2) be LONGER or SHORTER wavelength than the visible Balmer lines?", "choices": ["Longer", "Shorter", "The same", "It's not a real transition"], "answer": 1},
+        {"id": "lab2_q7", "type": "mc", "prompt": "Astronomers determine the COMPOSITION of a star using:", "choices": ["Only its color", "Dark absorption lines (Fraunhofer lines) from elements in its atmosphere", "Its mass only", "Its distance"], "answer": 1},
+        {"id": "lab2_q8", "type": "mc", "prompt": "The Sun's spectral class (G2) corresponds to roughly what temperature?", "choices": ["3,000 K", "5,800 K", "20,000 K", "100,000 K"], "answer": 1},
+        {"id": "lab2_q1_open", "type": "open", "prompt": "Name and describe the three types of spectra covered in Lab 2, and state what conditions produce each.", "rubric": "Key points: (1) Continuous — glowing solid/liquid/dense gas; smooth across all colors. (2) Emission (bright line) — hot low-density gas; bright lines at wavelengths characteristic of the element. (3) Absorption (dark line) — cooler gas between observer and continuous source; dark lines at same wavelengths. Wavelengths are identical between emission and absorption for a given element."},
+        {"id": "lab2_q2_open", "type": "open", "prompt": "The Sun's temperature is 5800 K and Wolf 359's is 3000 K. Use Wien's Law to calculate each peak wavelength and explain what this says about their colors.", "rubric": "Wien: lambda_peak = 2.898e-3 / T (meters). Sun: 2.898e-3 / 5800 ~ 500 nm (green-yellow), appears yellow-white. Wolf 359: 2.898e-3 / 3000 ~ 966 nm (near-IR), visible output skewed to red — appears RED. Full credit shows work and units."}
+      ]
+    },
+    "lab3": {
+      "title": "Lab 3 - Greenhouse Gas Effect",
+      "questions": [
+        {"id": "lab3_q1", "type": "mc", "prompt": "In Lab 3, which bottle served as the CONTROL?", "choices": ["The bottle with CO2 from Alka-Seltzer", "The bottle with only water (water vapor)", "The empty bottle with only AIR", "There was no control"], "answer": 2},
+        {"id": "lab3_q2", "type": "mc", "prompt": "CO2 was generated in the lab by:", "choices": ["Burning wood", "Adding Alka-Seltzer tablets to water", "Opening a soda", "Compressing air"], "answer": 1},
+        {"id": "lab3_q3", "type": "mc", "prompt": "Greenhouse gases trap heat because they:", "choices": ["Block incoming sunlight", "Are transparent to incoming visible light but absorb outgoing infrared radiation", "Reflect all radiation", "Produce heat by chemical reaction"], "answer": 1},
+        {"id": "lab3_q4", "type": "mc", "prompt": "N2 and O2 are NOT considered major greenhouse gases because:", "choices": ["They make up less than 1% of the atmosphere", "Their molecular structures don't absorb significant IR radiation", "They are radioactive", "They dissolve in ocean water"], "answer": 1},
+        {"id": "lab3_q5", "type": "mc", "prompt": "Without greenhouse gases, Earth's surface temperature would be approximately:", "choices": ["The same as now", "About 30 C cooler than now", "About 100 C hotter than now", "Boiling at 100 C"], "answer": 1},
+        {"id": "lab3_q6", "type": "mc", "prompt": "Venus has a surface hotter than Mercury's, despite being farther from the Sun, because:", "choices": ["It is closer to other stars", "Its thick CO2 atmosphere produces a runaway greenhouse effect", "It has more volcanoes", "Mercury has no atmosphere"], "answer": 1},
+        {"id": "lab3_q7", "type": "mc", "prompt": "Mars's atmosphere is mostly:", "choices": ["Oxygen", "CO2, but it is very thin (about 0.6% of Earth's pressure)", "Nitrogen", "Hydrogen"], "answer": 1},
+        {"id": "lab3_q1_open", "type": "open", "prompt": "Describe the setup of the greenhouse gas lab (bottles, gases, temperature probes) and what hypothesis it is designed to test.", "rubric": "Key points: (1) Three 1L plastic bottles: (a) AIR only = control, (b) water vapor (H2O), (c) CO2 generated from Alka-Seltzer + water. (2) Heat lamp ~30 cm away. (3) Color-coded temperature probes (red = CO2, blue = H2O, green = air). (4) Lamp cycled on/off every 2.5 minutes for 15 minutes. (5) Hypothesis: CO2 and water vapor bottles warm more than air-only because they absorb outgoing IR."},
+        {"id": "lab3_q2_open", "type": "open", "prompt": "Is the bottle experiment an ACCURATE model of Earth's atmosphere? Discuss at least three limitations.", "rubric": "Key points: (1) Closed bottle — no convection/horizontal transport. (2) Lamp is direct IR, not shortwave sunlight. (3) Scale — cm vs km. (4) No feedback loops (water vapor feedback, albedo, clouds). (5) Only one gas tested at a time. (6) No ocean heat storage. Demonstrates MECHANISM but not magnitude."}
+      ]
+    },
+    "lab4": {
+      "title": "Lab 4 - Rocket Design",
+      "questions": [
+        {"id": "lab4_q1", "type": "mc", "prompt": "In Lab 4, how many rockets did your group build per prototype?", "choices": ["One", "Two", "Three identical rockets (to average out random error)", "Six"], "answer": 2},
+        {"id": "lab4_q2", "type": "mc", "prompt": "Between prototype 1 and prototype 2, you changed how many design variables?", "choices": ["All of them", "Exactly ONE (controlled experiment)", "Two", "As many as you wanted"], "answer": 1},
+        {"id": "lab4_q3", "type": "mc", "prompt": "Altitude was calculated using:", "choices": ["GPS", "Angles A and B from two observers plus baseline L and eye-level height h (form of law of sines)", "Timing with a stopwatch only", "A satellite photo"], "answer": 1},
+        {"id": "lab4_q4", "type": "mc", "prompt": "The fins on a rocket mainly provide:", "choices": ["Thrust", "Stabilization and directional control via lift", "Weight reduction", "Engine cooling"], "answer": 1},
+        {"id": "lab4_q5", "type": "mc", "prompt": "The nose cone helps by:", "choices": ["Generating thrust", "Piercing the air and reducing form drag", "Acting as fuel", "Storing water"], "answer": 1},
+        {"id": "lab4_q6", "type": "mc", "prompt": "Which is NOT one of the four basic forces on a rocket?", "choices": ["Thrust", "Weight", "Lift", "Magnetism"], "answer": 3},
+        {"id": "lab4_q1_open", "type": "open", "prompt": "List at least four sources of error in Lab 4 and explain how each could affect the measured altitude.", "rubric": "Sources: wind direction/strength pushes rocket off vertical; human angle-reading with altitude tracker (~1-2 deg precision); inconsistent stomping force; non-identical rockets; non-airtight seams reducing pressure; observer reaction lag; weight variation from paper/tape amounts."},
+        {"id": "lab4_q2_open", "type": "open", "prompt": "Using your lab results, recommend two real-world rockets that could be scaled up from a similar design philosophy to support a mission to study life in the Solar System. Justify your choices.", "rubric": "Strong answers connect lab findings (low drag + stable fin geometry = higher altitude) to real rockets; name 2 (Falcon 9/Heavy, Starship, SLS, Atlas V, Electron); justify by cost per kg, payload capacity, reusability, mission target (Europa Clipper used Falcon Heavy)."}
+      ]
+    },
+    "lab5": {
+      "title": "Lab 5 - Reflectance Spectroscopy (Martian Soil)",
+      "questions": [
+        {"id": "lab5_q1", "type": "mc", "prompt": "Reflectance spectroscopy measures:", "choices": ["Only light an object emits on its own", "How much light at different wavelengths reflects off an object", "Only the temperature of an object", "The mass of an object"], "answer": 1},
+        {"id": "lab5_q2", "type": "mc", "prompt": "The ALTA II is an ACTIVE system because:", "choices": ["It moves around the lab", "It emits its own light at specific wavelengths and measures the reflection", "It uses solar power only", "It actively heats the sample"], "answer": 1},
+        {"id": "lab5_q3", "type": "mc", "prompt": "Dark voltage is:", "choices": ["The measurement of total reflected light", "The ALTA II reading when no light is present — electronic NOISE that must be subtracted", "The sample's true value", "Voltage from dark samples only"], "answer": 1},
+        {"id": "lab5_q4", "type": "mc", "prompt": "Why do you measure WHITE PAPER before each sample?", "choices": ["To calibrate and use as the maximum reflectance reference for computing % reflectivity", "White paper is a Mars analog", "It cleans the sensor", "It is required for safety"], "answer": 0},
+        {"id": "lab5_q5", "type": "mc", "prompt": "In the reflectance spectrum, a DIP at a specific wavelength means:", "choices": ["That wavelength is strongly reflected", "That wavelength is strongly absorbed by the sample", "The ALTA II is broken", "The sample is transparent"], "answer": 1},
+        {"id": "lab5_q6", "type": "mc", "prompt": "Which real Mars Express instrument uses reflectance spectroscopy to map minerals on Mars?", "choices": ["OMEGA IR Mineralogical Mapping Spectrometer", "Hubble Space Telescope", "LIGO", "Europa Clipper"], "answer": 0},
+        {"id": "lab5_q7", "type": "mc", "prompt": "For an opaque solid, the energy balance is approximately:", "choices": ["All light = reflected + absorbed", "All light = created + destroyed", "All light = diffracted + refracted", "All light = emitted only"], "answer": 0},
+        {"id": "lab5_q1_open", "type": "open", "prompt": "Explain reflectance spectroscopy and how the ALTA II works. Contrast it with emission and absorption spectroscopy.", "rubric": "Key points: (1) Reflectance = measures how much light at different wavelengths reflects. (2) ALTA II active — emits known wavelengths, measures reflection. (3) Emission = measures self-emitted light (stars). (4) Absorption = light passing through transparent medium (exoplanet atmospheres). (5) For opaque rocks: All light = reflected + absorbed."},
+        {"id": "lab5_q2_open", "type": "open", "prompt": "Identify another object in the Solar System where reflectance spectroscopy could detect biomarkers, what specifically you'd look for, and how the approach would differ from Mars.", "rubric": "Name target (Europa, Enceladus, Titan, Moon, asteroids). Biomarkers: water ice, hydrated salts, organics (C-H bonds in IR), ammonia, sulfates tied to hydrothermal activity. Adapt method: colder targets = different IR bands; close flyby or lander; plume sampling (Enceladus); Titan requires penetrating haze."}
+      ]
+    }
+  }
+}

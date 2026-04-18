@@ -8,14 +8,16 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const isGame = pathname.startsWith('/games');
   const isSuperintendent = pathname.startsWith('/superintendent');
   const isTransfer = pathname.startsWith('/transfer');
+  const isNst = pathname.startsWith('/NST') || pathname.startsWith('/nst');
+  const hide = isGame || isSuperintendent || isTransfer || isNst;
 
   return (
     <>
-      {!isGame && !isSuperintendent && !isTransfer && <Navbar />}
+      {!hide && <Navbar />}
       <div className="relative z-[1]">
         {children}
       </div>
-      {!isGame && !isSuperintendent && !isTransfer && (
+      {!hide && (
         <footer className="relative z-[1] bg-gradient-to-br from-[#4F46E5] via-[#7C3AED] to-[#06B6D4] py-16 px-4">
           <div className="max-w-5xl mx-auto text-center">
             <p className="text-white text-sm font-bold uppercase tracking-[0.14em] mb-3">
