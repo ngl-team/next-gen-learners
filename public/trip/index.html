@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day Trip · Sat April 25, 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a1f2e;
+    --panel2: #242a3d;
+    --text: #e8ecf1;
+    --muted: #8b93a7;
+    --accent: #4ade80;
+    --accent2: #60a5fa;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --border: #2d3548;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  body { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+
+  #sidebar {
+    width: 420px; flex: 0 0 420px; height: 100vh;
+    background: var(--panel);
+    overflow-y: auto; overflow-x: hidden;
+    border-right: 1px solid var(--border);
+    padding: 24px;
+  }
+  @media (max-width: 1100px) { #sidebar { width: 360px; flex-basis: 360px; } }
+
+  #sidebar h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  #sidebar .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  #sidebar h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 20px 0 10px 0; font-weight: 600; }
+
+  .trip-toggle {
+    display: flex; gap: 6px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 4px; margin-bottom: 18px;
+  }
+  .trip-toggle button {
+    flex: 1; padding: 10px; font-size: 13px; font-weight: 600;
+    background: transparent; color: var(--muted); border: none;
+    border-radius: 7px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .trip-toggle button.active { background: var(--accent); color: #0f1419; }
+  .trip-toggle button:not(.active):hover { color: var(--text); }
+
+  .summary {
+    background: var(--panel2); padding: 14px; border-radius: 10px; margin-bottom: 18px;
+    border: 1px solid var(--border);
+  }
+  .summary div { font-size: 13px; line-height: 1.6; }
+  .summary strong { color: var(--accent); }
+
+  .stop {
+    position: relative;
+    padding: 14px 14px 14px 50px;
+    margin-bottom: 10px;
+    background: var(--panel2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .stop:hover { border-color: var(--accent); transform: translateX(2px); }
+  .stop.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.15); }
+  .stop .num {
+    position: absolute; left: 14px; top: 14px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #0f1419;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+  }
+  .stop .time { color: var(--accent2); font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .stop .name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .stop .detail { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .stop .tag {
+    display: inline-block;
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    margin-right: 4px; margin-top: 6px; font-weight: 600;
+  }
+  .tag.nature { background: rgba(74, 222, 128, 0.15); color: var(--accent); }
+  .tag.town { background: rgba(96, 165, 250, 0.15); color: var(--accent2); }
+  .tag.food { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
+  .tag.transit { background: rgba(139, 147, 167, 0.15); color: var(--muted); }
+  .tag.dairy { background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248,113,113,.3); }
+
+  .allergy-note {
+    background: rgba(248, 113, 113, 0.08);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    padding: 12px; border-radius: 8px; margin-bottom: 18px;
+    font-size: 12px; line-height: 1.5;
+  }
+  .allergy-note strong { color: var(--danger); display: block; margin-bottom: 4px; }
+
+  .closed-box {
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 11px; line-height: 1.5; color: var(--muted);
+    margin-top: 14px;
+  }
+  .closed-box strong { color: var(--warn); display: block; margin-bottom: 4px; font-size: 12px; }
+
+  #map { flex: 1 1 auto; height: 100vh; position: relative; min-width: 0; }
+
+  .map-controls {
+    position: absolute; top: 12px; right: 12px;
+    z-index: 1000; display: flex; gap: 6px;
+  }
+  .map-controls button {
+    background: var(--panel2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .map-controls button:hover { border-color: var(--accent); color: var(--accent); }
+  .map-controls button.active { background: var(--accent); color: #0f1419; border-color: var(--accent); }
+
+  .leaflet-popup-content-wrapper {
+    background: var(--panel2); color: var(--text);
+    border-radius: 10px; border: 1px solid var(--border);
+    max-width: 240px;
+  }
+  .leaflet-popup-content { margin: 12px 14px; font-size: 13px; line-height: 1.5; width: auto !important; }
+  .leaflet-popup-content b { color: var(--accent); }
+  .leaflet-popup-tip { background: var(--panel2); }
+  .leaflet-container { background: #1a1f2e; }
+
+  .num-marker {
+    color: #0f1419;
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+    border: 3px solid #0f1419; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .num-marker.mv { background: var(--accent); }
+  .num-marker.cc { background: var(--warn); }
+  .num-marker.pw { background: #a78bfa; }
+
+  .expenses {
+    background: var(--panel2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; margin-top: 18px;
+  }
+  .expenses h3 {
+    font-size: 13px; font-weight: 700; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .expenses h3 .total {
+    color: var(--accent); font-size: 16px;
+  }
+  .expenses .line {
+    display: flex; justify-content: space-between;
+    font-size: 12px; padding: 5px 0;
+    color: var(--muted); border-bottom: 1px dashed var(--border);
+  }
+  .expenses .line:last-of-type { border-bottom: none; }
+  .expenses .line .amount { color: var(--text); font-weight: 600; }
+  .expenses .line.optional { opacity: 0.7; }
+  .expenses .line.optional .amount { color: var(--warn); }
+  .expenses .fine { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+  .weather-box {
+    padding: 12px; border-radius: 8px; margin-bottom: 14px;
+    font-size: 12px; line-height: 1.5; border: 1px solid;
+  }
+  .weather-box strong { display: block; margin-bottom: 4px; font-size: 12px; }
+  .weather-box.good { background: rgba(74, 222, 128, 0.08); border-color: rgba(74, 222, 128, 0.3); }
+  .weather-box.good strong { color: var(--accent); }
+  .weather-box.caution { background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.3); }
+  .weather-box.caution strong { color: var(--warn); }
+  .weather-box.bad { background: rgba(248, 113, 113, 0.08); border-color: rgba(248, 113, 113, 0.3); }
+  .weather-box.bad strong { color: var(--danger); }
+
+  @media (max-width: 900px) {
+    body { flex-direction: column; }
+    #sidebar { width: 100%; flex: 0 0 45vh; height: 45vh; border-right: none; border-bottom: 1px solid var(--border); }
+    #map { flex: 1 1 auto; height: 55vh; }
+  }
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <h1>Day Trip · Sat April 25, 2026</h1>
+  <div class="subtitle">Babson College → ocean and back</div>
+
+  <div class="trip-toggle">
+    <button id="tab-mv" class="active">MV</button>
+    <button id="tab-cc">Chatham</button>
+    <button id="tab-pw">P-town Whales</button>
+  </div>
+
+  <div id="trip-content"></div>
+</div>
+
+<div id="map">
+  <div class="map-controls">
+    <button id="view-trip" class="active">Trip area</button>
+    <button id="view-full">Full route (from Babson)</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const TRIPS = {
+    mv: {
+      label: "Martha's Vineyard",
+      colorClass: "mv",
+      lineColor: "#4ade80",
+      summary: [
+        ["Ferry", "Vineyard Haven (Oak Bluffs terminal closed until May)"],
+        ["Car", "Park at Falmouth Palmer Ave Lot, walk on as passengers"],
+        ["Transit on island", "VTA Route 13 (year-round, VH↔OB↔Edgartown)"],
+        ["Home by", "~8:45 PM"]
+      ],
+      weather: { level: "caution", title: "44°F forecast — cold but workable", body: "Ferry cabin is heated. Walking the towns is fine with layers. Scratch the bike option entirely — State Beach bike path at 44°F + ocean wind is miserable. Pack: heavy jacket, hat, gloves, scarf, warm socks, waterproof shoes (in case of spray on the ferry deck)." },
+      allergy: "Lunch pick is Atlantic Fish & Chop House — Spokin-verified, preps allergen-free meals on separate equipment. Order grilled fish with olive oil (no butter), steamed lobster, or oysters. Tell server on arrival. Backup: Sharky's Cantina Edgartown — Mexican, easy dairy-free. Avoid Black Dog chowders.",
+      closed: "Atria (reopens May), Among the Flowers Cafe (reopens 5/1), Oak Bluffs ferry terminal (Woods Hole→OB route opens May).",
+      confirm: "Call morning of: Atlantic Fish (508-627-7001) to confirm lunch and dairy allergy. Check steamshipauthority.com for ferry changes.",
+      stops: [
+        { n: 1, time: "7:00 AM · Depart", name: "Babson College", desc: "Wellesley, MA. Coffee in hand. ~1h20m drive to Falmouth.", tags: [["transit","drive"]], coords: [42.2947, -71.2648] },
+        { n: 2, time: "8:20 AM · Park", name: "Palmer Ave Park-and-Ride", desc: "Falmouth. ~$20-25/day. Free shuttle to Woods Hole ferry terminal every 15 min. Do NOT try to park at Woods Hole itself.", tags: [["transit","park + shuttle"]], coords: [41.5721, -70.6186] },
+        { n: 3, time: "8:45 AM · Ferry", name: "Woods Hole → Vineyard Haven", desc: "Steamship Authority. ~$10pp walk-on, no reservation needed. 45-min crossing. Sit on the top deck. Target 8:45 AM or 9:30 AM boat.", tags: [["transit","ferry"]], coords: [41.5243, -70.6714] },
+        { n: 4, time: "9:30 AM · Arrive", name: "Vineyard Haven", desc: "Walk Main Street shops, Owen Park and harbor. Photo stop at Black Dog Tavern. Year-round town, low-key.", tags: [["town","town walk"],["nature","harbor"]], coords: [41.4540, -70.6034] },
+        { n: 5, time: "10:45 AM · Bus", name: "VTA Route 13 → Oak Bluffs", desc: "~15-min ride. $1.25 or day pass $8. Runs every 30-60 min.", tags: [["transit","bus"]], coords: [41.4548, -70.6030] },
+        { n: 6, time: "11:00 AM · Explore", name: "Oak Bluffs", desc: "Trinity Park Gingerbread Cottages (colorful Victorians, iconic photo). Circuit Ave shops. Ocean Park lawn.", tags: [["town","town + shops"]], coords: [41.4560, -70.5592] },
+        { n: 7, time: "12:15 PM · Bus", name: "VTA 13 → Edgartown via Beach Rd", desc: "~25-min ride. Scenic: passes Joseph Sylvia State Beach and Jaws Bridge — sit on the right.", tags: [["transit","bus"],["nature","scenic"]], coords: [41.4281, -70.5424] },
+        { n: 8, time: "1:00 PM · Lunch", name: "Atlantic Fish & Chop House", desc: "2 Main St, Edgartown. Open Sat 12pm-12am. Call 508-627-7001 to flag dairy allergy — they prep allergen-free on separate equipment. Waterfront, upscale-casual, perfect date spot.", tags: [["food","lunch"],["dairy","dairy-safe ✓"]], coords: [41.3889, -70.5138] },
+        { n: 9, time: "2:30 PM · Walk", name: "Edgartown Lighthouse + Harbor", desc: "Walk down N Water St past the white-picket sea captain houses. Beach, views, quiet in April. Main nature moment of the day.", tags: [["nature","beach walk"],["town","historic"]], coords: [41.3927, -70.5014] },
+        { n: 10, time: "3:30 PM · Coffee", name: "Espresso Love", desc: "17 Church St. Year-round, Spokin-listed allergy-friendly. Browse Edgartown shops — Main St boutiques, Bunch of Grapes Bookstore.", tags: [["food","coffee"],["town","shops"],["dairy","dairy-safe ✓"]], coords: [41.3899, -70.5116] },
+        { n: 11, time: "5:00 PM · Bus back", name: "VTA 13 → Vineyard Haven Ferry", desc: "~45-min ride via OB back to the ferry terminal. Buffer for the bus — they can be late off-season.", tags: [["transit","bus"]], coords: [41.4548, -70.6030] },
+        { n: 12, time: "6:30 PM · Ferry", name: "Vineyard Haven → Woods Hole", desc: "Target 6:30 PM. Back to Falmouth ~7:15 PM, shuttle to car, drive home. Babson by ~8:45 PM.", tags: [["transit","ferry"]], coords: [41.5243, -70.6714] }
+      ],
+      routeBuilder: (s) => [
+        { coords: [s[0].coords, s[1].coords, s[2].coords], style: { color: '#8b93a7', weight: 3, opacity: 0.7, dashArray: '6, 8' } },
+        { coords: [s[2].coords, s[3].coords], style: { color: '#60a5fa', weight: 4, opacity: 0.9, dashArray: '10, 6' } },
+        { coords: [s[3].coords, s[5].coords, s[6].coords, s[7].coords, s[8].coords, s[9].coords, s[5].coords, s[3].coords], style: { color: '#4ade80', weight: 3, opacity: 0.85 } },
+        { coords: [s[3].coords, s[2].coords], style: { color: '#60a5fa', weight: 4, opacity: 0.5, dashArray: '10, 6' } }
+      ],
+      tripBoundsIndices: [3,4,5,6,7,8,9,10],
+      expenses: {
+        lines: [
+          { item: "Gas (Babson ↔ Falmouth, ~160 mi)", amount: 20 },
+          { item: "Parking at Palmer Ave Lot", amount: 25 },
+          { item: "Ferry walk-on, round trip × 2", amount: 44 },
+          { item: "VTA bus day pass × 2", amount: 16 },
+          { item: "Lunch at Atlantic Fish & Chop House (2 entrees + drinks)", amount: 90 },
+          { item: "Tip (lunch, 20%)", amount: 18 },
+          { item: "Coffee + pastry at Espresso Love", amount: 14 }
+        ],
+        fine: "Estimated for 2 people. Add $0-20 for any extra snacks or souvenirs. Tides vary — 8:45 AM ferry missed means a 9:30 AM boat, no cost impact."
+      }
+    },
+
+    cc: {
+      label: "Cape Cod (Chatham)",
+      colorClass: "cc",
+      lineColor: "#fbbf24",
+      summary: [
+        ["Theme", "Animal viewing — seals, seabirds, maybe whales"],
+        ["Drive", "Direct to Chatham via Sagamore Bridge, ~1h45m"],
+        ["Free wildlife", "Fish Pier, Lighthouse Beach, Monomoy NWR trail"],
+        ["Home by", "~6:30 PM"]
+      ],
+      weather: { level: "good", title: "44°F forecast — best trip for this weather", body: "Seals don't care about cold — this plan works well at 44°F because outdoor bouts are short (30-45 min at Fish Pier, flexible-length beach walk) with indoor warm-ups between (Main St shops, Squire, Candy Manor). Pack: warm jacket, hat, gloves, binoculars. Skip the Monomoy NWR trail if wind is strong (exposed)." },
+      allergy: "Lunch pick is Chatham Squire — allergy-aware menu, open Sat 11:30am-1am, fresh seafood, oysters on the half shell. Ask for grilled fish plain (no butter) or raw bar. Strongest dairy-safe backup: Bluefins Sushi (sushi is naturally dairy-free; skip tempura). The Chatham Cut has explicit dairy alerts on the menu.",
+      closed: "Many seasonal restaurants still closed in April — Pisces is seasonal. Nauset Light tours don't start until summer.",
+      confirm: "Call morning of: Chatham Squire (508-945-0945) for lunch + dairy allergy. Check the tide chart for Chatham (low tide = more seals on sandbars at Lighthouse Beach). Fish Pier is free, seals are best noon-2pm when fishing boats return.",
+      stops: [
+        { n: 1, time: "7:00 AM · Depart", name: "Babson College", desc: "Wellesley, MA. ~1h45m drive: Rt 3 → Sagamore Bridge → Rt 6 → Exit 11 to Chatham.", tags: [["transit","drive"]], coords: [42.2947, -71.2648] },
+        { n: 2, time: "8:45 AM · Coffee", name: "Monomoy Coffee Co.", desc: "Main Street Chatham. Year-round local coffee. Grab something warm and start the morning on foot.", tags: [["food","coffee"]], coords: [41.6817, -69.9603] },
+        { n: 3, time: "9:15 AM · Walk", name: "Chatham Main Street", desc: "Year-round shops: Chatham Clothing Bar, Yankee Ingenuity, Where the Sidewalk Ends Bookstore, Candy Manor. Quiet and cute in April.", tags: [["town","shops"]], coords: [41.6820, -69.9594] },
+        { n: 4, time: "10:15 AM · Beach + seals", name: "Chatham Lighthouse Beach", desc: "Walk the long beach south toward South Beach (connected by shifting sands). At lower tides, gray and harbor seals haul out on the exposed sandbars offshore — look through binoculars. Walk 20-30 min along the shore.", tags: [["nature","beach"],["nature","seals"]], coords: [41.6710, -69.9500] },
+        { n: 5, time: "11:45 AM · FREE SEALS", name: "Chatham Fish Pier", desc: "The gem. Free viewing deck overlooking the inlet. Working commercial pier — seals hang around waiting for the fishing boats to return with catch. Peak activity noon-2pm. Bring binoculars. You'll also see fishermen unloading right in front of you.", tags: [["nature","seals"],["nature","FREE"]], coords: [41.6858, -69.9486] },
+        { n: 6, time: "12:45 PM · Lunch", name: "Chatham Squire", desc: "487 Main St. Open Sat 11:30am-1am. Iconic local spot, raw bar, fresh fish. Call 508-945-0945 to flag dairy allergy. Order oysters, grilled fish no butter, steamers. 5 min walk from the pier.", tags: [["food","lunch"],["dairy","dairy-safe ✓"]], coords: [41.6820, -69.9590] },
+        { n: 7, time: "2:15 PM · Wildlife refuge", name: "Monomoy NWR — Morris Island Trail", desc: "Free visitor area at 30 Wikis Way. Short loop trail (~0.75 mi) with elevated views over Nantucket Sound. Seabirds, shorebirds, seals visible offshore, salt marsh ecology. The quietest, most nature-forward stop of the day.", tags: [["nature","refuge"],["nature","birds"]], coords: [41.6520, -69.9680] },
+        { n: 8, time: "3:45 PM · Treat", name: "Chatham Candy Manor", desc: "484 Main St. Classic year-round candy shop. Dairy-free: hard candies, fruit jellies, gummies. Skip fudge and chocolate truffles.", tags: [["food","treat"],["town","shops"]], coords: [41.6822, -69.9588] },
+        { n: 9, time: "4:30 PM · Return", name: "Drive back to Babson", desc: "Rt 6 → Sagamore Bridge → Rt 3 → Babson. ~1h45m with Saturday afternoon traffic buffered.", tags: [["transit","drive"]], coords: [42.2947, -71.2648] },
+        { n: 10, time: "OPTIONAL · Paid upgrade", name: "Beachcomber Seal Tour", desc: "$45pp, ~90 min boat tour from Chatham Boat Co (174 Crowell Rd). Gets you close to hauled-out gray seal colonies. Operates mid-April on. Check sealwatch.com the week before for 4/25 schedule. Slot in instead of Morris Island.", tags: [["food","$45pp"],["nature","seal boat"]], coords: [41.6881, -69.9612] },
+        { n: 11, time: "OPTIONAL · Splurge", name: "Dolphin Fleet Whale Watch (Provincetown)", desc: "$70pp, 3-4 hrs from MacMillan Pier. 2026 season opens April 18 — humpbacks and endangered North Atlantic Right Whales pass through April-May (actually peak whale season). Replaces most of the Chatham day — ~1h drive from Chatham up to P-town. Book at whalewatch.com.", tags: [["food","$70pp"],["nature","whales"]], coords: [42.0497, -70.1790] }
+      ],
+      routeBuilder: (s) => [
+        { coords: [s[0].coords, s[1].coords], style: { color: '#8b93a7', weight: 3, opacity: 0.7, dashArray: '6, 8' } },
+        { coords: [s[1].coords, s[2].coords, s[3].coords, s[4].coords, s[5].coords, s[6].coords, s[7].coords], style: { color: '#fbbf24', weight: 3, opacity: 0.85 } },
+        { coords: [s[7].coords, s[8].coords], style: { color: '#8b93a7', weight: 3, opacity: 0.7, dashArray: '6, 8' } }
+      ],
+      tripBoundsIndices: [1,2,3,4,5,6,7],
+      expenses: {
+        lines: [
+          { item: "Gas (Babson ↔ Chatham, ~190 mi)", amount: 24 },
+          { item: "Parking in Chatham", amount: 0 },
+          { item: "Morning coffee × 2", amount: 10 },
+          { item: "Lunch at Chatham Squire (2 entrees + drinks)", amount: 70 },
+          { item: "Tip (lunch, 20%)", amount: 14 },
+          { item: "Fish Pier + Lighthouse Beach + Monomoy NWR", amount: 0 },
+          { item: "Candy Manor treat", amount: 10 }
+        ],
+        fine: "Estimated for 2 people. All animal viewing is FREE. Optional add-ons: Beachcomber seal tour ~$90 for 2 (stop #10). Bring binoculars — makes the free spots 10× better.",
+        optional: [
+          { item: "+ Beachcomber seal boat tour (×2)", amount: 90 }
+        ]
+      }
+    },
+
+    pw: {
+      label: "P-town Whales",
+      colorClass: "pw",
+      lineColor: "#a78bfa",
+      summary: [
+        ["Theme", "Whale watching — humpbacks + rare right whales"],
+        ["Drive", "Babson → Provincetown, ~2h15m each way (longest day)"],
+        ["Season opens", "April 18, 2026 — you're in the window"],
+        ["Home by", "~7:00 PM"]
+      ],
+      weather: { level: "bad", title: "44°F forecast — reconsider this one", body: "Boat runs at 20+ knots across open Atlantic. 44°F ambient + 25kt wind chill ≈ 28-32°F effective, for 3-4 hours. Most April whale-watchers at these temps retreat to the cabin and miss the action. Whales will be there, but comfort will not. If you still go: thermal base layer + heavy insulated jacket + windbreaker shell + hat + gloves + scarf + hand warmers. Otherwise, save this for a warmer May/June weekend." },
+      allergy: "Lunch pick is The Canteen — casual New England seafood, year-round, known to accommodate allergies. Grilled fish and lobster rolls without butter are dairy-safe. Backup: The Lobster Pot (year-round classic, ask kitchen to omit butter on any seafood dish). Skip clam chowder anywhere — it's always dairy.",
+      closed: "Most P-town Commercial Street boutiques and galleries don't open until May. Year-round: The Canteen, The Lobster Pot, Bayside Betsy's (seasonal), Wired Puppy (coffee), Pilgrim Monument (check for early opening).",
+      confirm: "BOOK WHALE WATCH IN ADVANCE at whalewatch.com — 4/25 is Saturday of opening weekend-ish, popular. Dolphin Fleet: (508) 240-3636. Whale watches run regardless of whale sightings, but if no whales spotted they offer a rain-check voucher.",
+      stops: [
+        { n: 1, time: "6:30 AM · Depart", name: "Babson College", desc: "Earlier start — it's a ~2h15m drive. Leave with coffee. Grab breakfast sandwiches en route or at a Dunkin on Rt 6.", tags: [["transit","drive"]], coords: [42.2947, -71.2648] },
+        { n: 2, time: "8:45 AM · Park", name: "MacMillan Pier Lot", desc: "70 MacMillan Pier. $4/hr, $40 daily max. BUT enforcement doesn't start until May 1 — so on 4/25 parking is effectively free/unenforced. Card only (no cash).", tags: [["transit","park"]], coords: [42.0497, -70.1790] },
+        { n: 3, time: "9:00 AM · Coffee", name: "Wired Puppy or similar", desc: "Commercial Street. Year-round local coffee. Bathroom break and warmth before the boat.", tags: [["food","coffee"]], coords: [42.0489, -70.1834] },
+        { n: 4, time: "10:00 AM · Board", name: "Dolphin Fleet Whale Watch", desc: "MacMillan Pier. 3-4 hour trip. Board 15 min early. Dress WARM — wind on open Atlantic in April is brutal. Heavy jacket, hat, gloves, non-slip shoes. Seasick-prone? Take Dramamine 30 min before.", tags: [["nature","whales"]], coords: [42.0510, -70.1780] },
+        { n: 5, time: "10:30 AM - 1:30 PM · At sea", name: "On the water", desc: "Dolphin Fleet runs all trips with a naturalist from the Center for Coastal Studies. Humpbacks feeding, possible North Atlantic Right Whales (critically endangered — fewer than 400 left worldwide). April-May is actually peak whale density.", tags: [["nature","whales"]], coords: [42.15, -70.20] },
+        { n: 6, time: "1:45 PM · Lunch", name: "The Canteen", desc: "225 Commercial St. Year-round casual counter-service seafood. Allergy-friendly, order fish without butter or the lobster roll (ask for dairy-free aioli or none). Seats overlook the water.", tags: [["food","lunch"],["dairy","dairy-safe ✓"]], coords: [42.0491, -70.1817] },
+        { n: 7, time: "3:00 PM · Walk", name: "Commercial Street", desc: "Main drag — some shops still closed off-season but enough are open for a leisurely walk. Art galleries, bookstore (East End Books), harbor views.", tags: [["town","shops"]], coords: [42.0478, -70.1858] },
+        { n: 8, time: "3:45 PM · Pilgrim Monument view", name: "Pilgrim Monument area", desc: "Drive or walk up for the panoramic view. Tower itself may not be open until May, but the hill viewpoint is free and open year-round. Look over the whole harbor.", tags: [["nature","view"]], coords: [42.0520, -70.1850] },
+        { n: 9, time: "4:30 PM · Return", name: "Drive back to Babson", desc: "~2h15m. Rt 6 down-Cape to Sagamore → Rt 3 → Babson. Arrive ~6:45 PM. Traffic can add 20-30 min on Saturdays.", tags: [["transit","drive"]], coords: [42.2947, -71.2648] }
+      ],
+      routeBuilder: (s) => [
+        { coords: [s[0].coords, s[1].coords], style: { color: '#8b93a7', weight: 3, opacity: 0.7, dashArray: '6, 8' } },
+        { coords: [s[1].coords, s[2].coords, s[3].coords], style: { color: '#a78bfa', weight: 3, opacity: 0.85 } },
+        { coords: [s[3].coords, s[4].coords, s[3].coords], style: { color: '#60a5fa', weight: 4, opacity: 0.9, dashArray: '10, 6' } },
+        { coords: [s[3].coords, s[5].coords, s[6].coords, s[7].coords], style: { color: '#a78bfa', weight: 3, opacity: 0.85 } },
+        { coords: [s[7].coords, s[8].coords], style: { color: '#8b93a7', weight: 3, opacity: 0.7, dashArray: '6, 8' } }
+      ],
+      tripBoundsIndices: [1,2,3,5,6,7],
+      expenses: {
+        lines: [
+          { item: "Gas (Babson ↔ P-town, ~240 mi)", amount: 30 },
+          { item: "Parking at MacMillan Pier", amount: 0 },
+          { item: "Coffee + breakfast sandwich × 2", amount: 20 },
+          { item: "Whale watch ticket × 2 (~$70pp, verify)", amount: 140 },
+          { item: "Lunch at The Canteen (2 meals + drinks)", amount: 55 },
+          { item: "Tip (lunch, 20%)", amount: 11 },
+          { item: "Coffee/treat post-walk × 2", amount: 12 }
+        ],
+        fine: "Estimated for 2 people. Whale watch price is approximate — confirm at whalewatch.com before booking. Parking free in April (enforcement starts 5/1). Dramamine $8 if seasick-prone. Most expensive of the three options but delivers the biggest wildlife payoff."
+      }
+    }
+  };
+
+  const map = L.map('map', { zoomControl: true }).setView([41.75, -70.5], 9);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  let currentLayerGroup = L.layerGroup().addTo(map);
+  let currentTripKey = 'mv';
+  let currentTripBounds = null;
+  let currentFullBounds = null;
+
+  function renderSidebar(tripKey) {
+    const trip = TRIPS[tripKey];
+    const c = document.getElementById('trip-content');
+    let html = '';
+
+    html += '<div class="summary">';
+    for (const [k, v] of trip.summary) {
+      html += `<div><strong>${k}:</strong> ${v}</div>`;
+    }
+    html += '</div>';
+
+    if (trip.weather) {
+      html += `<div class="weather-box ${trip.weather.level}"><strong>${trip.weather.title}</strong>${trip.weather.body}</div>`;
+    }
+
+    html += `<div class="allergy-note"><strong>Dairy allergy plan</strong>${trip.allergy}</div>`;
+
+    html += '<h2>Itinerary</h2>';
+    trip.stops.forEach(s => {
+      const tags = (s.tags || []).map(([cls, txt]) => `<span class="tag ${cls}">${txt}</span>`).join('');
+      html += `<div class="stop" data-stop="${s.n}">
+        <div class="num">${s.n}</div>
+        <div class="time">${s.time}</div>
+        <div class="name">${s.name}</div>
+        <div class="detail">${s.desc}</div>
+        ${tags}
+      </div>`;
+    });
+
+    html += `<div class="closed-box"><strong>Closed on 4/25 — skip these</strong>${trip.closed}</div>`;
+    html += `<div class="closed-box" style="border-color: var(--border); background: var(--panel2); color: var(--muted);">${trip.confirm}</div>`;
+
+    if (trip.expenses) {
+      const total = trip.expenses.lines.reduce((sum, l) => sum + l.amount, 0);
+      html += '<div class="expenses">';
+      html += `<h3>Estimated total (2 people) <span class="total">$${total}</span></h3>`;
+      trip.expenses.lines.forEach(l => {
+        html += `<div class="line"><span>${l.item}</span><span class="amount">$${l.amount}</span></div>`;
+      });
+      if (trip.expenses.optional) {
+        trip.expenses.optional.forEach(l => {
+          html += `<div class="line optional"><span>${l.item}</span><span class="amount">$${l.amount}</span></div>`;
+        });
+      }
+      if (trip.expenses.fine) html += `<div class="fine">${trip.expenses.fine}</div>`;
+      html += '</div>';
+    }
+
+    c.innerHTML = html;
+
+    c.querySelectorAll('.stop').forEach(el => {
+      el.addEventListener('click', () => {
+        const n = parseInt(el.dataset.stop, 10);
+        const stop = trip.stops.find(s => s.n === n);
+        if (stop) {
+          map.flyTo(stop.coords, 14, { duration: 0.8 });
+        }
+        c.querySelectorAll('.stop').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+      });
+    });
+  }
+
+  function renderMap(tripKey) {
+    const trip = TRIPS[tripKey];
+    currentLayerGroup.clearLayers();
+
+    trip.stops.forEach(s => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="num-marker ${trip.colorClass}">${s.n}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+      const marker = L.marker(s.coords, { icon });
+      marker.bindPopup(`<b>${s.n}. ${s.name}</b><br/>${s.time}<br/>${s.desc}`);
+      currentLayerGroup.addLayer(marker);
+    });
+
+    trip.routeBuilder(trip.stops).forEach(seg => {
+      currentLayerGroup.addLayer(L.polyline(seg.coords, seg.style));
+    });
+
+    currentTripBounds = L.latLngBounds(trip.tripBoundsIndices.map(i => trip.stops[i].coords));
+    currentFullBounds = L.latLngBounds(trip.stops.map(s => s.coords));
+
+    setTimeout(() => {
+      map.invalidateSize();
+      map.flyToBounds(currentTripBounds, { padding: [50, 50], duration: 0.6 });
+    }, 50);
+  }
+
+  function switchTrip(tripKey) {
+    currentTripKey = tripKey;
+    document.querySelectorAll('.trip-toggle button').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tripKey).classList.add('active');
+    renderSidebar(tripKey);
+    renderMap(tripKey);
+    document.querySelectorAll('.map-controls button').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-trip').classList.add('active');
+  }
+
+  document.getElementById('tab-mv').addEventListener('click', () => switchTrip('mv'));
+  document.getElementById('tab-cc').addEventListener('click', () => switchTrip('cc'));
+  document.getElementById('tab-pw').addEventListener('click', () => switchTrip('pw'));
+
+  document.getElementById('view-trip').addEventListener('click', (e) => {
+    if (currentTripBounds) map.flyToBounds(currentTripBounds, { padding: [50, 50], duration: 0.8 });
+    document.querySelectorAll('.map-controls button').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+  document.getElementById('view-full').addEventListener('click', (e) => {
+    if (currentFullBounds) map.flyToBounds(currentFullBounds, { padding: [40, 40], duration: 0.8 });
+    document.querySelectorAll('.map-controls button').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+
+  window.addEventListener('resize', () => map.invalidateSize());
+
+  switchTrip('mv');
+</script>
+</body>
+</html>
