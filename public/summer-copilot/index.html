@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Microsoft Copilot + Custom Agents for Superintendents | NGL</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+    --border:#E2E8F0;--text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+    --primary:#4F46E5;--secondary:#7C3AED;--accent:#10B981;--cyan:#06B6D4;
+    --radius:12px;--radius-lg:20px;--radius-xl:24px;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .container{max-width:780px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,70,229,0.08);padding:14px 24px}
+  nav .inner{max-width:780px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-brand{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);font-weight:700;text-decoration:none}
+  .nav-link{font-size:.8rem;color:var(--text-2);text-decoration:none;font-weight:500}
+
+  .hero{position:relative;padding:80px 0 60px;text-align:center;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#312E81,#4F46E5,#06B6D4);background-size:400% 400%;z-index:0;border-radius:0 0 40px 40px;animation:gf 15s ease infinite}
+  @keyframes gf{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero-content{position:relative;z-index:2}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 18px;border-radius:100px;margin-bottom:24px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-weight:600}
+  .hero h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:16px;color:white;padding:0 24px}
+  .hero h1 em{font-style:italic;color:rgba(255,255,255,.92)}
+  .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.85);max-width:600px;margin:0 auto;line-height:1.7;font-weight:300;padding:0 24px}
+
+  .section{padding:64px 0}
+  .section-tight{padding:40px 0}
+  .sh-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700}
+  .sh-title{font-weight:800;letter-spacing:-.02em;font-size:clamp(1.4rem,3vw,1.8rem);line-height:1.25;margin-bottom:12px;color:var(--text)}
+  .sh-desc{font-size:.95rem;color:var(--text-2);line-height:1.7;margin-bottom:28px}
+
+  .arch-card{background:linear-gradient(135deg,#F8FAFF,#FFFFFF);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px;margin-bottom:28px}
+  .arch-row{display:grid;grid-template-columns:1fr;gap:14px;margin-top:18px}
+  .arch-pill{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+  .arch-pill-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .arch-pill-dot.p{background:var(--primary)}
+  .arch-pill-dot.s{background:var(--secondary)}
+  .arch-pill-dot.a{background:var(--accent)}
+  .arch-pill-dot.c{background:var(--cyan)}
+  .arch-pill strong{font-weight:700;font-size:.95rem;display:block;margin-bottom:2px}
+  .arch-pill span{font-size:.85rem;color:var(--text-2)}
+
+  .agents-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:640px){.agents-grid{grid-template-columns:1fr 1fr}}
+  .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;transition:all .25s}
+  .agent-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,0.08)}
+  .agent-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;margin-bottom:14px;font-size:.95rem}
+  .agent-icon.a1{background:linear-gradient(135deg,#4F46E5,#7C3AED)}
+  .agent-icon.a2{background:linear-gradient(135deg,#10B981,#06B6D4)}
+  .agent-icon.a3{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+  .agent-icon.a4{background:linear-gradient(135deg,#06B6D4,#4F46E5)}
+  .agent-icon.a5{background:linear-gradient(135deg,#7C3AED,#EC4899)}
+  .agent-card h3{font-weight:700;font-size:1.05rem;margin-bottom:8px}
+  .agent-card p{font-size:.88rem;color:var(--text-2);line-height:1.6;margin-bottom:10px}
+  .agent-saves{font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .agent-tag{display:inline-block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);background:rgba(79,70,229,0.08);padding:4px 10px;border-radius:6px;font-weight:700;margin-bottom:10px}
+
+  .sovereign{background:linear-gradient(135deg,#1E1B4B,#312E81);color:white;border-radius:var(--radius-xl);padding:40px 32px;margin-bottom:28px}
+  .sovereign h2{color:white;font-size:1.5rem;font-weight:800;margin-bottom:14px;letter-spacing:-.02em}
+  .sovereign p{color:rgba(255,255,255,0.85);font-size:.95rem;line-height:1.7;margin-bottom:18px}
+  .sovereign-list{display:grid;gap:10px;margin-top:18px}
+  .sovereign-item{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;color:rgba(255,255,255,0.92)}
+  .sovereign-check{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;margin-top:1px}
+
+  .steps{display:grid;gap:14px}
+  .step{display:flex;gap:16px;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
+  .step-num{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+  .step h4{font-weight:700;font-size:.98rem;margin-bottom:4px}
+  .step p{font-size:.85rem;color:var(--text-2);line-height:1.6}
+
+  .value-grid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:640px){.value-grid{grid-template-columns:1fr 1fr}}
+  .value-item{padding:18px 20px;background:var(--surface-2);border-radius:var(--radius);font-size:.9rem;color:var(--text);line-height:1.6}
+  .value-item strong{color:var(--primary);font-weight:700}
+
+  .cta{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;border-radius:var(--radius-xl);padding:40px 32px;text-align:center;margin:40px 0}
+  .cta h2{font-size:1.6rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em;color:white}
+  .cta p{color:rgba(255,255,255,0.9);font-size:1rem;line-height:1.7;margin-bottom:8px;max-width:560px;margin-left:auto;margin-right:auto}
+  .cta-mail{display:inline-block;margin-top:18px;padding:14px 28px;background:white;color:var(--primary);text-decoration:none;border-radius:100px;font-weight:700;font-size:.92rem;letter-spacing:.02em;transition:transform .15s}
+  .cta-mail:hover{transform:translateY(-1px)}
+
+  footer{padding:30px 24px 50px;text-align:center;font-size:.8rem;color:var(--text-3);border-top:1px solid var(--border);margin-top:40px}
+  footer a{color:var(--primary);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="nav-brand">Next Generation Learners</a>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="nav-link">brayan@nextgenerationlearners.com</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Summer 2026 · For Superintendents</div>
+    <h1>Microsoft Copilot, <em>configured for you</em>.</h1>
+    <p class="hero-sub">You already pay for Copilot. I make sure it actually saves you 10+ hours a week — by building custom agents that know your voice, your people, and your decisions, all running inside your own M365 tenant.</p>
+  </div>
+</section>
+
+<div class="container">
+
+<section class="section">
+  <div class="sh-label">The Architecture</div>
+  <h2 class="sh-title">Your tenant. Your data. Your control.</h2>
+  <p class="sh-desc">Everything lives in your Microsoft 365 environment. Nothing leaves. No third-party hosting, no shadow systems, no IT objections.</p>
+  <div class="arch-card">
+    <div class="arch-row">
+      <div class="arch-pill"><div class="arch-pill-dot p"></div><div><strong>M365 Copilot</strong><span>Drafts, summaries, and meeting recaps — built into Outlook, Word, Teams</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot s"></div><div><strong>Custom Agents (Copilot Studio)</strong><span>Configured specifically for you and your role</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot c"></div><div><strong>Grounding Layer (SharePoint)</strong><span>Your voice profile, people files, decisions — context the agents pull from</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot a"></div><div><strong>NGL Consulting</strong><span>I configure, train, iterate — you own everything</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">Suggested Agents</div>
+  <h2 class="sh-title">Five agents built for the superintendent's week.</h2>
+  <p class="sh-desc">We start with two. The others come once the first two prove themselves.</p>
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-icon a1">EM</div>
+      <div class="agent-tag">Start here</div>
+      <h3>Email Voice Agent</h3>
+      <p>Reads thread, drafts reply in your voice. Pulls relationship context for the sender so the response feels personal, not generic.</p>
+      <div class="agent-saves">Saves 1-2 hours / day</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a2">DL</div>
+      <div class="agent-tag">Start here</div>
+      <h3>Decision Log Agent</h3>
+      <p>After every meeting, captures what was decided, who owns the next step, and by when. Nothing falls through the cracks.</p>
+      <div class="agent-saves">Recovers commitments</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a3">MP</div>
+      <h3>Meeting Prep Agent</h3>
+      <p>Before any meeting, surfaces who's attending, last interaction, open items, and relevant decisions on the topic.</p>
+      <div class="agent-saves">Saves 15-30 min / meeting</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a4">SB</div>
+      <h3>Stakeholder Briefing Agent</h3>
+      <p>Brief me on [person]: who they are, history with the district, current asks, last touchpoint. Walks you in informed.</p>
+      <div class="agent-saves">Cold-prep eliminated</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a5">CD</div>
+      <h3>Communication Drafter</h3>
+      <p>Board memos, parent newsletters, staff updates. Drafted in your voice, with the tone and structure you've already established.</p>
+      <div class="agent-saves">Saves 2-4 hours / week</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sovereign">
+    <h2>Sovereign by design.</h2>
+    <p>The single biggest reason this approach works where others have failed: nothing leaves your environment. No data residency questions. No vendor lock-in. No "what happens if the consultant disappears" risk.</p>
+    <div class="sovereign-list">
+      <div class="sovereign-item"><div class="sovereign-check">✓</div><div>Your Microsoft tenant. Your license. Your data — at all times.</div></div>
+      <div class="sovereign-item"><div class="sovereign-check">✓</div><div>I never host, store, or hold anything belonging to you or your district.</div></div>
+      <div class="sovereign-item"><div class="sovereign-check">✓</div><div>If I step away, the system keeps running on your license. No dependency.</div></div>
+      <div class="sovereign-item"><div class="sovereign-check">✓</div><div>Compliance and data residency story writes itself for IT and the board.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">How It Works</div>
+  <h2 class="sh-title">Four steps from zero to Agent #1 live.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div><h4>Voice & context capture</h4><p>One 60-min session. We capture how you communicate, who's in your network, what decisions you make repeatedly. This becomes the grounding layer.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div><h4>Agent build in Copilot Studio</h4><p>I configure Agent #1 (Email Voice) inside your Copilot Studio. Grounded in your SharePoint. Tested live.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div><h4>Live training session</h4><p>I walk you through using it on your actual workflow. We tune until the output sounds like you.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div><h4>Weekly working sessions</h4><p>Every week, we layer in the next agent or refine the existing ones based on how you've been using them.</p></div></div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">What I Bring</div>
+  <h2 class="sh-title">You're paying for outcomes, not Copilot itself.</h2>
+  <div class="value-grid">
+    <div class="value-item"><strong>Workflow identification.</strong> Knowing which agents are worth building first for your role.</div>
+    <div class="value-item"><strong>Agent configuration.</strong> The actual build inside Copilot Studio.</div>
+    <div class="value-item"><strong>Voice capture.</strong> So outputs sound like you, not generic AI.</div>
+    <div class="value-item"><strong>Grounding setup.</strong> SharePoint structure that holds your context.</div>
+    <div class="value-item"><strong>Training & iteration.</strong> Patterns, prompts, ongoing refinement.</div>
+    <div class="value-item"><strong>Change management.</strong> When ready, rolling this out to your admin team.</div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="cta">
+    <h2>Let's build the first two agents this summer.</h2>
+    <p>Email Voice + Decision Log, live and saving you hours by August. We layer in the rest as the year picks up.</p>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="cta-mail">brayan@nextgenerationlearners.com</a>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  Next Generation Learners · <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a> · <a href="https://nextgenerationlearners.com">nextgenerationlearners.com</a>
+</footer>
+
+</body>
+</html>
