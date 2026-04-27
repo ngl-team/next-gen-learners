@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Summer Cabinet — 90-Day Roadmap | NGL</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+    --border:#E2E8F0;--text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+    --primary:#4F46E5;--secondary:#7C3AED;--accent:#10B981;--cyan:#06B6D4;--warm:#F59E0B;
+    --radius:12px;--radius-lg:20px;--radius-xl:24px;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .container{max-width:840px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+  .container-tight{max-width:780px;margin:0 auto;padding:0 24px}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,70,229,0.08);padding:14px 24px}
+  nav .inner{max-width:840px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-brand{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);font-weight:700;text-decoration:none}
+  .nav-link{font-size:.8rem;color:var(--text-2);text-decoration:none;font-weight:500}
+
+  .hero{position:relative;padding:80px 0 60px;text-align:center;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1E1B4B,#4F46E5,#7C3AED);background-size:400% 400%;z-index:0;border-radius:0 0 40px 40px;animation:gf 18s ease infinite}
+  @keyframes gf{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero-content{position:relative;z-index:2}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 18px;border-radius:100px;margin-bottom:24px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-weight:600}
+  .hero h1{font-size:clamp(2.1rem,5.5vw,3.4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:18px;color:white;padding:0 24px}
+  .hero h1 em{font-style:italic;color:rgba(255,255,255,.92)}
+  .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.85);max-width:620px;margin:0 auto;line-height:1.7;font-weight:300;padding:0 24px}
+
+  .section{padding:64px 0}
+  .section-tight{padding:44px 0}
+  .sh-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700}
+  .sh-title{font-weight:800;letter-spacing:-.02em;font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin-bottom:14px;color:var(--text)}
+  .sh-desc{font-size:.98rem;color:var(--text-2);line-height:1.7;margin-bottom:32px;max-width:680px}
+
+  .reality-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:24px}
+  @media(min-width:640px){.reality-grid{grid-template-columns:1fr 1fr}}
+  .reality-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;display:flex;gap:14px;align-items:flex-start}
+  .reality-dot{width:8px;height:8px;border-radius:50%;background:var(--warm);flex-shrink:0;margin-top:8px}
+  .reality-item strong{font-weight:700;font-size:.98rem;display:block;margin-bottom:4px}
+  .reality-item span{font-size:.88rem;color:var(--text-2);line-height:1.6}
+
+  .timeline{display:grid;gap:16px;margin-top:24px}
+  .timeline-row{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:flex-start;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);position:relative}
+  .timeline-month{font-weight:800;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+  .timeline-month-num{font-size:1.7rem;font-weight:300;color:var(--text);margin-bottom:2px}
+  .timeline-content h4{font-weight:700;font-size:1.05rem;margin-bottom:6px;color:var(--text)}
+  .timeline-content p{font-size:.9rem;color:var(--text-2);line-height:1.65}
+
+  .agents-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:640px){.agents-grid{grid-template-columns:1fr 1fr}}
+  .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;transition:all .25s}
+  .agent-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,0.08)}
+  .agent-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;margin-bottom:14px;font-size:.95rem}
+  .agent-icon.a1{background:linear-gradient(135deg,#4F46E5,#7C3AED)}
+  .agent-icon.a2{background:linear-gradient(135deg,#10B981,#06B6D4)}
+  .agent-icon.a3{background:linear-gradient(135deg,#F59E0B,#EF4444)}
+  .agent-icon.a4{background:linear-gradient(135deg,#06B6D4,#4F46E5)}
+  .agent-icon.a5{background:linear-gradient(135deg,#7C3AED,#EC4899)}
+  .agent-icon.a6{background:linear-gradient(135deg,#1E1B4B,#4F46E5)}
+  .agent-card h3{font-weight:700;font-size:1.08rem;margin-bottom:6px}
+  .agent-card .agent-tier{display:inline-block;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);background:rgba(79,70,229,0.08);padding:3px 10px;border-radius:6px;font-weight:700;margin-bottom:10px}
+  .agent-card p{font-size:.88rem;color:var(--text-2);line-height:1.6;margin-bottom:12px}
+  .agent-saves{font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:700;display:flex;align-items:center;gap:6px}
+  .agent-saves::before{content:"";width:6px;height:6px;background:var(--accent);border-radius:50%}
+
+  .arch-card{background:linear-gradient(135deg,#1E1B4B,#312E81);color:white;border-radius:var(--radius-xl);padding:36px 32px;margin-bottom:24px}
+  .arch-card h2{color:white;font-size:1.5rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+  .arch-card p{color:rgba(255,255,255,0.85);font-size:.95rem;line-height:1.7;margin-bottom:18px}
+  .arch-stack{display:grid;gap:10px;margin-top:18px}
+  .arch-pill{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius)}
+  .arch-pill-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:var(--accent)}
+  .arch-pill strong{font-weight:700;font-size:.95rem;color:white;display:block;margin-bottom:2px}
+  .arch-pill span{font-size:.85rem;color:rgba(255,255,255,0.7)}
+
+  .pricing-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:18px}
+  .pricing-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0}
+  .pricing-row.header{background:#F8FAFF;border-bottom:1px solid var(--border)}
+  .pricing-cell{padding:18px 20px;border-bottom:1px solid var(--border);font-size:.88rem;line-height:1.5}
+  .pricing-row:last-child .pricing-cell{border-bottom:none}
+  .pricing-cell.tier-name{font-weight:700;font-size:.98rem;color:var(--text)}
+  .pricing-cell.market{color:var(--text-3);text-decoration:line-through;font-size:.85rem}
+  .pricing-cell.standard{color:var(--text-2);font-weight:600}
+  .pricing-cell.founding{color:var(--primary);font-weight:800;font-size:1rem}
+  .pricing-cell.header-cell{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-2);font-weight:700}
+  .pricing-cell.header-cell.founding{color:var(--primary)}
+  .recommended-badge{display:inline-block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:white;padding:3px 9px;border-radius:5px;font-weight:700;margin-left:8px;vertical-align:middle}
+  .row-active{background:rgba(16,185,129,0.04)}
+  @media(max-width:640px){
+    .pricing-row{grid-template-columns:1fr 1fr;gap:0}
+    .pricing-cell.market{display:none}
+    .pricing-cell.standard{display:none}
+  }
+
+  .value-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:24px}
+  @media(min-width:640px){.value-grid{grid-template-columns:1fr 1fr 1fr}}
+  .value-card{padding:22px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);text-align:center}
+  .value-num{font-size:1.6rem;font-weight:800;color:var(--primary);margin-bottom:4px;letter-spacing:-.02em}
+  .value-label{font-size:.78rem;color:var(--text-2);font-weight:500;line-height:1.5}
+
+  .lock-banner{padding:20px 24px;background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-lg);margin-top:18px;font-size:.9rem;color:var(--text);line-height:1.6}
+  .lock-banner strong{color:#B45309;font-weight:700}
+
+  .why-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:24px}
+  @media(min-width:640px){.why-grid{grid-template-columns:1fr 1fr}}
+  .why-card{padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
+  .why-card h4{font-weight:700;font-size:1rem;margin-bottom:8px}
+  .why-card p{font-size:.88rem;color:var(--text-2);line-height:1.65}
+
+  .steps{display:grid;gap:14px;margin-top:24px}
+  .step{display:flex;gap:16px;padding:20px 22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
+  .step-num{flex-shrink:0;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem}
+  .step h4{font-weight:700;font-size:1rem;margin-bottom:4px}
+  .step p{font-size:.88rem;color:var(--text-2);line-height:1.6}
+
+  .cta{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;border-radius:var(--radius-xl);padding:44px 32px;text-align:center;margin:48px 0}
+  .cta h2{font-size:1.7rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em;color:white}
+  .cta p{color:rgba(255,255,255,0.9);font-size:1rem;line-height:1.7;margin-bottom:8px;max-width:600px;margin-left:auto;margin-right:auto}
+  .cta-mail{display:inline-block;margin-top:20px;padding:14px 28px;background:white;color:var(--primary);text-decoration:none;border-radius:100px;font-weight:700;font-size:.92rem;letter-spacing:.02em;transition:transform .15s}
+  .cta-mail:hover{transform:translateY(-1px)}
+
+  footer{padding:30px 24px 50px;text-align:center;font-size:.8rem;color:var(--text-3);border-top:1px solid var(--border);margin-top:40px}
+  footer a{color:var(--primary);text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="nav-brand">Next Generation Learners</a>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="nav-link">brayan@nextgenerationlearners.com</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">90-Day Roadmap · Summer 2026</div>
+    <h1>The Summer Cabinet.</h1>
+    <p class="hero-sub">A sovereign AI operating system built into your Microsoft 365 tenant. Custom agents that know your voice, your people, your decisions. Live by August. Owned by you, forever.</p>
+  </div>
+</section>
+
+<div class="container-tight">
+
+<section class="section">
+  <div class="sh-label">The Starting Point</div>
+  <h2 class="sh-title">A superintendent's week, before agents.</h2>
+  <p class="sh-desc">The pain isn't that the work is hard. It's that the work that matters most keeps getting pushed by the work that has to happen.</p>
+  <div class="reality-grid">
+    <div class="reality-item"><div class="reality-dot"></div><div><strong>Email volume that owns your morning</strong><span>1.5 to 2 hours a day on drafting, before the strategic work even starts.</span></div></div>
+    <div class="reality-item"><div class="reality-dot"></div><div><strong>Administrative assistant retiring</strong><span>Calendar, onboarding, benefits, compliance, finance support — all walking out the door soon.</span></div></div>
+    <div class="reality-item"><div class="reality-dot"></div><div><strong>Documents you can't find</strong><span>HR policies, board minutes, hiring rubrics — scattered across folders, paper, and memory.</span></div></div>
+    <div class="reality-item"><div class="reality-dot"></div><div><strong>Strategic planning crowded out</strong><span>Long-term board prep, retreats, multi-year mapping always loses to today's inbox.</span></div></div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">The 90-Day Arc</div>
+  <h2 class="sh-title">From kickoff to full Cabinet by August.</h2>
+  <div class="timeline">
+    <div class="timeline-row">
+      <div>
+        <div class="timeline-month-num">May</div>
+        <div class="timeline-month">Pilot Live</div>
+      </div>
+      <div class="timeline-content">
+        <h4>Email Voice Agent — built and live in your tenant</h4>
+        <p>Voice profile capture session. SharePoint architecture set up. Agent built, tested, refined. By mid-May you're using it daily on real emails.</p>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div>
+        <div class="timeline-month-num">Jun</div>
+        <div class="timeline-month">Active Cabinet</div>
+      </div>
+      <div class="timeline-content">
+        <h4>Administrative Assistant Agent + Document Q&A Agent</h4>
+        <p>The retiring admin's role gets its software counterpart: onboarding, calendar, benefits, compliance. Plus an agent you can talk to that finds any document instantly.</p>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div>
+        <div class="timeline-month-num">Jul</div>
+        <div class="timeline-month">Tuning & Layer-In</div>
+      </div>
+      <div class="timeline-content">
+        <h4>Hiring/Interview Bank Agent + PD Planning Agent</h4>
+        <p>Streamlined hiring with reusable interview question banks and rubrics — ready before the wave of retirements hits. PD planning logistics handled. Both agents tuned on real usage.</p>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div>
+        <div class="timeline-month-num">Aug</div>
+        <div class="timeline-month">Full Cabinet</div>
+      </div>
+      <div class="timeline-content">
+        <h4>Strategic Planning Agent + ongoing rhythm</h4>
+        <p>Board prep, retreat planning, multi-year mapping using your past board minutes. Weekly working session rhythm locked. Monthly impact reports start. You walk into the school year as the most operationally efficient superintendent's office in the state.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">The Agents</div>
+  <h2 class="sh-title">Six agents, mapped to what you actually do.</h2>
+  <p class="sh-desc">Each agent solves a workflow you named. Each runs sovereign in your M365 tenant. Each can be invoked by you, anywhere you work.</p>
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-icon a1">EM</div>
+      <div class="agent-tier">Pilot · Active · Unlimited</div>
+      <h3>Email Voice Agent</h3>
+      <p>Reads thread, drafts reply in your voice. Pulls relationship context for the sender so the response feels personal, not generic.</p>
+      <div class="agent-saves">Saves 1.5-2 hrs / day</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a2">AA</div>
+      <div class="agent-tier">Active · Unlimited</div>
+      <h3>Administrative Assistant Agent</h3>
+      <p>Onboarding workflows, calendar management, open enrollment, fingerprinting/FBI compliance, transcript follow-up, finance support. The retiring admin's role, in software.</p>
+      <div class="agent-saves">Replaces ~50% of admin role</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a3">DQ</div>
+      <div class="agent-tier">Active · Unlimited</div>
+      <h3>Document Q&A Agent</h3>
+      <p>Talk to it. Ask "where's the discipline policy from 2023?" or "pull up the board minutes from October." Returns the document plus relevant context instantly.</p>
+      <div class="agent-saves">Saves 30-45 min / day</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a4">HI</div>
+      <div class="agent-tier">Unlimited</div>
+      <h3>Hiring/Interview Bank Agent</h3>
+      <p>Reusable interview question banks by role. Hiring rubrics that align to district priorities. Candidate evaluation summaries. Ready before the retirement wave hits.</p>
+      <div class="agent-saves">Cuts hiring cycle 40%</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a5">PD</div>
+      <div class="agent-tier">Unlimited</div>
+      <h3>PD Planning Agent</h3>
+      <p>Calendar coordination, committee management, observation logistics across schools, math program planning, substitute scheduling. The PD season, organized.</p>
+      <div class="agent-saves">Saves 4-6 hrs / week PD season</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon a6">SP</div>
+      <div class="agent-tier">Unlimited</div>
+      <h3>Strategic Planning Agent</h3>
+      <p>Board agenda prep, retreat planning, multi-year strategic mapping using past board minutes and decisions. The thinking work that always gets pushed, finally protected.</p>
+      <div class="agent-saves">Reclaims strategic time</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="arch-card">
+    <h2>Sovereign by design.</h2>
+    <p>Everything lives in your Microsoft 365 tenant. Your license. Your SharePoint. Your data. Nothing leaves your environment. No third-party hosting, no shadow systems, no IT objections.</p>
+    <div class="arch-stack">
+      <div class="arch-pill"><div class="arch-pill-dot"></div><div><strong>M365 Copilot</strong><span>The AI layer you already pay for, surfaced in Outlook, Word, Teams</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot"></div><div><strong>Custom Agents (Copilot Studio)</strong><span>Configured for your role — voice, workflows, decisions</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot"></div><div><strong>Grounding Layer (SharePoint)</strong><span>Your voice profile, people files, decision history — context that makes outputs sound like you</span></div></div>
+      <div class="arch-pill"><div class="arch-pill-dot"></div><div><strong>NGL Consulting</strong><span>I configure, train, iterate. You own everything. If I step away, the system keeps running.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="sh-label">The Investment</div>
+  <h2 class="sh-title">Three tiers. Founding rates locked through Dec 2026.</h2>
+  <p class="sh-desc">Pricing reflects job value, not the founder's mood. Market rates shown for transparency — your founding rate honors the original engagement and the case study value of being first.</p>
+
+  <div class="pricing-table">
+    <div class="pricing-row header">
+      <div class="pricing-cell header-cell">Tier</div>
+      <div class="pricing-cell header-cell market">Market typical</div>
+      <div class="pricing-cell header-cell standard">Standard</div>
+      <div class="pricing-cell header-cell founding">Founding</div>
+    </div>
+    <div class="pricing-row">
+      <div class="pricing-cell tier-name">Pilot — Single Agent</div>
+      <div class="pricing-cell market">$5,000-15,000</div>
+      <div class="pricing-cell standard">$2,500 fixed</div>
+      <div class="pricing-cell founding">$1,250 fixed</div>
+    </div>
+    <div class="pricing-row row-active">
+      <div class="pricing-cell tier-name">Active Cabinet<span class="recommended-badge">Recommended</span></div>
+      <div class="pricing-cell market">$2,000-5,000/m</div>
+      <div class="pricing-cell standard">$3,500/m</div>
+      <div class="pricing-cell founding">$2,500/m</div>
+    </div>
+    <div class="pricing-row">
+      <div class="pricing-cell tier-name">Unlimited Cabinet</div>
+      <div class="pricing-cell market">$5,000-10,000/m</div>
+      <div class="pricing-cell standard">$5,000/m</div>
+      <div class="pricing-cell founding">$3,500/m</div>
+    </div>
+  </div>
+
+  <div class="lock-banner">
+    <strong>Founding rates locked through December 31, 2026.</strong> Standard rates apply from January 2027 onward. Pilot covers Email Voice Agent end-to-end. Active includes Email Voice + Administrative Assistant + Document Q&A, weekly working sessions, weekly education AI digest, monthly impact reports. Unlimited includes all six agents, quarterly strategic review, priority response.
+  </div>
+
+  <div class="value-grid">
+    <div class="value-card">
+      <div class="value-num">$41k+</div>
+      <div class="value-label">Year 1 value just from email time recovered</div>
+    </div>
+    <div class="value-card">
+      <div class="value-num">$50-70k</div>
+      <div class="value-label">Potential admin role salary offset</div>
+    </div>
+    <div class="value-card">
+      <div class="value-num">10-15 hrs</div>
+      <div class="value-label">Recovered per week at full Cabinet</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">Why Me</div>
+  <h2 class="sh-title">The honest case for the consultant.</h2>
+  <div class="why-grid">
+    <div class="why-card">
+      <h4>Speed proven, not promised</h4>
+      <p>The /summer-copilot page you're reading was built in real time during our call yesterday. The architecture diagrams, the agent specs, the SharePoint plan — same speed applies to your actual build.</p>
+    </div>
+    <div class="why-card">
+      <h4>AI fluency from the source</h4>
+      <p>I build with Claude API daily, ship Next.js apps weekly, and have shipped multiple AI tools to real users. Microsoft Copilot Studio is a UI on top of the same patterns I already work in. The learning curve is hours, not weeks.</p>
+    </div>
+    <div class="why-card">
+      <h4>Founding partnership, not vendor</h4>
+      <p>You're the first superintendent. The way I deliver for you sets the standard for every superintendent who follows. Your founding rate stays locked. Your case study opens doors I can't open alone. We both win when the system you have is undeniable.</p>
+    </div>
+    <div class="why-card">
+      <h4>Sovereign-by-design commitment</h4>
+      <p>I never host, store, or hold anything belonging to you or your district. Everything stays in your tenant. If I step away, the system keeps running on your license. You own it, fully.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">Next Steps</div>
+  <h2 class="sh-title">Three steps to kickoff.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div><h4>Answer seven quick questions</h4><p>Sent separately. License status, where your time actually goes, the retirement timeline, the headline outcome you'd want, and reimbursement structure if applicable. ~10 minutes to answer.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div><h4>Tailored roadmap follow-up</h4><p>I refine this roadmap based on your answers. Specific workflows you named get specific agent specs. The 90-day arc gets dated. Pricing structure gets confirmed.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div><h4>Kickoff call (60 min, virtual)</h4><p>Voice profile capture, SharePoint architecture walkthrough, first build session. Agent #1 starts the same week.</p></div></div>
+  </div>
+</section>
+
+<div class="container-tight">
+  <div class="cta">
+    <h2>Let's build the most efficient superintendent's office in the state.</h2>
+    <p>Email Voice Agent live by mid-May. Full Cabinet by August. Founding rate locked. Sovereign in your tenant. Yours, forever.</p>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="cta-mail">brayan@nextgenerationlearners.com</a>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  Next Generation Learners · <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a> · <a href="https://nextgenerationlearners.com">nextgenerationlearners.com</a>
+</footer>
+
+</body>
+</html>
