@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NovaBrew International — Case Study Simulation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c14;--card:#12151f;--card2:#181c2a;--border:#252a3d;
+  --accent:#4f8cff;--accent2:#6c9fff;--green:#34d399;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--pink:#f472b6;
+  --text:#e2e8f0;--dim:#7a8bad;--radius:14px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.topbar h1{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.topbar h1 .logo{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#4f8cff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:900;color:white}
+.topbar .course-badge{background:var(--card2);border:1px solid var(--border);padding:4px 12px;border-radius:6px;font-size:0.7rem;font-weight:600;color:var(--dim)}
+
+.container{max-width:1200px;margin:0 auto;padding:24px}
+
+/* VIEWS */
+.view{display:none}.view.active{display:block}
+
+/* OVERVIEW */
+.hero{background:linear-gradient(135deg,#0d1525 0%,#162040 50%,#1a1535 100%);border:1px solid var(--border);border-radius:var(--radius);padding:40px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(79,140,255,0.08),transparent 70%);pointer-events:none}
+.hero .tag{display:inline-block;background:rgba(79,140,255,0.15);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h2{font-size:2rem;font-weight:900;margin-bottom:8px;line-height:1.2}
+.hero h2 span{color:var(--accent)}
+.hero p{color:var(--dim);font-size:0.95rem;line-height:1.7;max-width:700px}
+
+.challenge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:32px}
+.challenge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.2s}
+.challenge-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.challenge-card .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:12px}
+.challenge-card h4{font-size:0.9rem;font-weight:700;margin-bottom:4px}
+.challenge-card p{font-size:0.8rem;color:var(--dim);line-height:1.5}
+
+.company-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.stat .num{font-size:1.6rem;font-weight:900;color:var(--accent)}
+.stat .label{font-size:0.75rem;color:var(--dim);margin-top:2px}
+
+.section-title{font-size:1.2rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+
+/* PERSONAS */
+.personas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.persona-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all 0.2s}
+.persona-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(79,140,255,0.1)}
+.persona-card .avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:white;position:relative}
+.persona-card .avatar .status{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:2px solid var(--card)}
+.persona-card h4{font-size:0.9rem;font-weight:700;margin-bottom:2px}
+.persona-card .role{font-size:0.75rem;color:var(--dim);margin-bottom:8px}
+.persona-card .dept{display:inline-block;font-size:0.65rem;font-weight:600;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
+
+.enter-btn{display:block;width:100%;background:var(--accent);border:none;color:white;padding:14px;border-radius:10px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;margin-top:24px;transition:all 0.2s}
+.enter-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+
+/* CHAT VIEW */
+.chat-header{display:flex;align-items:center;gap:16px;padding:20px 24px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px}
+.chat-header .avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:white;flex-shrink:0}
+.chat-header h3{font-size:1.1rem;font-weight:700}
+.chat-header .role{font-size:0.8rem;color:var(--dim)}
+.chat-header .back{background:none;border:1px solid var(--border);color:var(--dim);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:0.8rem;font-weight:600;margin-left:auto;transition:all 0.2s}
+.chat-header .back:hover{border-color:var(--accent);color:var(--accent)}
+
+.chat-area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;min-height:400px;max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:14px;margin-bottom:16px}
+
+.msg{max-width:80%;padding:12px 16px;border-radius:12px;font-size:0.9rem;line-height:1.6;animation:fadeIn 0.3s ease}
+.msg.system{background:var(--card2);color:var(--dim);font-size:0.8rem;max-width:100%;text-align:center;padding:8px}
+.msg.persona{background:var(--card2);border:1px solid var(--border);align-self:flex-start;position:relative}
+.msg.persona .name{font-size:0.7rem;font-weight:700;color:var(--accent);margin-bottom:4px}
+.msg.user{background:var(--accent);color:white;align-self:flex-end;border-radius:12px 12px 4px 12px}
+.msg.typing{align-self:flex-start}
+.msg.typing .dots{display:flex;gap:4px}
+.msg.typing .dots span{width:8px;height:8px;border-radius:50%;background:var(--dim);animation:typingDot 1.2s infinite}
+.msg.typing .dots span:nth-child(2){animation-delay:0.2s}
+.msg.typing .dots span:nth-child(3){animation-delay:0.4s}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes typingDot{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+.suggested-questions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.suggested-questions button{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-family:inherit;font-size:0.8rem;cursor:pointer;transition:all 0.2s;text-align:left;line-height:1.4}
+.suggested-questions button:hover{border-color:var(--accent);background:var(--card2)}
+
+.chat-input{display:flex;gap:10px}
+.chat-input input{flex:1;background:var(--card2);border:2px solid var(--border);color:var(--text);padding:14px 18px;border-radius:12px;font-family:inherit;font-size:0.9rem;outline:none}
+.chat-input input:focus{border-color:var(--accent)}
+.chat-input button{background:var(--accent);border:none;color:white;padding:14px 20px;border-radius:12px;font-family:inherit;font-size:0.9rem;font-weight:700;cursor:pointer}
+
+/* NOTEBOOK */
+.notebook{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:16px}
+.notebook h4{font-size:0.85rem;font-weight:700;margin-bottom:10px;color:var(--dim)}
+.notebook textarea{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-family:inherit;font-size:0.85rem;min-height:100px;resize:vertical;outline:none}
+.notebook textarea:focus{border-color:var(--accent)}
+
+/* PROGRESS SIDEBAR */
+.progress-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.progress-panel h4{font-size:0.85rem;font-weight:700;margin-bottom:12px}
+.progress-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.progress-item:last-child{border:none}
+.progress-item .check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.65rem;flex-shrink:0}
+.progress-item .check.done{background:var(--green);border-color:var(--green);color:white}
+.progress-item .text{font-size:0.8rem}
+.progress-item .text.done{color:var(--dim);text-decoration:line-through}
+
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:16px}
+@media(max-width:768px){.two-col{grid-template-columns:1fr}.personas-grid{grid-template-columns:1fr 1fr}.hero h2{font-size:1.4rem}.hero{padding:24px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span class="logo">NB</span> NovaBrew International</h1>
+  <span class="course-badge">BUS 398 — International Business</span>
+</div>
+
+<div class="container">
+  <!-- OVERVIEW VIEW -->
+  <div id="overviewView" class="view active">
+    <div class="hero">
+      <span class="tag">Case Study Simulation</span>
+      <h2>NovaBrew wants to go <span>global</span>.</h2>
+      <p>NovaBrew is a fast-growing specialty beverage company based in Austin, Texas. After dominating the U.S. market with their cold brew and functional drink line, the board has approved international expansion. Your team has been brought in as consultants to guide the strategy.</p>
+    </div>
+
+    <div class="company-stats">
+      <div class="stat"><div class="num">$48M</div><div class="label">Annual Revenue</div></div>
+      <div class="stat"><div class="num">240</div><div class="label">Employees</div></div>
+      <div class="stat"><div class="num">1,200+</div><div class="label">U.S. Retail Locations</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">Product Lines</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">International Markets</div></div>
+    </div>
+
+    <h3 class="section-title">Your Assignment</h3>
+    <div class="challenge-grid">
+      <div class="challenge-card">
+        <div class="icon" style="background:rgba(79,140,255,0.15);color:var(--accent)">&#127758;</div>
+        <h4>Overseas Expansion</h4>
+        <p>Identify which international market(s) NovaBrew should enter first and why. Consider economic, cultural, and competitive factors.</p>
+      </div>
+      <div class="challenge-card">
+        <div class="icon" style="background:rgba(167,139,250,0.15);color:var(--purple)">&#128101;</div>
+        <h4>Consumer Identification</h4>
+        <p>Define NovaBrew's target consumers in the new market. Build detailed buyer personas with demographics, psychographics, and behaviors.</p>
+      </div>
+      <div class="challenge-card">
+        <div class="icon" style="background:rgba(251,146,60,0.15);color:var(--orange)">&#128640;</div>
+        <h4>Market Entry Strategy</h4>
+        <p>Recommend the best market entry mode: exporting, licensing, joint venture, franchising, or wholly-owned subsidiary. Justify your choice.</p>
+      </div>
+      <div class="challenge-card">
+        <div class="icon" style="background:rgba(52,211,153,0.15);color:var(--green)">&#128202;</div>
+        <h4>Marketing Mix</h4>
+        <p>Develop a complete marketing mix (4Ps) adapted for the target market. Address product adaptation, pricing strategy, distribution, and promotion.</p>
+      </div>
+    </div>
+
+    <h3 class="section-title">Meet the Team</h3>
+    <p style="color:var(--dim);font-size:0.85rem;margin-bottom:16px;margin-top:-8px">Click on any employee to ask them questions about NovaBrew. They'll share information relevant to their role.</p>
+
+    <div class="personas-grid" id="personasGrid"></div>
+
+    <button class="enter-btn" onclick="showChat(0)">Start Consulting — Talk to the CEO</button>
+  </div>
+
+  <!-- CHAT VIEW -->
+  <div id="chatView" class="view">
+    <div class="two-col">
+      <div>
+        <div class="chat-header" id="chatHeader"></div>
+        <div class="chat-area" id="chatArea"></div>
+        <div class="suggested-questions" id="suggestedQ"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Ask a question about the company..." onkeydown="if(event.key==='Enter')sendMessage()">
+          <button onclick="sendMessage()">Send</button>
+        </div>
+        <div class="notebook">
+          <h4>Your Notes</h4>
+          <textarea id="notebook" placeholder="Take notes as you research the company..."></textarea>
+        </div>
+      </div>
+      <div>
+        <div class="progress-panel">
+          <h4>Research Progress</h4>
+          <div id="progressChecklist"></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+          <h4 style="font-size:0.85rem;font-weight:700;margin-bottom:12px">Other Employees</h4>
+          <div id="otherPersonas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PERSONAS = [
+  {
+    id: 0,
+    name: 'Sarah Chen',
+    role: 'Chief Executive Officer',
+    dept: 'Executive',
+    deptColor: 'rgba(79,140,255,0.15)',
+    deptText: '#4f8cff',
+    avatarBg: 'linear-gradient(135deg,#4f8cff,#2563eb)',
+    initials: 'SC',
+    greeting: "Welcome to NovaBrew. I'm Sarah Chen, CEO. I founded this company eight years ago with a vision to redefine how people experience beverages. We've grown to $48 million in revenue and now we're ready for our biggest challenge yet: going international. Ask me anything about our company vision, strategy, or where we're headed.",
+    suggested: [
+      "Why does NovaBrew want to expand internationally now?",
+      "What's the company's long-term vision?",
+      "What are the biggest risks of going global?",
+      "How much capital is available for international expansion?",
+      "What markets has the board discussed?"
+    ],
+    knowledge: {
+      "why expand|why international|why now|why go global": "Three reasons. First, we've hit 1,200 retail locations in the U.S. and our domestic growth rate is slowing from 35% to about 18% year-over-year. Second, the global specialty beverage market is projected to hit $85 billion by 2028, and we have zero international presence. Third, three of our competitors have already entered European and Asian markets. If we wait another year, we lose first-mover advantage in key regions. The board approved a $12 million international expansion budget in Q1.",
+      "vision|long-term|five year|future|where.*headed": "Our five-year vision is to become a top-three global specialty beverage brand. We want NovaBrew in 15 countries by 2031. But it's not just about distribution. We want to be the brand that represents premium, functional beverages globally. Each market should feel like NovaBrew was made for them, not that an American company showed up. Localization is everything. We're not Coca-Cola. We're a craft brand that happens to scale.",
+      "risk|biggest challenge|obstacle|worry|concern": "Honestly, there are several. Cultural misfit is number one. What works in Austin doesn't automatically work in Tokyo or Sao Paulo. We could burn $12 million and have nothing to show for it. Second, supply chain complexity. We currently source high-quality ingredients domestically. Going international means new suppliers, new regulations, new logistics. Third, brand dilution. If we rush into too many markets at once, we lose what makes NovaBrew special. I'd rather be excellent in two markets than mediocre in ten.",
+      "capital|budget|money|fund|invest|how much": "The board approved $12 million for international expansion over 24 months. That covers market research, regulatory compliance, initial distribution setup, marketing launch, and a small local team. For context, our total revenue last year was $48 million with about $7 million in net profit. So this is a significant bet. We expect to break even in the target market within 18-24 months. If the first market works, we'll reinvest profits to fund market two and three.",
+      "market|which country|where|region|board discussed": "We've narrowed it down to three possibilities: Brazil, South Korea, and the United Kingdom. Each has pros and cons. Brazil is massive and has a growing middle class with coffee culture, but the regulatory environment is complex. South Korea has incredible consumer appetite for trendy beverages and strong digital commerce, but it's a crowded market. The UK gives us English-language advantage and is a gateway to Europe, but margins are tighter. I'm genuinely open to the team's recommendation on this.",
+      "product|what do you sell|drink|beverage|line": "We have three product lines. First, NovaBrew Cold Brew, our flagship. Premium cold brew in four flavors: Original, Vanilla Bean, Mocha, and Oat Milk. These account for about 55% of revenue. Second, NovaBoost, our functional drink line with adaptogens, vitamins, and natural caffeine. Three flavors: Focus, Energy, and Calm. About 30% of revenue and growing fastest. Third, NovaSpark, a sparkling botanical drink we launched last year. Lower caffeine, positioned as an afternoon pick-me-up. About 15% of revenue. All products are non-GMO, no artificial sweeteners, and sustainably sourced.",
+      "competitor|competition|who else|rival": "In the U.S., our main competitors are Chameleon Cold Brew (owned by Nestle), La Colombe, and Stumptown. For functional beverages, we compete with Celsius, Athletic Greens, and some smaller brands. Internationally, the landscape shifts. In South Korea, you'd be looking at local giants like Lotte and Binggrae plus global players. In Brazil, Ambev dominates distribution. In the UK, Minor Figures and Oatly are in adjacent spaces. The key is that no one owns 'premium functional cold brew' internationally yet. That's our opening.",
+      "culture|company culture|values|team": "We built NovaBrew on three values: authenticity, wellness, and community. Our team is young. Average age is 31. We're headquartered in Austin but our 240 employees are spread across production (Buda, Texas), sales (nationwide), and HQ. We have zero international employees right now. That's a gap we need to fill. Any international expansion needs local talent who understand the market. We're not going to run Southeast Asia from a desk in Austin.",
+      "revenue|financial|profit|margin|sales": "Last fiscal year: $48 million revenue, up from $36 million the year before. Gross margin is about 52%, which is strong for beverage. Net margin around 14.5%, so roughly $7 million in profit. Our customer acquisition cost in the U.S. is about $3.20 per new customer through digital, $8.50 through retail promotions. We expect international CAC to be 2-3x higher initially. We're profitable enough to fund this expansion without taking on debt, which the board was firm about."
+    }
+  },
+  {
+    id: 1,
+    name: 'Peter Rodriguez',
+    role: 'VP of Marketing',
+    dept: 'Marketing',
+    deptColor: 'rgba(167,139,250,0.15)',
+    deptText: '#a78bfa',
+    avatarBg: 'linear-gradient(135deg,#a78bfa,#7c3aed)',
+    initials: 'PR',
+    greeting: "Hey there! Peter Rodriguez, VP of Marketing. I've been with NovaBrew for four years, built the brand from a regional player to national recognition. Now we need to figure out how to make NovaBrew resonate with consumers who've never heard of us and may have very different beverage habits. Fire away with your questions.",
+    suggested: [
+      "Who is NovaBrew's current target consumer?",
+      "How would you adapt the brand for international markets?",
+      "What's the current marketing mix in the U.S.?",
+      "What consumer research have you done internationally?",
+      "How should we position NovaBrew overseas?"
+    ],
+    knowledge: {
+      "target consumer|who buys|customer|demographic|who drinks": "Our core U.S. consumer is 24-38 years old, urban or suburban, college-educated, household income $55K-$120K. They care about what goes into their body. They read labels. They'll pay $4.99 for a cold brew instead of $2.99 because they trust our ingredients. Psychographically, they're wellness-oriented, digitally native, and influenced by social media and peer recommendations more than traditional advertising. About 58% female, 42% male. Heavy concentration in coastal cities and college towns. The question is: does this profile translate internationally, or do we need a completely different consumer?",
+      "adapt|international brand|localization|change.*brand": "This is the million-dollar question. My strong belief is that the NovaBrew brand architecture stays consistent globally: premium, functional, clean ingredients. But the execution has to be hyper-local. In Brazil, coffee is cultural. You don't introduce cold brew the way you do in the U.S. You have to respect their coffee traditions and position NovaBrew as a complement, not a replacement. In South Korea, aesthetics and packaging matter enormously. Their consumers want Instagram-worthy design. The UK market values understatement and quality over hype. Same brand DNA, completely different creative expression.",
+      "marketing mix|4p|four p|current strategy|how.*market": "In the U.S., here's our current mix. Product: three lines (Cold Brew, NovaBoost, NovaSpark), premium positioning, clean-label ingredients. Price: premium tier, $4.49-$5.99 per unit retail, about 40% above mass-market alternatives. Place: 1,200+ retail locations including Whole Foods, Sprouts, Target, plus DTC through our website and Amazon. We're in about 15% of available retail slots. Promotion: 60% digital (Instagram, TikTok, influencer partnerships), 20% in-store sampling and merchandising, 15% events and sponsorships, 5% PR. Total marketing spend is about $4.8 million annually, roughly 10% of revenue.",
+      "consumer research|international research|data|survey|study": "We've done preliminary work. We commissioned a survey of 1,500 consumers across Brazil, South Korea, and the UK last quarter. Key findings: brand awareness is essentially zero everywhere, which is expected. But interest in 'premium cold brew with functional benefits' tested well. Brazil scored 72% interest, South Korea 68%, UK 54%. Price sensitivity varies wildly. Brazilian consumers indicated a willingness to pay about 30% less than U.S. retail. South Korean consumers would actually pay MORE for the right premium product. UK consumers are value-conscious but will pay for quality if the brand is credible. We need much deeper ethnographic research in whichever market we choose.",
+      "position|positioning|brand position|message": "For the U.S., we're positioned as 'the thinking person's beverage.' Smart, not pretentious. Healthy, not preachy. Premium, not elitist. Internationally, I think we need to lean into different angles. In Brazil, I'd position around 'new energy for new Brazil.' In South Korea, it's 'premium functional craft.' In the UK, more like 'quality you can taste, ingredients you can trust.' The underlying promise is the same, but the cultural frame changes. We need to study local language, idioms, even humor styles before we lock positioning.",
+      "social media|digital|influencer|tiktok|instagram": "Social is our bread and butter. We have 380,000 Instagram followers, 210,000 on TikTok. Our best-performing content is behind-the-scenes production, founder stories, and user-generated taste tests. Engagement rate is about 4.2%, which is strong for CPG. Internationally, social strategy has to shift. South Korea is massive on KakaoTalk and Naver. Brazil is WhatsApp and Instagram heavy. UK uses similar platforms to the U.S. but the content style is different. Less hype, more substance. We'd need local content creators and probably a dedicated social manager per market.",
+      "packaging|design|label": "Packaging is a huge part of our brand. Our current design is minimalist: matte black cans with bold typography and a neon accent color per flavor. It stands out on U.S. shelves. But packaging preferences vary globally. South Korean consumers love limited editions, collectible designs, and collaboration packaging. Brazilian consumers respond to bold colors and warmth. UK consumers prefer understated elegance. We'd likely need to adapt packaging per market while keeping the NovaBrew logo and brand architecture consistent. That's a significant design and production investment.",
+      "pricing|how much|price point|cost": "In the U.S., we're at $4.49-$5.99 retail depending on product and channel. Our margin to retailers is about 35%. For international, pricing depends on market. Import duties, distribution costs, and local purchasing power all factor in. For South Korea, we could actually price 10-15% above U.S. levels, the premium market supports it. For Brazil, we'd need to come down 25-30% to be viable, which pressures margins unless we find local production. For the UK, probably similar to U.S. pricing with slight adjustments for VAT and competitive landscape."
+    }
+  },
+  {
+    id: 2,
+    name: 'David Okonkwo',
+    role: 'VP of International Operations',
+    dept: 'Operations',
+    deptColor: 'rgba(251,146,60,0.15)',
+    deptText: '#fb923c',
+    avatarBg: 'linear-gradient(135deg,#fb923c,#ea580c)',
+    initials: 'DO',
+    greeting: "David Okonkwo, VP of International Operations. I was hired six months ago specifically for this expansion initiative. I've spent 15 years in global supply chain and market entry at PepsiCo and Danone. I know what it takes to get a beverage brand into a new country and what can go wrong. Ask me about market entry, logistics, regulations, or operations.",
+    suggested: [
+      "What market entry strategy do you recommend?",
+      "What are the regulatory challenges in each market?",
+      "How would we set up the supply chain internationally?",
+      "What's the timeline for entering a new market?",
+      "What did you learn from your experience at PepsiCo?"
+    ],
+    knowledge: {
+      "entry strategy|market entry|how.*enter|mode of entry|export|franchise|joint venture|license": "For a company NovaBrew's size, I'd strongly consider different strategies per market. For the UK, I'd start with direct exporting through a local distribution partner. Lower risk, faster to market, and the regulatory environment is straightforward. For South Korea, a joint venture or strategic alliance with a local beverage company would be ideal. The market is complex, relationships matter, and a local partner accelerates everything from retail placement to consumer trust. For Brazil, this is trickier. Import duties on beverages are steep, 20-35%. You almost need local production or a licensing deal to make margins work. Each strategy has trade-offs between control, cost, speed, and risk.",
+      "regulatory|regulation|compliance|legal|law|fda|import": "Every market is different and this is where companies burn money. Brazil: ANVISA (their FDA equivalent) requires product registration, Portuguese labeling, specific nutritional claims restrictions. Import duties are 20-35% on beverages. There are also local tax structures (ICMS, IPI) that make pricing complex. South Korea: MFDS approval needed, Korean labeling required, strict rules about health claims for functional beverages. You can't say 'boosts energy' without clinical backing. The UK: post-Brexit, they have their own food standards agency. Labeling must comply with UK FIR regulations. Calorie and sugar content labeling is mandatory. The good news: UK regulations are well-documented and predictable. For all three markets, we need local legal counsel before we ship a single can.",
+      "supply chain|logistics|production|manufacturing|shipping|source": "Currently, all production happens at our facility in Buda, Texas. For international expansion, we have three options per market. One: export from Texas, which keeps quality control centralized but adds shipping costs, lead times, and import duties. Two: contract manufacturing locally, which reduces logistics costs but risks quality inconsistency. Three: build our own facility, which is the most expensive option and only makes sense at scale. For a first market entry, I'd recommend exporting from Texas for the UK and South Korea to test demand, and exploring a contract manufacturer in Brazil to manage those import duties. We can revisit production localization once we prove product-market fit.",
+      "timeline|how long|when|speed|fast": "Realistic timeline from decision to first sale: UK is fastest at 6-8 months. Regulatory is clear, we'd use a distribution partner, and we can export from Texas. South Korea is 8-12 months because of MFDS approval, finding the right JV partner, and adapting packaging for the Korean market. Brazil is 10-14 months due to ANVISA registration, complex tax setup, and potentially establishing contract manufacturing. These timelines assume no major regulatory surprises. In my experience at PepsiCo, I'd add a 3-month buffer to every estimate. Things always take longer than planned in new markets.",
+      "pepsico|danone|experience|learn|previous": "Fifteen years taught me three things. First, local talent is non-negotiable. At PepsiCo, we tried running the Mexico expansion from Dallas for the first year. Disaster. The moment we hired a Mexico-based GM with local relationships, everything accelerated. Second, test before you scale. At Danone, we did a 6-month pilot in two cities before rolling out nationally in Indonesia. That pilot saved us from a $15 million mistake because we discovered our flavor profile needed major adjustment. Third, distribution is king. You can have the best product in the world, but if you can't get it on shelves and into the cold chain consistently, you lose. In every new market, I spend 60% of my time on distribution partnerships.",
+      "distribution|retail|shelf|store|channel|where.*sell": "Distribution strategy varies by market. UK: I'd target premium grocery chains first, Waitrose, Sainsbury's premium range, Whole Foods UK, and independent specialty shops. Plus online through Ocado and Amazon UK. South Korea: convenience stores are massive there, CU, GS25, 7-Eleven. That's where trendy beverages launch. Also Coupang (their Amazon) for e-commerce. Department store food halls for premium positioning. Brazil: it's fragmented. Large chains like Carrefour and Pao de Acucar in major cities, but you also need local distributors for regional chains. E-commerce through Mercado Livre. In all cases, DTC through our own website is supplementary, not primary.",
+      "team|hire|local|staff|people": "For each market, you need at minimum: a Country Manager (local hire, senior, with industry relationships), a Sales/Distribution Manager, a Marketing Coordinator, and admin support. That's 4-5 people to start. For South Korea or Brazil, I'd add a regulatory specialist. Total labor cost for a starter team: UK about $350K-$450K annually, South Korea $300K-$400K, Brazil $200K-$300K depending on seniority. The Country Manager hire is the most critical decision. Get that wrong and everything downstream fails."
+    }
+  },
+  {
+    id: 3,
+    name: 'Lisa Park',
+    role: 'Chief Financial Officer',
+    dept: 'Finance',
+    deptColor: 'rgba(52,211,153,0.15)',
+    deptText: '#34d399',
+    avatarBg: 'linear-gradient(135deg,#34d399,#059669)',
+    initials: 'LP',
+    greeting: "Lisa Park, CFO. I've been managing NovaBrew's finances since year two. My job is to make sure this international expansion doesn't sink the ship. I'm all for growth, but it has to be financially sound. Ask me about budgets, projections, ROI, or anything numbers-related.",
+    suggested: [
+      "What's the $12M budget breakdown?",
+      "What ROI does the board expect?",
+      "Which market is most financially attractive?",
+      "What are the biggest financial risks?",
+      "How does international expansion affect our margins?"
+    ],
+    knowledge: {
+      "budget|breakdown|12 million|allocat|spend": "The $12 million is allocated over 24 months across four categories. Market Research and Setup: $2 million covering consumer research, regulatory compliance, legal fees, and initial market setup. Product and Supply Chain: $3.5 million for packaging adaptation, initial inventory, logistics setup, and potential contract manufacturing deposits. Marketing Launch: $3 million for brand introduction, digital campaigns, influencer programs, sampling, and PR in the target market. Operations and Team: $3.5 million for hiring local teams, office setup, travel, and working capital. This budget assumes entry into one primary market with potential to fund a second market if the first shows traction within 12 months.",
+      "roi|return|expect|payback|break even": "The board expects to reach operational break-even in the target market within 18-24 months. Full ROI on the $12 million investment within 36-48 months. Specifically, we're modeling Year 1 revenue of $3-5 million in the target market, Year 2 of $8-12 million. At our target gross margin of 45-50% internationally (lower than our 52% domestic due to logistics and duties), we'd need about $22-25 million in cumulative revenue to recoup the investment. The board is patient on this. They understand international expansion is a long game. But they want to see measurable traction by month 12: retail placement, sales velocity, and brand awareness metrics.",
+      "which market|financially|most attractive|best market|profitable": "Purely on financial attractiveness, here's my analysis. South Korea has the highest margin potential because consumers will pay premium prices and the market is concentrated enough to reach efficiently. Projected gross margin: 48-52%. UK is the most predictable because stable economy, clear regulations, and we can export without major supply chain changes. But margins are tighter at 42-46% due to competitive pricing pressure. Brazil has the largest total addressable market but the worst margin profile at 38-44% because of import duties, taxes, and lower price points. My recommendation purely on numbers: South Korea first for margin, UK as a close second for predictability. Brazil is a year-two play once we have international operations expertise.",
+      "risk|financial risk|danger|lose money|what.*wrong": "Four major financial risks. One: currency fluctuation. The Korean won, Brazilian real, and British pound all carry exchange rate risk. A 10% currency swing can turn a profitable quarter into a loss. We'd need hedging strategies. Two: higher-than-expected customer acquisition costs. Our U.S. CAC is $3.20 digital, but international markets with zero brand awareness could be $8-$15 per customer initially. Three: inventory write-offs. If we produce adapted packaging and the product doesn't sell, we're stuck with specialized inventory. Four: regulatory delays. If ANVISA or MFDS approval takes six months longer than planned, we're burning cash on teams and leases with no revenue. I've modeled a worst-case scenario where we burn through the entire $12M in 18 months with only $2M in revenue. It's unlikely but possible.",
+      "margin|profit margin|gross margin|how.*affect": "Our domestic gross margin is 52%. Internationally, I'm modeling 42-50% depending on market, driven by several factors. Shipping costs add 8-12% for exported products. Import duties range from 0% (UK for most food products) to 35% (Brazil). Local marketing costs per unit are higher when you're building awareness from zero. However, there are offsets: some markets support higher retail pricing, and as volume grows, we can negotiate better distribution terms. The key threshold: if gross margin drops below 40% in any market, the expansion doesn't work financially. We'd need to find cost savings or raise prices.",
+      "financial|company finances|health|balance sheet|debt": "NovaBrew is in solid financial shape. $48M revenue last year, $7M net profit, zero long-term debt. We have $9M in cash reserves plus the $12M expansion budget that came from a combination of retained earnings and a small credit facility we haven't drawn on. The business is self-funding. Sarah was very clear with the board: no dilutive funding for this expansion. We're not raising a round. We're not taking on significant debt. If the expansion works, it's funded by our own profitability. If it doesn't, we still have a healthy domestic business to fall back on."
+    }
+  },
+  {
+    id: 4,
+    name: 'Marcus Johnson',
+    role: 'Head of Product Development',
+    dept: 'Product',
+    deptColor: 'rgba(244,114,182,0.15)',
+    deptText: '#f472b6',
+    avatarBg: 'linear-gradient(135deg,#f472b6,#db2777)',
+    initials: 'MJ',
+    greeting: "Marcus Johnson, Head of Product Development. I'm the guy who creates what goes in the can. I've developed all three NovaBrew product lines from the ground up. For international expansion, the big question is: do we sell the exact same product, or do we adapt? Spoiler: it's never that simple. What do you want to know?",
+    suggested: [
+      "Would you change the product for international markets?",
+      "What are the ingredient sourcing challenges?",
+      "How do taste preferences differ across markets?",
+      "Tell me about the product development process",
+      "What flavors or products would you create for new markets?"
+    ],
+    knowledge: {
+      "change|adapt|modify|same product|different product|adjust": "Short answer: yes, we'd need to adapt. Long answer: the core formulation can stay similar, but we need to adjust for three things. First, local taste preferences. South Korean consumers prefer less sweetness and lighter flavor profiles. Brazilian consumers actually like sweeter beverages. UK consumers want balanced, not too sweet, not too bitter. Second, regulatory compliance. Some of our adaptogen ingredients (like ashwagandha in NovaBoost) may not be approved in all markets or may require different dosages. Third, practical considerations like shelf stability in different climates. Brazil's heat and humidity mean our shelf life testing from Texas may not apply. I'd plan on 3-4 months of reformulation and testing per market.",
+      "ingredient|sourcing|supply|raw material|where.*get": "Our current supply chain is U.S.-centric. We source coffee beans from Colombia and Ethiopia through a specialty importer in New Jersey. Adaptogens come from three suppliers: ashwagandha from India, lion's mane from a farm in Oregon, and L-theanine from Japan. Botanicals for NovaSpark come from domestic and Central American sources. For international markets, we could continue sourcing centrally and shipping finished product. But if we do local production, we need to qualify new suppliers, which takes 4-6 months of testing and quality audits. South Korea and the UK have excellent local supplier networks for most ingredients. Brazil is more challenging for specialty adaptogens.",
+      "taste|flavor|preference|palate|what do.*like": "I've done extensive tasting panels and here's what I've learned. South Korean consumers prefer clean, subtle flavors. They love matcha, yuzu, and floral notes. Our Original Cold Brew would work, but Mocha might need less chocolate intensity. For NovaBoost, a citrus-yuzu flavor could be a hit. Brazilian consumers love tropical flavors: acai, passion fruit, guarana. They drink sweetened coffee (cafezinho), so our cold brew might need a slightly sweeter variant or a Brazilian-specific flavor. UK consumers are sophisticated about coffee quality. They want origin stories, single-origin options, and less sweet profiles. Our Oat Milk Cold Brew would do well there. For each market, I'd want to do local taste testing with 200+ consumers before finalizing the lineup.",
+      "process|development|how.*create|r&d|develop": "Our product development cycle is about 4-6 months from concept to shelf. It goes: Concept (based on market research and trends) to Formulation (3-4 rounds of lab development) to Consumer Testing (panels of 150-300 people) to Production Scaling (adjusting for our equipment) to Quality Testing (shelf life, stability, safety) to Launch. For international adaptations, I'd compress this to 3-4 months since we're starting from existing formulations, not scratch. The biggest variable is consumer testing. We need local panels in each target market, which adds logistics complexity. I'd also build in a 'soft launch' phase where we sell limited quantities and collect real-world feedback before full production commitment.",
+      "new flavor|new product|create.*for|special|limited edition": "I've been thinking about this a lot. For South Korea, I'd develop a NovaBrew Yuzu Cold Brew and a NovaBoost Matcha Focus variant. Korean consumers love limited editions and seasonal flavors, so I'd plan quarterly special releases. For Brazil, a NovaBrew Acai Cold Brew and a NovaSpark Passion Fruit Botanical would tap into local flavor preferences. For the UK, I'd lead with our Oat Milk Cold Brew (oat milk is massive there) and develop a NovaBrew London Fog variant with Earl Grey notes. Each market would get 2-3 locally-adapted SKUs alongside our core range. That's about $800K in R&D per market for reformulation, testing, and packaging.",
+      "packaging|can|bottle|size|format": "Product format matters. In the U.S., our standard is a 12oz aluminum can. In South Korea, smaller sizes sell better: 250ml (about 8.5oz) is standard for convenience store beverages. They also love beautiful bottle designs for premium products. In Brazil, larger formats are popular for sharing: 350ml or even 500ml. Pet bottles are more common than cans in some segments. In the UK, 250ml cans work well and align with their sugar tax regulations (smaller servings = lower tax per unit). We'd need to invest in new can and potentially bottle tooling per market. That's factored into the product budget at about $500K-$700K per format change.",
+      "quality|shelf life|stability|testing|safe": "Our products have a 9-month shelf life in the U.S. under standard storage conditions. Internationally, this gets complicated. Shipping to South Korea or the UK adds 3-6 weeks of transit time, eating into shelf life. Brazil's tropical climate can degrade products faster if cold chain isn't maintained. We'd need accelerated stability testing at higher temperatures for Brazil. I'd also need to validate that our preservative-free formulation holds up under different storage conditions. This is non-negotiable. One batch of spoiled product in a new market could kill the brand before it starts. I budget 2 months and about $150K for stability testing per market."
+    }
+  }
+];
+
+const PROGRESS_ITEMS = [
+  {id:'p1',text:'Understand company background and financials',done:false},
+  {id:'p2',text:'Interview the CEO about strategic vision',done:false},
+  {id:'p3',text:'Research consumer profiles with Marketing',done:false},
+  {id:'p4',text:'Evaluate market entry strategies with Operations',done:false},
+  {id:'p5',text:'Analyze financial projections with CFO',done:false},
+  {id:'p6',text:'Discuss product adaptation with Product Dev',done:false},
+  {id:'p7',text:'Identify target market recommendation',done:false},
+  {id:'p8',text:'Develop complete marketing mix (4Ps)',done:false}
+];
+
+let currentPersona = null;
+let chatHistory = [];
+let notes = localStorage.getItem('nb-notes') || '';
+let progress = JSON.parse(localStorage.getItem('nb-progress') || 'null') || PROGRESS_ITEMS;
+let questionsAsked = JSON.parse(localStorage.getItem('nb-questions') || '{}');
+
+function renderPersonasGrid() {
+  const grid = document.getElementById('personasGrid');
+  grid.innerHTML = PERSONAS.map(p => `
+    <div class="persona-card" onclick="showChat(${p.id})">
+      <div class="avatar" style="background:${p.avatarBg}">
+        ${p.initials}
+        <span class="status"></span>
+      </div>
+      <h4>${p.name}</h4>
+      <div class="role">${p.role}</div>
+      <span class="dept" style="background:${p.deptColor};color:${p.deptText}">${p.dept}</span>
+    </div>
+  `).join('');
+}
+
+function showOverview() {
+  document.getElementById('overviewView').classList.add('active');
+  document.getElementById('chatView').classList.remove('active');
+}
+
+function showChat(personaId) {
+  currentPersona = PERSONAS[personaId];
+  chatHistory = [];
+  document.getElementById('overviewView').classList.remove('active');
+  document.getElementById('chatView').classList.add('active');
+
+  const header = document.getElementById('chatHeader');
+  header.innerHTML = `
+    <div class="avatar" style="background:${currentPersona.avatarBg}">${currentPersona.initials}</div>
+    <div>
+      <h3>${currentPersona.name}</h3>
+      <div class="role">${currentPersona.role}</div>
+    </div>
+    <button class="back" onclick="showOverview()">&#8592; Back to Overview</button>
+  `;
+
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  addMessage('persona', currentPersona.greeting);
+  renderSuggested();
+  renderOtherPersonas();
+  renderProgress();
+
+  document.getElementById('notebook').value = notes;
+  document.getElementById('notebook').oninput = (e) => {
+    notes = e.target.value;
+    localStorage.setItem('nb-notes', notes);
+  };
+
+  // Auto-progress
+  if (personaId === 0) updateProgress('p2');
+  if (personaId === 1) updateProgress('p3');
+  if (personaId === 2) updateProgress('p4');
+  if (personaId === 3) updateProgress('p5');
+  if (personaId === 4) updateProgress('p6');
+}
+
+function addMessage(type, text, name) {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg ' + type;
+  if (type === 'persona' && name) {
+    div.innerHTML = `<div class="name">${name}</div>${text}`;
+  } else {
+    div.textContent = text;
+  }
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const div = document.createElement('div');
+  div.className = 'msg typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = `<div class="dots"><span></span><span></span><span></span></div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function hideTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function findResponse(question) {
+  const q = question.toLowerCase();
+  const knowledge = currentPersona.knowledge;
+
+  let bestMatch = null;
+  let bestScore = 0;
+
+  for (const [pattern, response] of Object.entries(knowledge)) {
+    const keywords = pattern.split('|');
+    let score = 0;
+    for (const kw of keywords) {
+      if (kw.includes('.*')) {
+        const regex = new RegExp(kw, 'i');
+        if (regex.test(q)) score += 3;
+      } else if (q.includes(kw.toLowerCase())) {
+        score += 2;
+      }
+      const kwWords = kw.toLowerCase().split(/\s+/);
+      for (const w of kwWords) {
+        if (w.length > 3 && q.includes(w)) score += 1;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = response;
+    }
+  }
+
+  if (bestScore >= 2) return bestMatch;
+
+  return `That's a great question. From my perspective as ${currentPersona.role}, I'd suggest discussing that with one of my colleagues who may have more direct insight. But feel free to rephrase or ask me something specific about ${currentPersona.dept.toLowerCase()} and I'll give you what I can.`;
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage('user', text);
+  input.value = '';
+
+  if (!questionsAsked[currentPersona.id]) questionsAsked[currentPersona.id] = 0;
+  questionsAsked[currentPersona.id]++;
+  localStorage.setItem('nb-questions', JSON.stringify(questionsAsked));
+
+  showTyping();
+
+  const delay = 800 + Math.random() * 1200;
+  setTimeout(() => {
+    hideTyping();
+    const response = findResponse(text);
+    addMessage('persona', response, currentPersona.name);
+    updateSuggested(text);
+
+    // Speak response
+    if (window.speechSynthesis) {
+      const utter = new SpeechSynthesisUtterance(response.substring(0, 300));
+      utter.rate = 0.9;
+      utter.pitch = currentPersona.id % 2 === 0 ? 1.1 : 0.9;
+      utter.lang = 'en-US';
+      window.speechSynthesis.speak(utter);
+    }
+  }, delay);
+}
+
+function askSuggested(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function renderSuggested() {
+  const el = document.getElementById('suggestedQ');
+  el.innerHTML = currentPersona.suggested.map(q =>
+    `<button onclick="askSuggested('${q.replace(/'/g, "\\'")}')">${q}</button>`
+  ).join('');
+}
+
+function updateSuggested(askedQ) {
+  currentPersona.suggested = currentPersona.suggested.filter(q => q !== askedQ);
+  renderSuggested();
+}
+
+function renderOtherPersonas() {
+  const el = document.getElementById('otherPersonas');
+  el.innerHTML = PERSONAS.filter(p => p.id !== currentPersona.id).map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="showChat(${p.id})">
+      <div style="width:36px;height:36px;border-radius:50%;background:${p.avatarBg};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:white;flex-shrink:0">${p.initials}</div>
+      <div>
+        <div style="font-size:0.8rem;font-weight:600">${p.name}</div>
+        <div style="font-size:0.7rem;color:var(--dim)">${p.role}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderProgress() {
+  const el = document.getElementById('progressChecklist');
+  el.innerHTML = progress.map(p => `
+    <div class="progress-item" onclick="toggleProgress('${p.id}')">
+      <div class="check ${p.done ? 'done' : ''}">${p.done ? '&#10003;' : ''}</div>
+      <span class="text ${p.done ? 'done' : ''}">${p.text}</span>
+    </div>
+  `).join('');
+}
+
+function toggleProgress(id) {
+  const item = progress.find(p => p.id === id);
+  if (item) { item.done = !item.done; localStorage.setItem('nb-progress', JSON.stringify(progress)); renderProgress(); }
+}
+
+function updateProgress(id) {
+  const item = progress.find(p => p.id === id);
+  if (item && !item.done) { item.done = true; localStorage.setItem('nb-progress', JSON.stringify(progress)); renderProgress(); }
+}
+
+renderPersonasGrid();
+</script>
+</body>
+</html>
