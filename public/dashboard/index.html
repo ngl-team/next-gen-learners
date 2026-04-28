@@ -2517,8 +2517,8 @@ let _editDealId=null;
 let _dragDealId=null;
 
 const DEFAULT_DEALS=[
-  {id:'d1',name:'Christopher Roche',opp:'Superintendent Jarvis',value:'$2,500',owner:'brayan',type:'education',stage:'closing',next:'Friday April 25 at 11am, in-person build. Send invoice.',notes:'First pilot client. Deal confirmed, not yet paid. 50% upfront, 50% on completion. Double price to $5K after this.'},
-  {id:'d2',name:'Ridgefield Library',opp:'AI Club Program',value:'$300',owner:'brayan',type:'library',stage:'closing',next:'Check arriving in mail this week',notes:'3 sessions completed April 8-10. Payment in the mail.'},
+  {id:'d1',name:'Christopher Roche',opp:'Summer Microsoft Copilot Cabinet',value:'$1,250 + $2,500/m',owner:'brayan',type:'education',stage:'signed',next:'Pilot Agent #1 (Email Voice) live ~May 7. Send proposal email + 1-page agreement + 7 discovery questions tomorrow morning.',notes:'SIGNED 2026-04-27. $1,250 paid April 23. $1,250 due on Pilot Agent #1 completion (~May 7). $2,500/m Active Cabinet retainer founding rate, locked through Dec 2026. Anchor case study for Zaleta + CT supe network. Architecture lives in client tenant, no Savage Web app-consent needed.'},
+  {id:'d2',name:'Ridgefield Library',opp:'AI Club Program',value:'$300',owner:'brayan',type:'library',stage:'signed',next:'Confirm check arrived. Bank.',notes:'SIGNED. 3 sessions delivered April 8-10. Work complete. Payment in the mail.'},
   {id:'d3',name:'Matt Byrnes',opp:'AI Framework Wooster K-12',value:'$10K-$25K',owner:'brayan',type:'education',stage:'proposal',next:'Send bump email tonight. Meeting tomorrow April 14 at 1pm Babson. He confirmed but need to reconfirm.',notes:'Private school, Head of School. His son plays lacrosse for Tufts, game at 4pm. Known him since 6th grade. Discretionary budget. Ask for Michelle Gosh (Brewster) intro.'},
   {id:'d4',name:'Coach Steve',opp:'One Ball One Dream (50% equity)',value:'Equity',owner:'brayan',type:'equity',stage:'discovery',next:'Text him who he is around most, then send discovery email',notes:'Multi-billion dollar market. Zero competition. Steven Carneiro, Director Youth Dev at AC CT.'},
   {id:'d5',name:'Furfect Match (Zach/Eli)',opp:'CTO Role + Equity',value:'Equity TBD',owner:'brayan',type:'equity',stage:'discovery',next:'Internal decision: shelf or kill. PetFinder is direct competitor since 2013.',notes:'April 17 call with Zach. Dog adoption matching app. $7K invested in MVP (Indian dev team). Zero shelters onboarded despite months of outreach. One lead: Baja Street Dogs CEO (Mark). Revenue plan: breeder subscriptions, vet ads, Petco/Chewy e-commerce. CONCERNS: PetFinder already exists, no traction after 6+ months, zero shelter partnerships. Zach wants full-time dedicated CTO. NDA required. Skeptical - lacks clear differentiation from PetFinder and user pain is unclear.'},
@@ -2549,6 +2549,7 @@ const DEFAULT_DEALS=[
   {id:'d29',name:'Mike Kaltschnee',opp:'Danbury Hackerspace - Office Space + CT Next 2.0',value:'TBD',owner:'brayan',type:'networking',stage:'discovery',next:'Intro email sent. Waiting for response. Schedule May tour.',notes:'Co-Director Danbury Hackerspace. 20K sq ft Innovation Studios. Building statewide makerspace entrepreneur hub (CT Next 2.0). Potential to help build their online entry point and tracking system. 203-770-4976.'},
   {id:'d30',name:'Ms. McLeod',opp:'Brewster/Danbury Teacher Connection',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Reach out. She adores you. Good connection to Brewster schools.',notes:'Freshman humanities teacher. Worked at Danbury. Ryan suggested reaching out.'},
   {id:'d31',name:'Frank Rowella',opp:'CPA Mentor + Connector',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Follow up from April visit.',notes:'CPA at Reynolds & Rowella. Introduced Chelen Reyes. Long-term mentor relationship.'},
+  {id:'d34',name:'Z',opp:'MLS Lead-Gen Tool (MA Realtor)',value:'Upfront + monthly TBD',owner:'brayan',type:'side-project',stage:'closing',next:'Demo Wed 2026-04-29 2-2:30pm at library. Walk through live scrape + Sheets export. Anchor pricing AFTER his reaction (Voss: do not anchor first).',notes:'Placeholder name per no-store rule. MA realtor (Wellesley area). Met over dinner 2026-04-27. Local Python+Electron tool runs on his machine with his Pinergy + Spokeo creds, no Brayan-side recurring costs. Live scrape working end-to-end as of 4/27 23:18 (1000 listings: 529 EXP / 275 CAN / 196 WDN). Refresh cadence every 2 weeks. Open: owner resolution via Pinergy public records.'},
 ];
 
 function getDeals(){
@@ -2558,7 +2559,7 @@ function getDeals(){
 function saveDeals(){localStorage.setItem('ngl_deals',JSON.stringify(_deals))}
 
 function loadDeals(){
-  const DEALS_VERSION='2026-04-28-v4';
+  const DEALS_VERSION='2026-04-28-v5';
   const storedVersion=localStorage.getItem('ngl_deals_version');
   const stored=getDeals();
   if(!stored||storedVersion!==DEALS_VERSION){
