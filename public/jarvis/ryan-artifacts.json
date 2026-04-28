@@ -1,5 +1,12 @@
 [
   {
+    "id": "2026-04-28-walter-ai-tools-build",
+    "title": "Walter AI Tools \u2014 Transaction Coordination + Acquisition Analysis (Built)",
+    "date": "2026-04-28",
+    "person": "ryan",
+    "content": "# Walter AI Tools \u2014 Built and Ready for Demo\n\n**Date:** April 28, 2026\n**Client:** Walter Bahr (Bahr Standard Investments)\n**Status:** V1 built, ready for automation upgrade\n\n## What Was Built\nTwo AI tools in one dashboard (bahr-standard/tools.html):\n\n### 1. Transaction Coordination\n- Deal pipeline: Under Contract > Title Search > Attorney Review > Clear to Close > Closed\n- Auto-generated emails to attorneys, sellers, buyers, title companies (5 types: status, doc request, intro, closing, follow-up)\n- Document checklist per deal (10 standard docs with tracking)\n- Deal notes + full activity log\n- Saved contacts (attorneys, title companies auto-fill on new deals)\n- Overdue deal alerts (past-due, stale 14+ days, missing docs)\n- Dashboard stats: active deals, pipeline value, closed value, closing this week\n\n### 2. Acquisition Analysis\n- House mode: ARV, rehab, holding, closing costs > auto pro forma with MAO 70%/75% rule\n- Land mode: acreage, lots, site work, permits > development pro forma with profit/lot\n- Wholesale mode: assignment fee calculator\n- Reverse offer calculator: enter target profit > get max offer price\n- Property comparison: side-by-side two analyses\n- Print-ready pro formas for buyers/partners\n- Cash buyer list with criteria tags (areas, price range, property types)\n\n## Next Step: Automation\nCurrently static HTML (manual copy/paste emails). Upgrade path:\n- **Level 1:** Auto-send emails on stage changes via Gmail API or SendGrid. Auto follow-ups when deals go stale.\n- **Level 2:** Mojo webhook to auto-create deals. Auto-match wholesale deals to buyer list and blast out. Auto-pull property data from public records.\n- Deploy alongside Walter KPI tracker on Railway for one unified platform.\n\n## Revenue Impact\n- These tools are part of the /mo KPI tracker value stack\n- Automation upgrade could justify price increase to -200/mo\n- Transaction coordination alone saves Walter 30+ min per deal on emails"
+  },
+  {
     "id": "2026-04-28-business-professor-lead",
     "title": "New Lead: Business Professor \u2014 Interactive Case Study Platform (BUS 398)",
     "date": "2026-04-28",
