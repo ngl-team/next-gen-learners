@@ -836,7 +836,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     </div>
   </div>
   <div id="dealsTotalBar" style="display:flex;gap:12px;margin-bottom:20px"></div>
-  <div id="dealsBoard" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;overflow-x:auto;min-height:400px"></div>
+  <div id="dealsBoard" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;overflow-x:auto;min-height:400px"></div>
 </div>
 
 <!-- Deal modal -->
@@ -863,6 +863,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <select id="deal-stage">
         <option value="lead">Lead</option>
         <option value="discovery">Discovery</option>
+        <option value="built">Built</option>
         <option value="proposal">Proposal</option>
         <option value="closing">Closing</option>
         <option value="signed">Signed</option>
@@ -2509,17 +2510,18 @@ function renderMarkdown(md){
 }
 
 // ── Deals Board ────────────────────────────────────────────────────
-const DEAL_STAGES=['lead','discovery','proposal','closing','signed'];
-const DEAL_STAGE_LABELS={lead:'Lead',discovery:'Discovery',proposal:'Proposal',closing:'Closing',signed:'Signed'};
-const DEAL_STAGE_COLORS={lead:'var(--text-3)',discovery:'var(--cyan)',proposal:'var(--warm)',closing:'var(--primary)',signed:'var(--accent)'};
+const DEAL_STAGES=['lead','discovery','built','proposal','closing','signed'];
+const DEAL_STAGE_LABELS={lead:'Lead',discovery:'Discovery',built:'Built',proposal:'Proposal',closing:'Closing',signed:'Signed'};
+const DEAL_STAGE_COLORS={lead:'var(--text-3)',discovery:'var(--cyan)',built:'#8B5CF6',proposal:'var(--warm)',closing:'var(--primary)',signed:'var(--accent)'};
 let _deals=[];
 let _dealsFilter='all';
 let _editDealId=null;
 let _dragDealId=null;
 
 const DEFAULT_DEALS=[
-  {id:'d1',name:'Christopher Roche',opp:'Summer Microsoft Copilot Cabinet',value:'$1,250 + $2,500/m',owner:'brayan',type:'education',stage:'signed',next:'Pilot Agent #1 (Email Voice) live ~May 7. Send proposal email + 1-page agreement + 7 discovery questions tomorrow morning.',notes:'SIGNED 2026-04-27. $1,250 paid April 23. $1,250 due on Pilot Agent #1 completion (~May 7). $2,500/m Active Cabinet retainer founding rate, locked through Dec 2026. Anchor case study for Zaleta + CT supe network. Architecture lives in client tenant, no Savage Web app-consent needed.'},
-  {id:'d2',name:'Ridgefield Library',opp:'AI Club Program',value:'$300',owner:'brayan',type:'library',stage:'signed',next:'Confirm check arrived. Bank.',notes:'SIGNED. 3 sessions delivered April 8-10. Work complete. Payment in the mail.'},
+  {id:'d1',name:'Christopher Roche (Pilot)',opp:'Pilot Agent #1 - Email Voice',value:'$1,250',owner:'brayan',type:'education',stage:'signed',next:'Build Pilot Agent #1 (Email Voice). Live ~May 7.',notes:'SIGNED - $1,250 received April 23. Pilot Agent #1 in build. Architecture lives in client tenant. Anchor case study for Zaleta + CT supe network.'},
+  {id:'d35',name:'Christopher Roche (Cabinet)',opp:'Active Cabinet Retainer',value:'$2,500/m',owner:'brayan',type:'education',stage:'proposal',next:'Send proposal email + 1-page agreement + 7 discovery questions tomorrow morning. Convert post Pilot Agent #1 launch (~May 7).',notes:'PROPOSAL in flight. $2,500/m Active Cabinet founding rate, locked through Dec 2026. Founding pricing tier: pilot $1,250 + active $2,500/m vs standard $2,500 + $3,500/m. PD reimbursement lever: structure as "AI Leadership Coaching" / "Executive PD" to offset ~$333/m of personal cost.'},
+  {id:'d2',name:'Ridgefield Library',opp:'AI Club Program',value:'$300',owner:'brayan',type:'library',stage:'closing',next:'Confirm check arrived. Bank it.',notes:'3 sessions delivered April 8-10. Work complete. Payment in the mail (not yet received). Moves to signed when check clears.'},
   {id:'d3',name:'Matt Byrnes',opp:'AI Framework Wooster K-12',value:'$10K-$25K',owner:'brayan',type:'education',stage:'proposal',next:'Send bump email tonight. Meeting tomorrow April 14 at 1pm Babson. He confirmed but need to reconfirm.',notes:'Private school, Head of School. His son plays lacrosse for Tufts, game at 4pm. Known him since 6th grade. Discretionary budget. Ask for Michelle Gosh (Brewster) intro.'},
   {id:'d4',name:'Coach Steve',opp:'One Ball One Dream (50% equity)',value:'Equity',owner:'brayan',type:'equity',stage:'discovery',next:'Text him who he is around most, then send discovery email',notes:'Multi-billion dollar market. Zero competition. Steven Carneiro, Director Youth Dev at AC CT.'},
   {id:'d5',name:'Furfect Match (Zach/Eli)',opp:'CTO Role + Equity',value:'Equity TBD',owner:'brayan',type:'equity',stage:'discovery',next:'Internal decision: shelf or kill. PetFinder is direct competitor since 2013.',notes:'April 17 call with Zach. Dog adoption matching app. $7K invested in MVP (Indian dev team). Zero shelters onboarded despite months of outreach. One lead: Baja Street Dogs CEO (Mark). Revenue plan: breeder subscriptions, vet ads, Petco/Chewy e-commerce. CONCERNS: PetFinder already exists, no traction after 6+ months, zero shelter partnerships. Zach wants full-time dedicated CTO. NDA required. Skeptical - lacks clear differentiation from PetFinder and user pain is unclear.'},
@@ -2532,12 +2534,12 @@ const DEFAULT_DEALS=[
   {id:'d13',name:'Danbury Library',opp:'Summer AI Program',value:'$300-$400',owner:'brayan',type:'library',stage:'closing',next:'Confirm summer dates',notes:'4-week program confirmed'},
   {id:'d14',name:'Walter Website',opp:'Website',value:'$300 + $75/mo',owner:'ryan',type:'side-project',stage:'closing',next:'Wait for partner to prioritize.',notes:'Bahr Standard Investments. 4-page custom site. $300 setup / $75/mo. Poppins+OpenSans, glassmorphism, gold/teal/blue. Partner delaying the process.'},
   {id:'d15',name:'Walter',opp:'KPI Tracker',value:'$50/mo',owner:'ryan',type:'side-project',stage:'closing',next:'Collect first payment.',notes:'Bahr Standard Investments. $50/month agreed April 24. KPI tracker deployed on Railway. New AI tool ideas: transaction coordination + acquisition analysis.'},
-  {id:'d32',name:'Daniel (Walter Partner)',opp:'KPI + Marketing Tracker',value:'$50/mo',owner:'ryan',type:'side-project',stage:'closing',next:'Follow up after 1 week trial.',notes:'Walter\'s partner. Land development + house building. Tracker deployed at dylan.nextgenerationlearners.com. Marketing section added.'},
+  {id:'d32',name:'Daniel (Walter Partner)',opp:'KPI + Marketing Tracker',value:'$50/mo',owner:'ryan',type:'side-project',stage:'built',next:'Follow up after 1 week trial -> send proposal if usage looks good.',notes:'Walter\'s partner. Land development + house building. Tracker deployed at dylan.nextgenerationlearners.com. Marketing section added. In trial, no commitment yet -> moves to proposal after trial follow-up, closing on verbal yes.'},
   {id:'d16',name:'Jake',opp:'Coaching Platform + Website',value:'$2,500 + $300/mo',owner:'ryan',type:'side-project',stage:'proposal',next:'Demo call Sunday Apr 26 at noon. Follow up on pricing.',notes:'Personal trainer. Demo built + website + rebranding delivered. 60% probability.'},
-  {id:'d17',name:'Alex',opp:'Full Operating Platform',value:'$3,000 + $300/mo',owner:'ryan',type:'side-project',stage:'proposal',next:'Scoping call. Alex asked about pricing April 27. Send value stack: $3K setup / $300/mo.',notes:'Care Center in Brazil. Physical assessments + personal training. Full platform live at alex.nextgenerationlearners.com. Bilingual EN/PT. Prefers text (Portuguese speaker). Chris intro. 30% probability.'},
+  {id:'d17',name:'Alex',opp:'Full Operating Platform',value:'$3,000 + $300/mo',owner:'ryan',type:'side-project',stage:'built',next:'Send value stack: $3K setup / $300/mo. Alex asked about pricing April 27.',notes:'Care Center in Brazil. Physical assessments + personal training. Full platform live at alex.nextgenerationlearners.com. Bilingual EN/PT. Prefers text (Portuguese speaker). Chris intro. 30% probability. Built and live, value stack not yet sent -> moves to proposal once quote out.'},
   {id:'d18',name:'Nick',opp:'Message Platform',value:'$100 + $50/mo',owner:'ryan',type:'side-project',stage:'discovery',next:'Demo and pricing discussion.',notes:''},
-  {id:'d19',name:'Mrs. Marino',opp:'OG Digital Platform (Phonics)',value:'$500 + $75/mo',owner:'ryan',type:'education',stage:'proposal',next:'Send demo at marino.nextgenerationlearners.com and quote: $500 setup / $75/month.',notes:'Rachel Marino, Wooster School. Email: northforkboater@gmail.com. Full platform built: 20 lessons, audio, games, dictation, phoneme extensions. Gateway to Wooster School license ($300-500/mo).'},
-  {id:'d33',name:'Business Professor',opp:'Interactive Case Study Platform (BUS 398)',value:'$2,500 + $200/mo',owner:'ryan',type:'education',stage:'proposal',next:'Monday demo at nextgenerationlearners.com/case-study. If she likes it, commits for fall semester.',notes:'8am business teacher. BUS 398 International Business. NovaBrew simulation with 5 AI personas. Platform built and deployed. If successful: published articles, university adoptions, recurring scenario add-ons at $500-750 each.'},
+  {id:'d19',name:'Mrs. Marino',opp:'OG Digital Platform (Phonics)',value:'$500 + $75/mo',owner:'ryan',type:'education',stage:'built',next:'Send demo link at marino.nextgenerationlearners.com + quote: $500 setup / $75/month.',notes:'Rachel Marino, Wooster School. Email: northforkboater@gmail.com. Full platform built: 20 lessons, audio, games, dictation, phoneme extensions. Built but demo + quote not yet sent -> moves to proposal once she sees it. Gateway to Wooster School license ($300-500/mo).'},
+  {id:'d33',name:'Business Professor',opp:'Interactive Case Study Platform (BUS 398)',value:'$2,500 + $200/mo',owner:'ryan',type:'education',stage:'built',next:'Monday demo at nextgenerationlearners.com/case-study. If she likes it, commits for fall semester.',notes:'8am business teacher. BUS 398 International Business. NovaBrew simulation with 5 AI personas. Platform built and deployed -> demo Monday -> moves to proposal after demo. If successful: published articles, university adoptions, recurring scenario add-ons at $500-750 each.'},
   {id:'d20',name:'Eiker Jacome',opp:'Ad Tracking Tool',value:'$600 + $100/mo',owner:'ryan',type:'side-project',stage:'lead',next:'Follow up on questions.',notes:'Instagram lead. Cannot scope until he answers follow-up questions.'},
   {id:'d21',name:'Maura (Chamber of Commerce)',opp:'AI Specialist for Leadership Program',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Follow up through Nelson. Monthly learner sessions + July B2B event at Danbury HS.',notes:'Expressed interest in AI specialist for leadership program. Largest B2B event in CT in July.'},
   {id:'d22',name:'Dr. Casimiro',opp:'Danbury Superintendent - District AI',value:'$10K+',owner:'brayan',type:'education',stage:'lead',next:'After Roche pilot, use his playbook: say "academy" 6 times, reference Zaleta, position under professional learning budgets.',notes:'Danbury Public Schools Superintendent. Roche gave the playbook to get in.'},
@@ -2550,7 +2552,7 @@ const DEFAULT_DEALS=[
   {id:'d29',name:'Mike Kaltschnee',opp:'Danbury Hackerspace - Office Space + CT Next 2.0',value:'TBD',owner:'brayan',type:'networking',stage:'discovery',next:'Intro email sent. Waiting for response. Schedule May tour.',notes:'Co-Director Danbury Hackerspace. 20K sq ft Innovation Studios. Building statewide makerspace entrepreneur hub (CT Next 2.0). Potential to help build their online entry point and tracking system. 203-770-4976.'},
   {id:'d30',name:'Ms. McLeod',opp:'Brewster/Danbury Teacher Connection',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Reach out. She adores you. Good connection to Brewster schools.',notes:'Freshman humanities teacher. Worked at Danbury. Ryan suggested reaching out.'},
   {id:'d31',name:'Frank Rowella',opp:'CPA Mentor + Connector',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Follow up from April visit.',notes:'CPA at Reynolds & Rowella. Introduced Chelen Reyes. Long-term mentor relationship.'},
-  {id:'d34',name:'Z',opp:'MLS Lead-Gen Tool (MA Realtor)',value:'Upfront + monthly TBD',owner:'brayan',type:'side-project',stage:'closing',next:'Demo Wed 2026-04-29 2-2:30pm at library. Walk through live scrape + Sheets export. Anchor pricing AFTER his reaction (Voss: do not anchor first).',notes:'Placeholder name per no-store rule. MA realtor (Wellesley area). Met over dinner 2026-04-27. Local Python+Electron tool runs on his machine with his Pinergy + Spokeo creds, no Brayan-side recurring costs. Live scrape working end-to-end as of 4/27 23:18 (1000 listings: 529 EXP / 275 CAN / 196 WDN). Refresh cadence every 2 weeks. Open: owner resolution via Pinergy public records.'},
+  {id:'d34',name:'Z',opp:'MLS Lead-Gen Tool (MA Realtor)',value:'Upfront + monthly TBD',owner:'brayan',type:'side-project',stage:'built',next:'Demo Wed 2026-04-29 2-2:30pm at library. Walk through live scrape + Sheets export. Anchor pricing AFTER his reaction (Voss: do not anchor first) -> moves to proposal once number lands.',notes:'Placeholder name per no-store rule. MA realtor (Wellesley area). Met over dinner 2026-04-27. Local Python+Electron tool runs on his machine with his Pinergy + Spokeo creds, no Brayan-side recurring costs. Live scrape working end-to-end as of 4/27 23:18 (1000 listings: 529 EXP / 275 CAN / 196 WDN). Refresh cadence every 2 weeks. Open: owner resolution via Pinergy public records.'},
 ];
 
 function getDeals(){
@@ -2572,7 +2574,7 @@ function renderArchivedInfo(){
 }
 
 function loadDeals(){
-  const DEALS_VERSION='2026-04-28-v5';
+  const DEALS_VERSION='2026-04-28-v6';
   const storedVersion=localStorage.getItem('ngl_deals_version');
   const stored=getDeals();
   if(!stored||storedVersion!==DEALS_VERSION){
