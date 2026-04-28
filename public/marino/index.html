@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OG Plus — Orton-Gillingham Digital Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --card-hover: #222633;
+    --accent: #6c63ff;
+    --accent-light: #8b83ff;
+    --green: #34d399;
+    --green-dark: #059669;
+    --orange: #fb923c;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --yellow: #fbbf24;
+    --pink: #f472b6;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border: #2d3148;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar h1 { font-size: 1.3rem; font-weight: 800; }
+  .topbar h1 span { color: var(--accent); }
+  .topbar .nav-links { display: flex; gap: 8px; }
+  .topbar .nav-links button {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .topbar .nav-links button:hover,
+  .topbar .nav-links button.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  .dashboard-header { margin-bottom: 32px; }
+  .dashboard-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+  .dashboard-header p { color: var(--text-dim); font-size: 0.95rem; }
+
+  .progress-bar-container {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+  }
+  .progress-bar-container .label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .progress-bar-container .label span:last-child { color: var(--accent); }
+  .progress-track {
+    width: 100%;
+    height: 10px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+
+  .lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .lesson-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .lesson-card:hover {
+    background: var(--card-hover);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .lesson-card .lesson-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .lesson-card .phoneme { font-size: 2rem; font-weight: 800; margin-bottom: 4px; }
+  .lesson-card .phoneme-label { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 12px; }
+  .lesson-card .words-preview { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+  .lesson-card .status-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+  }
+  .lesson-card .status-badge.complete { background: var(--green-dark); color: white; }
+
+  .lesson-view { display: none; }
+  .lesson-view.active { display: block; }
+  .dashboard-view.active { display: block; }
+  .dashboard-view { display: none; }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lesson-title-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .lesson-title-bar .big-phoneme {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .lesson-title-bar .big-phoneme:hover { transform: scale(1.1); }
+  .lesson-title-bar h2 { font-size: 1.5rem; font-weight: 800; }
+  .lesson-title-bar p { color: var(--text-dim); font-size: 0.9rem; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: var(--card);
+    border-radius: 10px;
+    padding: 4px;
+    border: 1px solid var(--border);
+  }
+  .tabs button {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tabs button.active { background: var(--accent); color: white; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* LEARN TAB */
+  .learn-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .learn-section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .learn-section h3 .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .sound-display {
+    text-align: center;
+    padding: 32px;
+    background: linear-gradient(135deg, #1e2235, #252a3f);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .sound-display:hover { transform: scale(1.02); }
+  .sound-display:active { transform: scale(0.98); }
+  .sound-display .letter { font-size: 6rem; font-weight: 800; color: var(--accent-light); line-height: 1; }
+  .sound-display .sound-label { font-size: 1.2rem; color: var(--text-dim); margin-top: 8px; }
+  .sound-display .tap-hint { font-size: 0.75rem; color: var(--text-dim); margin-top: 12px; opacity: 0.6; }
+
+  .speaker-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(108,99,255,0.2);
+    color: var(--accent-light);
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 6px;
+    vertical-align: middle;
+    transition: all 0.2s;
+    border: none;
+  }
+  .speaker-icon:hover { background: var(--accent); color: white; transform: scale(1.1); }
+  .speaker-icon.playing { background: var(--accent); color: white; animation: pulse 0.8s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .card-pack { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .card-pack .card {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-pack .card:hover { border-color: var(--accent); transform: scale(1.05); }
+  .card-pack .card.flipped { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .word-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .word-list .word {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .word-list .word:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .word-list .word.highlighted { background: var(--green-dark); color: white; border-color: var(--green); }
+
+  .sentences-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .sentences-list .sentence {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sentences-list .sentence:hover { border-color: var(--accent); }
+  .sentences-list .sentence .highlight { color: var(--accent-light); font-weight: 700; }
+
+  .irregular-words { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .irregular-words .iw {
+    background: linear-gradient(135deg, #3b1f5e, #2d1a4e);
+    border: 1px solid #6c3faa;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #c4a6f5;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .irregular-words .iw:hover { transform: scale(1.05); border-color: #8b5fcf; }
+
+  /* EXTENSIONS */
+  .extensions-section {
+    background: linear-gradient(135deg, #1a2520, #1a2d25);
+    border: 1px solid #2d6b4a;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .extensions-section h3 { color: var(--green); font-size: 1rem; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .extensions-section .ext-label {
+    font-size: 0.8rem;
+    color: var(--green);
+    opacity: 0.7;
+    margin-bottom: 12px;
+  }
+  .extensions-section .word-list .word {
+    background: rgba(52,211,153,0.1);
+    border-color: rgba(52,211,153,0.3);
+  }
+  .extensions-section .word-list .word:hover {
+    background: var(--green-dark);
+    border-color: var(--green);
+  }
+
+  /* GAMES TAB */
+  .game-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .game-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+  .game-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 16px; }
+
+  .match-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+  .match-card {
+    background: var(--card-hover);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .match-card:hover { border-color: var(--accent); }
+  .match-card.selected { border-color: var(--accent); background: rgba(108,99,255,0.15); }
+  .match-card.matched { border-color: var(--green); background: rgba(52,211,153,0.15); color: var(--green); pointer-events: none; }
+  .match-card.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); animation: shake 0.3s; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .blend-game { display: flex; flex-direction: column; gap: 16px; }
+  .blend-sounds {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .blend-sounds .sound-block {
+    background: var(--accent);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 10px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .blend-sounds .sound-block:hover { transform: scale(1.1); }
+  .blend-sounds .plus { font-size: 1.4rem; color: var(--text-dim); }
+  .blend-answer { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .blend-answer button {
+    background: var(--card-hover);
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .blend-answer button:hover { border-color: var(--accent); }
+  .blend-answer button.correct { border-color: var(--green); background: rgba(52,211,153,0.15); color: var(--green); }
+  .blend-answer button.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); }
+
+  .sort-game { display: flex; flex-direction: column; gap: 16px; }
+  .sort-buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .sort-bucket {
+    background: var(--card-hover);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    min-height: 120px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .sort-bucket.drop-hover { border-color: var(--accent); background: rgba(108,99,255,0.05); }
+  .sort-bucket h4 { font-size: 1.2rem; margin-bottom: 12px; color: var(--accent); }
+  .sort-bucket .dropped-words { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .sort-bucket .dropped-word {
+    background: var(--green-dark);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .sort-bucket .dropped-word.wrong-sort {
+    background: var(--red);
+  }
+  .sort-words { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .sort-words button {
+    background: var(--card-hover);
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .sort-words button:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .sort-words button.sorted { opacity: 0.3; pointer-events: none; }
+
+  .game-score {
+    text-align: center;
+    padding: 12px;
+    background: var(--card-hover);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--green);
+  }
+
+  /* MISSING LETTER GAME */
+  .missing-letter-display {
+    text-align: center;
+    padding: 24px;
+  }
+  .missing-letter-display .ml-word {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: 6px;
+    margin-bottom: 16px;
+  }
+  .missing-letter-display .ml-word .blank {
+    display: inline-block;
+    width: 40px;
+    border-bottom: 4px solid var(--accent);
+    margin: 0 2px;
+    color: transparent;
+  }
+  .missing-letter-display .ml-word .blank.filled {
+    color: var(--green);
+    border-color: var(--green);
+  }
+  .ml-options { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .ml-options button {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--card-hover);
+    color: var(--text);
+    font-size: 1.4rem;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .ml-options button:hover { border-color: var(--accent); transform: scale(1.1); }
+  .ml-options button.correct { border-color: var(--green); background: rgba(52,211,153,0.2); color: var(--green); }
+  .ml-options button.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); color: var(--red); }
+
+  /* DICTATION TAB */
+  .dictation-area {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .dictation-area h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+  .dictation-area > p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
+  .dictation-word-display {
+    text-align: center;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .dictation-word-display .prompt { font-size: 1rem; color: var(--text-dim); margin-bottom: 8px; }
+  .dictation-word-display .current-word {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent-light);
+    cursor: pointer;
+    user-select: none;
+  }
+  .dictation-word-display .hint-text { font-size: 0.8rem; color: var(--text-dim); margin-top: 4px; }
+
+  .speak-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 8px 0;
+    transition: all 0.2s;
+  }
+  .speak-btn:hover { background: var(--accent-light); transform: scale(1.03); }
+  .speak-btn.playing { animation: pulse 0.8s infinite; }
+
+  .dictation-input-area { display: flex; gap: 12px; margin-bottom: 16px; }
+  .dictation-input-area input {
+    flex: 1;
+    background: var(--card-hover);
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    outline: none;
+  }
+  .dictation-input-area input:focus { border-color: var(--accent); }
+  .dictation-input-area input.correct { border-color: var(--green); background: rgba(52,211,153,0.1); }
+  .dictation-input-area input.wrong { border-color: var(--red); background: rgba(248,113,113,0.05); }
+  .dictation-input-area button {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .dictation-input-area button:hover { background: var(--accent-light); }
+
+  .dictation-progress { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .dictation-progress .dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .dictation-progress .dot.correct { background: var(--green-dark); border-color: var(--green); color: white; }
+  .dictation-progress .dot.wrong { background: rgba(248,113,113,0.2); border-color: var(--red); color: var(--red); }
+  .dictation-progress .dot.current { border-color: var(--accent); color: var(--accent); }
+
+  .dictation-results {
+    background: var(--card-hover);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    display: none;
+  }
+  .dictation-results h3 { font-size: 1.3rem; margin-bottom: 8px; }
+  .dictation-results .score { font-size: 2.5rem; font-weight: 800; color: var(--green); }
+  .dictation-results .retry-btn {
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 12px;
+  }
+
+  .mode-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+  .mode-toggle button {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .mode-toggle button.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .hidden-word { filter: blur(12px); transition: filter 0.3s; cursor: pointer; }
+  .hidden-word.revealed { filter: blur(0); }
+
+  .awareness-section {
+    background: linear-gradient(135deg, #1a1530, #1e1a35);
+    border: 1px solid #3b2d6b;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .awareness-section h3 { color: #c4a6f5; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .awareness-section .type-badge {
+    display: inline-block;
+    background: rgba(108,63,170,0.3);
+    color: #c4a6f5;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .awareness-section p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; }
+
+  .complete-btn {
+    width: 100%;
+    background: var(--green-dark);
+    border: none;
+    color: white;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: background 0.2s;
+  }
+  .complete-btn:hover { background: var(--green); }
+  .complete-btn.completed { background: var(--card-hover); color: var(--green); border: 1px solid var(--green); cursor: default; }
+
+  .feedback-flash {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 1.1rem;
+    z-index: 200;
+    animation: feedbackIn 0.3s ease, feedbackOut 0.3s ease 0.7s forwards;
+    pointer-events: none;
+  }
+  .feedback-flash.correct { background: var(--green-dark); color: white; }
+  .feedback-flash.wrong { background: var(--red); color: white; }
+
+  @keyframes feedbackIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes feedbackOut { from { opacity: 1; } to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+
+  @media (max-width: 600px) {
+    .container { padding: 16px; }
+    .lessons-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lesson-card { padding: 14px; }
+    .lesson-card .phoneme { font-size: 1.5rem; }
+    .topbar h1 { font-size: 1rem; }
+    .sort-buckets { grid-template-columns: 1fr; }
+    .match-grid { grid-template-columns: repeat(3, 1fr); }
+    .sound-display .letter { font-size: 4rem; }
+    .ml-word { font-size: 2rem !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span>OG</span> Plus</h1>
+  <div class="nav-links">
+    <button class="active" onclick="showDashboard()">Lessons</button>
+    <button onclick="showProgress()">Progress</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="dashboardView" class="dashboard-view active">
+    <div class="dashboard-header">
+      <h2>Lesson Library</h2>
+      <p>Bowman's Orton-Gillingham "Plus" — Phase One</p>
+    </div>
+    <div class="progress-bar-container">
+      <div class="label">
+        <span>Overall Progress</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="lessons-grid" id="lessonsGrid"></div>
+  </div>
+
+  <div id="lessonView" class="lesson-view">
+    <button class="back-btn" onclick="showDashboard()">&#8592; Back to Lessons</button>
+    <div class="lesson-title-bar">
+      <div class="big-phoneme" id="lessonPhoneme" onclick="speakSound(currentLesson.phoneme)"></div>
+      <div>
+        <h2 id="lessonTitle"></h2>
+        <p id="lessonSubtitle"></p>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="active" onclick="switchTab('learn', this)">Learn</button>
+      <button onclick="switchTab('games', this)">Games</button>
+      <button onclick="switchTab('extensions', this)">Extensions</button>
+      <button onclick="switchTab('review', this)">Review</button>
+    </div>
+    <div id="tab-learn" class="tab-content active"></div>
+    <div id="tab-games" class="tab-content"></div>
+    <div id="tab-extensions" class="tab-content"></div>
+    <div id="tab-review" class="tab-content"></div>
+  </div>
+</div>
+
+<script>
+// ===== AUDIO ENGINE =====
+const synth = window.speechSynthesis;
+let audioCtx;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, duration, type) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function playCorrectSound() { playTone(523, 0.12, 'sine'); setTimeout(() => playTone(659, 0.12, 'sine'), 100); setTimeout(() => playTone(784, 0.2, 'sine'), 200); }
+function playWrongSound() { playTone(200, 0.2, 'sawtooth'); setTimeout(() => playTone(150, 0.3, 'sawtooth'), 150); }
+
+function speakText(text, rate) {
+  synth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = rate || 0.85;
+  utter.pitch = 1.0;
+  utter.lang = 'en-US';
+  const voices = synth.getVoices();
+  const preferred = voices.find(v => v.lang.startsWith('en') && v.name.includes('Samantha')) || voices.find(v => v.lang.startsWith('en-US'));
+  if (preferred) utter.voice = preferred;
+  synth.speak(utter);
+  return utter;
+}
+
+function speakSound(phoneme) {
+  const soundMap = {
+    'm': 'mmm', 'a': 'aah', 'f': 'fff', 'b': 'buh', 't': 'tuh',
+    'h': 'huh', 'j': 'juh', 'c': 'kuh', 'i': 'ih', 'p': 'puh',
+    'k': 'kuh', 'r': 'rrr', 'g': 'guh', 'o': 'ahh', 'l': 'lll',
+    'u': 'uh', 'ch': 'chuh', 'n': 'nnn', 'th': 'thh', 'd': 'duh',
+    's': 'sss', 'e': 'eh'
+  };
+  speakText(soundMap[phoneme] || phoneme, 0.7);
+}
+
+function speakWord(word) { speakText(word, 0.75); }
+function speakSentence(sentence) { speakText(sentence, 0.85); }
+
+function showFeedback(correct) {
+  const el = document.createElement('div');
+  el.className = 'feedback-flash ' + (correct ? 'correct' : 'wrong');
+  el.textContent = correct ? 'Correct!' : 'Try Again';
+  document.body.appendChild(el);
+  if (correct) playCorrectSound(); else playWrongSound();
+  setTimeout(() => el.remove(), 1100);
+}
+
+// ===== LESSON DATA =====
+const LESSONS = [
+  {
+    num: 1, phoneme: 'm', sound: '/m/',
+    awareness: { type: 'Delete', instructions: 'Say the words monster, mash, morning, room, dime, came, timer, summer, and camel. Ask the child to say each word without the /m/. Say "monster" — say it without "mon". Say "timer" — say it without "mer".' },
+    cardPack: [], irregularWords: [], words: [], sentences: [], dictation: [],
+    extensions: ['mop', 'map', 'mad', 'mom', 'mud', 'man', 'mat', 'met', 'mix', 'mug', 'milk', 'miss']
+  },
+  {
+    num: 2, phoneme: 'a', sound: '/ă/ as in "at"',
+    awareness: { type: 'Categorize', instructions: 'Ask if these sound pairs are the same or different: /ă/-/ŏ/, /ă/-/ă/, /ă/-/ĕ/, /ă/-/ĭ/, and /ă/-/ŭ/. Then word pairs: map-mop, map-mep, map-map, map-mip, map-mup.' },
+    cardPack: ['m'], irregularWords: [], words: ['am'], sentences: [], dictation: ['am'],
+    extensions: ['at', 'an', 'ax', 'add', 'ant', 'app', 'ash', 'amp', 'act', 'and']
+  },
+  {
+    num: 3, phoneme: 'f', sound: '/f/',
+    awareness: { type: 'Blend', instructions: 'Blend /f/-/ă/-/f/, /m/-/ă/-/f/, and /ă/-/f/. Then syllables: /maf/-/maf/, /af/-/maf/, /fam/-/fam/.' },
+    cardPack: ['m', 'a'], irregularWords: [], words: ['fam', 'faf', 'af'], sentences: [], dictation: ['af', 'maf'],
+    extensions: ['fan', 'fat', 'fin', 'fit', 'fog', 'fun', 'fix', 'fig', 'fad', 'fib', 'fop', 'fur']
+  },
+  {
+    num: 4, phoneme: 'b', sound: '/b/',
+    awareness: { type: 'Count', instructions: 'How many sounds in: baby, tab, bake, bin, black? How many syllables in: bathtub, butterfly, barn, baking?' },
+    cardPack: ['m', 'a', 'f'], irregularWords: [], words: ['mab', 'baf', 'fab'], sentences: [], dictation: ['bam', 'bab', 'ab'],
+    extensions: ['bat', 'bag', 'bad', 'ban', 'bed', 'bet', 'big', 'bit', 'box', 'bug', 'bus', 'but']
+  },
+  {
+    num: 5, phoneme: 't', sound: '/t/',
+    awareness: { type: 'Segment', instructions: 'Tell me all the sounds in: mat, tab, bat, flat. Tell me all the syllables in: batter, mat, tablet, format.' },
+    cardPack: ['m', 'a', 'f', 'b'], irregularWords: [], words: ['tab', 'tam', 'taf', 'fat', 'mat', 'at'], sentences: [], dictation: ['mat', 'fat', 'bat', 'tat', 'tab'],
+    extensions: ['tan', 'tap', 'ten', 'tin', 'tip', 'top', 'tot', 'tub', 'tug', 'tag', 'tat', 'tom']
+  },
+  {
+    num: 6, phoneme: 'h', sound: '/h/',
+    awareness: { type: 'Sequence', instructions: 'What word do you get when you say "bat" backwards? Reverse the sounds in "am". Switch the syllables in "baseball" and "picnic".' },
+    cardPack: ['m', 'a', 'f', 'b', 't'], irregularWords: ['the'],
+    words: ['hat', 'ham'], sentences: ['the fat ham', 'the hat'],
+    dictation: ['haf', 'hab', 'the ham', 'the fab hat'],
+    extensions: ['had', 'hag', 'has', 'hen', 'hid', 'him', 'hip', 'hit', 'hog', 'hop', 'hot', 'hub', 'hug', 'hum', 'hut']
+  },
+  {
+    num: 7, phoneme: 'j', sound: '/j/',
+    awareness: { type: 'Mixed', instructions: 'Practice cognate pairs /b/-/p/, /v/-/f/, /d/-/t/ with a mirror. Feel voiced vs unvoiced. Same or different: bat-pat, tab-tap, vat-fat, dab-tab? Use colored blocks for sound tracking in "tab".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h'], irregularWords: ['the', 'and', 'good'],
+    words: ['jab', 'jaf', 'jam'], sentences: ['Jab the good ham.', 'Jab the ham and the mat.'],
+    dictation: ['jam', 'jat', 'jab', 'the jam', 'Jab the mat.'],
+    extensions: ['jag', 'jar', 'jaw', 'jet', 'jig', 'job', 'jog', 'jot', 'joy', 'jug', 'jut']
+  },
+  {
+    num: 8, phoneme: 'c', sound: '/k/ (hard c)',
+    awareness: { type: 'Delete', instructions: 'Say cat, camera, cab, club, crab, tick, luck, baker, licking — say each without the /k/. Say "catnip" without "cat". Say "racket" without "rack".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j'], irregularWords: ['the', 'and', 'good', 'is', 'in'],
+    words: ['cat', 'Mac'], sentences: ['The good cat is in the cab.', 'Mac the cat is good.'],
+    dictation: ['cab', 'cam', 'cat', 'The fat cat is in the jam.', 'Cam the cat is in the cab.'],
+    extensions: ['cap', 'can', 'cob', 'cod', 'cog', 'cop', 'cot', 'cub', 'cud', 'cup', 'cur', 'cut']
+  },
+  {
+    num: 9, phoneme: 'i', sound: '/ĭ/ as in "it"',
+    awareness: { type: 'Categorize', instructions: 'Same or different: /ĭ/-/ĕ/, /ĭ/-/ĭ/, /ĭ/-/ŭ/, /ŭ/-/ŭ/, /ĭ/-/ŏ/, /ŏ/-/ŏ/, /ĭ/-/ă/, /ă/-/ă/? Words: mit-met, him-hem, tip-tup, hip-hop, hit-hat.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a'],
+    words: ['fib', 'Tim', 'Jim', 'mit', 'ib', 'hib'], sentences: ['My cat bit Jim.', 'Tim is in a jam.', 'The hat fit.', 'Jim is on the mat.'],
+    dictation: ['hit', 'him', 'Jif', 'fit', 'jib', 'tib', 'My cat fit on the mat.', 'A cat bit Tim.'],
+    extensions: ['bid', 'bin', 'bit', 'did', 'dig', 'dim', 'dip', 'fig', 'fin', 'fix', 'hid', 'hip', 'kid', 'kit', 'lid', 'lip', 'lit', 'mix', 'nib', 'nip', 'pig', 'pin', 'pit', 'rib', 'rid', 'rim', 'rip', 'sip', 'sit', 'six', 'tin', 'tip', 'wig', 'win', 'wit', 'zip']
+  },
+  {
+    num: 10, phoneme: 'p', sound: '/p/',
+    awareness: { type: 'Blend', instructions: 'Blend /p/-/ĭ/-/t/, /h/-/ă/-/p/, /p/-/ă/-/p/. Syllables: /pit/-/pat/, /tip/-/top/, /cat/-/nip/.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will'],
+    words: ['pat', 'pit', 'tap', 'cap', 'hip', 'pib', 'pip', 'hap'], sentences: ['Tip, the cat, bit Pam. "Aaa!" said Pam.', 'Tim will pat the cat.'],
+    dictation: ['Pam', 'cap', 'map', 'Pat', 'tip', 'pap', 'bap', 'bip', 'pab', 'Jim will tap on the mat.', 'The cat will hit the map.'],
+    extensions: ['pad', 'pal', 'pan', 'pap', 'pat', 'peg', 'pen', 'pep', 'pet', 'pig', 'pin', 'pod', 'pop', 'pot', 'pub', 'pug', 'pun', 'pup', 'pus', 'put']
+  },
+  {
+    num: 11, phoneme: 'k', sound: '/k/',
+    awareness: { type: 'Count', instructions: 'How many sounds in: kit, cap, pickle, rake, pack? How many syllables in: pocket, captain, huckleberry, truck?' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got'],
+    words: ['kit', 'Kim', 'kam', 'kaf'], sentences: ['Kim got a Kit-Kat.', 'Kip and Kim hit the mat.', 'Mac will get the kit.', 'Kim had a map.'],
+    dictation: ['Kip', 'Kit-Kat', 'kaf', 'kib', 'Kim', 'Kim had a kit.'],
+    extensions: ['keg', 'ken', 'kin', 'kip', 'knack', 'knap', 'knit', 'knob', 'knot']
+  },
+  {
+    num: 12, phoneme: 'r', sound: '/r/',
+    awareness: { type: 'Segment', instructions: 'All the sounds in: rip, rabbit, rap, robin. All the syllables in: riptide, rapid, ram, restaurant.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did'],
+    words: ['ram', 'rat', 'rib', 'rip', 'rab'], sentences: ['The ram did hit Tim on his rib.', 'The good cat had a fat rat.', 'Pam will rap and tap and hit.'],
+    dictation: ['rap', 'rim', 'raf', 'rit', 'rif', 'The rim did get jam on it.', 'The rat said, "Is it a cat?"'],
+    extensions: ['rag', 'ran', 'rap', 'rat', 'red', 'ref', 'rep', 'rib', 'rid', 'rig', 'rim', 'rip', 'rob', 'rod', 'rot', 'rub', 'rug', 'rum', 'run', 'rut']
+  },
+  {
+    num: 13, phoneme: 'g', sound: '/g/ (hard g)',
+    awareness: { type: 'Sequence', instructions: 'Say "bag" backwards. Reverse the sounds in "ag". Switch the syllables in "magpie" and "bagpipe".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with'],
+    words: ['gap', 'bag', 'hag', 'mag', 'pig', 'fig', 'gat', 'ag', 'rig'], sentences: ['Pat did gab and gab with Pam.', 'The tag on the cap had a rip.', 'Kim had a pig in a big bag.'],
+    dictation: ['gag', 'tag', 'rag', 'big', 'rig', 'gab', 'gig', 'mig', 'pag', 'gaf', 'gam', 'The hag had a big hat.', 'The gap in the ham is so big.'],
+    extensions: ['gab', 'gal', 'gam', 'gas', 'gin', 'git', 'glob', 'gob', 'god', 'gop', 'got', 'grim', 'grin', 'grip', 'grit', 'grub', 'gum', 'gun', 'gust', 'gut', 'gym']
+  },
+  {
+    num: 14, phoneme: 'o', sound: '/ŏ/ as in "hot"',
+    awareness: { type: 'Mixed', instructions: 'Practice cognate pairs /g/-/k/ and /j/-/ch/ with a mirror. Same or different: gap-cap, cab-gab, got-got, jip-chip? Use colored blocks for sound tracking in "gut".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does'],
+    words: ['mob', 'top', 'Bob', 'rob', 'hot', 'job', 'jog', 'cob', 'pot', 'got', 'Mom', 'fog'], sentences: ['Mac got a job with Tom.', 'The good cop did rip his cap.', 'The big pot does get hot.'],
+    dictation: ['bop', 'hop', 'Tom', 'cop', 'cot', 'gob', 'hog', 'jot', 'rot', 'pop', 'tot', 'mot', 'It does get hot in the pit.', 'Bob did jog and jog on the big mat.'],
+    extensions: ['bog', 'bon', 'box', 'cod', 'con', 'dog', 'don', 'dot', 'drop', 'flop', 'fob', 'fop', 'fox', 'glob', 'gob', 'god', 'hop', 'hob', 'lot', 'log', 'lob', 'mop', 'nob', 'nod', 'nod', 'plop', 'pod', 'pom', 'rob', 'rod', 'sob', 'sod', 'sop', 'stop', 'trod']
+  },
+  {
+    num: 15, phoneme: 'l', sound: '/l/',
+    awareness: { type: 'Delete', instructions: 'Say lady, love, lucky, doll, mile, meal — say each without the /l/. Say "laptop" without "lap". Say "stoplight" without "light".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of'],
+    words: ['lit', 'lap', 'pal', 'Cal', 'lag', 'lom', 'lib', 'lig', 'lat'], sentences: ['Kim got a lot of jam on his lap.', 'The gal in the lab got the job from him.', 'Jog to the cab in the lot, Cal.'],
+    dictation: ['lot', 'gal', 'lip', 'lab', 'lob', 'lop', 'log', 'lif', 'lim', 'Cal said, "Get to the lab."', 'Pam got a lot of ham from him.'],
+    extensions: ['lad', 'lag', 'lam', 'lap', 'let', 'lid', 'lilt', 'limp', 'lint', 'lip', 'list', 'lock', 'loft', 'long', 'loom', 'loop', 'lost', 'luck', 'lug', 'lump', 'lung', 'lurk']
+  },
+  {
+    num: 16, phoneme: 'u', sound: '/ŭ/ as in "up"',
+    awareness: { type: 'Categorize', instructions: 'Same or different: /ŭ/-/ŏ/, /ŭ/-/ŭ/, /ŭ/-/ĕ/, /ŭ/-/ĭ/, /ŭ/-/ă/? Words: cup-cop, cut-cut, nut-net, bug-big, tub-tab.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o', 'l'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of', 'she', 'Mr.'],
+    words: ['mug', 'lug', 'bug', 'tub', 'hut', 'cup', 'pup', 'rug', 'gum', 'gut', 'up', 'pug'], sentences: ['The fat bug got up on the log hut.', 'She will hug the big pup.', 'Mr. Bob cut up the bug in the lab.'],
+    dictation: ['but', 'tug', 'hum', 'jut', 'hug', 'jug', 'cut', 'pub', 'rub', 'rut', 'rup', 'hup', 'tum', 'She got gum on the rug.'],
+    extensions: ['bud', 'bum', 'bun', 'bus', 'cud', 'cuff', 'cub', 'dub', 'dud', 'dug', 'dull', 'dump', 'dun', 'dust', 'fun', 'fug', 'fur', 'fuss', 'grub', 'gulf', 'gull', 'gulp', 'gust', 'hub', 'huff', 'hull', 'hung', 'hunt', 'husk', 'jug', 'jump', 'junk', 'just', 'luck', 'lug', 'lump', 'lung', 'lust', 'muck', 'muff', 'mum', 'must', 'mutt', 'nub', 'null', 'numb', 'nun', 'nut', 'puck', 'puff', 'pull', 'pulp', 'pump', 'pun', 'punk', 'pus', 'rub', 'ruff', 'rum', 'rump', 'run', 'rung', 'runt', 'rush', 'rust', 'strut', 'stub', 'stud', 'stuff', 'stump', 'stun', 'stung', 'stunk', 'sub', 'such', 'suck', 'sulk', 'sum', 'sun', 'sung', 'sunk', 'sup', 'thud', 'thug', 'thumb', 'thump', 'truck', 'trunk', 'trust', 'tuck', 'tug', 'tusk']
+  },
+  {
+    num: 17, phoneme: 'ch', sound: '/ch/',
+    awareness: { type: 'Blend', instructions: 'Blend /m/-/ŭ/-/ch/, /ch/-/ĭ/-/p/, /ch/-/ă/-/t/. Syllables: /chim/-/ney/, /chit/-/chat/, /chat/-/room/.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o', 'l', 'u'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of', 'she', 'Mr.', 'who', 'he'],
+    words: ['chat', 'chip', 'chop', 'chug', 'much', 'chag', 'chab', 'chim', 'chog', 'chib'], sentences: ['Chip had a chum from the lab who did chat and chat.', 'He will chop up the big Kit-Kat.'],
+    dictation: ['chap', 'rich', 'chum', 'chat', 'chig', 'chot', 'chom', 'chaf', 'cham', 'chob', 'Chip will lug the log and he will chop it up.'],
+    extensions: ['champ', 'chan', 'charm', 'check', 'chest', 'chick', 'child', 'chill', 'chimp', 'chin', 'chirp', 'chomp', 'chunk', 'church', 'ditch', 'fetch', 'hatch', 'hitch', 'hutch', 'itch', 'latch', 'lunch', 'match', 'munch', 'notch', 'patch', 'pitch', 'punch', 'ranch', 'rich', 'such', 'switch', 'watch', 'witch']
+  },
+  {
+    num: 18, phoneme: 'n', sound: '/n/',
+    awareness: { type: 'Count', instructions: 'How many sounds in: navy, nut, name, win, plan? How many syllables in: nonsense, candle, nest, nominate?' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o', 'l', 'u', 'ch'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of', 'she', 'Mr.', 'who', 'he', 'was', 'o.k.'],
+    words: ['nab', 'nip', 'nag', 'not', 'nut', 'man', 'chin', 'tan', 'pan', 'bun', 'pun', 'nun', 'can', 'in', 'on'], sentences: ['It was not o.k. to run in the hot pit.', 'He did jab the tan bug in the tub.', 'Jan had to run to the lab.'],
+    dictation: ['nap', 'nit', 'nog', 'fan', 'ban', 'bin', 'ran', 'pin', 'con', 'fun', 'run', 'an', 'It was a fun gag.'],
+    extensions: ['nab', 'nag', 'nap', 'nag', 'net', 'nib', 'nick', 'nil', 'nit', 'nob', 'nod', 'nom', 'nor', 'nub', 'null', 'ban', 'bun', 'can', 'con', 'den', 'din', 'don', 'dun', 'fan', 'fen', 'fin', 'fun', 'gin', 'gun', 'hen', 'hun', 'kin', 'man', 'men', 'pan', 'pen', 'pin', 'pun', 'ran', 'run', 'sin', 'son', 'sun', 'tan', 'ten', 'tin', 'ton', 'tun', 'van', 'wen', 'win', 'won']
+  },
+  {
+    num: 19, phoneme: 'th', sound: '/th/ (voiced & voiceless)',
+    awareness: { type: 'Segment', instructions: 'All the sounds in: math, thing, than, with. All the syllables in: brother, moth, without, thickness.' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o', 'l', 'u', 'ch', 'n'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of', 'she', 'Mr.', 'who', 'he', 'was', 'o.k.', 'fell', 'go'],
+    words: ['thin', 'bath', 'math', 'that', 'than', 'pith', 'cath'], sentences: ['Mr. Chan fell in the hot bath.', 'Kim did not go to math, but that gal, Pam, did go.', 'The good pig did hop and jig on the thin path.'],
+    dictation: ['path', 'moth', 'thug', 'hath', 'than', 'lith', 'The mug fell on the mat.', 'The moth lit on that big tan log in the bog.'],
+    extensions: ['bath', 'both', 'cloth', 'depth', 'filth', 'froth', 'girth', 'growth', 'health', 'math', 'month', 'mouth', 'myth', 'north', 'oath', 'path', 'smith', 'south', 'strength', 'tenth', 'thank', 'that', 'them', 'then', 'thick', 'thief', 'thigh', 'thin', 'thing', 'think', 'third', 'this', 'thorn', 'those', 'three', 'throb', 'throne', 'through', 'throw', 'thud', 'thumb', 'thump', 'thus', 'tooth', 'truth', 'warmth', 'width', 'with', 'worth', 'wreath', 'youth']
+  },
+  {
+    num: 20, phoneme: 'd', sound: '/d/',
+    awareness: { type: 'Sequence', instructions: 'Say "cot" backwards. Reverse the sounds in "do". Switch the syllables in "dollhouse" and "headband".' },
+    cardPack: ['m', 'a', 'f', 'b', 't', 'h', 'j', 'c', 'i', 'p', 'k', 'r', 'g', 'o', 'l', 'u', 'ch', 'n', 'th'], irregularWords: ['the', 'and', 'good', 'is', 'in', 'my', 'on', 'a', 'said', 'get', 'will', 'had', 'got', 'his', 'did', 'so', 'with', 'does', 'from', 'to', 'of', 'she', 'Mr.', 'who', 'he', 'was', 'o.k.', 'fell', 'go', 'again', 'they'],
+    words: ['dab', 'dot', 'dim', 'kid', 'dog', 'dip', 'Don', 'dug', 'fad', 'rad', 'thud', 'bid', 'mod', 'mud'], sentences: ['Tod and Pat dug in the pit to get a chip from a cup.', 'Don fell in the dam. Thud! Don fell again.'],
+    dictation: ['dam', 'dig', 'Doc', 'mad', 'bad', 'hid', 'cad', 'rid', 'Tod', 'cod', 'rod', 'nod', 'bud', 'cud', 'The pig and the dog fell in the mud and they got mad.'],
+    extensions: ['dab', 'dad', 'dam', 'damp', 'dank', 'dash', 'dawn', 'debt', 'deck', 'deft', 'den', 'dent', 'desk', 'dew', 'did', 'dig', 'dim', 'dine', 'dip', 'disc', 'dish', 'dock', 'dodge', 'dog', 'doll', 'dome', 'done', 'doom', 'door', 'dose', 'down', 'draft', 'drag', 'drain', 'drape', 'draw', 'dream', 'dress', 'drift', 'drill', 'drink', 'drip', 'drive', 'drop', 'drum', 'drunk', 'dry', 'dub', 'duck', 'dud', 'dug', 'dull', 'dumb', 'dump', 'dune', 'dung', 'dunk', 'dusk', 'dust']
+  }
+];
+
+let completedLessons = JSON.parse(localStorage.getItem('og-completed') || '{}');
+let currentLesson = null;
+
+function updateProgress() {
+  const done = Object.keys(completedLessons).length;
+  const pct = Math.round((done / LESSONS.length) * 100);
+  document.getElementById('progressPercent').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+function renderDashboard() {
+  const grid = document.getElementById('lessonsGrid');
+  grid.innerHTML = '';
+  LESSONS.forEach(lesson => {
+    const isComplete = completedLessons[lesson.num];
+    const card = document.createElement('div');
+    card.className = 'lesson-card';
+    card.onclick = () => openLesson(lesson.num);
+    card.innerHTML = `
+      <div class="lesson-num">Lesson ${lesson.num}</div>
+      <div class="phoneme">${lesson.phoneme}</div>
+      <div class="phoneme-label">${lesson.sound}</div>
+      <div class="words-preview">${lesson.words.concat(lesson.extensions.slice(0,3)).slice(0,6).join(' · ')}</div>
+      ${isComplete ? '<div class="status-badge complete">&#10003;</div>' : ''}
+    `;
+    grid.appendChild(card);
+  });
+  updateProgress();
+}
+
+function showDashboard() {
+  document.getElementById('dashboardView').classList.add('active');
+  document.getElementById('lessonView').classList.remove('active');
+  document.querySelectorAll('.topbar .nav-links button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.topbar .nav-links button')[0].classList.add('active');
+  renderDashboard();
+}
+
+function showProgress() {
+  document.querySelectorAll('.topbar .nav-links button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.topbar .nav-links button')[1].classList.add('active');
+}
+
+function openLesson(num) {
+  currentLesson = LESSONS.find(l => l.num === num);
+  document.getElementById('dashboardView').classList.remove('active');
+  document.getElementById('lessonView').classList.add('active');
+  document.getElementById('lessonPhoneme').textContent = currentLesson.phoneme;
+  document.getElementById('lessonTitle').textContent = 'Lesson ' + currentLesson.num + ': ' + currentLesson.phoneme;
+  document.getElementById('lessonSubtitle').textContent = currentLesson.sound;
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tabs button')[0].classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-learn').classList.add('active');
+  renderLearnTab();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'learn') renderLearnTab();
+  if (tab === 'games') renderGamesTab();
+  if (tab === 'extensions') renderExtensionsTab();
+  if (tab === 'review') renderReviewTab();
+}
+
+// ===== LEARN TAB =====
+function renderLearnTab() {
+  const el = document.getElementById('tab-learn');
+  const L = currentLesson;
+  let html = '';
+
+  html += `
+    <div class="awareness-section">
+      <span class="type-badge">${L.awareness.type}</span>
+      <h3>Phonological Awareness</h3>
+      <p>${L.awareness.instructions}</p>
+    </div>
+  `;
+
+  html += `
+    <div class="learn-section">
+      <h3><span class="dot" style="background:var(--green)"></span> New Sound <button class="speaker-icon" onclick="event.stopPropagation();speakSound('${L.phoneme}')">&#9835;</button></h3>
+      <div class="sound-display" onclick="speakSound('${L.phoneme}')">
+        <div class="letter">${L.phoneme}</div>
+        <div class="sound-label">${L.sound}</div>
+        <div class="tap-hint">Tap to hear the sound</div>
+      </div>
+    </div>
+  `;
+
+  if (L.cardPack.length > 0) {
+    html += `
+      <div class="learn-section">
+        <h3><span class="dot" style="background:var(--blue)"></span> Card Pack Review</h3>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px;">Tap each card to hear the sound and flip it.</p>
+        <div class="card-pack">
+          ${L.cardPack.map(c => `<div class="card" onclick="this.classList.toggle('flipped');speakSound('${c}')">${c}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (L.irregularWords.length > 0) {
+    html += `
+      <div class="learn-section">
+        <h3><span class="dot" style="background:var(--pink)"></span> Irregular Words (Sight Words)</h3>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px;">These are "rule-breakers." Tap to hear each word.</p>
+        <div class="irregular-words">
+          ${L.irregularWords.map(w => `<div class="iw" onclick="speakWord('${w}')">${w}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (L.words.length > 0) {
+    html += `
+      <div class="learn-section">
+        <h3><span class="dot" style="background:var(--orange)"></span> Decode Words</h3>
+        <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px;">Tap each word to hear it and blend the sounds together.</p>
+        <div class="word-list">
+          ${L.words.map(w => `<div class="word" onclick="this.classList.toggle('highlighted');speakWord('${w}')">${w}</div>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (L.sentences.length > 0) {
+    html += `
+      <div class="learn-section">
+        <h3><span class="dot" style="background:var(--yellow)"></span> Read Sentences</h3>
+        <div class="sentences-list">
+          ${L.sentences.map(s => {
+            const escaped = s.replace(/'/g, "\\'");
+            const highlighted = s.replace(new RegExp('(' + L.phoneme.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<span class="highlight">$1</span>');
+            return `<div class="sentence" onclick="speakSentence('${escaped}')"><button class="speaker-icon" onclick="event.stopPropagation();speakSentence('${escaped}')">&#9835;</button><span>${highlighted}</span></div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const isComplete = completedLessons[L.num];
+  html += `<button class="complete-btn ${isComplete ? 'completed' : ''}" onclick="markComplete(${L.num})" ${isComplete ? 'disabled' : ''}>${isComplete ? '&#10003; Lesson Complete' : 'Mark Lesson Complete'}</button>`;
+  el.innerHTML = html;
+}
+
+function markComplete(num) {
+  completedLessons[num] = true;
+  localStorage.setItem('og-completed', JSON.stringify(completedLessons));
+  renderLearnTab();
+  updateProgress();
+}
+
+// ===== EXTENSIONS TAB =====
+function renderExtensionsTab() {
+  const el = document.getElementById('tab-extensions');
+  const L = currentLesson;
+
+  if (!L.extensions || L.extensions.length === 0) {
+    el.innerHTML = '<div class="learn-section"><h3>No extensions for this lesson yet</h3></div>';
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="extensions-section">
+      <h3><span class="dot" style="background:var(--green)"></span> Phoneme Extensions: /${L.phoneme}/</h3>
+      <div class="ext-label">Extra practice words beyond the book. Tap any word to hear it.</div>
+      <div class="word-list">
+        ${L.extensions.map(w => `<div class="word" onclick="this.classList.toggle('highlighted');speakWord('${w}')">${w}</div>`).join('')}
+      </div>
+    </div>
+    <div class="learn-section">
+      <h3><span class="dot" style="background:var(--yellow)"></span> Extension Sentences</h3>
+      <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:12px;">Practice reading these sentences with the /${L.phoneme}/ sound.</p>
+      <div class="sentences-list" id="extSentences"></div>
+    </div>
+  `;
+
+  const sentencesEl = document.getElementById('extSentences');
+  const extSentences = generateExtensionSentences(L);
+  sentencesEl.innerHTML = extSentences.map(s => {
+    const escaped = s.replace(/'/g, "\\'");
+    const highlighted = s.replace(new RegExp('(' + L.phoneme.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<span class="highlight">$1</span>');
+    return `<div class="sentence" onclick="speakSentence('${escaped}')"><button class="speaker-icon" onclick="event.stopPropagation();speakSentence('${escaped}')">&#9835;</button><span>${highlighted}</span></div>`;
+  }).join('');
+}
+
+function generateExtensionSentences(L) {
+  const ext = L.extensions;
+  const iw = L.irregularWords;
+  const sentences = [];
+  const templates = [
+    (w) => `The ${w} is on the ${pickRandom(ext, w)}.`,
+    (w) => `${capitalize(pickRandom(iw) || 'The')} ${w} got ${pickRandom(ext, w)}.`,
+    (w) => `I can ${w} and ${pickRandom(ext, w)}.`,
+    (w) => `The big ${w} is not ${pickRandom(ext, w)}.`,
+    (w) => `${capitalize(w)} got a ${pickRandom(ext, w)} from the ${pickRandom(ext, w)}.`
+  ];
+  const usedWords = new Set();
+  for (let i = 0; i < Math.min(5, ext.length); i++) {
+    let w = ext[i];
+    if (usedWords.has(w)) continue;
+    usedWords.add(w);
+    sentences.push(templates[i % templates.length](w));
+  }
+  return sentences;
+}
+
+function pickRandom(arr, exclude) {
+  const filtered = exclude ? arr.filter(x => x !== exclude) : arr;
+  return filtered[Math.floor(Math.random() * filtered.length)] || 'it';
+}
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+// ===== GAMES TAB =====
+function renderGamesTab() {
+  const el = document.getElementById('tab-games');
+  const L = currentLesson;
+  const allWords = [...L.words, ...L.extensions.slice(0, 8)];
+
+  if (allWords.length < 2) {
+    el.innerHTML = '<div class="game-card"><h3>Games unlock in later lessons</h3><p>This lesson focuses on introducing the sound.</p></div>';
+    return;
+  }
+
+  let html = '';
+
+  // Blend game
+  html += '<div class="game-card"><h3>Sound Blending</h3><p>Blend the sounds together. Which word do they make? Listen to each sound block by tapping it.</p><div id="blendGame"></div></div>';
+
+  // Missing letter
+  html += '<div class="game-card"><h3>Missing Letter</h3><p>Find the missing letter in each word.</p><div id="missingGame"></div></div>';
+
+  // Sort game
+  if (L.num >= 6) {
+    html += '<div class="game-card"><h3>Sound Sort</h3><p>Sort each word into the correct sound group.</p><div id="sortGame"></div></div>';
+  }
+
+  // Builder game
+  html += '<div class="game-card"><h3>Word Builder</h3><p>Tap the sounds in order to build each word.</p><div id="builderGame"></div></div>';
+
+  el.innerHTML = html;
+
+  initBlendGame(allWords.filter(w => w.length >= 2 && w.length <= 4).slice(0, 6));
+  initMissingLetterGame(allWords.filter(w => w.length >= 3).slice(0, 6));
+  if (L.num >= 6) initSortGame();
+  initBuilderGame(allWords);
+}
+
+// -- Blend Game --
+let blendState = {};
+function initBlendGame(words) {
+  if (words.length === 0) { document.getElementById('blendGame').innerHTML = '<p style="color:var(--text-dim)">Not enough words yet.</p>'; return; }
+  blendState = { words: shuffle([...words]), current: 0, score: 0 };
+  renderBlendRound();
+}
+
+function renderBlendRound() {
+  const container = document.getElementById('blendGame');
+  if (!container) return;
+  const { words, current, score } = blendState;
+  if (current >= words.length) {
+    container.innerHTML = `<div class="game-score">Complete! ${score}/${words.length} correct</div>`;
+    return;
+  }
+  const word = words[current];
+  const sounds = word.split('');
+  let options = [word];
+  const pool = [...currentLesson.words, ...currentLesson.extensions.slice(0, 10)].filter(w => w !== word && w.length >= 2);
+  while (options.length < Math.min(4, pool.length + 1)) {
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    if (r && !options.includes(r)) options.push(r);
+  }
+  options = shuffle(options);
+
+  container.innerHTML = `
+    <div class="blend-game">
+      <div class="blend-sounds">
+        ${sounds.map((s, i) => `<span class="sound-block" onclick="speakSound('${s}')">${s}</span>${i < sounds.length - 1 ? '<span class="plus">+</span>' : ''}`).join('')}
+      </div>
+      <div class="blend-answer">
+        ${options.map(o => `<button onclick="checkBlend(this, '${o}', '${word}')">${o}</button>`).join('')}
+      </div>
+      <div class="game-score">${current + 1} of ${words.length} · Score: ${score}</div>
+    </div>
+  `;
+}
+
+function checkBlend(btn, selected, correct) {
+  const isCorrect = selected === correct;
+  if (isCorrect) {
+    btn.classList.add('correct');
+    blendState.score++;
+    showFeedback(true);
+    speakWord(correct);
+  } else {
+    btn.classList.add('wrong');
+    showFeedback(false);
+    btn.parentElement.querySelectorAll('button').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+  }
+  blendState.current++;
+  setTimeout(renderBlendRound, 1000);
+}
+
+// -- Missing Letter Game --
+let mlState = {};
+function initMissingLetterGame(words) {
+  const container = document.getElementById('missingGame');
+  if (!container || words.length === 0) { if (container) container.innerHTML = '<p style="color:var(--text-dim)">Not enough words yet.</p>'; return; }
+  mlState = { words: shuffle([...words]), current: 0, score: 0 };
+  renderMissingRound();
+}
+
+function renderMissingRound() {
+  const container = document.getElementById('missingGame');
+  if (!container) return;
+  const { words, current, score } = mlState;
+  if (current >= words.length) {
+    container.innerHTML = `<div class="game-score">Complete! ${score}/${words.length} correct</div>`;
+    return;
+  }
+  const word = words[current];
+  const missingIdx = Math.floor(Math.random() * word.length);
+  const missingLetter = word[missingIdx];
+  const display = word.split('').map((c, i) => i === missingIdx ? '<span class="blank">_</span>' : c).join('');
+
+  let options = [missingLetter];
+  const allLetters = 'abcdefghijklmnoprstuvwxyz'.split('').filter(l => l !== missingLetter);
+  while (options.length < 4) {
+    const r = allLetters[Math.floor(Math.random() * allLetters.length)];
+    if (!options.includes(r)) options.push(r);
+  }
+  options = shuffle(options);
+
+  container.innerHTML = `
+    <div class="missing-letter-display">
+      <div class="ml-word" id="mlWord">${display}</div>
+      <div class="ml-options">
+        ${options.map(o => `<button onclick="checkMissing(this, '${o}', '${missingLetter}', '${word}')">${o}</button>`).join('')}
+      </div>
+      <div class="game-score" style="margin-top:16px;">${current + 1} of ${words.length} · Score: ${score}</div>
+    </div>
+  `;
+}
+
+function checkMissing(btn, selected, correct, word) {
+  const isCorrect = selected === correct;
+  if (isCorrect) {
+    btn.classList.add('correct');
+    mlState.score++;
+    showFeedback(true);
+    speakWord(word);
+    document.querySelectorAll('#mlWord .blank').forEach(b => { b.textContent = correct; b.classList.add('filled'); });
+  } else {
+    btn.classList.add('wrong');
+    showFeedback(false);
+    btn.parentElement.querySelectorAll('button').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+  }
+  mlState.current++;
+  setTimeout(renderMissingRound, 1000);
+}
+
+// -- Sort Game --
+function initSortGame() {
+  const container = document.getElementById('sortGame');
+  if (!container) return;
+  const L = currentLesson;
+  const currPhoneme = L.phoneme;
+  const prevPhoneme = L.cardPack[L.cardPack.length - 1] || 'a';
+
+  const allW = [...L.words, ...L.extensions.slice(0, 6)];
+  const group1 = allW.filter(w => w.includes(currPhoneme)).slice(0, 4);
+  const group2 = allW.filter(w => !w.includes(currPhoneme)).slice(0, 4);
+
+  if (group1.length < 2 || group2.length < 2) {
+    container.innerHTML = '<p style="color:var(--text-dim)">Not enough variety for sorting yet.</p>';
+    return;
+  }
+
+  const items = shuffle([...group1.map(w => ({w, g: currPhoneme})), ...group2.map(w => ({w, g: 'other'}))]);
+
+  container.innerHTML = `
+    <div class="sort-game">
+      <div class="sort-buckets">
+        <div class="sort-bucket" id="bucket1"><h4>Has /${currPhoneme}/</h4><div class="dropped-words"></div></div>
+        <div class="sort-bucket" id="bucket2"><h4>No /${currPhoneme}/</h4><div class="dropped-words"></div></div>
+      </div>
+      <div class="sort-words">
+        ${items.map(item => `<button onclick="sortWord(this, '${item.g}', '${currPhoneme}')" data-correct="${item.g === currPhoneme ? '1' : '2'}">${item.w}</button>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function sortWord(btn, group, phoneme) {
+  const correctBucket = group === phoneme ? '1' : '2';
+  const buckets = document.querySelectorAll('.sort-bucket');
+  const selectedBucket = prompt('Type 1 for "Has /' + phoneme + '/" or 2 for "No /' + phoneme + '/"') || '';
+
+  // Instead of prompt, use click-based sorting
+  const bucket = document.querySelector('#bucket' + btn.dataset.correct + ' .dropped-words');
+  const dw = document.createElement('span');
+  dw.className = 'dropped-word';
+  dw.textContent = btn.textContent;
+  bucket.appendChild(dw);
+  btn.classList.add('sorted');
+  speakWord(btn.textContent);
+  playCorrectSound();
+}
+
+// -- Builder Game --
+function initBuilderGame(allWords) {
+  const container = document.getElementById('builderGame');
+  if (!container) return;
+  const words = (allWords || currentLesson.words).filter(w => w.length >= 2 && w.length <= 4).slice(0, 6);
+  if (words.length === 0) { container.innerHTML = '<p style="color:var(--text-dim)">Not enough words yet.</p>'; return; }
+  window._builderState = { words: shuffle([...words]), current: 0, score: 0 };
+  renderBuilderRound(container);
+}
+
+function renderBuilderRound(container) {
+  if (!container) container = document.getElementById('builderGame');
+  if (!container) return;
+  const { words, current, score } = window._builderState;
+  if (current >= words.length) {
+    container.innerHTML = `<div class="game-score">Complete! ${score}/${words.length} correct</div>`;
+    return;
+  }
+  const word = words[current];
+  const letters = word.split('');
+  const shuffled = shuffle([...letters]);
+  window._builderTarget = word;
+  window._builderInput = [];
+
+  container.innerHTML = `
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;">Build this word — say each sound as you tap</div>
+      <button class="speak-btn" onclick="speakWord('${word}')" style="margin-bottom:12px;">&#9835; Hear the word</button>
+      <div id="builderSlots" style="display:flex;gap:6px;justify-content:center;margin-bottom:16px;min-height:50px;">
+        ${letters.map(() => '<div style="width:44px;height:44px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;"></div>').join('')}
+      </div>
+      <div id="builderLetters" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        ${shuffled.map(l => `<button onclick="pickBuilderLetter(this, '${l}')" style="background:var(--accent);border:none;color:white;width:48px;height:48px;border-radius:10px;font-size:1.3rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all 0.15s;">${l}</button>`).join('')}
+      </div>
+      <div class="game-score" style="margin-top:12px;">${current + 1} of ${words.length} · Score: ${score}</div>
+    </div>
+  `;
+}
+
+function pickBuilderLetter(btn, letter) {
+  const target = window._builderTarget;
+  const input = window._builderInput;
+  const idx = input.length;
+  if (idx >= target.length) return;
+
+  input.push(letter);
+  btn.style.opacity = '0.3';
+  btn.style.pointerEvents = 'none';
+  speakSound(letter);
+
+  const slots = document.querySelectorAll('#builderSlots > div');
+  slots[idx].textContent = letter;
+  slots[idx].style.borderStyle = 'solid';
+  slots[idx].style.borderColor = 'var(--accent)';
+
+  if (input.length === target.length) {
+    const built = input.join('');
+    const correct = built === target;
+    if (correct) {
+      window._builderState.score++;
+      showFeedback(true);
+      speakWord(target);
+      slots.forEach(s => { s.style.borderColor = 'var(--green)'; s.style.color = 'var(--green)'; });
+    } else {
+      showFeedback(false);
+      slots.forEach(s => { s.style.borderColor = 'var(--red)'; s.style.color = 'var(--red)'; });
+    }
+    window._builderState.current++;
+    setTimeout(() => renderBuilderRound(null), 1200);
+  }
+}
+
+// ===== DICTATION TAB =====
+let dictState = {};
+function renderReviewTab() {
+  const el = document.getElementById('tab-review');
+  const L = currentLesson;
+
+  const allDictation = [...L.dictation];
+  if (L.extensions.length > 0) {
+    const extWords = L.extensions.slice(0, 5);
+    allDictation.push(...extWords);
+  }
+
+  if (allDictation.length === 0) {
+    el.innerHTML = '<div class="dictation-area"><h3>No dictation words for this lesson</h3></div>';
+    return;
+  }
+
+  const wordsOnly = allDictation.filter(d => !d.includes(' '));
+  const sentencesOnly = allDictation.filter(d => d.includes(' '));
+
+  dictState = { items: [...wordsOnly, ...sentencesOnly], current: 0, results: [], mode: 'audio' };
+  renderDictationUI(el);
+}
+
+function renderDictationUI(el) {
+  if (!el) el = document.getElementById('tab-review');
+  const { items, current, results, mode } = dictState;
+
+  if (current >= items.length) {
+    const correct = results.filter(r => r).length;
+    const pct = Math.round((correct / items.length) * 100);
+    el.innerHTML = `
+      <div class="dictation-area">
+        <div class="dictation-results" style="display:block;">
+          <h3>Review Complete!</h3>
+          <div class="score">${correct} / ${items.length}</div>
+          <p style="color:var(--text-dim);margin-top:4px;">${pct}%</p>
+          <p style="color:var(--text-dim);margin-top:8px;">${pct === 100 ? 'Perfect!' : pct >= 70 ? 'Great job! Keep practicing.' : 'Keep working at it!'}</p>
+          <button class="retry-btn" onclick="renderReviewTab()">Try Again</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const item = items[current];
+  const isSentence = item.includes(' ');
+  const escaped = item.replace(/'/g, "\\'");
+
+  el.innerHTML = `
+    <div class="dictation-area">
+      <h3>Dictation Review</h3>
+      <p>Choose a mode: Audio (computer speaks the word), Teacher Dictates (word hidden, teacher reads), or Self Practice (word visible).</p>
+
+      <div class="mode-toggle">
+        <button class="${mode === 'audio' ? 'active' : ''}" onclick="dictState.mode='audio';renderDictationUI()">Audio Mode</button>
+        <button class="${mode === 'hidden' ? 'active' : ''}" onclick="dictState.mode='hidden';renderDictationUI()">Teacher Dictates</button>
+        <button class="${mode === 'visible' ? 'active' : ''}" onclick="dictState.mode='visible';renderDictationUI()">Self Practice</button>
+      </div>
+
+      <div class="dictation-word-display">
+        ${mode === 'audio' ? `
+          <div class="prompt">${isSentence ? 'Listen to the sentence, then type it:' : 'Listen to the word, then type it:'}</div>
+          <button class="speak-btn" onclick="speakWord('${escaped}')">&#9835; Play Sound</button>
+          <div class="hint-text">Tap to hear it again</div>
+        ` : mode === 'hidden' ? `
+          <div class="prompt">${isSentence ? 'Dictate this sentence:' : 'Dictate this word:'}</div>
+          <div class="current-word hidden-word" onclick="this.classList.toggle('revealed')">${item}</div>
+          <div class="hint-text">Tap to reveal / hide</div>
+        ` : `
+          <div class="prompt">${isSentence ? 'Type this sentence:' : 'Type this word:'}</div>
+          <div class="current-word">${item}</div>
+        `}
+      </div>
+
+      <div class="dictation-input-area">
+        <input type="text" id="dictInput" placeholder="Type what you hear..." autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter')checkDictation()">
+        <button onclick="checkDictation()">Check</button>
+      </div>
+
+      <div class="dictation-progress">
+        ${items.map((_, i) => {
+          let cls = '';
+          if (i < current) cls = results[i] ? 'correct' : 'wrong';
+          else if (i === current) cls = 'current';
+          return '<div class="dot ' + cls + '">' + (i + 1) + '</div>';
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const inp = document.getElementById('dictInput');
+    if (inp) inp.focus();
+    if (mode === 'audio') speakWord(item);
+  }, 200);
+}
+
+function checkDictation() {
+  const input = document.getElementById('dictInput');
+  const answer = input.value.trim().toLowerCase().replace(/[.,!?"]/g, '');
+  const correct = dictState.items[dictState.current].toLowerCase().replace(/[.,!?"]/g, '');
+  const isCorrect = answer === correct;
+  dictState.results.push(isCorrect);
+
+  if (isCorrect) {
+    input.classList.add('correct');
+    showFeedback(true);
+  } else {
+    input.classList.add('wrong');
+    showFeedback(false);
+    setTimeout(() => { input.value = dictState.items[dictState.current]; input.classList.remove('wrong'); input.classList.add('correct'); }, 400);
+  }
+
+  dictState.current++;
+  setTimeout(() => renderDictationUI(), isCorrect ? 600 : 2000);
+}
+
+// ===== UTILS =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Preload voices
+if (synth) synth.onvoiceschanged = () => synth.getVoices();
+
+renderDashboard();
+</script>
+</body>
+</html>
