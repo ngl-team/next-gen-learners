@@ -831,6 +831,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <button class="btn primary" id="dealsFilterAll" onclick="filterDeals('all')" style="font-size:.65rem">All</button>
       <button class="btn" id="dealsFilterBrayan" onclick="filterDeals('brayan')" style="font-size:.65rem">Brayan</button>
       <button class="btn" id="dealsFilterRyan" onclick="filterDeals('ryan')" style="font-size:.65rem">Ryan</button>
+      <span id="dealsArchivedInfo" style="font-size:.6rem;color:var(--text-3)"></span>
       <button class="btn" onclick="openDealModal()" style="font-size:.65rem;background:var(--primary);color:white;border-color:var(--primary)">+ Add Deal</button>
     </div>
   </div>
@@ -878,7 +879,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <div class="field"><label>Notes</label><textarea id="deal-notes" style="min-height:60px" placeholder="Any context..."></textarea></div>
     <div style="display:flex;gap:8px;margin-top:16px">
       <button class="btn primary" onclick="saveDeal()" style="flex:1">Save</button>
-      <button class="btn danger" id="dealDeleteBtn" onclick="deleteDeal()" style="display:none">Delete</button>
+      <button class="btn danger" id="dealDeleteBtn" onclick="archiveDeal()" style="display:none">Archive</button>
     </div>
   </div>
 </div>
@@ -2558,6 +2559,18 @@ function getDeals(){
 }
 function saveDeals(){localStorage.setItem('ngl_deals',JSON.stringify(_deals))}
 
+function getArchivedDealIds(){
+  try{const a=localStorage.getItem('ngl_deals_archived');if(a)return JSON.parse(a)}catch(e){}
+  return [];
+}
+function saveArchivedDealIds(ids){localStorage.setItem('ngl_deals_archived',JSON.stringify(ids))}
+
+function renderArchivedInfo(){
+  const el=document.getElementById('dealsArchivedInfo');if(!el)return;
+  const n=getArchivedDealIds().length;
+  el.innerHTML=n?`${n} archived <a href="#" onclick="restoreArchivedDeals();return false" style="color:var(--text-2);text-decoration:underline;margin-left:4px">restore all</a>`:'';
+}
+
 function loadDeals(){
   const DEALS_VERSION='2026-04-28-v5';
   const storedVersion=localStorage.getItem('ngl_deals_version');
@@ -2569,7 +2582,13 @@ function loadDeals(){
   }else{
     _deals=stored;
   }
+  // Archive tombstones survive version bumps and stored-deal reloads
+  const archived=getArchivedDealIds();
+  if(archived.length){
+    _deals=_deals.filter(d=>!archived.includes(d.id));
+  }
   renderDeals();
+  renderArchivedInfo();
   checkDealsGmail();
 }
 
@@ -2800,10 +2819,21 @@ function saveDeal(){
   saveDeals();closeDealModal();renderDeals();
 }
 
-function deleteDeal(){
-  if(!_editDealId||!confirm('Delete this deal?'))return;
+function archiveDeal(){
+  if(!_editDealId||!confirm('Archive this deal? It will not return on refresh or version updates. You can restore from the deals header.'))return;
+  const archived=getArchivedDealIds();
+  if(!archived.includes(_editDealId))archived.push(_editDealId);
+  saveArchivedDealIds(archived);
   _deals=_deals.filter(d=>d.id!==_editDealId);
-  saveDeals();closeDealModal();renderDeals();
+  saveDeals();closeDealModal();renderDeals();renderArchivedInfo();
+}
+
+function restoreArchivedDeals(){
+  const n=getArchivedDealIds().length;
+  if(!n)return;
+  if(!confirm(`Restore ${n} archived deal${n>1?'s':''}? They will reappear on next load.`))return;
+  saveArchivedDealIds([]);
+  loadDeals();
 }
 </script>
 </body>
