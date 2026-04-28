@@ -129,6 +129,24 @@
   .lock-banner{padding:20px 24px;background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(245,158,11,0.04));border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-lg);margin-top:18px;font-size:.9rem;color:var(--text);line-height:1.6}
   .lock-banner strong{color:#B45309;font-weight:700}
 
+  /* Comparison Grid */
+  .compare-grid{display:grid;grid-template-columns:1fr;gap:14px;margin:24px 0}
+  @media(min-width:640px){.compare-grid{grid-template-columns:1fr 1fr}}
+  .compare-card{padding:22px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
+  .compare-tag{display:inline-block;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:3px 9px;border-radius:5px;margin-bottom:10px;background:rgba(245,158,11,0.12);color:#B45309}
+  .compare-name{font-weight:800;font-size:1rem;margin-bottom:4px;color:var(--text);letter-spacing:-.01em}
+  .compare-cost{font-size:.75rem;color:var(--text-3);font-weight:700;margin-bottom:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.02em}
+  .compare-desc{font-size:.85rem;color:var(--text-2);line-height:1.6;margin-bottom:14px}
+  .compare-flaw{font-size:.82rem;color:#7F1D1D;line-height:1.55;padding-top:12px;border-top:1px solid var(--surface-2);font-weight:500}
+  .compare-flaw strong{color:#7F1D1D;font-weight:800;display:block;margin-bottom:3px;text-transform:uppercase;font-size:.65rem;letter-spacing:.1em;color:#B91C1C}
+
+  .compare-bridge{margin:28px 0 6px;padding:26px 28px;background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(124,58,237,0.06));border:1px solid rgba(79,70,229,0.2);border-radius:var(--radius-lg)}
+  .compare-bridge .bridge-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);font-weight:800;margin-bottom:8px}
+  .compare-bridge h4{font-weight:800;font-size:1.1rem;color:var(--text);margin-bottom:12px;letter-spacing:-.01em}
+  .compare-bridge ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+  .compare-bridge li{font-size:.88rem;color:var(--text);line-height:1.6;padding-left:24px;position:relative}
+  .compare-bridge li::before{content:"✓";position:absolute;left:0;top:0;color:var(--accent);font-weight:800;font-size:.95rem}
+
   .tier-includes{display:grid;gap:14px;margin-top:24px}
   .tier-includes-card{padding:22px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg)}
   .tier-includes-card h4{font-weight:800;font-size:1rem;margin-bottom:6px;color:var(--text)}
@@ -550,7 +568,79 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 6: Pricing -->
 <section class="section">
-  <div class="sh-label">Section 7 · The investment</div>
+  <div class="sh-label">Section 7 · What you might be weighing this against</div>
+  <h2 class="sh-title">Five paths most superintendents consider. None of them are built for you.</h2>
+  <p class="sh-desc">Before we talk about pricing, here's the honest landscape. Each option below solves part of the picture and misses the rest. Read carefully — the common flaw is not cost. It's that none of them know your voice, your people, or how your week actually works.</p>
+
+  <div class="compare-grid">
+
+    <div class="compare-card">
+      <span class="compare-tag">Generic AI</span>
+      <div class="compare-name">Microsoft Copilot out-of-the-box</div>
+      <div class="compare-cost">~$30-50 per user / month</div>
+      <p class="compare-desc">The Copilot license bundled with M365. You turn it on and it works. Drafts emails, summarizes meetings, helps in Word and Excel.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>Same Copilot every superintendent in America gets. No voice profile, no people files, no grounding in your district. Powerful, but it has no idea who you are or what your Tuesday actually looks like.</div>
+    </div>
+
+    <div class="compare-card">
+      <span class="compare-tag">Built for IT, not you</span>
+      <div class="compare-name">Microsoft partner / IT consulting firm</div>
+      <div class="compare-cost">~$5,000-15,000 setup + $1,500-5,000 / month</div>
+      <p class="compare-desc">Big-firm Copilot deployments. Templates pulled from a playbook used across hundreds of corporate clients.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>Built to deploy Copilot at scale to IT departments, not to customize for one superintendent's actual workflow. Your engagement gets a junior consultant working from a template. They don't know what a Board agenda looks like.</div>
+    </div>
+
+    <div class="compare-card">
+      <span class="compare-tag">Built for classrooms</span>
+      <div class="compare-name">Education AI platforms (MagicSchool, SchoolAI, Khanmigo)</div>
+      <div class="compare-cost">~$10,000-50,000 / year district-wide</div>
+      <p class="compare-desc">AI tools designed for teachers and students. Lesson planning, rubric generation, student feedback.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>Wrong audience. Built for classroom workflows, not the executive office. Multi-tenant SaaS, which means your data lives on their servers. No board prep, no parent communications at the leadership level, no admin office workflows.</div>
+    </div>
+
+    <div class="compare-card">
+      <span class="compare-tag">Talk only, no system</span>
+      <div class="compare-name">Education leadership coaching (e.g. Breakthrough Coach style)</div>
+      <div class="compare-cost">~$5,000-20,000 / year</div>
+      <p class="compare-desc">Coaching programs that train you on practices, time-management habits, and leadership frameworks.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>Talk-based. No tools actually built for you. You leave the call inspired and motivated, then drown in your inbox Monday morning anyway. The thinking improves; the system doesn't.</div>
+    </div>
+
+    <div class="compare-card">
+      <span class="compare-tag">Free in cash, expensive in time</span>
+      <div class="compare-name">Build it yourself / hire a tech-savvy admin</div>
+      <div class="compare-cost">~200-400 hours of staff time</div>
+      <p class="compare-desc">Have someone smart on your team figure out Copilot from YouTube tutorials and configure things piecemeal in spare time.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>No deep AI fluency means surface-level configuration. Quality is whatever they cobbled together between their actual job. Falls apart the day they leave the district.</div>
+    </div>
+
+    <div class="compare-card">
+      <span class="compare-tag">Generic SaaS</span>
+      <div class="compare-name">ChatGPT Enterprise / Claude Teams</div>
+      <div class="compare-cost">~$25-60 per seat / month + minimum seat counts</div>
+      <p class="compare-desc">Enterprise-grade chatbots with privacy controls and a clean web interface.</p>
+      <div class="compare-flaw"><strong>The flaw</strong>Lives outside your work tools. No M365 integration. You're context-switching between Outlook, Teams, and a separate browser tab all day. You build every prompt yourself. Nothing is grounded in your actual context.</div>
+    </div>
+
+  </div>
+
+  <div class="compare-bridge">
+    <div class="bridge-label">What you get with Cabinet that none of them deliver</div>
+    <h4>Built for you, by name.</h4>
+    <ul>
+      <li>A voice profile extracted from a sixty-minute interview with you, not a generic prompt template</li>
+      <li>People files for your specific cabinet members, by name, with relationship history and context</li>
+      <li>Power Automate flows built around your actual sender and topic patterns, not someone else's playbook</li>
+      <li>Sovereign-by-design: your data never leaves your tenant, never lives on a third-party server</li>
+      <li>A Prompt Library you own outright, that builds and rebuilds your system on demand</li>
+      <li>Both the M365 layer (Cabinet) and the local layer (Jarvis) — two systems, one engagement</li>
+      <li>A consultant who knows education from the inside and AI from the source, not a vendor optimizing for scale</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="sh-label">Section 8 · The investment</div>
   <h2 class="sh-title">Three tiers. Founding rates locked through December 2026.</h2>
   <p class="sh-desc">Market rates shown for transparency. Your founding rate honors the original engagement and the case-study value of being the first superintendent in the system. Locked through December 2026, no surprises after.</p>
 
@@ -635,7 +725,7 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 7: Roles -->
 <section class="section-tight">
-  <div class="sh-label">Section 8 · Roles and responsibilities</div>
+  <div class="sh-label">Section 9 · Roles and responsibilities</div>
   <h2 class="sh-title">What each side brings.</h2>
   <div class="roles-grid">
     <div class="role-card brayan">
@@ -678,7 +768,7 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 8: Cadence -->
 <section class="section-tight">
-  <div class="sh-label">Section 9 · Communication cadence</div>
+  <div class="sh-label">Section 10 · Communication cadence</div>
   <h2 class="sh-title">When we talk and what gets shipped.</h2>
   <div class="cadence-table">
     <div class="cadence-row header">
@@ -721,7 +811,7 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 9: Metrics -->
 <section class="section-tight">
-  <div class="sh-label">Section 10 · How we know it's working</div>
+  <div class="sh-label">Section 11 · How we know it's working</div>
   <h2 class="sh-title">Three things we track monthly.</h2>
   <p class="sh-desc">Quantitative where possible. Qualitative where it matters most. Every metric ties back to a pain you named.</p>
   <div class="metric-grid">
@@ -745,7 +835,7 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 10: Boundaries + Risks -->
 <section class="section-tight">
-  <div class="sh-label">Section 11 · Honest boundaries</div>
+  <div class="sh-label">Section 12 · Honest boundaries</div>
   <h2 class="sh-title">What we don't do, and what could go wrong.</h2>
   <p class="sh-desc">Honest up front. You respect competence over hype, so here it is.</p>
 
@@ -769,14 +859,14 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 11: PD Reimbursement -->
 <section class="section-tight">
-  <div class="sh-label">Section 12 · PD reimbursement path</div>
+  <div class="sh-label">Section 13 · PD reimbursement path</div>
   <h2 class="sh-title">Offset the personal monthly cost.</h2>
   <p class="sh-desc">Most superintendent contracts include a Professional Development reimbursement allowance. Industry typical is around $4,000 per year. If your Woodstock contract has it, this engagement may qualify under "AI Leadership Coaching" or "Executive Professional Development" line items. I can invoice in whatever format your business office uses (PO-based, expense-reimbursement, vendor-direct). Even a $4,000 annual offset cuts your personal monthly cost by about $333. This is offered as a help, not a requirement. Question seven on the proposal opens the conversation.</p>
 </section>
 
 <!-- Section 12: Founding Terms -->
 <section class="section-tight">
-  <div class="sh-label">Section 13 · Founding member terms</div>
+  <div class="sh-label">Section 14 · Founding member terms</div>
   <h2 class="sh-title">The case-study deal, in writing.</h2>
   <p class="sh-desc">You are the foundation client. The deal is explicit. Both sides win when your system is undeniable.</p>
 
@@ -805,7 +895,7 @@ post a Teams notification in #cabinet channel
 
 <!-- Section 13: Next Steps -->
 <section class="section-tight">
-  <div class="sh-label">Section 14 · Next steps</div>
+  <div class="sh-label">Section 15 · Next steps</div>
   <h2 class="sh-title">From today to kickoff.</h2>
   <div class="steps">
     <div class="step"><div class="step-num">1</div><div><h4>Today · Read this proposal and answer seven questions</h4><p>License status, where your time actually goes, retirement timeline, headline outcome, reimbursement structure. About ten minutes to answer.</p></div></div>
