@@ -2539,7 +2539,7 @@ const DEFAULT_DEALS=[
   {id:'d17',name:'Alex',opp:'Full Operating Platform',value:'$3,000 + $300/mo',owner:'ryan',type:'side-project',stage:'built',next:'Send value stack: $3K setup / $300/mo. Alex asked about pricing April 27.',notes:'Care Center in Brazil. Physical assessments + personal training. Full platform live at alex.nextgenerationlearners.com. Bilingual EN/PT. Prefers text (Portuguese speaker). Chris intro. 30% probability. Built and live, value stack not yet sent -> moves to proposal once quote out.'},
   {id:'d18',name:'Nick',opp:'Message Platform',value:'$100 + $50/mo',owner:'ryan',type:'side-project',stage:'discovery',next:'Demo and pricing discussion.',notes:''},
   {id:'d19',name:'Mrs. Marino',opp:'OG Digital Platform (Phonics)',value:'$500 + $75/mo',owner:'ryan',type:'education',stage:'built',next:'Send demo link at marino.nextgenerationlearners.com + quote: $500 setup / $75/month.',notes:'Rachel Marino, Wooster School. Email: northforkboater@gmail.com. Full platform built: 20 lessons, audio, games, dictation, phoneme extensions. Built but demo + quote not yet sent -> moves to proposal once she sees it. Gateway to Wooster School license ($300-500/mo).'},
-  {id:'d33',name:'Business Professor',opp:'Interactive Case Study Platform (BUS 398)',value:'$2,500 + $200/mo',owner:'ryan',type:'education',stage:'built',next:'Monday demo at nextgenerationlearners.com/case-study. If she likes it, commits for fall semester.',notes:'8am business teacher. BUS 398 International Business. NovaBrew simulation with 5 AI personas. Platform built and deployed -> demo Monday -> moves to proposal after demo. If successful: published articles, university adoptions, recurring scenario add-ons at $500-750 each.'},
+  {id:'d33',name:'Business Professor',opp:'Interactive Case Study Platform (BUS 398)',value:'Free (Door Opener)',owner:'ryan',type:'education',stage:'discovery',next:'Monday demo. Get feedback, iterate. She becomes the champion who refers to department.',notes:'8am business teacher. BUS 398 International Business. Free build to get in the door. She runs 4 businesses (Rosman play). Platform built at nextgenerationlearners.com/case-study. Money comes from department referrals and university adoption, not from her. If successful: published articles, professor referrals, department deals.'},
   {id:'d20',name:'Eiker Jacome',opp:'Ad Tracking Tool',value:'$600 + $100/mo',owner:'ryan',type:'side-project',stage:'lead',next:'Follow up on questions.',notes:'Instagram lead. Cannot scope until he answers follow-up questions.'},
   {id:'d21',name:'Maura (Chamber of Commerce)',opp:'AI Specialist for Leadership Program',value:'TBD',owner:'brayan',type:'networking',stage:'lead',next:'Follow up through Nelson. Monthly learner sessions + July B2B event at Danbury HS.',notes:'Expressed interest in AI specialist for leadership program. Largest B2B event in CT in July.'},
   {id:'d22',name:'Dr. Casimiro',opp:'Danbury Superintendent - District AI',value:'$10K+',owner:'brayan',type:'education',stage:'lead',next:'After Roche pilot, use his playbook: say "academy" 6 times, reference Zaleta, position under professional learning budgets.',notes:'Danbury Public Schools Superintendent. Roche gave the playbook to get in.'},
@@ -2574,7 +2574,7 @@ function renderArchivedInfo(){
 }
 
 function loadDeals(){
-  const DEALS_VERSION='2026-04-28-v6';
+  const DEALS_VERSION='2026-04-28-v7';
   const storedVersion=localStorage.getItem('ngl_deals_version');
   const stored=getDeals();
   if(!stored||storedVersion!==DEALS_VERSION){
