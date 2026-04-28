@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NGL Software | We Build Software That Works</title>
+  <meta name="description" content="Custom software solutions for businesses. We design and build websites, web apps, dashboards, and automation tools that solve real problems."/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root {
+      --bg: #06060e;
+      --bg-card: #0d0d1a;
+      --bg-card-hover: #12122a;
+      --border: rgba(255,255,255,0.06);
+      --border-hover: rgba(255,255,255,0.12);
+      --text: #e4e4f0;
+      --text-muted: #8888a4;
+      --text-dim: #55556a;
+      --violet: #8b5cf6;
+      --violet-light: #a78bfa;
+      --blue: #3b82f6;
+      --cyan: #06b6d4;
+      --green: #22c55e;
+      --orange: #f97316;
+      --pink: #ec4899;
+      --glow-violet: rgba(139,92,246,0.15);
+      --glow-blue: rgba(59,130,246,0.15);
+      --glow-cyan: rgba(6,182,212,0.12);
+      --gradient-main: linear-gradient(135deg, var(--violet), var(--blue), var(--cyan));
+      --gradient-warm: linear-gradient(135deg, var(--orange), var(--pink), var(--violet));
+      --radius: 8px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-2xl: 28px;
+    }
+
+    html { scroll-behavior: smooth }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    h1,h2,h3,h4,h5,.nav-brand,.btn,.section-label,.step-num {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+    }
+
+    a { text-decoration: none; color: inherit }
+    ul { list-style: none }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    h1,h2,h3,h4,h5 { font-weight: 700; line-height: 1.12; color: var(--text); }
+    h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); letter-spacing: -0.03em }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -0.02em }
+    h3 { font-size: 1.25rem }
+    h4 { font-size: 1.1rem }
+
+    .gradient-text {
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .section-desc { font-size: 1.05rem; color: var(--text-muted); max-width: 600px; line-height: 1.7; }
+
+    /* ── Buttons ── */
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .btn-primary {
+      background: var(--gradient-main);
+      color: #fff;
+      box-shadow: 0 4px 20px var(--glow-violet), 0 0 40px var(--glow-blue);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px var(--glow-violet), 0 0 80px var(--glow-blue);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-3px);
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--bg);
+    }
+    .btn-white:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px rgba(255,255,255,0.2);
+    }
+
+    /* ── Navigation ── */
+
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(6,6,14,0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    .nav.scrolled { background: rgba(6,6,14,0.9); box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+
+    .nav-brand { font-size: 1rem; font-weight: 700; }
+    .nav-brand span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-link { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); transition: all 0.3s; }
+    .nav-link:hover { color: var(--text); }
+
+    .nav-cta { padding: 10px 24px; font-size: 0.82rem; }
+
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 8px; }
+    .nav-toggle span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+
+    /* ── Hero ── */
+
+    .hero {
+      padding: 160px 0 120px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    #heroCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+    .hero h1 { margin-bottom: 24px; line-height: 1.05; }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-stat-label { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; }
+
+    /* ── Sections ── */
+
+    .section { padding: 100px 0; position: relative; }
+    .section-header { margin-bottom: 56px; }
+    .section-header.center { text-align: center; }
+    .section-header.center .section-desc { margin: 12px auto 0; }
+    .section-alt { background: rgba(255,255,255,0.015); }
+
+    /* ── Service Cards ── */
+
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gradient-main);
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .service-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 100px;
+      background: linear-gradient(180deg, var(--glow-violet), transparent);
+      opacity: 0;
+      transition: all 0.4s;
+    }
+
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139,92,246,0.3);
+      box-shadow: 0 20px 60px rgba(139,92,246,0.1), 0 0 40px rgba(59,130,246,0.05);
+    }
+    .service-card:hover::before { opacity: 1; }
+    .service-card:hover::after { opacity: 1; }
+
+    .service-icon {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .service-icon.violet { background: var(--glow-violet); }
+    .service-icon.blue { background: var(--glow-blue); }
+    .service-icon.cyan { background: var(--glow-cyan); }
+
+    .service-card h3 { margin-bottom: 10px; position: relative; z-index: 1; }
+    .service-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; position: relative; z-index: 1; }
+
+    .service-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; position: relative; z-index: 1; }
+    .service-tag {
+      padding: 5px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* ── Steps ── */
+
+    .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; position: relative; }
+
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 36px; left: 12%; right: 12%;
+      height: 2px;
+      background: var(--gradient-main);
+      opacity: 0.2;
+      z-index: 0;
+    }
+
+    .step-card { text-align: center; position: relative; z-index: 1; }
+
+    .step-num {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--gradient-main);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; font-weight: 700;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 30px var(--glow-violet), 0 0 60px var(--glow-blue);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 8px 30px var(--glow-violet), 0 0 60px var(--glow-blue); }
+      50% { box-shadow: 0 8px 40px rgba(139,92,246,0.3), 0 0 80px rgba(59,130,246,0.2); }
+    }
+
+    .step-card h4 { margin-bottom: 8px; }
+    .step-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Portfolio ── */
+
+    .portfolio-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+
+    .portfolio-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+    .portfolio-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--border-hover);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px var(--glow-violet);
+    }
+
+    .portfolio-card:nth-child(5) {
+      grid-column: 1 / -1;
+      max-width: 50%;
+      justify-self: center;
+    }
+
+    .portfolio-img {
+      width: 100%; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    .portfolio-img .mockup {
+      width: 85%; height: 75%;
+      background: rgba(255,255,255,0.06);
+      border-radius: 8px 8px 0 0;
+      position: relative;
+      margin-top: auto;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-bottom: none;
+      backdrop-filter: blur(4px);
+    }
+
+    .mockup-bar {
+      height: 24px;
+      background: rgba(255,255,255,0.04);
+      display: flex; align-items: center;
+      padding: 0 10px; gap: 5px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .mockup-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .mockup-dot:nth-child(1) { background: #ef4444; }
+    .mockup-dot:nth-child(2) { background: #eab308; }
+    .mockup-dot:nth-child(3) { background: #22c55e; }
+
+    .mockup-content { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .mockup-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); }
+    .mockup-line.short { width: 40% }
+    .mockup-line.med { width: 65% }
+    .mockup-line.long { width: 85% }
+    .mockup-line.accent { background: rgba(139,92,246,0.5); }
+    .mockup-line.blue-accent { background: rgba(59,130,246,0.5); }
+    .mockup-line.cyan-accent { background: rgba(6,182,212,0.5); }
+    .mockup-line.green-accent { background: rgba(34,197,94,0.5); }
+    .mockup-line.orange-accent { background: rgba(249,115,22,0.5); }
+
+    .mockup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 12px 12px; }
+    .mockup-card { height: 28px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+
+    .mockup-chart { display: flex; align-items: flex-end; gap: 4px; padding: 0 12px 12px; height: 50px; }
+    .mockup-chart-bar { flex: 1; border-radius: 2px 2px 0 0; }
+
+    .portfolio-img.dark-grad { background: linear-gradient(135deg, #1a1a2e, #0f172a); }
+    .portfolio-img.violet-grad { background: linear-gradient(135deg, #4c1d95, var(--violet)); }
+    .portfolio-img.blue-grad { background: linear-gradient(135deg, #1e3a5f, var(--blue)); }
+    .portfolio-img.cyan-grad { background: linear-gradient(135deg, #0e4d5c, var(--cyan)); }
+    .portfolio-img.green-grad { background: linear-gradient(135deg, #065f46, var(--green)); }
+    .portfolio-img.orange-grad { background: linear-gradient(135deg, #9a3412, var(--orange)); }
+
+    .portfolio-badge {
+      position: absolute;
+      top: 16px; left: 16px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.68rem; font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .portfolio-body { padding: 28px; }
+    .portfolio-type {
+      font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+    .portfolio-type.violet { color: var(--violet-light); }
+    .portfolio-type.blue { color: var(--blue); }
+    .portfolio-type.cyan { color: var(--cyan); }
+    .portfolio-type.green { color: var(--green); }
+    .portfolio-type.orange { color: var(--orange); }
+
+    .portfolio-card h3 { margin-bottom: 8px; font-size: 1.15rem; }
+    .portfolio-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── Why Us ── */
+
+    .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+    .why-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    .why-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(139,92,246,0.3);
+      box-shadow: 0 20px 60px rgba(139,92,246,0.08);
+    }
+
+    .why-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 20px;
+    }
+
+    .why-icon.v { background: var(--glow-violet); }
+    .why-icon.b { background: var(--glow-blue); }
+    .why-icon.c { background: var(--glow-cyan); }
+
+    .why-card h3 { margin-bottom: 8px; }
+    .why-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── About ── */
+
+    .about-section { position: relative; overflow: hidden; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .about-photo-wrap {
+      position: relative;
+    }
+    .about-photo-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: var(--radius-2xl);
+      background: var(--gradient-main);
+      opacity: 0.4;
+      filter: blur(20px);
+      z-index: 0;
+    }
+    .about-photo {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      border-radius: var(--radius-2xl);
+      border: 2px solid var(--border);
+      display: block;
+    }
+    .about-text h2 { margin-bottom: 16px; }
+    .about-text p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .about-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .about-stat-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-stat-lbl {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+    .about-links {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .about-links a {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      transition: all 0.2s;
+    }
+    .about-links a:hover {
+      border-color: var(--violet);
+      color: var(--violet-light);
+      background: var(--glow-violet);
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; text-align: center; }
+      .about-photo-wrap { max-width: 240px; margin: 0 auto; }
+      .about-stats { justify-content: center; }
+      .about-links { justify-content: center; }
+    }
+
+    /* ── CTA Banner ── */
+
+    .cta-section { padding: 100px 0; }
+
+    .cta-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 80px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-2xl);
+      padding: 1px;
+      background: var(--gradient-main);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.3;
+    }
+
+    .cta-banner::after {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, var(--glow-violet), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .cta-banner h2 { position: relative; z-index: 1; margin-bottom: 12px; }
+    .cta-banner p { color: var(--text-muted); max-width: 500px; margin: 0 auto 36px; font-size: 1.05rem; position: relative; z-index: 1; }
+    .cta-banner .btn-row { position: relative; z-index: 1; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Contact ── */
+
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+
+    .contact-info h2 { margin-bottom: 16px; }
+    .contact-info > p { color: var(--text-muted); line-height: 1.8; margin-bottom: 32px; }
+
+    .contact-detail {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-detail:last-child { border-bottom: none; }
+
+    .contact-detail-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius);
+      background: var(--glow-violet);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; flex-shrink: 0;
+    }
+
+    .contact-detail-text { font-size: 0.9rem; }
+    .contact-detail-text strong { display: block; color: var(--text-muted); font-size: 0.78rem; margin-bottom: 2px; }
+
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .form-card h3 { margin-bottom: 4px; }
+    .form-card > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 28px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: all 0.3s;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--violet);
+      box-shadow: 0 0 0 3px var(--glow-violet);
+    }
+
+    .form-group select { color: var(--text-muted); }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-submit { margin-top: 8px; }
+
+    /* ── Footer ── */
+
+    .footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 64px 0 32px;
+    }
+
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+
+    .footer-brand-text { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+    .footer-brand-text span { background: var(--gradient-main); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .footer-brand p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.7; max-width: 280px; }
+
+    .footer h4 { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a { font-size: 0.85rem; color: var(--text-dim); transition: all 0.3s; }
+    .footer-links a:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--text-dim);
+    }
+
+    /* ── Animations ── */
+
+    .animate-in {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .animate-in.visible { opacity: 1; transform: translateY(0); }
+
+    .animate-in.from-left { transform: translateX(-40px) translateY(0); }
+    .animate-in.from-left.visible { transform: translateX(0); }
+
+    .animate-in.from-right { transform: translateX(40px) translateY(0); }
+    .animate-in.from-right.visible { transform: translateX(0); }
+
+    .animate-in.scale-in { transform: scale(0.92); }
+    .animate-in.scale-in.visible { transform: scale(1); }
+
+    .stagger-1 { transition-delay: 0.05s; }
+    .stagger-2 { transition-delay: 0.1s; }
+    .stagger-3 { transition-delay: 0.15s; }
+    .stagger-4 { transition-delay: 0.2s; }
+    .stagger-5 { transition-delay: 0.25s; }
+    .stagger-6 { transition-delay: 0.3s; }
+
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .hero h1 .shimmer {
+      background: linear-gradient(90deg, var(--violet-light) 0%, #fff 40%, var(--cyan) 60%, var(--violet-light) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 968px) {
+      .nav-links { display: none; }
+      .nav-toggle { display: flex; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 72px; left: 0; right: 0;
+        background: rgba(6,6,14,0.95);
+        backdrop-filter: blur(20px);
+        padding: 24px; gap: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .services-grid { grid-template-columns: 1fr; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .portfolio-card:nth-child(5) { max-width: 100%; }
+      .why-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr 1fr; }
+      .steps-grid::before { display: none; }
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .cta-banner { padding: 48px 24px; }
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 120px 0 70px; }
+      .section { padding: 70px 0; }
+      .hero-btns { flex-direction: column; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav" id="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">NGL <span>Software</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#work" class="nav-link">Work</a>
+        <a href="#why" class="nav-link">Why Us</a>
+        <a href="#contact" class="btn btn-primary nav-cta">Start a Project</a>
+      </div>
+      <button class="nav-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="container">
+      <div class="hero-content">
+        <div class="section-label">Software Solutions</div>
+        <h1>We Build <span class="shimmer">Software That Works</span> for Your Business</h1>
+        <p class="hero-sub">You tell us the problem. We build the solution. Websites, apps, dashboards, automation. No bloated agencies, no six-month timelines. Just software that does what you need it to do.</p>
+        <div class="hero-btns">
+          <a href="#contact" class="btn btn-primary">Start a Project</a>
+          <a href="#work" class="btn btn-ghost">See Our Work</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-num" data-count="2" data-suffix=" Weeks">0</div>
+            <div class="hero-stat-label">Average Time to Launch</div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-count="100" data-suffix="%">0</div>
+            <div class="hero-stat-label">Custom Built</div>
+          </div>
+          <div>
+            <div class="hero-stat-num" data-prefix="$" data-count="0" data-suffix="">$0</div>
+            <div class="hero-stat-label">Until You're Happy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What We Build -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header center animate-in">
+        <div class="section-label">What We Build</div>
+        <h2>Software That Solves <span class="gradient-text">Real Problems</span></h2>
+        <p class="section-desc">Every business has something that could run smoother, look better, or work faster. We figure out what that is and build it.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card animate-in stagger-1">
+          <div class="service-icon violet">&#x1F310;</div>
+          <h3>Websites</h3>
+          <p>Custom sites that look professional and actually convert. Not templates. Built from scratch to match your brand and your goals.</p>
+          <div class="service-tags">
+            <span class="service-tag">Landing Pages</span>
+            <span class="service-tag">Business Sites</span>
+            <span class="service-tag">Portfolios</span>
+            <span class="service-tag">SEO</span>
+          </div>
+        </div>
+        <div class="service-card animate-in stagger-2">
+          <div class="service-icon blue">&#x1F4CA;</div>
+          <h3>Dashboards &amp; Tools</h3>
+          <p>Track your KPIs, manage your pipeline, see your numbers in real time. We build internal tools that make your business easier to run.</p>
+          <div class="service-tags">
+            <span class="service-tag">KPI Tracking</span>
+            <span class="service-tag">CRM Tools</span>
+            <span class="service-tag">Analytics</span>
+            <span class="service-tag">Reporting</span>
+          </div>
+        </div>
+        <div class="service-card animate-in stagger-3">
+          <div class="service-icon cyan">&#x26A1;</div>
+          <h3>Apps &amp; Automation</h3>
+          <p>Web apps, workflow automation, AI-powered tools. If there's a manual process eating your time, we can probably automate it.</p>
+          <div class="service-tags">
+            <span class="service-tag">Web Apps</span>
+            <span class="service-tag">Automation</span>
+            <span class="service-tag">AI Tools</span>
+            <span class="service-tag">Integrations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header center animate-in">
+        <div class="section-label">How It Works</div>
+        <h2>From Idea to Launch. <span class="gradient-text">Fast.</span></h2>
+        <p class="section-desc">No drawn-out discovery phases. No 40-page proposals. We talk, we scope, we build, you launch.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card animate-in stagger-1">
+          <div class="step-num">1</div>
+          <h4>Discovery Call</h4>
+          <p>15-minute conversation. You tell us what you need, we tell you if we can build it and what it'll take.</p>
+        </div>
+        <div class="step-card animate-in stagger-2">
+          <div class="step-num">2</div>
+          <h4>Scope &amp; Quote</h4>
+          <p>We send you a clear scope with a flat price. No hourly billing, no surprise invoices. You know the cost upfront.</p>
+        </div>
+        <div class="step-card animate-in stagger-3">
+          <div class="step-num">3</div>
+          <h4>Build</h4>
+          <p>We build it fast. You get progress updates and a working preview before anything goes live.</p>
+        </div>
+        <div class="step-card animate-in stagger-4">
+          <div class="step-num">4</div>
+          <h4>Launch</h4>
+          <p>We deploy, you review, we refine. You don't pay until you're happy with the result.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio -->
+  <section class="section" id="work">
+    <div class="container">
+      <div class="section-header center animate-in">
+        <div class="section-label">Our Work</div>
+        <h2>Built. Shipped. <span class="gradient-text">Running.</span></h2>
+        <p class="section-desc">Real projects for real businesses. Here's some of what we've built recently.</p>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-card animate-in stagger-1">
+          <div class="portfolio-img dark-grad">
+            <div class="mockup">
+              <div class="mockup-bar"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div></div>
+              <div class="mockup-content">
+                <div class="mockup-line short accent"></div>
+                <div class="mockup-line long"></div>
+                <div class="mockup-line med"></div>
+              </div>
+              <div class="mockup-grid">
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+              </div>
+            </div>
+            <span class="portfolio-badge">Live</span>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-type violet">Website</div>
+            <h3>Real Estate Investment Platform</h3>
+            <p>Full 4-page website for a real estate company. Custom design, investor portal, property listings, and lead capture forms.</p>
+          </div>
+        </div>
+        <div class="portfolio-card animate-in stagger-2">
+          <div class="portfolio-img blue-grad">
+            <div class="mockup">
+              <div class="mockup-bar"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div></div>
+              <div class="mockup-content">
+                <div class="mockup-line short blue-accent"></div>
+                <div class="mockup-line med"></div>
+              </div>
+              <div class="mockup-chart">
+                <div class="mockup-chart-bar" style="height:40%;background:rgba(59,130,246,0.4)"></div>
+                <div class="mockup-chart-bar" style="height:65%;background:rgba(59,130,246,0.5)"></div>
+                <div class="mockup-chart-bar" style="height:45%;background:rgba(59,130,246,0.4)"></div>
+                <div class="mockup-chart-bar" style="height:80%;background:rgba(59,130,246,0.6)"></div>
+                <div class="mockup-chart-bar" style="height:55%;background:rgba(59,130,246,0.4)"></div>
+                <div class="mockup-chart-bar" style="height:90%;background:rgba(59,130,246,0.6)"></div>
+                <div class="mockup-chart-bar" style="height:70%;background:rgba(59,130,246,0.5)"></div>
+              </div>
+            </div>
+            <span class="portfolio-badge">Live</span>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-type blue">Dashboard</div>
+            <h3>Sales KPI Tracker</h3>
+            <p>Automated KPI dashboard for a wholesaling business. Webhook integrations, CSV imports, and real-time performance tracking.</p>
+          </div>
+        </div>
+        <div class="portfolio-card animate-in stagger-3">
+          <div class="portfolio-img green-grad">
+            <div class="mockup">
+              <div class="mockup-bar"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div></div>
+              <div class="mockup-content">
+                <div class="mockup-line short green-accent"></div>
+                <div class="mockup-line long"></div>
+              </div>
+              <div class="mockup-grid">
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+              </div>
+              <div class="mockup-content" style="padding-top:0;">
+                <div class="mockup-line med"></div>
+                <div class="mockup-line short"></div>
+              </div>
+            </div>
+            <span class="portfolio-badge">Live</span>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-type green">Platform</div>
+            <h3>Care Center Operating System</h3>
+            <p>Full client management platform for a fitness care center. Scheduling, subscriptions, session tracking, WhatsApp automation, and revenue analytics.</p>
+          </div>
+        </div>
+        <div class="portfolio-card animate-in stagger-4">
+          <div class="portfolio-img cyan-grad">
+            <div class="mockup">
+              <div class="mockup-bar"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div></div>
+              <div class="mockup-content">
+                <div class="mockup-line short cyan-accent"></div>
+                <div class="mockup-line long"></div>
+                <div class="mockup-line med"></div>
+              </div>
+              <div class="mockup-grid">
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+                <div class="mockup-card"></div>
+              </div>
+            </div>
+            <span class="portfolio-badge">In Development</span>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-type cyan">Web App</div>
+            <h3>Coaching Platform</h3>
+            <p>Client management platform for professional coaches. Session scheduling, progress tracking, and client communication tools.</p>
+          </div>
+        </div>
+        <div class="portfolio-card animate-in stagger-5">
+          <div class="portfolio-img orange-grad">
+            <div class="mockup">
+              <div class="mockup-bar"><div class="mockup-dot"></div><div class="mockup-dot"></div><div class="mockup-dot"></div></div>
+              <div class="mockup-content">
+                <div class="mockup-line short orange-accent"></div>
+                <div class="mockup-line med"></div>
+              </div>
+              <div class="mockup-chart">
+                <div class="mockup-chart-bar" style="height:60%;background:rgba(249,115,22,0.4)"></div>
+                <div class="mockup-chart-bar" style="height:35%;background:rgba(249,115,22,0.3)"></div>
+                <div class="mockup-chart-bar" style="height:75%;background:rgba(249,115,22,0.5)"></div>
+                <div class="mockup-chart-bar" style="height:50%;background:rgba(249,115,22,0.4)"></div>
+                <div class="mockup-chart-bar" style="height:85%;background:rgba(249,115,22,0.5)"></div>
+              </div>
+            </div>
+            <span class="portfolio-badge">In Development</span>
+          </div>
+          <div class="portfolio-body">
+            <div class="portfolio-type orange">AI Tool</div>
+            <h3>Ad Performance Tracker</h3>
+            <p>Custom ad tracking and attribution tool. Monitors campaign performance across platforms with AI-powered insights.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Work With Us -->
+  <section class="section section-alt" id="why">
+    <div class="container">
+      <div class="section-header center animate-in">
+        <div class="section-label">Why Us</div>
+        <h2>Not Your <span class="gradient-text">Typical Agency</span></h2>
+        <p class="section-desc">We're builders, not account managers. You work directly with the people writing the code.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card animate-in stagger-1">
+          <div class="why-icon v">&#x1F3AF;</div>
+          <h3>Direct Access</h3>
+          <p>No project managers in between. You talk directly to the person building your product. Questions get answered in hours, not days.</p>
+        </div>
+        <div class="why-card animate-in stagger-2">
+          <div class="why-icon b">&#x26A1;</div>
+          <h3>Fast Turnaround</h3>
+          <p>Most projects launch in 1-3 weeks. We don't pad timelines. If it can be built in a week, we'll tell you that.</p>
+        </div>
+        <div class="why-card animate-in stagger-3">
+          <div class="why-icon c">&#x1F4B0;</div>
+          <h3>Flat Pricing</h3>
+          <p>You get a price before we start. That's the price you pay. No scope creep charges, no surprise bills at the end.</p>
+        </div>
+        <div class="why-card animate-in stagger-4">
+          <div class="why-icon v">&#x1F527;</div>
+          <h3>You Own Everything</h3>
+          <p>The code, the design, the hosting. It's yours. We don't hold your business hostage with proprietary platforms.</p>
+        </div>
+        <div class="why-card animate-in stagger-5">
+          <div class="why-icon b">&#x1F916;</div>
+          <h3>AI-Native</h3>
+          <p>We use AI to move faster and build smarter. That means better software in less time, at a fraction of what traditional agencies charge.</p>
+        </div>
+        <div class="why-card animate-in stagger-6">
+          <div class="why-icon c">&#x1F91D;</div>
+          <h3>Ongoing Support</h3>
+          <p>After launch, we don't disappear. Monthly maintenance plans keep your software updated and running smoothly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <div class="about-grid animate-in">
+        <div class="about-photo-wrap">
+          <img src="img/ryan.png" alt="Ryan Vincent" class="about-photo"/>
+        </div>
+        <div class="about-text">
+          <div class="section-label">Who's Behind This</div>
+          <h2>Ryan <span class="gradient-text">Vincent</span></h2>
+          <p>I'm a software developer who builds things that actually work. Websites, platforms, dashboards, automation tools. If it runs on the internet and solves a real problem, I can build it.</p>
+          <p>I started by running AI education programs at libraries and schools across Westchester and Connecticut. That work taught me what real users need: software that's simple, fast, and doesn't get in the way. Now I take that same approach to every project I build for businesses.</p>
+          <p>When you work with me, you're talking directly to the person writing the code. No middlemen, no account managers, no getting passed around. I'll tell you what it costs, how long it takes, and then I'll build it.</p>
+          <div class="about-stats">
+            <div>
+              <div class="about-stat-val">20+</div>
+              <div class="about-stat-lbl">Projects Built</div>
+            </div>
+            <div>
+              <div class="about-stat-val">1-3 wk</div>
+              <div class="about-stat-lbl">Avg Delivery</div>
+            </div>
+            <div>
+              <div class="about-stat-val">100%</div>
+              <div class="about-stat-lbl">You Own the Code</div>
+            </div>
+          </div>
+          <div class="about-links">
+            <a href="mailto:ryanvincent@nextgenerationlearners.com">&#9993; Email Me</a>
+            <a href="#contact">&#128172; Start a Project</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-banner animate-in scale-in">
+        <h2>Got a Project in Mind?</h2>
+        <p>Tell us what you're trying to build. We'll tell you how fast we can get it done and what it'll cost. No commitment, no pressure.</p>
+        <div class="btn-row">
+          <a href="#contact" class="btn btn-primary">Start a Project</a>
+          <a href="mailto:ryanvincent@nextgenerationlearners.com" class="btn btn-ghost">Send Us an Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section section-alt" id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info animate-in from-left">
+          <div class="section-label">Get Started</div>
+          <h2>Let's Build Something</h2>
+          <p>Fill out the form and we'll get back to you within 24 hours. Or just send us an email directly. Either way, we'll keep it short and figure out if we're a good fit.</p>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">&#x2709;</div>
+            <div class="contact-detail-text">
+              <strong>Email</strong>
+              ryanvincent@nextgenerationlearners.com
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">&#x23F1;</div>
+            <div class="contact-detail-text">
+              <strong>Response Time</strong>
+              Within 24 hours
+            </div>
+          </div>
+          <div class="contact-detail">
+            <div class="contact-detail-icon">&#x1F4CD;</div>
+            <div class="contact-detail-text">
+              <strong>Based In</strong>
+              Connecticut, USA
+            </div>
+          </div>
+        </div>
+        <div class="form-card animate-in from-right">
+          <h3>Tell Us About Your Project</h3>
+          <p>The more detail, the faster we can scope it.</p>
+          <form action="https://formsubmit.co/ryanvincent@nextgenerationlearners.com" method="POST">
+            <input type="hidden" name="_subject" value="New Project Inquiry from NGL Software"/>
+            <input type="hidden" name="_captcha" value="false"/>
+            <input type="hidden" name="_next" value="https://www.nextgenerationlearners.com/software"/>
+            <input type="text" name="_honey" style="display:none"/>
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" name="name" placeholder="John Smith" required/>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="john@company.com" required/>
+              </div>
+              <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" name="business" placeholder="Your company"/>
+              </div>
+              <div class="form-group">
+                <label>Project Type</label>
+                <select name="project_type">
+                  <option value="">Select one</option>
+                  <option>Website</option>
+                  <option>Web App</option>
+                  <option>Dashboard / Tool</option>
+                  <option>Automation</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label>Tell Us More</label>
+                <textarea name="message" placeholder="What are you trying to build? What problem does it solve? Any specific features in mind?"></textarea>
+              </div>
+              <div class="form-group full form-submit">
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Message</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-text">NGL <span>Software</span></div>
+          <p>Custom software solutions for businesses. Websites, apps, dashboards, and automation tools. Built in Connecticut.</p>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul class="footer-links">
+            <li><a href="#services">Websites</a></li>
+            <li><a href="#services">Dashboards &amp; Tools</a></li>
+            <li><a href="#services">Apps &amp; Automation</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul class="footer-links">
+            <li><a href="#work">Our Work</a></li>
+            <li><a href="#why">Why Us</a></li>
+            <li><a href="#contact">Start a Project</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:ryanvincent@nextgenerationlearners.com">Email Us</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 NGL Software. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    function animateCounters() {
+      document.querySelectorAll('.hero-stat-num[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const duration = 1500;
+        const start = performance.now();
+
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+          el.textContent = prefix + current + suffix;
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      });
+    }
+
+    const heroObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounters();
+          heroObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) heroObserver.observe(statsEl);
+
+    // NGL Software — Whoosh Text Animation
+    (function() {
+      const canvas = document.getElementById('heroCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h, centerX, centerY, radius;
+      let mouse = { x: -1000, y: -1000 };
+
+      const NUM_POINTS = 400;
+      const points = [];
+      let textTargets = [];
+      let phase = 'scatter'; // scatter -> whoosh -> text -> breathe
+      let phaseStart = 0;
+      const SCATTER_DURATION = 1200;
+      const WHOOSH_DURATION = 1800;
+      const HOLD_DURATION = 3000;
+      const DISPERSE_DURATION = 1500;
+      let startTime = 0;
+      let textPairs = [];
+
+      function resize() {
+        const hero = canvas.parentElement;
+        w = canvas.width = hero.offsetWidth;
+        h = canvas.height = hero.offsetHeight;
+        centerX = w * 0.5;
+        centerY = h * 0.45;
+        radius = Math.min(w, h) * 0.32;
+        textTargets = sampleText();
+        assignTargets();
+      }
+
+      function sampleText() {
+        const offscreen = document.createElement('canvas');
+        const octx = offscreen.getContext('2d');
+        offscreen.width = w;
+        offscreen.height = h;
+
+        const fontSize = Math.min(w * 0.1, 120);
+        octx.font = `900 ${fontSize}px 'Space Grotesk', -apple-system, sans-serif`;
+        octx.fillStyle = '#fff';
+        octx.textAlign = 'center';
+        octx.textBaseline = 'middle';
+        octx.fillText('NGL Software', w * 0.5, h * 0.45);
+
+        const imageData = octx.getImageData(0, 0, w, h);
+        const pixels = imageData.data;
+        const samples = [];
+        const step = Math.max(3, Math.floor(Math.sqrt(w * h / 8000)));
+
+        for (let y = 0; y < h; y += step) {
+          for (let x = 0; x < w; x += step) {
+            const i = (y * w + x) * 4;
+            if (pixels[i + 3] > 128) {
+              samples.push({ x, y });
+            }
+          }
+        }
+
+        // Shuffle and pick NUM_POINTS
+        for (let i = samples.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [samples[i], samples[j]] = [samples[j], samples[i]];
+        }
+        return samples.slice(0, NUM_POINTS);
+      }
+
+      function assignTargets() {
+        // Match each point to nearest available text target
+        const used = new Set();
+        for (const p of points) {
+          let bestIdx = 0, bestDist = Infinity;
+          for (let j = 0; j < textTargets.length; j++) {
+            if (used.has(j)) continue;
+            const dx = p.scatterX - textTargets[j].x;
+            const dy = p.scatterY - textTargets[j].y;
+            const d = dx * dx + dy * dy;
+            if (d < bestDist) { bestDist = d; bestIdx = j; }
+          }
+          used.add(bestIdx);
+          if (textTargets[bestIdx]) {
+            p.tx = textTargets[bestIdx].x;
+            p.ty = textTargets[bestIdx].y;
+          } else {
+            p.tx = centerX + (Math.random() - 0.5) * w * 0.8;
+            p.ty = centerY + (Math.random() - 0.5) * h * 0.5;
+          }
+        }
+
+        // Build text connection pairs
+        textPairs = [];
+        const connDist = Math.min(w, h) * 0.04;
+        for (let i = 0; i < points.length; i++) {
+          for (let j = i + 1; j < points.length; j++) {
+            const dx = points[i].tx - points[j].tx;
+            const dy = points[i].ty - points[j].ty;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < connDist) {
+              textPairs.push([i, j, d]);
+            }
+          }
+        }
+      }
+
+      // Initialize points scattered across the canvas
+      for (let i = 0; i < NUM_POINTS; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 0.5 + 0.5;
+        points.push({
+          scatterX: 0, scatterY: 0,
+          sx: 0, sy: 0,
+          prevX: 0, prevY: 0,
+          tx: 0, ty: 0,
+          disperseX: 0, disperseY: 0,
+          angle,
+          dist,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+          size: Math.random() * 1.5 + 0.8,
+          phase: Math.random() * Math.PI * 2,
+          hue: [260, 220, 185][Math.floor(Math.random() * 3)],
+          delay: Math.random() * 0.4,
+        });
+      }
+
+      function initScatter() {
+        for (const p of points) {
+          p.scatterX = Math.random() * w;
+          p.scatterY = Math.random() * h;
+          p.sx = p.scatterX;
+          p.sy = p.scatterY;
+          p.prevX = p.sx;
+          p.prevY = p.sy;
+        }
+      }
+
+      function easeOutExpo(t) {
+        return t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+      }
+
+      function easeInBack(t) {
+        const c = 1.70158;
+        return (c + 1) * t * t * t - c * t * t;
+      }
+
+      function draw(time) {
+        if (!startTime) startTime = time;
+        const elapsed = time - startTime;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Background glow centered on text area
+        const coreGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius * 2);
+        coreGrad.addColorStop(0, 'rgba(139, 92, 246, 0.05)');
+        coreGrad.addColorStop(0.4, 'rgba(59, 130, 246, 0.025)');
+        coreGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = coreGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Phase transitions
+        if (phase === 'scatter' && elapsed > SCATTER_DURATION) {
+          phase = 'whoosh';
+          phaseStart = time;
+        } else if (phase === 'whoosh' && time - phaseStart > WHOOSH_DURATION) {
+          phase = 'text';
+          phaseStart = time;
+        } else if (phase === 'text' && time - phaseStart > HOLD_DURATION) {
+          phase = 'disperse';
+          phaseStart = time;
+          for (const p of points) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = radius * (1.5 + Math.random() * 2);
+            p.disperseX = centerX + Math.cos(angle) * dist;
+            p.disperseY = centerY + Math.sin(angle) * dist;
+          }
+        } else if (phase === 'disperse' && time - phaseStart > DISPERSE_DURATION) {
+          phase = 'sphere';
+          phaseStart = time;
+        }
+
+        // Scatter phase: dots float randomly
+        if (phase === 'scatter') {
+          for (const p of points) {
+            p.scatterX += p.vx;
+            p.scatterY += p.vy;
+            if (p.scatterX < 0 || p.scatterX > w) p.vx *= -1;
+            if (p.scatterY < 0 || p.scatterY > h) p.vy *= -1;
+            p.prevX = p.sx;
+            p.prevY = p.sy;
+            p.sx = p.scatterX;
+            p.sy = p.scatterY;
+          }
+        }
+
+        // Whoosh phase: dots fly to text positions
+        if (phase === 'whoosh') {
+          const phaseElapsed = time - phaseStart;
+          for (const p of points) {
+            const delay = p.delay * WHOOSH_DURATION * 0.5;
+            const t = Math.max(0, Math.min(1, (phaseElapsed - delay) / (WHOOSH_DURATION * 0.6)));
+            const e = easeOutExpo(t);
+            p.prevX = p.sx;
+            p.prevY = p.sy;
+            p.sx = p.scatterX + (p.tx - p.scatterX) * e;
+            p.sy = p.scatterY + (p.ty - p.scatterY) * e;
+          }
+        }
+
+        // Text phase: dots hold position with subtle breathing
+        if (phase === 'text') {
+          for (const p of points) {
+            const breathe = Math.sin(time * 0.002 + p.phase) * 1.5;
+            p.prevX = p.sx;
+            p.prevY = p.sy;
+            p.sx = p.tx + breathe;
+            p.sy = p.ty + Math.cos(time * 0.0015 + p.phase) * 1;
+          }
+        }
+
+        // Disperse phase: dots fly outward
+        if (phase === 'disperse') {
+          const phaseElapsed = time - phaseStart;
+          for (const p of points) {
+            const t = Math.min(1, phaseElapsed / DISPERSE_DURATION);
+            const e = easeInBack(t);
+            p.prevX = p.sx;
+            p.prevY = p.sy;
+            p.sx = p.tx + (p.disperseX - p.tx) * e;
+            p.sy = p.ty + (p.disperseY - p.ty) * e;
+          }
+        }
+
+        // Sphere phase: dots orbit as the original sphere
+        if (phase === 'sphere') {
+          const phaseElapsed = time - phaseStart;
+          const rotSpeed = phaseElapsed * 0.0003;
+          const golden = Math.PI * (3 - Math.sqrt(5));
+          for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            const y = 1 - (i / (points.length - 1)) * 2;
+            const r = Math.sqrt(1 - y * y);
+            const theta = golden * i + rotSpeed;
+            const ox = Math.cos(theta) * r;
+            const oy = y;
+            const oz = Math.sin(theta) * r;
+
+            const breathe = 1 + Math.sin(time * 0.001 + p.phase) * 0.03;
+            const scale = 1 / (1 + oz * 0.3);
+
+            p.prevX = p.sx;
+            p.prevY = p.sy;
+            p.sx = centerX + ox * radius * scale * breathe;
+            p.sy = centerY + oy * radius * scale * breathe;
+            p.depth = oz;
+
+            // Mouse interaction in sphere mode
+            if (mouse.x > 0) {
+              const dx = p.sx - mouse.x;
+              const dy = p.sy - mouse.y;
+              const md = Math.sqrt(dx * dx + dy * dy);
+              if (md < 100) {
+                const push = (100 - md) * 0.3;
+                p.sx += (dx / md) * push;
+                p.sy += (dy / md) * push;
+              }
+            }
+          }
+        }
+
+        // Draw connections (during whoosh, text, and sphere phases)
+        if (phase === 'whoosh' || phase === 'text' || phase === 'disperse') {
+          const fadeIn = phase === 'whoosh' ? Math.min(1, (time - phaseStart) / WHOOSH_DURATION) : 1;
+          const fadeOut = phase === 'disperse' ? Math.max(0, 1 - (time - phaseStart) / (DISPERSE_DURATION * 0.5)) : 1;
+          const connAlpha = fadeIn * fadeOut;
+
+          for (const [i, j] of textPairs) {
+            const a = points[i], b = points[j];
+            const alpha = connAlpha * 0.12;
+            if (alpha < 0.01) continue;
+            ctx.beginPath();
+            ctx.moveTo(a.sx, a.sy);
+            ctx.lineTo(b.sx, b.sy);
+            const hue = (a.hue + b.hue) / 2;
+            ctx.strokeStyle = `hsla(${hue}, 70%, 65%, ${alpha})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+
+        // Sphere mode connections
+        if (phase === 'sphere') {
+          const golden = Math.PI * (3 - Math.sqrt(5));
+          for (let i = 0; i < points.length; i++) {
+            for (let j = i + 1; j < Math.min(i + 8, points.length); j++) {
+              const a = points[i], b = points[j];
+              const dx = a.sx - b.sx, dy = a.sy - b.sy;
+              const d = Math.sqrt(dx * dx + dy * dy);
+              if (d < 50) {
+                const alpha = (1 - d / 50) * 0.1;
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.lineTo(b.sx, b.sy);
+                ctx.strokeStyle = `hsla(${a.hue}, 70%, 65%, ${alpha})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        // Draw motion trails during whoosh
+        if (phase === 'whoosh') {
+          for (const p of points) {
+            const dx = p.sx - p.prevX;
+            const dy = p.sy - p.prevY;
+            const speed = Math.sqrt(dx * dx + dy * dy);
+            if (speed > 3) {
+              const trailLen = Math.min(speed * 2, 40);
+              const angle = Math.atan2(dy, dx);
+              ctx.beginPath();
+              ctx.moveTo(p.sx, p.sy);
+              ctx.lineTo(p.sx - Math.cos(angle) * trailLen, p.sy - Math.sin(angle) * trailLen);
+              ctx.strokeStyle = `hsla(${p.hue}, 85%, 70%, ${Math.min(0.4, speed * 0.02)})`;
+              ctx.lineWidth = p.size * 0.8;
+              ctx.lineCap = 'round';
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Draw dots
+        for (const p of points) {
+          const pulse = Math.sin(time * 0.003 + p.phase) * 0.3 + 0.7;
+          let alpha = pulse * 0.8;
+
+          // Fade in during scatter
+          if (phase === 'scatter') {
+            alpha *= Math.min(1, elapsed / 600);
+          }
+
+          // Brighter when in text form
+          if (phase === 'text') {
+            alpha = 0.85 + Math.sin(time * 0.004 + p.phase) * 0.15;
+          }
+
+          // Fade out during disperse
+          if (phase === 'disperse') {
+            alpha *= Math.max(0, 1 - (time - phaseStart) / DISPERSE_DURATION);
+          }
+
+          // Sphere mode depth-based alpha
+          if (phase === 'sphere') {
+            alpha = 0.2 + ((p.depth || 0) + 1) * 0.3;
+          }
+
+          const sz = p.size;
+
+          // Outer glow
+          ctx.beginPath();
+          ctx.arc(p.sx, p.sy, sz * 4, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, 80%, 65%, ${alpha * 0.06})`;
+          ctx.fill();
+
+          // Mid glow
+          ctx.beginPath();
+          ctx.arc(p.sx, p.sy, sz * 2, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, 75%, 65%, ${alpha * 0.15})`;
+          ctx.fill();
+
+          // Core
+          ctx.beginPath();
+          ctx.arc(p.sx, p.sy, sz, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, 80%, 75%, ${alpha})`;
+          ctx.fill();
+        }
+
+        // Whoosh shockwave flash
+        if (phase === 'whoosh') {
+          const t = (time - phaseStart) / WHOOSH_DURATION;
+          if (t < 0.3) {
+            const flashAlpha = (1 - t / 0.3) * 0.08;
+            const flashGrad = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius * 2 * (t / 0.3));
+            flashGrad.addColorStop(0, `rgba(139, 92, 246, ${flashAlpha})`);
+            flashGrad.addColorStop(0.5, `rgba(59, 130, 246, ${flashAlpha * 0.5})`);
+            flashGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = flashGrad;
+            ctx.fillRect(0, 0, w, h);
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+      canvas.addEventListener('mouseleave', () => { mouse.x = -1000; mouse.y = -1000; });
+
+      window.addEventListener('resize', () => { resize(); });
+
+      resize();
+      initScatter();
+      requestAnimationFrame(draw);
+    })();
+  </script>
+
+</body>
+</html>
