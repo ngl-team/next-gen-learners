@@ -201,10 +201,65 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 /* CHART CONTAINER */
 .chart-wrap{position:relative;height:220px;margin:12px 0}
 
-@media(max-width:768px){.two-col,.grid-2,.grid-3,.fw-grid{grid-template-columns:1fr}.hero h2{font-size:1.3rem}.hero{padding:20px}.container{padding:12px}.phase-bar{flex-wrap:nowrap;overflow-x:auto}}
+/* LOGIN */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{max-width:440px;width:100%;text-align:center}
+.login-box .logo-big{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#4f8cff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:white;margin:0 auto 20px}
+.login-box h2{font-size:1.5rem;font-weight:900;margin-bottom:4px}
+.login-box .sub{color:var(--dim);font-size:0.85rem;margin-bottom:28px}
+.login-roles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.role-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:24px 16px;cursor:pointer;transition:all 0.2s;text-align:center}
+.role-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.role-card.selected{border-color:var(--accent);background:rgba(79,140,255,0.08)}
+.role-card .role-icon{font-size:2.2rem;margin-bottom:10px}
+.role-card h4{font-size:0.95rem;font-weight:700;margin-bottom:4px}
+.role-card p{font-size:0.72rem;color:var(--dim)}
+.login-fields{margin-top:16px}
+.login-fields input{width:100%;background:var(--card2);border:2px solid var(--border);color:var(--text);padding:12px 16px;border-radius:10px;font-family:inherit;font-size:0.9rem;outline:none;margin-bottom:10px;text-align:center}
+.login-fields input:focus{border-color:var(--accent)}
+.login-fields input::placeholder{color:var(--dim)}
+.login-error{color:var(--red);font-size:0.8rem;margin-bottom:8px;min-height:20px}
+.login-btn{width:100%;padding:14px;background:var(--accent);border:none;color:white;border-radius:10px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.login-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+.login-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+
+.logout-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;border-radius:6px;font-family:inherit;font-size:0.7rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+@media(max-width:768px){.two-col,.grid-2,.grid-3,.fw-grid{grid-template-columns:1fr}.hero h2{font-size:1.3rem}.hero{padding:20px}.container{padding:12px}.phase-bar{flex-wrap:nowrap;overflow-x:auto}.login-roles{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="logo-big">NB</div>
+    <h2>NovaBrew International</h2>
+    <p class="sub">Case Study Simulation — BUS 398</p>
+    <div class="login-roles">
+      <div class="role-card" onclick="selectRole('student',this)">
+        <div class="role-icon">&#127891;</div>
+        <h4>Student</h4>
+        <p>Research, analyze, and build your recommendation</p>
+      </div>
+      <div class="role-card" onclick="selectRole('teacher',this)">
+        <div class="role-icon">&#128218;</div>
+        <h4>Professor</h4>
+        <p>View all student progress, rubrics, and analytics</p>
+      </div>
+    </div>
+    <div class="login-fields" id="loginFields" style="display:none">
+      <input id="loginName" type="text" placeholder="Enter your full name" />
+      <input id="loginPass" type="password" placeholder="Professor passcode" style="display:none" />
+      <div class="login-error" id="loginError"></div>
+      <button class="login-btn" onclick="doLogin()">Enter Simulation</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" style="display:none">
 
 <div class="topbar">
   <h1><span class="logo">NB</span> NovaBrew International</h1>
@@ -215,7 +270,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="nav-tab" onclick="goTab('strategy')">Strategy</button>
     <button class="nav-tab" onclick="goTab('professor')">Professor</button>
   </div>
-  <span class="course-badge">BUS 398 - International Business</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="course-badge" id="userBadge"></span>
+    <button class="logout-btn" onclick="doLogout()">Log Out</button>
+  </div>
 </div>
 
 <div class="container">
@@ -429,7 +487,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
-</div>
+</div><!-- end container -->
+</div><!-- end mainApp -->
 
 <script>
 // ─── DATA ───
@@ -734,6 +793,10 @@ function sendMessage(){
   addMsg('user',text);inp.value='';
   if(!questionsAsked[currentPersona.id])questionsAsked[currentPersona.id]=0;
   questionsAsked[currentPersona.id]++;localStorage.setItem('nb-questions',JSON.stringify(questionsAsked));
+  if(currentUser&&currentUser.role==='student'){
+    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
+    if(st){st.questions=Object.values(questionsAsked).reduce((a,b)=>a+b,0);st.personas=Object.keys(questionsAsked).length;localStorage.setItem('nb-students',JSON.stringify(students))}
+  }
   showTyping();
   setTimeout(()=>{hideTyping();const r=findResponse(text);const isSocratic=r.includes('push your thinking')||r.includes('be more specific')||r.includes('challenge you');addMsg('persona',r,currentPersona.name,isSocratic);updateSuggested(text)},800+Math.random()*1200);
 }
@@ -752,6 +815,10 @@ function saveFrameworks(){
   localStorage.setItem('nb-frameworks',JSON.stringify(frameworks));
   if(frameworks.swotS||frameworks.swotW||frameworks.swotO||frameworks.swotT)updateProgress('p7');
   if(frameworks.pesP||frameworks.pesE||frameworks.pesS)updateProgress('p8');
+  if(currentUser&&currentUser.role==='student'){
+    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
+    if(st){st.frameworks=(frameworks.swotS?1:0)+(frameworks.pesP?1:0)+(frameworks.p5sup?1:0);localStorage.setItem('nb-students',JSON.stringify(students))}
+  }
 }
 function loadFrameworks(){Object.entries(frameworks).forEach(([k,val])=>{const el=document.getElementById(k);if(el)el.value=val||''})}
 function v(id){return document.getElementById(id)?.value||''}
@@ -767,11 +834,13 @@ function submitRec(){
   const r=recommendation;
   if(!r.market||!r.entry||!r.whyMarket){document.getElementById('submitConfirm').innerHTML='<div style="color:var(--red);font-size:0.85rem;padding:10px">Please complete at least: Target Market, Why This Market, and Entry Strategy.</div>';return}
   updateProgress('p9');
-  const studentName='Student_'+Date.now().toString(36);
+  const studentName=(currentUser&&currentUser.role==='student')?currentUser.name:('Student_'+Date.now().toString(36));
   const totalQ=Object.values(questionsAsked).reduce((a,b)=>a+b,0);
   const personasTalked=Object.keys(questionsAsked).length;
   const fwDone=(frameworks.swotS?1:0)+(frameworks.pesP?1:0)+(frameworks.p5sup?1:0);
-  students.push({name:studentName,questions:totalQ,personas:personasTalked,frameworks:fwDone,submitted:true,market:r.market,entry:r.entry,time:new Date().toLocaleString()});
+  let existing=students.find(x=>x.name.toLowerCase()===studentName.toLowerCase());
+  if(existing){existing.questions=totalQ;existing.personas=personasTalked;existing.frameworks=fwDone;existing.submitted=true;existing.market=r.market;existing.entry=r.entry;existing.time=new Date().toLocaleString()}
+  else{students.push({name:studentName,questions:totalQ,personas:personasTalked,frameworks:fwDone,submitted:true,market:r.market,entry:r.entry,time:new Date().toLocaleString()})}
   localStorage.setItem('nb-students',JSON.stringify(students));
   document.getElementById('submitConfirm').innerHTML=`<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green);padding:14px;border-radius:10px;font-weight:700">Recommendation submitted successfully. Your professor can view your work in the Professor Dashboard.</div>`;
 }
@@ -843,8 +912,82 @@ function renderProfessor(){
 
 function saveDeadline(phase,date){const d=JSON.parse(localStorage.getItem('nb-deadlines')||'{}');d[phase]=date;localStorage.setItem('nb-deadlines',JSON.stringify(d))}
 
+// ─── LOGIN SYSTEM ───
+const TEACHER_PASS='novabrew2026';
+let currentUser=JSON.parse(localStorage.getItem('nb-user')||'null');
+
+function selectRole(role,el){
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('loginFields').style.display='block';
+  document.getElementById('loginFields').dataset.role=role;
+  const nameInput=document.getElementById('loginName');
+  const passInput=document.getElementById('loginPass');
+  const btn=document.querySelector('.login-btn');
+  if(role==='teacher'){
+    nameInput.placeholder='Professor name';
+    passInput.style.display='block';
+    btn.textContent='Enter Dashboard';
+  }else{
+    nameInput.placeholder='Enter your full name';
+    passInput.style.display='none';
+    btn.textContent='Enter Simulation';
+  }
+  document.getElementById('loginError').textContent='';
+}
+
+function doLogin(){
+  const role=document.getElementById('loginFields').dataset.role;
+  const name=document.getElementById('loginName').value.trim();
+  const pass=document.getElementById('loginPass').value.trim();
+  if(!role){document.getElementById('loginError').textContent='Select a role first';return}
+  if(!name){document.getElementById('loginError').textContent='Enter your name';return}
+  if(role==='teacher'&&pass!==TEACHER_PASS){document.getElementById('loginError').textContent='Incorrect passcode';return}
+  currentUser={role,name,loginTime:Date.now()};
+  localStorage.setItem('nb-user',JSON.stringify(currentUser));
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  const profTab=document.querySelector('.nav-tab[onclick*="professor"]');
+  if(currentUser.role==='student'){
+    profTab.style.display='none';
+    registerStudent(currentUser.name);
+  }else{
+    profTab.style.display='';
+    goTab('professor');
+  }
+  renderPhaseBar();
+  document.getElementById('userBadge').textContent=currentUser.name+(currentUser.role==='teacher'?' (Professor)':'');
+}
+
+function registerStudent(name){
+  let s=students.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!s){
+    s={name,questions:0,personas:0,frameworks:0,submitted:false,market:null};
+    students.push(s);
+    localStorage.setItem('nb-students',JSON.stringify(students));
+  }
+}
+
+function doLogout(){
+  localStorage.removeItem('nb-user');
+  currentUser=null;
+  document.getElementById('mainApp').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('loginFields').style.display='none';
+  document.getElementById('loginName').value='';
+  document.getElementById('loginPass').value='';
+}
+
 // ─── INIT ───
+if(currentUser){enterApp()}
+else{document.getElementById('loginScreen').style.display='flex';document.getElementById('mainApp').style.display='none'}
 renderPersonasGrid();renderPhaseBar();
 </script>
+
 </body>
 </html>
