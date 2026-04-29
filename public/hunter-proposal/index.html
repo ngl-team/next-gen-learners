@@ -37,7 +37,15 @@
   .sig-line .field { font-size: .75rem; color: #94A3B8; }
   .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #E2E8F0; display: flex; justify-content: space-between; }
   .footer div { font-size: .65rem; color: #94A3B8; }
-  @media print { body { padding: 20px; } @page { size: letter; margin: 0.4in; } }
+  @media print {
+    *, *::before, *::after {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    body { padding: 20px; }
+  }
+  @page { size: letter; margin: 0.4in; }
 </style>
 </head>
 <body>
