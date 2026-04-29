@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NovaBrew International — Case Study Simulation</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
@@ -167,6 +168,39 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .competitor-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)}
 .competitor-table tr:hover{background:rgba(255,255,255,0.02)}
 
+/* PIN */
+.msg.persona{position:relative}
+.pin-btn{position:absolute;top:6px;right:6px;background:none;border:1px solid var(--border);color:var(--dim);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:0.65rem;display:none;align-items:center;justify-content:center;transition:all 0.2s}
+.msg.persona:hover .pin-btn{display:flex}
+.pin-btn.pinned{background:var(--accent);border-color:var(--accent);color:white;display:flex}
+.pinned-list{max-height:200px;overflow-y:auto}
+.pinned-item{font-size:0.72rem;padding:6px 8px;background:rgba(79,140,255,0.08);border:1px solid rgba(79,140,255,0.15);border-radius:6px;margin-bottom:4px;position:relative;cursor:pointer}
+.pinned-item .pin-source{font-size:0.6rem;color:var(--accent);font-weight:700}
+.pinned-item .pin-remove{position:absolute;top:4px;right:4px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.7rem}
+
+/* HOFSTEDE */
+.hof-bar{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:0.68rem}
+.hof-bar .hof-label{width:80px;color:var(--dim);text-align:right;flex-shrink:0}
+.hof-bar .hof-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.hof-bar .hof-fill{height:100%;border-radius:4px}
+.hof-bar .hof-val{width:28px;font-weight:700;font-size:0.65rem}
+
+/* SOCRATIC */
+.msg.socratic{background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2)}
+
+/* RUBRIC */
+.rubric-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:0.82rem}
+.rubric-score{font-family:'Inter',sans-serif;font-weight:800;font-size:1rem}
+.rubric-score.high{color:var(--green)}.rubric-score.med{color:var(--orange)}.rubric-score.low{color:var(--red)}
+
+/* DEADLINE */
+.deadline-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
+.deadline-row label{font-size:0.75rem;font-weight:600}
+.deadline-row input{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-family:inherit;font-size:0.78rem}
+
+/* CHART CONTAINER */
+.chart-wrap{position:relative;height:220px;margin:12px 0}
+
 @media(max-width:768px){.two-col,.grid-2,.grid-3,.fw-grid{grid-template-columns:1fr}.hero h2{font-size:1.3rem}.hero{padding:20px}.container{padding:12px}.phase-bar{flex-wrap:nowrap;overflow-x:auto}}
 </style>
 </head>
@@ -252,6 +286,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="sidebar-card">
           <h4>Research Progress</h4>
           <div id="progressChecklist"></div>
+        </div>
+        <div class="sidebar-card">
+          <h4>Pinned Insights</h4>
+          <div class="pinned-list" id="pinnedList"><div style="font-size:0.72rem;color:var(--dim)">Pin key answers from conversations to use in your recommendation.</div></div>
         </div>
         <div class="sidebar-card">
           <h4>Other Employees</h4>
@@ -366,9 +404,24 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="btn btn-sm btn-outline" onclick="clearStudents()">Clear</button>
   </div>
   <div class="stats-row" id="profStats"></div>
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <h3>Class Engagement</h3>
+      <div class="chart-wrap" style="height:200px"><canvas id="engagementCanvas"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Market Selections</h3>
+      <div class="chart-wrap" style="height:200px"><canvas id="marketCanvas"></canvas></div>
+    </div>
+  </div>
   <div class="card" style="margin-bottom:16px">
-    <h3>Class Engagement</h3>
-    <div class="bar-chart" id="engagementChart"></div>
+    <h3>Phase Deadlines</h3>
+    <div id="deadlineControls"></div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3>Auto-Rubric Scores</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Engagement (25%) + Frameworks (25%) + Data Room (25%) + Recommendation (25%)</p>
+    <div id="rubricList"></div>
   </div>
   <div class="card">
     <h3>Student Progress</h3>
@@ -448,15 +501,18 @@ const COUNTRIES=[
 {name:'Brazil',flag:'&#127463;&#127479;',color:'var(--green)',
 data:{gdp:'$2.1T',pop:'215M',growth:'2.9%',ease:'124th',coffee:'World\'s largest coffee producer',bevMkt:'$58B',dutys:'20-35%',currency:'BRL (R$)'},
 pros:['Massive market (215M people)','Coffee culture deeply embedded','72% interest in survey','Growing middle class','Large young population'],
-cons:['20-35% import duties','Complex tax structure (ICMS, IPI)','ANVISA registration slow','Need local production for margins','Currency volatility (BRL)','10-14 month timeline']},
+cons:['20-35% import duties','Complex tax structure (ICMS, IPI)','ANVISA registration slow','Need local production for margins','Currency volatility (BRL)','10-14 month timeline'],
+hofstede:{pdi:69,idv:38,mas:49,uai:76,lto:44,ind:59},etiquette:'Relationship-driven culture. Build personal rapport before business. Meetings start with small talk. Hierarchy matters. Use titles. Expect flexibility on timelines.'},
 {name:'South Korea',flag:'&#127472;&#127479;',color:'var(--accent)',
 data:{gdp:'$1.7T',pop:'52M',growth:'2.6%',ease:'5th',coffee:'3rd wave coffee boom','bevMkt':'$22B',dutys:'8%',currency:'KRW (&#8361;)'},
 pros:['Consumers pay premium prices','Incredible digital commerce','Strong convenience store culture','5th easiest to do business','48-52% margin potential','Trend-driven consumers'],
-cons:['Crowded beverage market','MFDS health claim restrictions','Need JV partner','Smaller total market (52M)','8-12 month timeline','Intense competition from Lotte, Binggrae']},
+cons:['Crowded beverage market','MFDS health claim restrictions','Need JV partner','Smaller total market (52M)','8-12 month timeline','Intense competition from Lotte, Binggrae'],
+hofstede:{pdi:60,idv:18,mas:39,uai:85,lto:100,ind:29},etiquette:'Collectivist and hierarchical. Age/seniority deeply respected. Business cards exchanged formally with both hands. Relationship before transaction. After-work socializing (hoesik) expected.'},
 {name:'United Kingdom',flag:'&#127468;&#127463;',color:'var(--purple)',
 data:{gdp:'$3.1T',pop:'67M',growth:'1.4%',ease:'8th',coffee:'Specialty coffee growing 15%/yr','bevMkt':'$32B',dutys:'0%',currency:'GBP (&pound;)'},
 pros:['English language advantage','Gateway to Europe','0% import duties','Predictable regulations','Fastest timeline (6-8 months)','Strong oat milk trend'],
-cons:['Tighter margins (42-46%)','Conservative consumers','Competitive pricing pressure','Lower growth rate','Post-Brexit complexity','UK consumers skeptical of hype']},
+cons:['Tighter margins (42-46%)','Conservative consumers','Competitive pricing pressure','Lower growth rate','Post-Brexit complexity','UK consumers skeptical of hype'],
+hofstede:{pdi:35,idv:89,mas:66,uai:35,lto:51,ind:69},etiquette:'Direct but polite. Understatement valued over hype. Punctuality important. Humor in business is common. Email-first culture. Meetings are structured with agendas.'},
 ];
 
 const PROGRESS_ITEMS=[
@@ -485,6 +541,7 @@ let questionsAsked=JSON.parse(localStorage.getItem('nb-questions')||'{}');
 let frameworks=JSON.parse(localStorage.getItem('nb-frameworks')||'{}');
 let recommendation=JSON.parse(localStorage.getItem('nb-rec')||'{}');
 let students=JSON.parse(localStorage.getItem('nb-students')||'[]');
+let pinnedInsights=JSON.parse(localStorage.getItem('nb-pins')||'[]');
 let currentPhase=localStorage.getItem('nb-phase')||'overview';
 
 // ─── NAVIGATION ───
@@ -549,6 +606,9 @@ function renderCountries(){
       </div>
       <div class="pros">${c.pros.map(p=>`<span>+ </span>${p}<br>`).join('')}</div>
       <div class="cons">${c.cons.map(p=>`<span>- </span>${p}<br>`).join('')}</div>
+      ${c.hofstede?`<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)"><div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px">HOFSTEDE DIMENSIONS</div>
+      ${[['PDI',c.hofstede.pdi,'Power Distance'],['IDV',c.hofstede.idv,'Individualism'],['MAS',c.hofstede.mas,'Masculinity'],['UAI',c.hofstede.uai,'Uncertainty Avoidance'],['LTO',c.hofstede.lto,'Long-Term'],['IND',c.hofstede.ind,'Indulgence']].map(([k,val,label])=>`<div class="hof-bar"><span class="hof-label">${label}</span><div class="hof-track"><div class="hof-fill" style="width:${val}%;background:${val>66?'var(--accent)':val>33?'var(--orange)':'var(--green)'}"></div></div><span class="hof-val">${val}</span></div>`).join('')}
+      <div style="font-size:0.68rem;color:var(--dim);margin-top:8px;line-height:1.4"><strong style="color:var(--text)">Business Etiquette:</strong> ${c.etiquette}</div></div>`:''}
     </div>`).join('');
 }
 
@@ -558,13 +618,18 @@ function toggleDoc(type){
   if(el.dataset.open===type){el.innerHTML='';el.dataset.open='';return}
   el.dataset.open=type;
   const docs={
-    financials:`<div class="card"><h3>Financial Summary</h3><div class="bar-chart">
-      <div class="bar-row"><span class="bar-label">Revenue</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--accent)">$48M</div></div></div>
-      <div class="bar-row"><span class="bar-label">Gross Profit</span><div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--green)">$24.9M (52%)</div></div></div>
-      <div class="bar-row"><span class="bar-label">Net Profit</span><div class="bar-track"><div class="bar-fill" style="width:14.5%;background:var(--purple)">$7M (14.5%)</div></div></div>
-      <div class="bar-row"><span class="bar-label">Marketing</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--orange)">$4.8M (10%)</div></div></div>
-      <div class="bar-row"><span class="bar-label">Expansion Budget</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--gold, #D4A843)">$12M</div></div></div>
-    </div><p style="font-size:0.78rem;color:var(--dim);margin-top:12px">Revenue grew 33% YoY ($36M to $48M). Zero long-term debt. $9M cash reserves. Customer acquisition cost: $3.20 digital, $8.50 retail.</p></div>`,
+    financials:`<div class="card"><h3>Financial Summary</h3>
+      <div class="grid-2">
+        <div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
+        <div><div class="chart-wrap"><canvas id="productChart"></canvas></div></div>
+      </div>
+      <div class="bar-chart" style="margin-top:16px">
+        <div class="bar-row"><span class="bar-label">Gross Margin</span><div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--green)">52%</div></div><span class="bar-val">$24.9M</span></div>
+        <div class="bar-row"><span class="bar-label">Net Margin</span><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--purple)">14.5%</div></div><span class="bar-val">$7M</span></div>
+        <div class="bar-row"><span class="bar-label">Marketing</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--orange)">10%</div></div><span class="bar-val">$4.8M</span></div>
+        <div class="bar-row"><span class="bar-label">Expansion</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--accent)">$12M</div></div><span class="bar-val">$12M</span></div>
+      </div>
+      <p style="font-size:0.78rem;color:var(--dim);margin-top:12px">Revenue grew 33% YoY ($36M to $48M). Zero long-term debt. $9M cash reserves. CAC: $3.20 digital, $8.50 retail.</p></div>`,
     competitors:`<div class="card"><h3>Competitor Landscape</h3><table class="competitor-table"><thead><tr><th>Company</th><th>Category</th><th>Est. Revenue</th><th>Int'l Presence</th><th>Threat Level</th></tr></thead><tbody>
       <tr><td>Chameleon Cold Brew</td><td>Cold Brew</td><td>$120M+ (Nestle)</td><td>Europe, Asia</td><td style="color:var(--red)">High</td></tr>
       <tr><td>La Colombe</td><td>Cold Brew / RTD</td><td>$200M+</td><td>Limited</td><td style="color:var(--orange)">Medium</td></tr>
@@ -582,6 +647,15 @@ function toggleDoc(type){
     </div><p style="font-size:0.78rem;color:var(--dim);margin-top:12px">Interest = % who said "interested" or "very interested" in premium cold brew with functional benefits. Brand awareness: 0% in all markets. Brazil respondents indicated 30% lower price willingness. South Korea would pay 10-15% above U.S. pricing. UK is value-conscious but pays for quality.</p></div>`
   };
   el.innerHTML=docs[type]||'';
+  if(type==='financials')setTimeout(renderFinancialCharts,100);
+}
+
+function renderFinancialCharts(){
+  const rc=document.getElementById('revenueChart');
+  const pc=document.getElementById('productChart');
+  if(!rc||!pc||typeof Chart==='undefined')return;
+  new Chart(rc,{type:'bar',data:{labels:['2023','2024','2025','2026E'],datasets:[{label:'Revenue ($M)',data:[22,30,36,48],backgroundColor:'rgba(79,140,255,0.6)',borderRadius:6},{label:'Net Profit ($M)',data:[2.2,3.5,5,7],backgroundColor:'rgba(52,211,153,0.6)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7a8bad',font:{size:10}}}},scales:{x:{ticks:{color:'#7a8bad'},grid:{display:false}},y:{ticks:{color:'#7a8bad',callback:v=>'$'+v+'M'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+  new Chart(pc,{type:'doughnut',data:{labels:['Cold Brew (55%)','NovaBoost (30%)','NovaSpark (15%)'],datasets:[{data:[55,30,15],backgroundColor:['rgba(79,140,255,0.7)','rgba(52,211,153,0.7)','rgba(167,139,250,0.7)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8bad',font:{size:10},padding:12}}}}});
 }
 
 // ─── CHAT ───
@@ -597,14 +671,34 @@ function showChat(pid){
   document.getElementById('notebook').value=notes;
   document.getElementById('notebook').oninput=e=>{notes=e.target.value;localStorage.setItem('nb-notes',notes)};
   if(pid===0)updateProgress('p2');if(pid===1)updateProgress('p3');if(pid===2)updateProgress('p4');if(pid===3)updateProgress('p5');if(pid===4)updateProgress('p6');
+  renderPins();
 }
 function closeChat(){document.getElementById('chatView').style.display='none';document.getElementById('personasGrid2').style.display='';renderPersonasGrid2()}
 
-function addMsg(type,text,name){
+function addMsg(type,text,name,socratic){
   const a=document.getElementById('chatArea'),d=document.createElement('div');
-  d.className='msg '+type;
-  if(type==='persona'&&name)d.innerHTML=`<div class="name">${name}</div>${text}`;else d.textContent=text;
+  d.className='msg '+type+(socratic?' socratic':'');
+  if(type==='persona'&&name){
+    const pinId='pin-'+Date.now()+Math.random().toString(36).slice(2,6);
+    d.innerHTML=`<div class="name">${name}</div>${text}<button class="pin-btn" onclick="pinInsight('${pinId}','${name.replace(/'/g,"\\'")}',this)" data-pinid="${pinId}" title="Pin this insight">&#128204;</button>`;
+    d.dataset.text=text;d.dataset.source=name;
+  }else d.textContent=text;
   a.appendChild(d);a.scrollTop=a.scrollHeight;
+}
+
+function pinInsight(id,source,btn){
+  const existing=pinnedInsights.findIndex(p=>p.id===id);
+  if(existing>=0){pinnedInsights.splice(existing,1);btn.classList.remove('pinned')}
+  else{const msg=btn.parentElement;pinnedInsights.push({id,source,text:msg.dataset.text?.substring(0,150)||'...'});btn.classList.add('pinned')}
+  localStorage.setItem('nb-pins',JSON.stringify(pinnedInsights));renderPins();
+}
+
+function removePin(id){pinnedInsights=pinnedInsights.filter(p=>p.id!==id);localStorage.setItem('nb-pins',JSON.stringify(pinnedInsights));renderPins();const btn=document.querySelector(`[data-pinid="${id}"]`);if(btn)btn.classList.remove('pinned')}
+
+function renderPins(){
+  const el=document.getElementById('pinnedList');
+  if(!pinnedInsights.length){el.innerHTML='<div style="font-size:0.72rem;color:var(--dim)">Pin key answers from conversations to use in your recommendation.</div>';return}
+  el.innerHTML=pinnedInsights.map(p=>`<div class="pinned-item"><div class="pin-source">${p.source}</div>${p.text}...<button class="pin-remove" onclick="removePin('${p.id}')">&times;</button></div>`).join('');
 }
 function showTyping(){const a=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg typing';d.id='typingInd';d.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';a.appendChild(d);a.scrollTop=a.scrollHeight}
 function hideTyping(){const e=document.getElementById('typingInd');if(e)e.remove()}
@@ -620,7 +714,15 @@ function findResponse(q){
     }
     if(sc>bestS){bestS=sc;best=resp}
   }
-  if(bestS>=2)return best;
+  if(bestS>=2){
+    const wordCount=q.split(/\s+/).length;
+    if(wordCount<5&&questionsAsked[currentPersona.id]>2){
+      const probes=["That's a good start. But can you be more specific? What exactly are you trying to understand about "+currentPersona.dept.toLowerCase()+"?","Before I answer that directly, tell me: what's your hypothesis? What do you think the answer might be based on what you've learned so far?","I can answer that, but I want to push your thinking first. How does this connect to what you've already heard from the other executives?","Let me challenge you on that. Why is that question important for your final recommendation? What decision does it help you make?"];
+      const probe=probes[questionsAsked[currentPersona.id]%probes.length];
+      return probe+"\n\nBut here's what I can tell you: "+best;
+    }
+    return best;
+  }
   const allK=PERSONAS.flatMap(p=>Object.entries(p.knowledge));let xBest=null,xS=0,xP=null;
   for(const p of PERSONAS){if(p.id===currentPersona.id)continue;for(const[pat,resp]of Object.entries(p.knowledge)){const kws=pat.split('|');let sc=0;for(const kw of kws){if(q.includes(kw.toLowerCase()))sc+=2;for(const w of kw.toLowerCase().split(/\s+/))if(w.length>3&&q.includes(w))sc+=1}if(sc>xS){xS=sc;xBest=resp;xP=p}}}
   if(xS>=3)return`That's more in ${xP.name}'s area (${xP.role}), but from what I know: ${xBest.substring(0,200)}... I'd recommend talking to ${xP.name} directly for the full picture.`;
@@ -633,7 +735,7 @@ function sendMessage(){
   if(!questionsAsked[currentPersona.id])questionsAsked[currentPersona.id]=0;
   questionsAsked[currentPersona.id]++;localStorage.setItem('nb-questions',JSON.stringify(questionsAsked));
   showTyping();
-  setTimeout(()=>{hideTyping();const r=findResponse(text);addMsg('persona',r,currentPersona.name);updateSuggested(text)},800+Math.random()*1200);
+  setTimeout(()=>{hideTyping();const r=findResponse(text);const isSocratic=r.includes('push your thinking')||r.includes('be more specific')||r.includes('challenge you');addMsg('persona',r,currentPersona.name,isSocratic);updateSuggested(text)},800+Math.random()*1200);
 }
 
 function askSuggested(t){document.getElementById('chatInput').value=t;sendMessage()}
@@ -704,11 +806,42 @@ function renderProfessor(){
     <div class="prof-stat"><div class="num" style="color:var(--purple)">${avgQ}</div><div class="lbl">Avg Questions</div></div>
     <div class="prof-stat"><div class="num" style="color:var(--pink)">${avgP}</div><div class="lbl">Avg Personas</div></div>`;
 
-  const personaCounts=PERSONAS.map(p=>({name:p.name,count:students.reduce((a,s)=>a+(s.personas>p.id?1:0),0)}));
-  document.getElementById('engagementChart').innerHTML=personaCounts.map(p=>`<div class="bar-row"><span class="bar-label">${p.name}</span><div class="bar-track"><div class="bar-fill" style="width:${total?p.count/total*100:0}%;background:var(--accent)">${p.count}</div></div></div>`).join('');
+  // Engagement chart
+  setTimeout(()=>{
+    const ec=document.getElementById('engagementCanvas');
+    const mc=document.getElementById('marketCanvas');
+    if(ec&&typeof Chart!=='undefined'){
+      if(ec._chart)ec._chart.destroy();
+      ec._chart=new Chart(ec,{type:'bar',data:{labels:PERSONAS.map(p=>p.name.split(' ')[0]),datasets:[{label:'Students Engaged',data:PERSONAS.map(p=>students.filter(s=>s.personas>p.id).length),backgroundColor:['rgba(79,140,255,0.6)','rgba(167,139,250,0.6)','rgba(251,146,60,0.6)','rgba(52,211,153,0.6)','rgba(244,114,182,0.6)'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a8bad'},grid:{display:false}},y:{ticks:{color:'#7a8bad'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+    }
+    if(mc&&typeof Chart!=='undefined'){
+      const mCounts={Brazil:0,'South Korea':0,'United Kingdom':0,None:0};
+      students.forEach(s=>{if(s.market&&mCounts[s.market]!==undefined)mCounts[s.market]++;else mCounts.None++});
+      if(mc._chart)mc._chart.destroy();
+      mc._chart=new Chart(mc,{type:'doughnut',data:{labels:Object.keys(mCounts),datasets:[{data:Object.values(mCounts),backgroundColor:['rgba(52,211,153,0.7)','rgba(79,140,255,0.7)','rgba(167,139,250,0.7)','rgba(255,255,255,0.1)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8bad',font:{size:10}}}}}});
+    }
+  },100);
 
+  // Deadline controls
+  const deadlines=JSON.parse(localStorage.getItem('nb-deadlines')||'{}');
+  document.getElementById('deadlineControls').innerHTML=PHASES.map(p=>`<div class="deadline-row"><label>Phase ${p.num}: ${p.label}</label><input type="date" value="${deadlines[p.id]||''}" onchange="saveDeadline('${p.id}',this.value)"></div>`).join('');
+
+  // Rubric scores
+  document.getElementById('rubricList').innerHTML=students.map(s=>{
+    const engScore=Math.min(25,Math.round(s.questions/20*25));
+    const fwScore=Math.round(s.frameworks/3*25);
+    const dataScore=Math.round(Math.min(1,s.personas/5)*25);
+    const recScore=s.submitted?25:0;
+    const total=engScore+fwScore+dataScore+recScore;
+    const cls=total>=70?'high':total>=40?'med':'low';
+    return`<div class="rubric-row"><div><strong>${s.name}</strong><div style="font-size:0.68rem;color:var(--dim)">Engage: ${engScore} | Frameworks: ${fwScore} | Data: ${dataScore} | Rec: ${recScore}</div></div><div class="rubric-score ${cls}">${total}/100</div></div>`;
+  }).join('')||'<div style="color:var(--dim);font-size:0.82rem">No students yet.</div>';
+
+  // Student list
   document.getElementById('studentList').innerHTML=students.map(s=>`<div class="student-row"><div><strong>${s.name}</strong><div style="font-size:0.72rem;color:var(--dim)">${s.questions} questions | ${s.personas} personas | ${s.frameworks}/3 frameworks${s.market?' | '+s.market:''}</div></div><div class="badges">${s.submitted?`<span class="badge done">Submitted</span>`:`<span class="badge pending">In Progress</span>`}</div></div>`).join('')||'<div style="color:var(--dim);padding:20px;text-align:center">No student data yet.</div>';
 }
+
+function saveDeadline(phase,date){const d=JSON.parse(localStorage.getItem('nb-deadlines')||'{}');d[phase]=date;localStorage.setItem('nb-deadlines',JSON.stringify(d))}
 
 // ─── INIT ───
 renderPersonasGrid();renderPhaseBar();
