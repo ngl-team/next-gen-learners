@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bahr Standard — AI Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#0A2463;--blue-light:#1E3A8A;--blue-accent:#3B82F6;
+  --teal:#0F766E;--teal-light:#14B8A6;
+  --gold:#D4A843;--gold-light:#F0C75E;
+  --bg:#0B0F1A;--card:rgba(15,23,42,0.8);--card-solid:#0F172A;
+  --border:rgba(59,130,246,0.15);--border-hover:rgba(59,130,246,0.35);
+  --text:#E2E8F0;--dim:#64748B;--radius:12px;
+  --green:#34D399;--red:#EF4444;--orange:#FB923C;--purple:#A78BFA;
+}
+body{font-family:'Open Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(10,36,99,0.6);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+.topbar h1{font-size:1rem;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.topbar h1 .mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:var(--blue)}
+
+.tabs{display:flex;gap:3px;background:rgba(255,255,255,0.05);border-radius:8px;padding:3px;flex-wrap:wrap}
+.tab{padding:7px 16px;border:none;background:none;color:var(--dim);font-family:'Poppins',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;border-radius:6px;transition:all 0.2s;white-space:nowrap}
+.tab.active{background:var(--blue-accent);color:white}
+.tab:hover:not(.active){color:var(--text)}
+
+.container{max-width:1300px;margin:0 auto;padding:20px}
+.view{display:none}.view.active{display:block}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:3px}
+.form-group label{font-size:0.7rem;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px}
+.form-group input,.form-group select,.form-group textarea{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-family:'Open Sans',sans-serif;font-size:0.85rem;outline:none;transition:border 0.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue-accent)}
+.form-group select{cursor:pointer}
+.form-group select option{background:var(--card-solid);color:var(--text)}
+.form-group textarea{resize:vertical;min-height:60px}
+
+.btn{padding:9px 18px;border:none;border-radius:8px;font-family:'Poppins',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--blue-accent);color:white}
+.btn-primary:hover{background:#2563EB;transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--blue)}
+.btn-gold:hover{transform:translateY(-1px)}
+.btn-teal{background:var(--teal);color:white}
+.btn-teal:hover{background:var(--teal-light)}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--dim)}
+.btn-outline:hover{border-color:var(--blue-accent);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:0.7rem}
+.btn-danger{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
+.btn-danger:hover{background:rgba(239,68,68,0.25)}
+.btn-icon{width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px;background:none;border:1px solid var(--border);color:var(--dim);cursor:pointer;font-size:0.85rem}
+.btn-icon:hover{border-color:var(--blue-accent);color:var(--text)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;backdrop-filter:blur(8px)}
+.card h3{font-size:0.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:1.2rem;font-weight:800;margin-bottom:18px;color:var(--gold)}
+
+/* DASHBOARD STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 0 0 60px;opacity:0.08}
+.stat-card.blue::after{background:var(--blue-accent)}.stat-card.green::after{background:var(--green)}.stat-card.gold::after{background:var(--gold)}.stat-card.red::after{background:var(--red)}.stat-card.purple::after{background:var(--purple)}
+.stat-card .num{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;line-height:1}
+.stat-card .num.blue{color:var(--blue-accent)}.stat-card .num.green{color:var(--green)}.stat-card .num.gold{color:var(--gold)}.stat-card .num.red{color:var(--red)}.stat-card .num.purple{color:var(--purple)}
+.stat-card .lbl{font-size:0.7rem;color:var(--dim);margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* ALERT BAR */
+.alerts{margin-bottom:20px;display:flex;flex-direction:column;gap:8px}
+.alert{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;font-size:0.82rem;font-weight:500}
+.alert.warn{background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.25);color:var(--orange)}
+.alert.danger{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:var(--red)}
+.alert.info{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);color:var(--blue-accent)}
+
+/* DEALS */
+.deals-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.deal-row{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;cursor:pointer;transition:all 0.2s}
+.deal-row:hover{border-color:var(--border-hover);transform:translateY(-1px)}
+.deal-row.overdue{border-left:3px solid var(--red)}
+.deal-row.closing-soon{border-left:3px solid var(--orange)}
+.deal-row .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px}
+.deal-row .address{font-family:'Poppins',sans-serif;font-weight:700;font-size:0.9rem}
+.deal-row .meta{display:flex;gap:10px;font-size:0.78rem;color:var(--dim);flex-wrap:wrap}
+.deal-row .docs-status{font-size:0.7rem;color:var(--dim);margin-top:6px}
+.deal-row .docs-status .missing{color:var(--orange)}
+
+.stage-badge{padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.stage-contract{background:rgba(59,130,246,0.15);color:var(--blue-accent)}
+.stage-title{background:rgba(167,139,250,0.15);color:var(--purple)}
+.stage-attorney{background:rgba(251,146,60,0.15);color:var(--orange)}
+.stage-clear{background:rgba(52,211,153,0.15);color:var(--green)}
+.stage-closed{background:rgba(212,168,67,0.15);color:var(--gold)}
+
+.pipeline-bar{display:flex;gap:2px;margin-top:8px}
+.pipeline-step{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,0.06)}
+.pipeline-step.active{background:var(--blue-accent)}
+.pipeline-step.done{background:var(--teal-light)}
+
+/* DEAL DETAIL */
+.deal-detail{display:none}
+.deal-detail.active{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+
+.parties-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.party-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:12px}
+.party-card .role{font-size:0.65rem;font-weight:700;color:var(--blue-accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.party-card .name{font-family:'Poppins',sans-serif;font-weight:600;font-size:0.85rem;margin-bottom:2px}
+.party-card .contact{font-size:0.75rem;color:var(--dim)}
+
+.email-preview{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:14px}
+.email-preview .to{font-size:0.75rem;color:var(--dim);margin-bottom:3px}
+.email-preview .subject{font-family:'Poppins',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:10px}
+.email-preview .body{font-size:0.85rem;line-height:1.7;color:var(--text);white-space:pre-wrap}
+.email-actions{display:flex;gap:8px;margin-top:12px}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:12px;padding:10px 0;position:relative}
+.tl-item::before{content:'';position:absolute;left:11px;top:34px;bottom:-10px;width:2px;background:var(--border)}
+.tl-item:last-child::before{display:none}
+.tl-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.55rem;background:var(--card-solid)}
+.tl-dot.done{background:var(--teal);border-color:var(--teal);color:white}
+.tl-dot.current{background:var(--blue-accent);border-color:var(--blue-accent);color:white}
+.tl-content .title{font-weight:600;font-size:0.82rem}
+.tl-content .date{font-size:0.7rem;color:var(--dim)}
+
+/* DOCS CHECKLIST */
+.doc-list{display:flex;flex-direction:column;gap:6px}
+.doc-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:0.82rem;cursor:pointer;user-select:none}
+.doc-item .checkbox{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;transition:all 0.2s}
+.doc-item .checkbox.checked{background:var(--teal);border-color:var(--teal);color:white}
+.doc-item.missing .label{color:var(--orange)}
+
+/* NOTES */
+.notes-section textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:'Open Sans',sans-serif;font-size:0.82rem;min-height:80px;resize:vertical;outline:none}
+.notes-section textarea:focus{border-color:var(--blue-accent)}
+.activity-log{margin-top:12px;max-height:200px;overflow-y:auto}
+.log-entry{font-size:0.78rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.log-entry .log-date{color:var(--dim);margin-right:6px}
+
+/* ANALYSIS */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.metric{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.metric .num{font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:800}
+.metric .num.green{color:var(--green)}.metric .num.red{color:var(--red)}.metric .num.gold{color:var(--gold)}
+.metric .lbl{font-size:0.65rem;color:var(--dim);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+
+.proforma{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.proforma-header{background:linear-gradient(135deg,var(--blue),var(--blue-light));padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+.proforma-header h3{color:var(--gold);margin:0;font-size:1rem}
+.proforma-header .type-badge{background:rgba(212,168,67,0.2);color:var(--gold-light);padding:4px 12px;border-radius:6px;font-size:0.65rem;font-weight:700;text-transform:uppercase}
+.proforma-body{padding:20px}
+.proforma-section{margin-bottom:18px}
+.proforma-section h4{font-size:0.75rem;font-weight:700;color:var(--blue-accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.proforma-row{display:flex;justify-content:space-between;padding:5px 0;font-size:0.85rem}
+.proforma-row.total{font-weight:700;font-family:'Poppins',sans-serif;border-top:2px solid var(--border);padding-top:8px;margin-top:4px}
+.proforma-row .label{color:var(--dim)}
+.proforma-row .value{font-weight:600}
+.proforma-row .value.green{color:var(--green)}.proforma-row .value.red{color:var(--red)}.proforma-row .value.gold{color:var(--gold)}
+
+.verdict{padding:14px 18px;border-radius:10px;display:flex;align-items:center;gap:10px;font-family:'Poppins',sans-serif;font-weight:700;font-size:0.9rem;margin-top:14px}
+.verdict.go{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green)}
+.verdict.caution{background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:var(--orange)}
+.verdict.no{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red)}
+
+/* REVERSE CALC */
+.reverse-result{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:16px;margin-top:14px;text-align:center}
+.reverse-result .big{font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green)}
+.reverse-result .sub{font-size:0.8rem;color:var(--dim);margin-top:4px}
+
+/* BUYERS LIST */
+.buyer-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.buyer-row .info .bname{font-weight:600;font-size:0.88rem}
+.buyer-row .info .criteria{font-size:0.75rem;color:var(--dim)}
+.buyer-tags{display:flex;gap:4px;flex-wrap:wrap}
+.buyer-tag{font-size:0.6rem;padding:2px 8px;border-radius:4px;background:rgba(59,130,246,0.1);color:var(--blue-accent);font-weight:600}
+
+/* COMPARE */
+.compare-grid{display:grid;grid-template-columns:200px 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.compare-grid .ch{background:rgba(255,255,255,0.04);padding:10px 14px;font-size:0.8rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+.compare-grid .ch.header{font-family:'Poppins',sans-serif;font-weight:700;font-size:0.82rem;background:rgba(10,36,99,0.4)}
+.compare-grid .ch.label{color:var(--dim);font-weight:600}
+.compare-grid .ch.better{color:var(--green);font-weight:600}
+
+/* SAVED */
+.saved-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all 0.2s}
+.saved-row:hover{border-color:var(--border-hover)}
+
+/* CONTACTS */
+.contact-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.contact-row .cinfo .cname{font-weight:600;font-size:0.88rem}
+.contact-row .cinfo .cdetail{font-size:0.75rem;color:var(--dim)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card-solid);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:1rem;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.modal h3 button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:1.2rem}
+
+/* PRINT */
+@media print{
+  body{background:white;color:#1a1a1a}
+  .topbar,.tabs,.btn,.alerts,.deals-list,.deal-detail,.modal-overlay,.saved-analyses,.email-preview,.suggested-questions,.chat-input,.notebook,.form-group select,.form-group input{display:none!important}
+  .proforma{border:1px solid #ddd;break-inside:avoid}
+  .proforma-header{background:#0A2463!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .proforma-header h3{color:#D4A843!important}
+  .proforma-row{border-bottom:1px solid #eee}
+  .metrics-grid{display:grid!important}
+  .metric{border:1px solid #ddd}
+  .verdict{border:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printProforma{display:block!important}
+}
+
+@media(max-width:768px){
+  .form-grid,.parties-grid,.detail-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .compare-grid{grid-template-columns:120px 1fr 1fr;font-size:0.75rem}
+  .container{padding:12px}
+  .topbar{padding:10px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span class="mark">BS</span> Bahr Standard AI Tools</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('transactions')">Deals</button>
+    <button class="tab" onclick="switchTab('analysis')">Analysis</button>
+    <button class="tab" onclick="switchTab('buyers')">Buyers</button>
+    <button class="tab" onclick="switchTab('contacts')">Contacts</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══ TRANSACTIONS ═══ -->
+<div id="transactionsView" class="view active">
+  <div class="stats-row" id="dashStats"></div>
+  <div class="alerts" id="alertsBar"></div>
+
+  <div id="dealsListWrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h2 class="section-title" style="margin:0">Active Deals</h2>
+      <button class="btn btn-gold" onclick="openModal('newDealModal')">+ New Deal</button>
+    </div>
+    <div class="deals-list" id="dealsList"></div>
+  </div>
+
+  <div class="deal-detail" id="dealDetail">
+    <button class="btn btn-outline btn-sm" onclick="closeDealDetail()" style="margin-bottom:14px">&#8592; Back</button>
+    <div id="dealDetailHeader"></div>
+    <div class="detail-grid">
+      <div>
+        <div class="card">
+          <h3>Timeline</h3>
+          <div id="dealTimeline"></div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="advanceStage()">Next Stage &#8594;</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteDeal()">Delete Deal</button>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Parties</h3>
+          <div class="parties-grid" id="dealParties"></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Documents</h3>
+          <div class="doc-list" id="dealDocs"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>AI Email Generator</h3>
+          <div class="form-group" style="margin-bottom:10px">
+            <label>Recipient</label>
+            <select id="emailRecipient" onchange="generateEmail()">
+              <option value="">Select...</option>
+              <option value="attorney">Attorney</option>
+              <option value="seller">Seller</option>
+              <option value="buyer">Buyer / Assignee</option>
+              <option value="title">Title Company</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:10px">
+            <label>Type</label>
+            <select id="emailType" onchange="generateEmail()">
+              <option value="status">Status Update</option>
+              <option value="request">Document Request</option>
+              <option value="intro">Introduction</option>
+              <option value="closing">Closing Coordination</option>
+              <option value="followup">Follow-up</option>
+            </select>
+          </div>
+          <div id="emailOutput"></div>
+        </div>
+        <div class="card notes-section" style="margin-top:14px">
+          <h3>Notes</h3>
+          <textarea id="dealNotes" placeholder="Deal notes..." oninput="saveDealNotes()"></textarea>
+          <div class="activity-log" id="activityLog"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ANALYSIS ═══ -->
+<div id="analysisView" class="view">
+  <h2 class="section-title">Acquisition Analysis</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <h3>Property</h3>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Address</label>
+          <input type="text" id="propAddress" placeholder="123 Main St, Danbury, CT">
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="propType" onchange="toggleFields()">
+            <option value="house">House</option>
+            <option value="land">Land</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Asking Price</label>
+          <input type="number" id="propAskingPrice" placeholder="250000">
+        </div>
+        <div class="form-group">
+          <label>Offer Price</label>
+          <input type="number" id="propOfferPrice" placeholder="200000">
+        </div>
+        <div class="form-group">
+          <label>Strategy</label>
+          <select id="propStrategy">
+            <option value="wholesale">Wholesale</option>
+            <option value="flip">Fix & Flip</option>
+            <option value="hold">Buy & Hold</option>
+            <option value="develop">Development</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" id="houseFields">
+        <h3>Numbers</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>ARV</label><input type="number" id="propARV" placeholder="350000"></div>
+          <div class="form-group"><label>Rehab Cost</label><input type="number" id="propRehab" placeholder="45000"></div>
+          <div class="form-group"><label>Holding $/Month</label><input type="number" id="propHolding" placeholder="2500"></div>
+          <div class="form-group"><label>Hold Time (mo)</label><input type="number" id="propHoldMonths" placeholder="4" value="4"></div>
+          <div class="form-group"><label>Closing Costs %</label><input type="number" id="propClosingPct" placeholder="8" value="8" step="0.5"></div>
+          <div class="form-group"><label>Assignment Fee</label><input type="number" id="propAssignment" placeholder="10000"></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="runAnalysis()">Run Pro Forma</button>
+          <button class="btn btn-outline" onclick="clearAnalysis()">Clear</button>
+          <button class="btn btn-outline" onclick="printProforma()">Print</button>
+        </div>
+      </div>
+      <div class="card" id="landFields" style="display:none">
+        <h3>Land Numbers</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Total Acreage</label><input type="number" id="landAcres" placeholder="5" step="0.1"></div>
+          <div class="form-group"><label>Lots After Split</label><input type="number" id="landLots" placeholder="4"></div>
+          <div class="form-group"><label>Value Per Lot</label><input type="number" id="landLotValue" placeholder="120000"></div>
+          <div class="form-group"><label>Site Work Cost</label><input type="number" id="landSiteWork" placeholder="80000"></div>
+          <div class="form-group"><label>Permits Cost</label><input type="number" id="landPermits" placeholder="25000"></div>
+          <div class="form-group"><label>Holding (total)</label><input type="number" id="landHolding" placeholder="15000"></div>
+          <div class="form-group"><label>Timeline (mo)</label><input type="number" id="landMonths" placeholder="8" value="8"></div>
+          <div class="form-group"><label>Closing %</label><input type="number" id="landClosingPct" placeholder="6" value="6" step="0.5"></div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="runAnalysis()">Run Pro Forma</button>
+          <button class="btn btn-outline" onclick="clearAnalysis()">Clear</button>
+          <button class="btn btn-outline" onclick="printProforma()">Print</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVERSE CALCULATOR -->
+  <div class="card" style="margin-top:20px">
+    <h3>Reverse Offer Calculator</h3>
+    <p style="font-size:0.8rem;color:var(--dim);margin-bottom:14px">Enter your target profit and property details. Get the maximum offer price.</p>
+    <div class="form-grid">
+      <div class="form-group"><label>Target Profit ($)</label><input type="number" id="revProfit" placeholder="15000"></div>
+      <div class="form-group"><label>ARV</label><input type="number" id="revARV" placeholder="350000"></div>
+      <div class="form-group"><label>Rehab Cost</label><input type="number" id="revRehab" placeholder="45000"></div>
+      <div class="form-group"><label>Closing %</label><input type="number" id="revClosing" placeholder="8" value="8" step="0.5"></div>
+      <div class="form-group"><label>Holding (total)</label><input type="number" id="revHolding" placeholder="10000"></div>
+      <div class="form-group"><label>Strategy</label>
+        <select id="revStrategy">
+          <option value="wholesale">Wholesale</option>
+          <option value="flip">Fix & Flip</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-teal" style="margin-top:14px" onclick="reverseCalc()">Calculate Max Offer</button>
+    <div id="reverseResult"></div>
+  </div>
+
+  <div id="analysisOutput" style="margin-top:20px"></div>
+
+  <!-- COMPARE -->
+  <div class="card" style="margin-top:20px">
+    <h3>Compare Properties</h3>
+    <p style="font-size:0.8rem;color:var(--dim);margin-bottom:14px">Select two saved analyses to compare side by side.</p>
+    <div class="form-grid">
+      <div class="form-group"><label>Property A</label><select id="compareA"><option value="">Select...</option></select></div>
+      <div class="form-group"><label>Property B</label><select id="compareB"><option value="">Select...</option></select></div>
+    </div>
+    <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="compareProperties()">Compare</button>
+    <div id="compareOutput" style="margin-top:14px"></div>
+  </div>
+
+  <div style="margin-top:20px">
+    <h3 style="font-size:0.85rem;font-weight:700;color:var(--dim);margin-bottom:10px">Saved Analyses</h3>
+    <div id="savedList"></div>
+  </div>
+</div>
+
+<!-- ═══ BUYERS ═══ -->
+<div id="buyersView" class="view">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <h2 class="section-title" style="margin:0">Cash Buyer List</h2>
+    <button class="btn btn-gold" onclick="openModal('newBuyerModal')">+ Add Buyer</button>
+  </div>
+  <div id="buyersList"></div>
+</div>
+
+<!-- ═══ CONTACTS ═══ -->
+<div id="contactsView" class="view">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <h2 class="section-title" style="margin:0">Saved Contacts</h2>
+    <button class="btn btn-gold" onclick="openModal('newContactModal')">+ Add Contact</button>
+  </div>
+  <div id="contactsList"></div>
+</div>
+
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- NEW DEAL -->
+<div class="modal-overlay" id="newDealModal">
+<div class="modal">
+  <h3>New Deal <button onclick="closeModal('newDealModal')">&times;</button></h3>
+  <div class="form-grid">
+    <div class="form-group" style="grid-column:1/-1"><label>Property Address</label><input type="text" id="ndAddress" placeholder="123 Main St, Danbury, CT"></div>
+    <div class="form-group"><label>Contract Price</label><input type="number" id="ndPrice" placeholder="200000"></div>
+    <div class="form-group"><label>Deal Type</label><select id="ndType"><option value="wholesale">Wholesale</option><option value="flip">Fix & Flip</option><option value="development">Development</option></select></div>
+    <div class="form-group"><label>Seller</label>
+      <select id="ndSellerContact" onchange="fillFromContact('ndSellerContact','ndSellerName','ndSellerEmail')"><option value="">Type manually or select saved...</option></select>
+    </div>
+    <div class="form-group"><label>Seller Name</label><input type="text" id="ndSellerName"></div>
+    <div class="form-group"><label>Seller Email</label><input type="email" id="ndSellerEmail"></div>
+    <div class="form-group"><label>Attorney</label>
+      <select id="ndAttorneyContact" onchange="fillFromContact('ndAttorneyContact','ndAttorneyName','ndAttorneyEmail')"><option value="">Select saved...</option></select>
+    </div>
+    <div class="form-group"><label>Attorney Name</label><input type="text" id="ndAttorneyName"></div>
+    <div class="form-group"><label>Attorney Email</label><input type="email" id="ndAttorneyEmail"></div>
+    <div class="form-group"><label>Title Company</label>
+      <select id="ndTitleContact" onchange="fillFromContact('ndTitleContact','ndTitleName','ndTitleEmail')"><option value="">Select saved...</option></select>
+    </div>
+    <div class="form-group"><label>Title Co. Name</label><input type="text" id="ndTitleName"></div>
+    <div class="form-group"><label>Title Co. Email</label><input type="email" id="ndTitleEmail"></div>
+    <div class="form-group"><label>Buyer / Assignee</label><input type="text" id="ndBuyerName"></div>
+    <div class="form-group"><label>Buyer Email</label><input type="email" id="ndBuyerEmail"></div>
+    <div class="form-group"><label>Close Date</label><input type="date" id="ndCloseDate"></div>
+  </div>
+  <div style="margin-top:18px;display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn btn-outline" onclick="closeModal('newDealModal')">Cancel</button>
+    <button class="btn btn-gold" onclick="saveDeal()">Create Deal</button>
+  </div>
+</div>
+</div>
+
+<!-- NEW BUYER -->
+<div class="modal-overlay" id="newBuyerModal">
+<div class="modal">
+  <h3>Add Cash Buyer <button onclick="closeModal('newBuyerModal')">&times;</button></h3>
+  <div class="form-grid">
+    <div class="form-group"><label>Name</label><input type="text" id="nbName"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="nbEmail"></div>
+    <div class="form-group"><label>Phone</label><input type="text" id="nbPhone"></div>
+    <div class="form-group"><label>Company</label><input type="text" id="nbCompany"></div>
+    <div class="form-group"><label>Buy Criteria (areas)</label><input type="text" id="nbAreas" placeholder="Danbury, Bethel, Newtown"></div>
+    <div class="form-group"><label>Price Range</label><input type="text" id="nbRange" placeholder="150K - 400K"></div>
+    <div class="form-group"><label>Property Types</label><input type="text" id="nbTypes" placeholder="SFR, Multi, Land"></div>
+    <div class="form-group" style="grid-column:1/-1"><label>Notes</label><textarea id="nbNotes" rows="2"></textarea></div>
+  </div>
+  <div style="margin-top:18px;display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn btn-outline" onclick="closeModal('newBuyerModal')">Cancel</button>
+    <button class="btn btn-gold" onclick="saveBuyer()">Save Buyer</button>
+  </div>
+</div>
+</div>
+
+<!-- NEW CONTACT -->
+<div class="modal-overlay" id="newContactModal">
+<div class="modal">
+  <h3>Add Contact <button onclick="closeModal('newContactModal')">&times;</button></h3>
+  <div class="form-grid">
+    <div class="form-group"><label>Name</label><input type="text" id="ncName"></div>
+    <div class="form-group"><label>Role</label><select id="ncRole"><option value="attorney">Attorney</option><option value="title">Title Company</option><option value="seller">Seller</option><option value="contractor">Contractor</option><option value="other">Other</option></select></div>
+    <div class="form-group"><label>Email</label><input type="email" id="ncEmail"></div>
+    <div class="form-group"><label>Phone</label><input type="text" id="ncPhone"></div>
+    <div class="form-group" style="grid-column:1/-1"><label>Company / Firm</label><input type="text" id="ncCompany"></div>
+  </div>
+  <div style="margin-top:18px;display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn btn-outline" onclick="closeModal('newContactModal')">Cancel</button>
+    <button class="btn btn-gold" onclick="saveContact()">Save Contact</button>
+  </div>
+</div>
+</div>
+
+<script>
+const STAGES=[
+  {id:'contract',label:'Under Contract',cls:'stage-contract'},
+  {id:'title',label:'Title Search',cls:'stage-title'},
+  {id:'attorney',label:'Attorney Review',cls:'stage-attorney'},
+  {id:'clear',label:'Clear to Close',cls:'stage-clear'},
+  {id:'closed',label:'Closed',cls:'stage-closed'}
+];
+const DOCS=[
+  'Purchase & Sale Agreement','Proof of Funds','Title Commitment','Survey',
+  'Property Inspection Report','Attorney Approval Letter','Assignment Contract',
+  'Closing Disclosure / HUD-1','Wire Instructions','Deed'
+];
+
+let deals=JSON.parse(localStorage.getItem('bs-deals')||'[]');
+let analyses=JSON.parse(localStorage.getItem('bs-analyses')||'[]');
+let buyers=JSON.parse(localStorage.getItem('bs-buyers')||'[]');
+let contacts=JSON.parse(localStorage.getItem('bs-contacts')||'[]');
+let currentDealId=null;
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(t+'View').classList.add('active');
+}
+function openModal(id){document.getElementById(id).classList.add('active');populateContactDropdowns()}
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+function fmt(n){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n)}
+function pct(n){return(n*100).toFixed(1)+'%'}
+function daysBetween(a,b){return Math.round((new Date(b)-new Date(a))/(1000*60*60*24))}
+function today(){return new Date().toISOString().split('T')[0]}
+
+// ─── DASHBOARD STATS ───
+function renderDashboard(){
+  const active=deals.filter(d=>d.stage!=='closed');
+  const closed=deals.filter(d=>d.stage==='closed');
+  const totalPipeline=active.reduce((s,d)=>s+d.price,0);
+  const closedValue=closed.reduce((s,d)=>s+d.price,0);
+  const closingSoon=active.filter(d=>d.closeDate&&daysBetween(today(),d.closeDate)<=7&&daysBetween(today(),d.closeDate)>=0).length;
+  const needAttention=getAlerts().length;
+
+  document.getElementById('dashStats').innerHTML=`
+    <div class="stat-card blue"><div class="num blue">${active.length}</div><div class="lbl">Active Deals</div></div>
+    <div class="stat-card gold"><div class="num gold">${fmt(totalPipeline)}</div><div class="lbl">Pipeline Value</div></div>
+    <div class="stat-card green"><div class="num green">${fmt(closedValue)}</div><div class="lbl">Closed Value</div></div>
+    <div class="stat-card purple"><div class="num purple">${closingSoon}</div><div class="lbl">Closing This Week</div></div>
+    <div class="stat-card ${needAttention?'red':'green'}"><div class="num ${needAttention?'red':'green'}">${needAttention}</div><div class="lbl">Need Attention</div></div>
+  `;
+}
+
+function getAlerts(){
+  const alerts=[];
+  deals.forEach(d=>{
+    if(d.stage==='closed')return;
+    if(d.closeDate&&daysBetween(today(),d.closeDate)<0){
+      alerts.push({type:'danger',msg:`${d.address} — Closing date has passed (${d.closeDate})`});
+    }else if(d.closeDate&&daysBetween(today(),d.closeDate)<=3&&daysBetween(today(),d.closeDate)>=0){
+      alerts.push({type:'warn',msg:`${d.address} — Closing in ${daysBetween(today(),d.closeDate)} days`});
+    }
+    const lastActivity=d.history?.length?d.history[d.history.length-1].date:d.created;
+    if(lastActivity&&daysBetween(lastActivity,today())>=14){
+      alerts.push({type:'warn',msg:`${d.address} — No activity for ${daysBetween(lastActivity,today())} days (${STAGES.find(s=>s.id===d.stage)?.label})`});
+    }
+    const docs=d.docs||{};
+    const missing=DOCS.filter(dc=>!docs[dc]);
+    if(d.stage==='clear'&&missing.length>3){
+      alerts.push({type:'info',msg:`${d.address} — ${missing.length} documents still missing before close`});
+    }
+  });
+  return alerts;
+}
+
+function renderAlerts(){
+  const alerts=getAlerts();
+  document.getElementById('alertsBar').innerHTML=alerts.map(a=>`<div class="alert ${a.type}">${a.msg}</div>`).join('');
+}
+
+// ─── DEALS LIST ───
+function renderDeals(){
+  renderDashboard();
+  renderAlerts();
+  const el=document.getElementById('dealsList');
+  if(!deals.length){el.innerHTML='<div style="text-align:center;padding:32px;color:var(--dim)">No deals yet. Click <strong>+ New Deal</strong> to start.</div>';return}
+  el.innerHTML=deals.map(d=>{
+    const si=STAGES.findIndex(s=>s.id===d.stage);
+    const stg=STAGES[si];
+    const docs=d.docs||{};
+    const docsDone=DOCS.filter(dc=>docs[dc]).length;
+    const isOverdue=d.closeDate&&daysBetween(today(),d.closeDate)<0&&d.stage!=='closed';
+    const closingSoon=d.closeDate&&daysBetween(today(),d.closeDate)<=7&&daysBetween(today(),d.closeDate)>=0&&d.stage!=='closed';
+    const lastAct=d.history?.length?d.history[d.history.length-1].date:d.created;
+    const stale=lastAct&&daysBetween(lastAct,today())>=14&&d.stage!=='closed';
+    return`<div class="deal-row ${isOverdue?'overdue':''} ${closingSoon?'closing-soon':''}" onclick="openDeal('${d.id}')">
+      <div class="top">
+        <span class="address">${d.address} ${stale?'<span style="color:var(--orange);font-size:0.7rem;font-weight:600">STALE</span>':''}</span>
+        <span class="stage-badge ${stg.cls}">${stg.label}</span>
+      </div>
+      <div class="meta"><span>${d.type.toUpperCase()}</span><span>${fmt(d.price)}</span><span>Close: ${d.closeDate||'TBD'}</span></div>
+      <div class="docs-status">Docs: ${docsDone}/${DOCS.length} ${DOCS.length-docsDone>0?`<span class="missing">(${DOCS.length-docsDone} missing)</span>`:''}</div>
+      <div class="pipeline-bar">${STAGES.map((_,i)=>`<div class="pipeline-step ${i<si?'done':''} ${i===si?'active':''}"></div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function saveDeal(){
+  const deal={
+    id:'deal-'+Date.now(),
+    address:document.getElementById('ndAddress').value||'Unknown',
+    price:parseFloat(document.getElementById('ndPrice').value)||0,
+    type:document.getElementById('ndType').value,
+    stage:'contract',
+    closeDate:document.getElementById('ndCloseDate').value,
+    created:today(),
+    parties:{
+      seller:{name:document.getElementById('ndSellerName').value,email:document.getElementById('ndSellerEmail').value},
+      attorney:{name:document.getElementById('ndAttorneyName').value,email:document.getElementById('ndAttorneyEmail').value},
+      title:{name:document.getElementById('ndTitleName').value,email:document.getElementById('ndTitleEmail').value},
+      buyer:{name:document.getElementById('ndBuyerName').value,email:document.getElementById('ndBuyerEmail').value}
+    },
+    history:[{date:today(),action:'Deal created — Under Contract'}],
+    docs:{},
+    notes:''
+  };
+  deals.push(deal);
+  saveDealsLS();
+  closeModal('newDealModal');
+  document.querySelectorAll('#newDealModal input').forEach(i=>i.value='');
+  renderDeals();
+}
+
+function saveDealsLS(){localStorage.setItem('bs-deals',JSON.stringify(deals))}
+
+// ─── DEAL DETAIL ───
+function openDeal(id){
+  currentDealId=id;
+  const d=deals.find(x=>x.id===id);
+  document.getElementById('dealsListWrap').style.display='none';
+  document.getElementById('dashStats').style.display='none';
+  document.getElementById('alertsBar').style.display='none';
+  document.getElementById('dealDetail').classList.add('active');
+  const si=STAGES.findIndex(s=>s.id===d.stage);
+  const stg=STAGES[si];
+  document.getElementById('dealDetailHeader').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div><h2 style="font-family:'Poppins',sans-serif;font-size:1.2rem;font-weight:800">${d.address}</h2>
+      <div style="display:flex;gap:10px;margin-top:4px;font-size:0.82rem;color:var(--dim)"><span>${d.type.toUpperCase()}</span><span>${fmt(d.price)}</span><span>Close: ${d.closeDate||'TBD'}</span></div></div>
+      <span class="stage-badge ${stg.cls}" style="font-size:0.8rem;padding:6px 14px">${stg.label}</span>
+    </div>
+    <div class="pipeline-bar" style="margin-top:12px">${STAGES.map((_,i)=>`<div class="pipeline-step ${i<si?'done':''} ${i===si?'active':''}"></div>`).join('')}</div>`;
+  renderTimeline(d);
+  renderParties(d);
+  renderDocChecklist(d);
+  renderNotes(d);
+  document.getElementById('emailRecipient').value='';
+  document.getElementById('emailOutput').innerHTML='';
+}
+
+function closeDealDetail(){
+  document.getElementById('dealDetail').classList.remove('active');
+  document.getElementById('dealsListWrap').style.display='';
+  document.getElementById('dashStats').style.display='';
+  document.getElementById('alertsBar').style.display='';
+  currentDealId=null;
+  renderDeals();
+}
+
+function renderTimeline(d){
+  const si=STAGES.findIndex(s=>s.id===d.stage);
+  document.getElementById('dealTimeline').innerHTML=`<div class="timeline">${STAGES.map((s,i)=>`
+    <div class="tl-item"><div class="tl-dot ${i<si?'done':''} ${i===si?'current':''}">${i<si?'&#10003;':i===si?'&#9679;':''}</div>
+    <div class="tl-content"><div class="title">${s.label}</div><div class="date">${i<si?'Done':i===si?'Current':'Pending'}</div></div></div>`).join('')}</div>`;
+  document.getElementById('activityLog').innerHTML=d.history.slice().reverse().map(h=>`<div class="log-entry"><span class="log-date">${h.date}</span>${h.action}</div>`).join('');
+}
+
+function renderParties(d){
+  const labels={seller:'Seller',attorney:'Attorney',title:'Title Company',buyer:'Buyer / Assignee'};
+  document.getElementById('dealParties').innerHTML=['seller','attorney','title','buyer'].map(r=>{
+    const p=d.parties[r]||{};
+    return`<div class="party-card"><div class="role">${labels[r]}</div><div class="name">${p.name||'Not assigned'}</div><div class="contact">${p.email||''}</div></div>`;
+  }).join('');
+}
+
+function renderDocChecklist(d){
+  const docs=d.docs||{};
+  document.getElementById('dealDocs').innerHTML=DOCS.map(dc=>{
+    const checked=!!docs[dc];
+    return`<div class="doc-item ${checked?'':'missing'}" onclick="toggleDoc('${dc}')">
+      <div class="checkbox ${checked?'checked':''}">${checked?'&#10003;':''}</div>
+      <span class="label">${dc}</span></div>`;
+  }).join('');
+}
+
+function toggleDoc(dc){
+  const d=deals.find(x=>x.id===currentDealId);
+  if(!d.docs)d.docs={};
+  d.docs[dc]=!d.docs[dc];
+  if(d.docs[dc])d.history.push({date:today(),action:`Document received: ${dc}`});
+  saveDealsLS();
+  renderDocChecklist(d);
+  renderTimeline(d);
+}
+
+function renderNotes(d){
+  document.getElementById('dealNotes').value=d.notes||'';
+}
+function saveDealNotes(){
+  const d=deals.find(x=>x.id===currentDealId);
+  if(d){d.notes=document.getElementById('dealNotes').value;saveDealsLS()}
+}
+
+function advanceStage(){
+  const d=deals.find(x=>x.id===currentDealId);
+  const i=STAGES.findIndex(s=>s.id===d.stage);
+  if(i>=STAGES.length-1)return;
+  d.stage=STAGES[i+1].id;
+  d.history.push({date:today(),action:`Advanced to ${STAGES[i+1].label}`});
+  saveDealsLS();openDeal(currentDealId);
+}
+
+function deleteDeal(){
+  if(!confirm('Delete this deal?'))return;
+  deals=deals.filter(d=>d.id!==currentDealId);
+  saveDealsLS();closeDealDetail();
+}
+
+// ─── EMAIL GENERATOR ───
+function generateEmail(){
+  const d=deals.find(x=>x.id===currentDealId);if(!d)return;
+  const r=document.getElementById('emailRecipient').value;
+  const t=document.getElementById('emailType').value;
+  if(!r){document.getElementById('emailOutput').innerHTML='';return}
+  const p=d.parties[r]||{};
+  const name=p.name||r;
+  const email=p.email||'';
+  const stg=STAGES.find(s=>s.id===d.stage);
+  const T={
+    'attorney-status':{s:`Status Update — ${d.address}`,b:`${name},\n\nWriting to provide a status update on ${d.address}.\n\nCurrently in ${stg.label} with anticipated closing ${d.closeDate||'TBD'}. Contract price: ${fmt(d.price)}.\n\nPlease let me know if you need anything from our end.\n\nBest regards,\nWalter Bahr\nBahr Standard Investments`},
+    'attorney-request':{s:`Document Request — ${d.address}`,b:`${name},\n\nRegarding ${d.address}, please provide:\n\n1. Title commitment / search results\n2. Outstanding liens or encumbrances\n3. Survey (if available)\n4. Estimated closing statement\n\nTarget closing: ${d.closeDate||'TBD'}. Please advise on any timeline issues.\n\nBest regards,\nWalter Bahr\nBahr Standard Investments`},
+    'attorney-intro':{s:`New Transaction — ${d.address}`,b:`${name},\n\nNew transaction for your review.\n\nProperty: ${d.address}\nContract Price: ${fmt(d.price)}\nType: ${d.type}\nClosing: ${d.closeDate||'TBD'}\n\nPurchase agreement coming shortly. Please review and advise.\n\nBest regards,\nWalter Bahr\nBahr Standard Investments`},
+    'attorney-closing':{s:`Closing Coordination — ${d.address}`,b:`${name},\n\nApproaching closing on ${d.address}. Target: ${d.closeDate||'TBD'}.\n\nPlease confirm:\n1. Title clear for transfer\n2. All docs prepared\n3. Wire instructions set\n4. Any outstanding items\n\nEarliest available closing date?\n\nBest regards,\nWalter Bahr\nBahr Standard Investments`},
+    'attorney-followup':{s:`Follow-up — ${d.address}`,b:`${name},\n\nFollowing up on ${d.address}. Checking status and whether you need anything from our side.\n\nPlease advise.\n\nBest regards,\nWalter Bahr\nBahr Standard Investments`},
+    'seller-status':{s:`Update — ${d.address}`,b:`Hi ${name},\n\nQuick update on ${d.address}.\n\nEverything progressing well. Currently in ${stg.label.toLowerCase()} phase. Target closing: ${d.closeDate||'TBD'}.\n\nI'll keep you posted. Reach out with any questions.\n\nBest,\nWalter Bahr\nBahr Standard Investments`},
+    'seller-request':{s:`Documents Needed — ${d.address}`,b:`Hi ${name},\n\nFor ${d.address}, we need:\n\n1. Government-issued ID\n2. Existing survey\n3. Utility account info\n4. Keys / access codes\n\nGetting these in soon keeps us on schedule.\n\nBest,\nWalter Bahr\nBahr Standard Investments`},
+    'seller-intro':{s:`Next Steps — ${d.address}`,b:`Hi ${name},\n\nThank you for accepting our offer on ${d.address} at ${fmt(d.price)}.\n\nNext steps:\n1. Attorney review\n2. Title search ordered\n3. Inspections coordinated\n4. Target closing: ${d.closeDate||'TBD'}\n\nI'm your main contact throughout. Reach out anytime.\n\nBest,\nWalter Bahr\nBahr Standard Investments`},
+    'seller-closing':{s:`Closing Details — ${d.address}`,b:`Hi ${name},\n\nApproaching closing on ${d.address}.\n\nPlease bring:\n1. Photo ID\n2. All keys, remotes, access codes\n3. Warranties / manuals\n\nTitle company will send exact date, time, location. Closing statement 24 hours in advance.\n\nAlmost there!\n\nBest,\nWalter Bahr\nBahr Standard Investments`},
+    'seller-followup':{s:`Checking In — ${d.address}`,b:`Hi ${name},\n\nChecking in on ${d.address}. Any questions or concerns, I'm always available.\n\nBest,\nWalter Bahr\nBahr Standard Investments`},
+    'buyer-status':{s:`Deal Update — ${d.address}`,b:`Quick update on ${d.address}.\n\nStatus: ${stg.label}. Price: ${fmt(d.price)}. Closing: ${d.closeDate||'TBD'}.\n\nOn track. More updates as we get closer.\n\nWalter Bahr\nBahr Standard Investments`},
+    'buyer-intro':{s:`Deal — ${d.address}`,b:`Got a deal for you.\n\nProperty: ${d.address}\nPrice: ${fmt(d.price)}\nType: ${d.type}\nClosing: ${d.closeDate||'TBD'}\n\nWant the full package?\n\nWalter Bahr\nBahr Standard Investments`},
+    'buyer-request':{s:`Docs Needed — ${d.address}`,b:`Need the following for ${d.address}:\n\n1. Proof of funds\n2. Signed assignment agreement\n3. Earnest money deposit\n\nPlease send at your earliest.\n\nWalter Bahr\nBahr Standard Investments`},
+    'buyer-closing':{s:`Closing — ${d.address}`,b:`Closing approaching on ${d.address}. Target: ${d.closeDate||'TBD'}.\n\nPlease confirm:\n1. Funds ready\n2. All docs signed\n3. Available for closing date\n\nWalter Bahr\nBahr Standard Investments`},
+    'buyer-followup':{s:`Follow-up — ${d.address}`,b:`Following up on ${d.address}. Still interested? Let me know.\n\nWalter Bahr\nBahr Standard Investments`},
+    'title-status':{s:`Status — ${d.address}`,b:`Checking on title work for ${d.address}.\n\nPrice: ${fmt(d.price)}\nClosing: ${d.closeDate||'TBD'}\n\nUpdate on:\n1. Title search status\n2. Any exceptions\n3. Closing availability\n\nThank you,\nWalter Bahr\nBahr Standard Investments`},
+    'title-intro':{s:`New File — ${d.address}`,b:`Please open a new file:\n\nProperty: ${d.address}\nPrice: ${fmt(d.price)}\nSeller: ${d.parties.seller?.name||'TBD'}\nBuyer: Walter Bahr / Bahr Standard Investments (or assigns)\nClosing: ${d.closeDate||'TBD'}\n\nPurchase agreement coming shortly. Please begin title search.\n\nThank you,\nWalter Bahr\nBahr Standard Investments`},
+    'title-request':{s:`Docs Needed — ${d.address}`,b:`For ${d.address}, please provide:\n\n1. Title commitment\n2. Preliminary closing statement\n3. Wire instructions\n4. Any exceptions found\n\nThank you,\nWalter Bahr\nBahr Standard Investments`},
+    'title-closing':{s:`Closing Setup — ${d.address}`,b:`Ready to schedule closing on ${d.address}. Target: ${d.closeDate||'TBD'}.\n\nPlease confirm:\n1. Title clear\n2. Closing docs prepared\n3. Available dates\n\nThank you,\nWalter Bahr\nBahr Standard Investments`},
+    'title-followup':{s:`Follow-up — ${d.address}`,b:`Following up on ${d.address}. Any updates on your end?\n\nThank you,\nWalter Bahr\nBahr Standard Investments`}
+  };
+  const tmpl=T[r+'-'+t]||{s:`Re: ${d.address}`,b:`Hi ${name},\n\nRegarding ${d.address}.\n\n[Message]\n\nWalter Bahr\nBahr Standard Investments`};
+  document.getElementById('emailOutput').innerHTML=`
+    <div class="email-preview">
+      <div class="to">To: ${name} ${email?'&lt;'+email+'&gt;':''}</div>
+      <div class="subject">${tmpl.s}</div>
+      <div class="body" contenteditable="true" id="emailBody">${tmpl.b}</div>
+      <div class="email-actions">
+        <button class="btn btn-primary btn-sm" onclick="copyEmail()">Copy</button>
+        ${email?`<button class="btn btn-teal btn-sm" onclick="openMailto()">Open Mail</button>`:''}
+      </div>
+    </div>`;
+}
+function copyEmail(){const b=document.getElementById('emailBody').innerText;navigator.clipboard.writeText(b);event.target.textContent='Copied!';setTimeout(()=>event.target.textContent='Copy',1500)}
+function openMailto(){const d=deals.find(x=>x.id===currentDealId);const r=document.getElementById('emailRecipient').value;const p=d.parties[r];window.open(`mailto:${p.email}?subject=${encodeURIComponent(document.querySelector('.email-preview .subject').textContent)}&body=${encodeURIComponent(document.getElementById('emailBody').innerText)}`)}
+
+// ─── ANALYSIS ───
+function toggleFields(){
+  const t=document.getElementById('propType').value;
+  document.getElementById('houseFields').style.display=t==='house'?'':'none';
+  document.getElementById('landFields').style.display=t==='land'?'':'none';
+}
+
+function runAnalysis(){
+  const type=document.getElementById('propType').value;
+  const addr=document.getElementById('propAddress').value||'Unknown Property';
+  const asking=parseFloat(document.getElementById('propAskingPrice').value)||0;
+  const offer=parseFloat(document.getElementById('propOfferPrice').value)||0;
+  const strategy=document.getElementById('propStrategy').value;
+  let html='',saveData={};
+
+  if(type==='house'){
+    const arv=parseFloat(document.getElementById('propARV').value)||0;
+    const rehab=parseFloat(document.getElementById('propRehab').value)||0;
+    const hpm=parseFloat(document.getElementById('propHolding').value)||0;
+    const hm=parseFloat(document.getElementById('propHoldMonths').value)||4;
+    const cp=(parseFloat(document.getElementById('propClosingPct').value)||8)/100;
+    const af=parseFloat(document.getElementById('propAssignment').value)||0;
+    const th=hpm*hm,cc=arv*cp,mao70=arv*0.70-rehab,mao75=arv*0.75-rehab;
+    let ti,tr,np,roi;
+    if(strategy==='wholesale'){ti=offer;tr=offer+af;np=af;roi=offer>0?np/offer:0}
+    else{ti=offer+rehab+th+cc;tr=arv;np=tr-ti;roi=ti>0?np/ti:0}
+    const ds=offer<=mao70?'go':offer<=mao75?'caution':'no';
+    const vt=ds==='go'?'Strong — Under 70% MAO':ds==='caution'?'Caution — 70-75% MAO':'Risky — Above 75% MAO';
+    saveData={arv,rehab,profit:np,roi,mao70};
+
+    html=`<div class="metrics-grid">
+      <div class="metric"><div class="num gold">${fmt(arv)}</div><div class="lbl">ARV</div></div>
+      <div class="metric"><div class="num">${fmt(offer)}</div><div class="lbl">Purchase</div></div>
+      <div class="metric"><div class="num ${np>=0?'green':'red'}">${fmt(np)}</div><div class="lbl">${strategy==='wholesale'?'Assignment':'Profit'}</div></div>
+      <div class="metric"><div class="num ${roi>=0.15?'green':roi>=0?'gold':'red'}">${pct(roi)}</div><div class="lbl">ROI</div></div>
+      <div class="metric"><div class="num">${fmt(mao70)}</div><div class="lbl">MAO 70%</div></div>
+    </div>
+    <div id="printProforma"><div class="proforma"><div class="proforma-header"><h3>${addr}</h3><span class="type-badge">${strategy}</span></div><div class="proforma-body">
+      <div class="proforma-section"><h4>Revenue</h4>${strategy==='wholesale'?
+        `<div class="proforma-row"><span class="label">Contract Price</span><span class="value">${fmt(offer)}</span></div><div class="proforma-row"><span class="label">Assignment Fee</span><span class="value green">${fmt(af)}</span></div><div class="proforma-row total"><span class="label">Assigned At</span><span class="value">${fmt(offer+af)}</span></div>`:
+        `<div class="proforma-row"><span class="label">ARV</span><span class="value">${fmt(arv)}</span></div><div class="proforma-row total"><span class="label">Total Revenue</span><span class="value">${fmt(arv)}</span></div>`}</div>
+      ${strategy!=='wholesale'?`<div class="proforma-section"><h4>Costs</h4>
+        <div class="proforma-row"><span class="label">Purchase</span><span class="value">${fmt(offer)}</span></div>
+        <div class="proforma-row"><span class="label">Rehab</span><span class="value">${fmt(rehab)}</span></div>
+        <div class="proforma-row"><span class="label">Holding (${hm}mo x ${fmt(hpm)})</span><span class="value">${fmt(th)}</span></div>
+        <div class="proforma-row"><span class="label">Closing (${(cp*100).toFixed(1)}%)</span><span class="value">${fmt(cc)}</span></div>
+        <div class="proforma-row total"><span class="label">Total Investment</span><span class="value">${fmt(ti)}</span></div></div>`:''}
+      <div class="proforma-section"><h4>Returns</h4>
+        <div class="proforma-row"><span class="label">Net Profit</span><span class="value ${np>=0?'green':'red'}">${fmt(np)}</span></div>
+        <div class="proforma-row"><span class="label">ROI</span><span class="value">${pct(roi)}</span></div>
+        <div class="proforma-row"><span class="label">MAO 70%</span><span class="value">${fmt(mao70)}</span></div>
+        <div class="proforma-row"><span class="label">MAO 75%</span><span class="value">${fmt(mao75)}</span></div>
+        <div class="proforma-row"><span class="label">Spread vs 70%</span><span class="value ${offer<=mao70?'green':'red'}">${fmt(mao70-offer)}</span></div></div>
+    </div></div></div>
+    <div class="verdict ${ds}">${ds==='go'?'&#10003;':ds==='caution'?'&#9888;':'&#10007;'} ${vt}</div>`;
+  }else{
+    const ac=parseFloat(document.getElementById('landAcres').value)||0;
+    const lots=parseInt(document.getElementById('landLots').value)||1;
+    const lv=parseFloat(document.getElementById('landLotValue').value)||0;
+    const sw=parseFloat(document.getElementById('landSiteWork').value)||0;
+    const pm=parseFloat(document.getElementById('landPermits').value)||0;
+    const lh=parseFloat(document.getElementById('landHolding').value)||0;
+    const mo=parseFloat(document.getElementById('landMonths').value)||8;
+    const cp=(parseFloat(document.getElementById('landClosingPct').value)||6)/100;
+    const tlv=lots*lv,cc=tlv*cp,ti=offer+sw+pm+lh+cc,np=tlv-ti,roi=ti>0?np/ti:0,ppl=lots>0?np/lots:0,ppa=ac>0?offer/ac:0;
+    const ds=roi>=0.25?'go':roi>=0.10?'caution':'no';
+    const vt=ds==='go'?'Strong — 25%+ ROI':ds==='caution'?'Caution — 10-25% ROI':'Risky — Under 10% ROI';
+    saveData={lots,lotValue:lv,profit:np,roi};
+
+    html=`<div class="metrics-grid">
+      <div class="metric"><div class="num gold">${fmt(tlv)}</div><div class="lbl">Total Value</div></div>
+      <div class="metric"><div class="num">${fmt(offer)}</div><div class="lbl">Land Cost</div></div>
+      <div class="metric"><div class="num ${np>=0?'green':'red'}">${fmt(np)}</div><div class="lbl">Profit</div></div>
+      <div class="metric"><div class="num ${roi>=0.25?'green':roi>=0?'gold':'red'}">${pct(roi)}</div><div class="lbl">ROI</div></div>
+      <div class="metric"><div class="num">${lots}</div><div class="lbl">Lots</div></div>
+      <div class="metric"><div class="num">${fmt(ppl)}</div><div class="lbl">$/Lot</div></div>
+    </div>
+    <div id="printProforma"><div class="proforma"><div class="proforma-header"><h3>${addr}</h3><span class="type-badge">Land Development</span></div><div class="proforma-body">
+      <div class="proforma-section"><h4>Revenue</h4><div class="proforma-row"><span class="label">${lots} Lots x ${fmt(lv)}</span><span class="value">${fmt(tlv)}</span></div><div class="proforma-row total"><span class="label">Total Revenue</span><span class="value">${fmt(tlv)}</span></div></div>
+      <div class="proforma-section"><h4>Costs</h4>
+        <div class="proforma-row"><span class="label">Land (${ac}ac @ ${fmt(ppa)}/ac)</span><span class="value">${fmt(offer)}</span></div>
+        <div class="proforma-row"><span class="label">Site Work</span><span class="value">${fmt(sw)}</span></div>
+        <div class="proforma-row"><span class="label">Permits</span><span class="value">${fmt(pm)}</span></div>
+        <div class="proforma-row"><span class="label">Holding (~${mo}mo)</span><span class="value">${fmt(lh)}</span></div>
+        <div class="proforma-row"><span class="label">Closing (${(cp*100).toFixed(1)}%)</span><span class="value">${fmt(cc)}</span></div>
+        <div class="proforma-row total"><span class="label">Total Investment</span><span class="value">${fmt(ti)}</span></div></div>
+      <div class="proforma-section"><h4>Returns</h4>
+        <div class="proforma-row"><span class="label">Net Profit</span><span class="value ${np>=0?'green':'red'}">${fmt(np)}</span></div>
+        <div class="proforma-row"><span class="label">ROI</span><span class="value">${pct(roi)}</span></div>
+        <div class="proforma-row"><span class="label">Profit/Lot</span><span class="value">${fmt(ppl)}</span></div></div>
+    </div></div></div>
+    <div class="verdict ${ds}">${ds==='go'?'&#10003;':ds==='caution'?'&#9888;':'&#10007;'} ${vt}</div>`;
+  }
+
+  document.getElementById('analysisOutput').innerHTML=html;
+  const a={id:'a-'+Date.now(),address:addr,type,strategy,offer,asking,date:today(),...saveData};
+  analyses.push(a);
+  localStorage.setItem('bs-analyses',JSON.stringify(analyses));
+  renderSaved();renderCompareDropdowns();
+}
+
+function clearAnalysis(){
+  document.querySelectorAll('#analysisView input[type="number"],#analysisView input[type="text"]').forEach(i=>i.value='');
+  document.getElementById('analysisOutput').innerHTML='';
+}
+
+function printProforma(){window.print()}
+
+function renderSaved(){
+  const el=document.getElementById('savedList');
+  if(!analyses.length){el.innerHTML='<div style="color:var(--dim);font-size:0.82rem">No saved analyses.</div>';return}
+  el.innerHTML=analyses.slice().reverse().slice(0,15).map(a=>`
+    <div class="saved-row"><div><div style="font-weight:600;font-size:0.88rem">${a.address}</div>
+    <div style="font-size:0.72rem;color:var(--dim)">${a.type} — ${a.strategy} — ${a.date}</div></div>
+    <div style="text-align:right"><div style="font-size:0.88rem">${fmt(a.offer)}</div>
+    ${a.profit!==undefined?`<div style="font-size:0.72rem;color:${a.profit>=0?'var(--green)':'var(--red)'}">${fmt(a.profit)} profit</div>`:''}</div></div>`).join('');
+}
+
+// ─── REVERSE CALC ───
+function reverseCalc(){
+  const tp=parseFloat(document.getElementById('revProfit').value)||0;
+  const arv=parseFloat(document.getElementById('revARV').value)||0;
+  const rehab=parseFloat(document.getElementById('revRehab').value)||0;
+  const cp=(parseFloat(document.getElementById('revClosing').value)||8)/100;
+  const hold=parseFloat(document.getElementById('revHolding').value)||0;
+  const strat=document.getElementById('revStrategy').value;
+  let maxOffer;
+  if(strat==='wholesale'){maxOffer=(arv*0.70)-rehab-tp}
+  else{maxOffer=arv-rehab-hold-(arv*cp)-tp}
+  document.getElementById('reverseResult').innerHTML=`
+    <div class="reverse-result">
+      <div style="font-size:0.75rem;color:var(--dim);margin-bottom:6px">Maximum Offer Price</div>
+      <div class="big">${fmt(Math.max(0,maxOffer))}</div>
+      <div class="sub">To make ${fmt(tp)} profit on a ${fmt(arv)} ARV property</div>
+      ${maxOffer<0?'<div style="color:var(--red);margin-top:8px;font-weight:600">Deal does not work at these numbers.</div>':''}
+    </div>`;
+}
+
+// ─── COMPARE ───
+function renderCompareDropdowns(){
+  ['compareA','compareB'].forEach(id=>{
+    const el=document.getElementById(id);
+    const val=el.value;
+    el.innerHTML='<option value="">Select...</option>'+analyses.map(a=>`<option value="${a.id}">${a.address} (${a.date})</option>`).join('');
+    el.value=val;
+  });
+}
+
+function compareProperties(){
+  const aId=document.getElementById('compareA').value;
+  const bId=document.getElementById('compareB').value;
+  if(!aId||!bId){document.getElementById('compareOutput').innerHTML='<div style="color:var(--dim);font-size:0.82rem">Select two properties.</div>';return}
+  const a=analyses.find(x=>x.id===aId),b=analyses.find(x=>x.id===bId);
+  const rows=[
+    ['Address',a.address,b.address],
+    ['Type',a.type,b.type],
+    ['Strategy',a.strategy,b.strategy],
+    ['Offer',fmt(a.offer),fmt(b.offer),a.offer<b.offer],
+    ['Asking',fmt(a.asking||0),fmt(b.asking||0)],
+    ['Profit',a.profit!==undefined?fmt(a.profit):'N/A',b.profit!==undefined?fmt(b.profit):'N/A',(a.profit||0)>(b.profit||0)],
+    ['ROI',a.roi!==undefined?pct(a.roi):'N/A',b.roi!==undefined?pct(b.roi):'N/A',(a.roi||0)>(b.roi||0)]
+  ];
+  document.getElementById('compareOutput').innerHTML=`<div class="compare-grid">
+    <div class="ch header">Metric</div><div class="ch header">${a.address}</div><div class="ch header">${b.address}</div>
+    ${rows.map(r=>`<div class="ch label">${r[0]}</div><div class="ch ${r[3]===true?'better':r[3]===false?'':''}"> ${r[1]}</div><div class="ch ${r[3]===false?'better':r[3]===true?'':''}"> ${r[2]}</div>`).join('')}
+  </div>`;
+}
+
+// ─── BUYERS ───
+function renderBuyers(){
+  const el=document.getElementById('buyersList');
+  if(!buyers.length){el.innerHTML='<div style="color:var(--dim);font-size:0.82rem;padding:20px;text-align:center">No buyers yet.</div>';return}
+  el.innerHTML=buyers.map(b=>`
+    <div class="buyer-row">
+      <div class="info"><div class="bname">${b.name}${b.company?' — '+b.company:''}</div>
+      <div class="criteria">${b.email}${b.phone?' | '+b.phone:''}</div>
+      <div class="buyer-tags" style="margin-top:4px">
+        ${b.areas?b.areas.split(',').map(a=>`<span class="buyer-tag">${a.trim()}</span>`).join(''):''}
+        ${b.range?`<span class="buyer-tag">${b.range}</span>`:''}
+        ${b.types?b.types.split(',').map(t=>`<span class="buyer-tag">${t.trim()}</span>`).join(''):''}
+      </div>
+      ${b.notes?`<div style="font-size:0.75rem;color:var(--dim);margin-top:4px">${b.notes}</div>`:''}</div>
+      <button class="btn-icon" onclick="deleteBuyer('${b.id}')" title="Delete">&times;</button>
+    </div>`).join('');
+}
+
+function saveBuyer(){
+  buyers.push({id:'b-'+Date.now(),name:document.getElementById('nbName').value,email:document.getElementById('nbEmail').value,phone:document.getElementById('nbPhone').value,company:document.getElementById('nbCompany').value,areas:document.getElementById('nbAreas').value,range:document.getElementById('nbRange').value,types:document.getElementById('nbTypes').value,notes:document.getElementById('nbNotes').value});
+  localStorage.setItem('bs-buyers',JSON.stringify(buyers));
+  closeModal('newBuyerModal');
+  document.querySelectorAll('#newBuyerModal input,#newBuyerModal textarea').forEach(i=>i.value='');
+  renderBuyers();
+}
+
+function deleteBuyer(id){buyers=buyers.filter(b=>b.id!==id);localStorage.setItem('bs-buyers',JSON.stringify(buyers));renderBuyers()}
+
+// ─── CONTACTS ───
+function renderContacts(){
+  const el=document.getElementById('contactsList');
+  if(!contacts.length){el.innerHTML='<div style="color:var(--dim);font-size:0.82rem;padding:20px;text-align:center">No saved contacts. Add attorneys, title companies, and other frequent contacts.</div>';return}
+  el.innerHTML=contacts.map(c=>`
+    <div class="contact-row">
+      <div class="cinfo"><div class="cname">${c.name} <span style="font-size:0.7rem;color:var(--blue-accent);text-transform:uppercase">${c.role}</span></div>
+      <div class="cdetail">${c.company?c.company+' | ':''}${c.email||''}${c.phone?' | '+c.phone:''}</div></div>
+      <button class="btn-icon" onclick="deleteContact('${c.id}')" title="Delete">&times;</button>
+    </div>`).join('');
+}
+
+function saveContact(){
+  contacts.push({id:'c-'+Date.now(),name:document.getElementById('ncName').value,role:document.getElementById('ncRole').value,email:document.getElementById('ncEmail').value,phone:document.getElementById('ncPhone').value,company:document.getElementById('ncCompany').value});
+  localStorage.setItem('bs-contacts',JSON.stringify(contacts));
+  closeModal('newContactModal');
+  document.querySelectorAll('#newContactModal input').forEach(i=>i.value='');
+  renderContacts();
+}
+
+function deleteContact(id){contacts=contacts.filter(c=>c.id!==id);localStorage.setItem('bs-contacts',JSON.stringify(contacts));renderContacts()}
+
+function populateContactDropdowns(){
+  ['ndSellerContact','ndAttorneyContact','ndTitleContact'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const role=id.includes('Seller')?'seller':id.includes('Attorney')?'attorney':'title';
+    const filtered=contacts.filter(c=>c.role===role||role==='seller');
+    el.innerHTML='<option value="">Type manually or select saved...</option>'+filtered.map(c=>`<option value="${c.id}">${c.name}${c.company?' — '+c.company:''}</option>`).join('');
+  });
+}
+
+function fillFromContact(selectId,nameId,emailId){
+  const cId=document.getElementById(selectId).value;
+  const c=contacts.find(x=>x.id===cId);
+  if(c){document.getElementById(nameId).value=c.name;document.getElementById(emailId).value=c.email||''}
+}
+
+// INIT
+renderDeals();renderSaved();renderBuyers();renderContacts();renderCompareDropdowns();
+</script>
+</body>
+</html>

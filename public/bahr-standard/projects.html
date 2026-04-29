@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects | Bahr Standard Investments</title>
+  <meta name="description" content="View our portfolio of active developments, completed projects, and upcoming acquisitions across the Phoenix metro area."/>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .animate-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease }
+    .animate-in.visible { opacity: 1; transform: translateY(0) }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      color: var(--gray-600);
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover { border-color: var(--blue); color: var(--blue) }
+    .filter-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue) }
+
+    /* Project count */
+    .project-count {
+      font-size: 0.82rem;
+      color: var(--gray-400);
+      margin-bottom: 24px;
+    }
+    .project-count span { color: var(--blue); font-weight: 700 }
+
+    /* Extended project cards for this page */
+    .projects-page-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .project-card-full .project-img { height: 220px }
+
+    .project-card-full .project-body { padding: 24px }
+
+    .project-type {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--blue-accent);
+      margin-bottom: 6px;
+    }
+
+    .project-card-full .project-title {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .project-card-full .project-location {
+      margin-bottom: 14px;
+    }
+
+    .project-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding-top: 14px;
+      border-top: 1px solid var(--gray-100);
+    }
+
+    .project-stat {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+    .project-stat strong {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--gray-800);
+      font-weight: 700;
+    }
+
+    /* Portfolio stats banner */
+    .portfolio-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+    .portfolio-stat-card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-align: center;
+    }
+    .portfolio-stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--blue);
+    }
+    .portfolio-stat-label {
+      font-size: 0.78rem;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 968px) {
+      .projects-page-grid { grid-template-columns: 1fr 1fr }
+      .portfolio-stats { grid-template-columns: 1fr 1fr }
+    }
+    @media (max-width: 600px) {
+      .projects-page-grid { grid-template-columns: 1fr }
+      .portfolio-stats { grid-template-columns: 1fr 1fr }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-text">BAHR <span>STANDARD</span></div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="buying.html" class="nav-link">Sell Your Property</a>
+        <a href="investors.html" class="nav-link">Investors</a>
+        <a href="projects.html" class="nav-link active">Projects</a>
+        <a href="index.html#about" class="nav-link">About</a>
+        <a href="index.html#contact" class="btn btn-primary nav-cta">Contact Us</a>
+      </div>
+      <button class="nav-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" style="padding:140px 0 80px;background:url('https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?w=1920&q=80') center/cover no-repeat">
+    <div class="container">
+      <div class="hero-content" style="max-width:600px">
+        <div class="section-label" style="color:rgba(255,255,255,0.5)">Our Portfolio</div>
+        <h1>Projects &amp; <span>Developments</span></h1>
+        <p class="hero-sub">Every property we've acquired, developed, and delivered. Our track record speaks for itself.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Stats -->
+  <section class="section" style="padding-bottom:0">
+    <div class="container">
+      <div class="portfolio-stats animate-in">
+        <div class="portfolio-stat-card">
+          <div class="portfolio-stat-num">12</div>
+          <div class="portfolio-stat-label">Total Projects</div>
+        </div>
+        <div class="portfolio-stat-card">
+          <div class="portfolio-stat-num">3</div>
+          <div class="portfolio-stat-label">Active Now</div>
+        </div>
+        <div class="portfolio-stat-card">
+          <div class="portfolio-stat-num">7</div>
+          <div class="portfolio-stat-label">Completed</div>
+        </div>
+        <div class="portfolio-stat-card">
+          <div class="portfolio-stat-num">2</div>
+          <div class="portfolio-stat-label">Coming Soon</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Grid -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterProjects('all', this)">All Projects</button>
+        <button class="filter-btn" onclick="filterProjects('active', this)">Active</button>
+        <button class="filter-btn" onclick="filterProjects('completed', this)">Completed</button>
+        <button class="filter-btn" onclick="filterProjects('coming', this)">Coming Soon</button>
+        <button class="filter-btn" onclick="filterProjects('rehab', this)">Rehabs</button>
+        <button class="filter-btn" onclick="filterProjects('land', this)">Land</button>
+        <button class="filter-btn" onclick="filterProjects('new-build', this)">New Builds</button>
+      </div>
+
+      <div class="project-count"><span id="projectCount">12</span> projects</div>
+
+      <!-- Projects -->
+      <div class="projects-page-grid" id="projectsGrid">
+
+        <!-- Active Projects -->
+        <div class="project-card project-card-full animate-in" data-status="active" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1628744448840-55bdb2497bd4?w=800&q=80" alt="Desert Ridge Development" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge active">Active</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Desert Ridge Development</div>
+            <div class="project-location">North Phoenix, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>4 Units</strong>Type</div>
+              <div class="project-stat"><strong>6,200 sqft</strong>Total Size</div>
+              <div class="project-stat"><strong>Q2 2026</strong>Est. Completion</div>
+              <div class="project-stat"><strong>$1.2M</strong>Project Value</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="active" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Scottsdale Rehab" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge active">Active</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Scottsdale Luxury Rehab</div>
+            <div class="project-location">Scottsdale, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Single Family</strong>Type</div>
+              <div class="project-stat"><strong>2,800 sqft</strong>Size</div>
+              <div class="project-stat"><strong>May 2026</strong>Est. Completion</div>
+              <div class="project-stat"><strong>$580K</strong>Project Value</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="active" data-type="new-build">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80" alt="Tempe New Build" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge active">Active</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">New Build</div>
+            <div class="project-title">Tempe Townhome Project</div>
+            <div class="project-location">Tempe, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>3 Units</strong>Type</div>
+              <div class="project-stat"><strong>4,800 sqft</strong>Total Size</div>
+              <div class="project-stat"><strong>Q3 2026</strong>Est. Completion</div>
+              <div class="project-stat"><strong>$890K</strong>Project Value</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Projects -->
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1523217582562-09d0def993a6?w=800&q=80" alt="Chandler Flip" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Chandler Full Rehab</div>
+            <div class="project-location">Chandler, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Single Family</strong>Type</div>
+              <div class="project-stat"><strong>1,950 sqft</strong>Size</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$425K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" alt="Gilbert Rehab" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Gilbert Family Home</div>
+            <div class="project-location">Gilbert, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Single Family</strong>Type</div>
+              <div class="project-stat"><strong>2,400 sqft</strong>Size</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$510K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="land">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="Buckeye Land" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Land</div>
+            <div class="project-title">Buckeye Land Acquisition</div>
+            <div class="project-location">Buckeye, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>5 Acres</strong>Size</div>
+              <div class="project-stat"><strong>Residential</strong>Zoning</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$320K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1592595896616-c37162298647?w=800&q=80" alt="Peoria Rehab" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Peoria Starter Home</div>
+            <div class="project-location">Peoria, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Single Family</strong>Type</div>
+              <div class="project-stat"><strong>1,600 sqft</strong>Size</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$345K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="new-build">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1602941525421-8f8b81d3edbb?w=800&q=80" alt="Surprise New Build" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">New Build</div>
+            <div class="project-title">Surprise Duplex Build</div>
+            <div class="project-location">Surprise, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Duplex</strong>Type</div>
+              <div class="project-stat"><strong>3,200 sqft</strong>Total Size</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$620K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="land">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="Goodyear Land" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Land</div>
+            <div class="project-title">Goodyear Parcel Sale</div>
+            <div class="project-location">Goodyear, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>3.2 Acres</strong>Size</div>
+              <div class="project-stat"><strong>Commercial</strong>Zoning</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$275K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="completed" data-type="rehab">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Glendale Rehab" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge sold">Completed</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Rehab</div>
+            <div class="project-title">Glendale Corner Lot</div>
+            <div class="project-location">Glendale, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>Single Family</strong>Type</div>
+              <div class="project-stat"><strong>2,100 sqft</strong>Size</div>
+              <div class="project-stat"><strong>Sold</strong>Status</div>
+              <div class="project-stat"><strong>$465K</strong>Sale Price</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coming Soon -->
+        <div class="project-card project-card-full animate-in" data-status="coming" data-type="land">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80" alt="Mesa Land" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge coming">Coming Soon</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">Land Acquisition</div>
+            <div class="project-title">Mesa Development Parcel</div>
+            <div class="project-location">Mesa, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>2.5 Acres</strong>Size</div>
+              <div class="project-stat"><strong>Multi-use</strong>Zoning</div>
+              <div class="project-stat"><strong>Q3 2026</strong>Target Close</div>
+              <div class="project-stat"><strong>TBD</strong>Project Value</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card project-card-full animate-in" data-status="coming" data-type="new-build">
+          <div class="project-img">
+            <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80" alt="Avondale Build" style="width:100%;height:100%;object-fit:cover"/>
+            <div class="project-badge coming">Coming Soon</div>
+          </div>
+          <div class="project-body">
+            <div class="project-type">New Build</div>
+            <div class="project-title">Avondale Infill Project</div>
+            <div class="project-location">Avondale, AZ</div>
+            <div class="project-stats">
+              <div class="project-stat"><strong>2 Units</strong>Type</div>
+              <div class="project-stat"><strong>3,400 sqft</strong>Total Size</div>
+              <div class="project-stat"><strong>Q4 2026</strong>Target Start</div>
+              <div class="project-stat"><strong>TBD</strong>Project Value</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section-gray">
+    <div class="container">
+      <div class="cta-banner animate-in">
+        <h2>Have a Property or Want to Invest?</h2>
+        <p>We're always looking for new opportunities. Whether you have a property to sell or capital to invest, let's talk.</p>
+        <div>
+          <a href="buying.html" class="btn btn-white">Sell Your Property</a>
+          <a href="investors.html" class="btn btn-accent">Invest With Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo-text" style="color:var(--white)">BAHR <span style="color:#F0C75E">STANDARD</span></div>
+          <p>A Phoenix-based real estate development company focused on building quality properties and creating lasting investment opportunities.</p>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul class="footer-links">
+            <li><a href="buying.html">Sell Your Property</a></li>
+            <li><a href="buying.html">Sell Your Land</a></li>
+            <li><a href="investors.html">Invest With Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-links">
+            <li><a href="mailto:info@bahrstandard.com">info@bahrstandard.com</a></li>
+            <li><a href="tel:+16025551234">Phoenix, AZ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 Bahr Standard Investments. All rights reserved.</div>
+        <div class="footer-socials">
+          <a href="#">Instagram</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">Facebook</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    function filterProjects(filter, btn) {
+      // Update active button
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('#projectsGrid .project-card');
+      let count = 0;
+
+      cards.forEach(card => {
+        const status = card.dataset.status;
+        const type = card.dataset.type;
+        const match = filter === 'all' || status === filter || type === filter;
+
+        card.style.display = match ? '' : 'none';
+        if (match) count++;
+      });
+
+      document.getElementById('projectCount').textContent = count;
+    }
+  </script>
+</body>
+</html>
