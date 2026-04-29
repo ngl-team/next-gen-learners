@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hunter Proposal | NGL</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+    --border:#E2E8F0;--text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+    --primary:#4F46E5;--secondary:#7C3AED;--accent:#10B981;--cyan:#06B6D4;--warm:#F59E0B;--rose:#EC4899;
+    --radius:12px;--radius-lg:20px;--radius-xl:24px;
+  }
+  html{scroll-behavior:smooth}
+  body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .container{max-width:880px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.85);backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,70,229,0.08);padding:14px 24px}
+  nav .inner{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .nav-brand{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);font-weight:700;text-decoration:none}
+  .nav-link{font-size:.8rem;color:var(--text-2);text-decoration:none;font-weight:500}
+
+  .hero{position:relative;padding:80px 0 60px;text-align:center;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1E1B4B,#4F46E5,#7C3AED);background-size:400% 400%;z-index:0;border-radius:0 0 40px 40px;animation:gf 18s ease infinite}
+  @keyframes gf{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  .hero-content{position:relative;z-index:2}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 18px;border-radius:100px;margin-bottom:24px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-weight:600}
+  .hero h1{font-size:clamp(2.1rem,5.5vw,3.4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:18px;color:white;padding:0 24px}
+  .hero h1 em{font-style:italic;color:rgba(255,255,255,.92)}
+  .hero-sub{font-size:1.05rem;color:rgba(255,255,255,.85);max-width:660px;margin:0 auto;line-height:1.7;font-weight:300;padding:0 24px}
+  .hero-meta{margin-top:30px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px;font-size:.78rem;color:rgba(255,255,255,.75);padding:0 24px}
+  .hero-meta span{display:inline-flex;align-items:center;gap:6px}
+  .hero-meta span::before{content:"";width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.6)}
+
+  .section{padding:64px 0}
+  .section-tight{padding:44px 0}
+  .sh-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700}
+  .sh-title{font-weight:800;letter-spacing:-.02em;font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin-bottom:14px;color:var(--text)}
+  .sh-desc{font-size:.98rem;color:var(--text-2);line-height:1.7;margin-bottom:32px;max-width:680px}
+
+  .pain-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:24px}
+  @media(min-width:640px){.pain-grid{grid-template-columns:1fr 1fr}}
+  .pain-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px}
+  .pain-quote{font-size:.9rem;color:var(--text);font-style:italic;line-height:1.55;margin-bottom:10px;padding-left:14px;border-left:3px solid var(--warm)}
+  .pain-tag{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-2);font-weight:600}
+
+  .stack-wrap{margin-top:24px}
+  .stack-layer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 26px;margin-bottom:14px}
+  .stack-layer.foundation{border-left:4px solid var(--accent)}
+  .stack-layer.agents{border-left:4px solid var(--primary)}
+  .stack-tag{display:inline-block;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:6px;margin-bottom:10px}
+  .stack-tag.foundation{background:rgba(16,185,129,0.1);color:#047857}
+  .stack-tag.agents{background:rgba(79,70,229,0.1);color:var(--primary)}
+  .stack-layer h3{font-size:1.15rem;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+  .stack-layer p.lead{font-size:.92rem;color:var(--text-2);line-height:1.7;margin-bottom:14px}
+  .stack-list{display:grid;gap:8px;margin-top:12px}
+  .stack-item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:11px 14px;background:var(--surface-2);border-radius:10px;font-size:.86rem;align-items:start}
+  .stack-item-num{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--primary);font-weight:600;padding-top:1px}
+  .stack-item-text strong{font-weight:700;color:var(--text);display:block;margin-bottom:2px}
+  .stack-item-text span{color:var(--text-2);font-size:.83rem;line-height:1.55}
+
+  .compare{margin-top:24px;display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:640px){.compare{grid-template-columns:1fr 1fr 1fr}}
+  .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px}
+  .compare-card.us{border:2px solid var(--primary);background:linear-gradient(180deg,#F4F3FF,#FFFFFF)}
+  .compare-name{font-weight:800;font-size:1rem;margin-bottom:4px}
+  .compare-price{font-size:.78rem;color:var(--text-2);font-family:'JetBrains Mono',monospace;margin-bottom:10px}
+  .compare-list{font-size:.82rem;color:var(--text-2);line-height:1.6;list-style:none}
+  .compare-list li{padding-left:18px;position:relative;margin-bottom:5px}
+  .compare-list li::before{content:"-";position:absolute;left:6px;color:var(--text-3)}
+  .compare-card.us .compare-list li::before{content:"+";color:var(--accent);font-weight:700}
+
+  .invest-block{background:linear-gradient(135deg,#1E1B4B,#4F46E5);color:white;border-radius:var(--radius-xl);padding:36px 32px;margin-top:24px}
+  .invest-block h3{color:white;font-size:1.35rem;font-weight:800;margin-bottom:18px;letter-spacing:-.01em}
+  .invest-row{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.15);font-size:1rem}
+  .invest-row.total{border-bottom:none;border-top:2px solid rgba(255,255,255,0.4);margin-top:6px;padding-top:18px;font-size:1.15rem;font-weight:800}
+  .invest-label{color:rgba(255,255,255,0.95);font-weight:600}
+  .invest-detail{color:rgba(255,255,255,0.65);font-size:.78rem;font-weight:400;display:block;margin-top:2px}
+  .invest-amt{font-family:'JetBrains Mono',monospace;color:white;font-weight:700;font-size:1.05rem}
+  .invest-note{margin-top:18px;font-size:.83rem;color:rgba(255,255,255,0.78);line-height:1.6}
+
+  .terms-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px}
+  @media(min-width:640px){.terms-grid{grid-template-columns:1fr 1fr}}
+  .terms-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px}
+  .terms-card h4{font-size:.95rem;font-weight:800;margin-bottom:8px}
+  .terms-card p{font-size:.85rem;color:var(--text-2);line-height:1.65}
+  .terms-card .pay-methods{margin-top:10px;font-size:.78rem;color:var(--text);font-family:'JetBrains Mono',monospace}
+
+  .priority-card{background:linear-gradient(135deg,#10B981,#06B6D4);color:white;border-radius:var(--radius-xl);padding:30px 30px;margin-top:24px}
+  .priority-card h3{color:white;font-size:1.2rem;font-weight:800;margin-bottom:10px}
+  .priority-card p{color:rgba(255,255,255,0.92);font-size:.92rem;line-height:1.65}
+
+  .timeline{margin-top:24px;border-left:2px solid var(--border);padding-left:24px}
+  .timeline-row{position:relative;padding-bottom:18px}
+  .timeline-row::before{content:"";position:absolute;left:-30px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--primary);border:2px solid white;box-shadow:0 0 0 2px var(--primary)}
+  .timeline-date{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--primary);font-weight:700;margin-bottom:3px}
+  .timeline-content{font-size:.9rem;color:var(--text);line-height:1.6}
+  .timeline-content strong{font-weight:700}
+
+  .sign-block{background:var(--surface);border:2px solid var(--text);border-radius:var(--radius-xl);padding:34px 32px;margin-top:32px}
+  .sign-block h3{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+  .sign-block p{font-size:.88rem;color:var(--text-2);line-height:1.65;margin-bottom:24px}
+  .sign-grid{display:grid;grid-template-columns:1fr;gap:24px}
+  @media(min-width:640px){.sign-grid{grid-template-columns:1fr 1fr}}
+  .sig-line{border-bottom:1.5px solid var(--text);height:48px;margin-bottom:6px}
+  .sig-label{font-size:.72rem;color:var(--text-2);letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+
+  .cta{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:white;border-radius:var(--radius-xl);padding:44px 32px;text-align:center;margin:48px 0}
+  .cta h2{font-size:1.5rem;font-weight:800;margin-bottom:12px;letter-spacing:-.02em;color:white}
+  .cta p{color:rgba(255,255,255,0.92);font-size:.95rem;line-height:1.7;margin-bottom:8px;max-width:600px;margin-left:auto;margin-right:auto}
+  .cta-mail{display:inline-block;margin-top:20px;padding:14px 28px;background:white;color:var(--primary);text-decoration:none;border-radius:100px;font-weight:700;font-size:.92rem;letter-spacing:.02em}
+
+  footer{padding:40px 24px;text-align:center;color:var(--text-3);font-size:.78rem;border-top:1px solid var(--border);margin-top:40px}
+  footer a{color:var(--primary);text-decoration:none;font-weight:600}
+
+  @media print{
+    @page{size:letter;margin:0.5in}
+    nav,.cta{display:none !important}
+    .hero{padding:30px 0 20px;page-break-after:avoid}
+    .hero-bg{border-radius:0;background:#1E1B4B !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .invest-block,.priority-card{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .section{padding:24px 0;page-break-inside:avoid}
+    .sign-block{page-break-inside:avoid;page-break-before:auto}
+    body{font-size:10pt}
+    .hero h1{font-size:24pt}
+    .sh-title{font-size:14pt}
+    a{color:inherit;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="nav-brand">NGL · Next Generation Learners</a>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="nav-link">brayan@nextgenerationlearners.com</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Hunter · Proposal</div>
+    <h1>The lead-gen system <em>built around your workflow.</em></h1>
+    <p class="hero-sub">Custom-built around the process you walked me through Sunday April 27. Live today at hunter.nextgenerationlearners.com. Designed to be tuned and humming before your summer window opens.</p>
+    <div class="hero-meta">
+      <span>Prepared April 29, 2026</span>
+      <span>For our 2:00 PM conversation</span>
+      <span>By Brayan Tenesaca</span>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 1 · The pain you described</div>
+    <h2 class="sh-title">The work that ate your Sunday afternoon, in your own words.</h2>
+    <p class="sh-desc">These are the parts of your manual workflow that drove the build. Each one is something Hunter handles automatically.</p>
+    <div class="pain-grid">
+      <div class="pain-item">
+        <div class="pain-quote">"I'll sound like an idiot on the phone if I call about a property that's already back on market."</div>
+        <div class="pain-tag">Relisting suppression</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-quote">"This is a tricky part, finding the right LLC because sometimes there's many, many, many."</div>
+        <div class="pain-tag">LLC to manager chain</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-quote">"The grandkids always answer the phone. The old people don't answer the phone that much."</div>
+        <div class="pain-tag">Family network skip trace</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-quote">"I would love to just put it in a spreadsheet so I don't have to do it every, every single time."</div>
+        <div class="pain-tag">Automated refresh</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 2 · The build</div>
+    <h2 class="sh-title">What Hunter does, end to end.</h2>
+    <p class="sh-desc">Live today at <strong>hunter.nextgenerationlearners.com</strong>. Each step below corresponds to something you walked me through Sunday.</p>
+
+    <div class="stack-wrap">
+      <div class="stack-layer foundation">
+        <div class="stack-tag foundation">Pull &amp; Filter</div>
+        <h3>The MLS pull, every two weeks, automatic.</h3>
+        <p class="lead">Logs into Pinergy with your agent credentials. Pulls expired, canceled, and withdrawn listings inside a 20-mile radius from Wellesley, 18-month lookback, across the four property types you prioritized.</p>
+        <div class="stack-list">
+          <div class="stack-item"><span class="stack-item-num">01</span><div class="stack-item-text"><strong>Multi-family, land, commercial, business op</strong><span>Your stated priorities. Mobile homes, rentals, and condominiums excluded.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">02</span><div class="stack-item-text"><strong>1,000 listings on first pull, deduped</strong><span>Most-recent listing per property only. No wasted time on duplicate addresses.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">03</span><div class="stack-item-text"><strong>Active-listing cross-reference</strong><span>134 of the original 1,000 caught and suppressed because they relisted active. You never make the call you said you'd sound like an idiot making.</span></div></div>
+        </div>
+      </div>
+
+      <div class="stack-layer agents">
+        <div class="stack-tag agents">Resolve &amp; Trace</div>
+        <h3>From property to person, including the LLC chain.</h3>
+        <p class="lead">Owner resolution through Pinergy public records and Mass Corporation Search, including the LLC to manager chain. Spokeo skip trace for full contact and family network.</p>
+        <div class="stack-list">
+          <div class="stack-item"><span class="stack-item-num">04</span><div class="stack-item-text"><strong>LLC to manager chain</strong><span>The exact pattern you showed me on 90 Maple Street: Buttonball LLC to Kenneth Gray. Followed automatically for every LLC-held property.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">05</span><div class="stack-item-text"><strong>Spokeo skip trace</strong><span>Phone, email, and family network: children, grandchildren, siblings, parents. Built around your point that grandkids are the ones who actually answer.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">06</span><div class="stack-item-text"><strong>Mailing addresses captured</strong><span>For the deals where phone, email, and social fail and you want to send a letter.</span></div></div>
+        </div>
+      </div>
+
+      <div class="stack-layer agents">
+        <div class="stack-tag agents">Pipeline &amp; Track</div>
+        <h3>The "map of where everything goes" you asked for.</h3>
+        <p class="lead">A kanban pipeline view, persistent state, timestamped stage history, and automatic export to Google Sheets.</p>
+        <div class="stack-list">
+          <div class="stack-item"><span class="stack-item-num">07</span><div class="stack-item-text"><strong>Seven-stage pipeline</strong><span>New, Flagged, Skip-Traced, Contacted, In Conversation, Listing Signed, Dead. Stage history timestamped and persistent.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">08</span><div class="stack-item-text"><strong>Outreach logging with auto-advance</strong><span>Every call, voicemail, and email logged. Pipeline stages advance automatically based on outreach result.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">09</span><div class="stack-item-text"><strong>Google Sheets export</strong><span>CSV today, live Sheets API push when you want it. MLS photos render inline in the kanban view.</span></div></div>
+          <div class="stack-item"><span class="stack-item-num">10</span><div class="stack-item-text"><strong>Two-week auto-refresh</strong><span>The pipeline reloads with new expired and canceled listings on a fixed cadence. No manual triggering.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 3 · How this compares</div>
+    <h2 class="sh-title">Custom beats generic on the parts that matter.</h2>
+    <p class="sh-desc">PropStream and BatchLeads are SaaS tools designed for a generic agent. Hunter is built around your specific workflow.</p>
+    <div class="compare">
+      <div class="compare-card">
+        <div class="compare-name">PropStream</div>
+        <div class="compare-price">$99 to $249 per month</div>
+        <ul class="compare-list">
+          <li>No relisting suppression</li>
+          <li>No LLC to manager chain</li>
+          <li>No pipeline persistence</li>
+          <li>Generic to all agents</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <div class="compare-name">BatchLeads</div>
+        <div class="compare-price">$99 to $299 per month</div>
+        <ul class="compare-list">
+          <li>No relisting suppression</li>
+          <li>No LLC to manager chain</li>
+          <li>No pipeline persistence</li>
+          <li>Generic to all agents</li>
+        </ul>
+      </div>
+      <div class="compare-card us">
+        <div class="compare-name">Hunter</div>
+        <div class="compare-price">Built for your workflow</div>
+        <ul class="compare-list">
+          <li>Relisting suppression catches 134 of 1,000</li>
+          <li>LLC to manager chain follows automatically</li>
+          <li>Pipeline persists across refreshes</li>
+          <li>Built around how you actually work</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 4 · Investment</div>
+    <h2 class="sh-title">Honest pricing for a custom build with ongoing maintenance.</h2>
+    <p class="sh-desc">The build is one-time. The maintenance is monthly because Pinergy and Spokeo change, scrapers break, and I patch them. The monthly is what keeps the tool running clean through your full summer window.</p>
+
+    <div class="invest-block">
+      <h3>The numbers</h3>
+      <div class="invest-row">
+        <div class="invest-label">Build &amp; Setup<span class="invest-detail">One-time, includes Spokeo integration and 30 days of live support</span></div>
+        <div class="invest-amt">$3,500</div>
+      </div>
+      <div class="invest-row">
+        <div class="invest-label">Maintenance Retainer<span class="invest-detail">Monthly, beginning May 1, 2026. Pinergy and Spokeo scraper maintenance, bug fixes, feature requests, 24-hour response window</span></div>
+        <div class="invest-amt">$300/mo</div>
+      </div>
+      <div class="invest-row total">
+        <div class="invest-label">First-year total</div>
+        <div class="invest-amt">$7,100</div>
+      </div>
+      <p class="invest-note">Break-even at roughly 38% of one Wellesley close at 2.5% commission on $750,000. One additional listing signed through Hunter pays for the system many times over.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 5 · Payment terms</div>
+    <h2 class="sh-title">Standard custom-build payment structure.</h2>
+    <div class="terms-grid">
+      <div class="terms-card">
+        <h4>Build &amp; Setup ($3,500)</h4>
+        <p>50% at signing ($1,750). 50% at completion, due May 29, 2026 when Spokeo integration is live and owner-resolution rate is tuned past 90%.</p>
+      </div>
+      <div class="terms-card">
+        <h4>Maintenance Retainer ($300/month)</h4>
+        <p>First payment May 1, 2026. Recurring monthly. Cancellable with 30 days notice. Covers all scraper maintenance, bug fixes, and feature requests.</p>
+      </div>
+      <div class="terms-card">
+        <h4>Accepted Payment Methods</h4>
+        <p>Choose what's easiest for you.</p>
+        <div class="pay-methods">Venmo · Zelle · Check · Bank transfer</div>
+      </div>
+      <div class="terms-card">
+        <h4>What's Included in the Retainer</h4>
+        <p>All hosting, scraping infrastructure, and API costs are absorbed by the monthly. The only ongoing costs you see from your side are your existing Pinergy and Spokeo subscriptions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 6 · Priority access</div>
+    <div class="priority-card">
+      <h3>First access and preferred-client pricing on every future tool.</h3>
+      <p>As Hunter evolves and as I build new tools that fit your workflow - social-media vibe-check automation, distressed-property database integration, outreach script generation, anything else that emerges from how you actually use Hunter - you get first access and a preferred-client discount on anything that connects to or extends what we're building together. You're not just buying Hunter today. You're locking in the relationship that brings every next tool to you first.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sh-label">Section 7 · Timeline</div>
+    <h2 class="sh-title">From signing today to humming before summer.</h2>
+    <p class="sh-desc">Working backward from your stated goal of a tuned, running system before you go full-time on it for summer.</p>
+
+    <div class="timeline">
+      <div class="timeline-row">
+        <div class="timeline-date">Today · April 29</div>
+        <div class="timeline-content"><strong>Proposal signed, deposit received.</strong> Spokeo credentials handoff this week. Build start tomorrow morning.</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">By April 30</div>
+        <div class="timeline-content"><strong>Live Spokeo integration.</strong> Replaces the seeded skip-trace data with real phone, email, and family records pulled through your credentials.</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">Friday May 1</div>
+        <div class="timeline-content"><strong>First full automated refresh runs.</strong> Maintenance retainer begins. The pipeline starts repopulating itself every two weeks from here forward.</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">By May 13</div>
+        <div class="timeline-content"><strong>Tuned and ready for full-time summer use.</strong> Owner-resolution rate pushed past 90%. Edge cases caught. You walk into your summer window with a system already humming.</div>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">May 29</div>
+        <div class="timeline-content"><strong>Build completion payment due ($1,750).</strong> All deliverables verified. Ongoing operation moves to retainer-only.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sign-block">
+      <h3>Agreement</h3>
+      <p>By signing below, both parties agree to the scope, payment terms, and timeline outlined above. Signed copies retained by both parties. Any modifications agreed to in writing.</p>
+      <div class="sign-grid">
+        <div>
+          <div class="sig-line"></div>
+          <div class="sig-label">Client signature &amp; date</div>
+        </div>
+        <div>
+          <div class="sig-line"></div>
+          <div class="sig-label">Brayan Tenesaca, NGL · April 29, 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2>Ready to start tomorrow morning.</h2>
+    <p>Sign, send the deposit, and the build starts at 9 AM. By the time school's out, Hunter is already running clean.</p>
+    <a href="mailto:brayan@nextgenerationlearners.com" class="cta-mail">brayan@nextgenerationlearners.com</a>
+  </div>
+</section>
+
+<footer>
+  <p>Hunter · Built by NGL · <a href="https://hunter.nextgenerationlearners.com">hunter.nextgenerationlearners.com</a></p>
+  <p style="margin-top:8px">Brayan Tenesaca · <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a></p>
+</footer>
+
+</body>
+</html>
