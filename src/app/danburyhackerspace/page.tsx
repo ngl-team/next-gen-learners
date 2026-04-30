@@ -355,50 +355,7 @@ export default function DanburyHackerspacePage() {
               <p style={{ fontSize: '1.04rem', color: 'rgba(226,232,240,0.78)', lineHeight: 1.7, maxWidth: 760 }}>
                 Danbury Hackerspace already shares a building with CT SBDC, SCORE Western CT, and K&apos;s Cafe. Mike has been living the model for years. CT Next 2.0 is what happens when you take that one room and stretch it across the state.
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginTop: 28 }}>
-                {[
-                  { yr: '2012', t: 'CT Next launches Danbury Hackerspace.' },
-                  { yr: '2014', t: '501(c)(3) status. SBDC and SCORE join the building.' },
-                  { yr: '2025', t: 'Mike emails Nelson at SBDC with the CT Next 2.0 vision.' },
-                  { yr: '2026', t: 'Bright Ravens 25,000 sq ft build begins. CT Next 2.0 is unfunded.' },
-                ].map((row, i) => (
-                  <Reveal key={row.yr} delay={i * 80}>
-                    <div style={{ background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '16px 18px', backdropFilter: 'blur(10px)', height: '100%' }}>
-                      <div style={{ fontSize: '0.74rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(165,180,252,0.95)', fontWeight: 700, marginBottom: 8 }}>{row.yr}</div>
-                      <div style={{ fontSize: '0.92rem', color: '#FFFFFF', lineHeight: 1.55 }}>{row.t}</div>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
             </div>
-          </div>
-        </Reveal>
-
-        {/* Mike's three problems — vibrant quote cards */}
-        <Reveal style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 24px 56px', position: 'relative' }}>
-          <div style={{ ...eyebrow, color: 'rgba(165,180,252,0.95)' }}>What he said is broken</div>
-          <h3 style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.4rem)', fontWeight: 800, letterSpacing: '-0.02em', color: '#FFFFFF', marginBottom: 12, lineHeight: 1.15 }}>Three problems. One page that solves them.</h3>
-          <p style={{ ...sectionLead, marginBottom: 32 }}>From Mike&apos;s December 2025 email, verbatim.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-            {[
-              { tone: '#818CF8', glow: 'rgba(99,102,241,0.35)', k: 'No front door', q: 'We’ll need a catchy name, but it would be an online entry point into where they can get help.', solved: 'This page' },
-              { tone: '#6EE7B7', glow: 'rgba(16,185,129,0.35)', k: 'No tracking', q: 'We would track all of the people we help state-wide, and formalize the referrals.', solved: 'Every form submission writes a row' },
-              { tone: '#F472B6', glow: 'rgba(244,114,182,0.35)', k: 'No identity', q: 'We all have an identity problem. Nobody knows what we do.', solved: 'CT Next 2.0' },
-            ].map((q, i) => (
-              <Reveal key={q.k} delay={i * 90}>
-                <div className="dh-tilt" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015))', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: 28, height: '100%', position: 'relative', overflow: 'hidden' }}>
-                  <div aria-hidden="true" style={{ position: 'absolute', top: '-50%', right: '-20%', width: 200, height: 200, borderRadius: '50%', background: `radial-gradient(circle, ${q.glow}, transparent 65%)`, filter: 'blur(30px)' }} />
-                  <div style={{ position: 'relative' }}>
-                    <div style={{ fontSize: '0.66rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: q.tone, fontWeight: 800, marginBottom: 16 }}>Problem {i + 1} &middot; {q.k}</div>
-                    <div style={{ fontSize: '1.02rem', color: '#FFFFFF', lineHeight: 1.6, fontStyle: 'italic', marginBottom: 16 }}>&ldquo;{q.q}&rdquo;</div>
-                    <div style={{ fontSize: '0.78rem', color: 'rgba(226,232,240,0.5)', marginBottom: 18 }}>Mike Kaltschnee, December 2025</div>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '0.82rem', fontWeight: 600, color: q.tone, padding: '8px 14px', background: `linear-gradient(135deg, ${q.glow}, transparent)`, borderRadius: 999, border: `1px solid ${q.tone}40` }}>
-                      <span>✓</span> Solved by: {q.solved}
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
           </div>
         </Reveal>
 
