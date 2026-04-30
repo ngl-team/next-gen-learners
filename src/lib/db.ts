@@ -202,7 +202,43 @@ export async function initDb() {
     )
   `);
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS dh_submissions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      help_type TEXT NOT NULL,
+      region TEXT NOT NULL,
+      matched_hub TEXT NOT NULL,
+      matched_advisor TEXT NOT NULL,
+      name TEXT DEFAULT '',
+      email TEXT DEFAULT '',
+      notes TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   initialized = true;
+}
+
+export async function insertDhSubmission(data: {
+  help_type: string;
+  region: string;
+  matched_hub: string;
+  matched_advisor: string;
+  name: string;
+  email: string;
+  notes: string;
+}) {
+  await initDb();
+  const r = await db.execute({
+    sql: 'INSERT INTO dh_submissions (help_type, region, matched_hub, matched_advisor, name, email, notes) VALUES (?,?,?,?,?,?,?)',
+    args: [data.help_type, data.region, data.matched_hub, data.matched_advisor, data.name, data.email, data.notes],
+  });
+  return r.lastInsertRowid;
+}
+
+export async function getDhSubmissions() {
+  await initDb();
+  return (await db.execute('SELECT * FROM dh_submissions ORDER BY created_at DESC')).rows;
 }
 
 export { db };
