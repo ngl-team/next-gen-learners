@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Reveal from '../danburyhackerspace/Reveal';
 import Counter from '../danburyhackerspace/Counter';
+import SplitWords from './SplitWords';
 
 export const metadata: Metadata = {
   title: 'Nelson Merchan. Greater Danbury’s entry point for entrepreneurs.',
@@ -141,14 +142,50 @@ export default function NelsonMerchanPage() {
         @keyframes nm-blob-a { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-20px) scale(1.08); } }
         @keyframes nm-blob-b { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,30px) scale(1.06); } }
         @keyframes nm-pulse-dot { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
-        @keyframes nm-rule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes nm-rule-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes nm-rule-grow-x { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+        @keyframes nm-ken-burns {
+          0% { transform: scale(1.0) translate(0, 0); }
+          100% { transform: scale(1.06) translate(-1.2%, -0.8%); }
+        }
+        @keyframes nm-photo-sweep {
+          0% { transform: translateX(-130%) skewX(-14deg); opacity: 0; }
+          22% { opacity: 1; }
+          100% { transform: translateX(160%) skewX(-14deg); opacity: 0; }
+        }
+        @keyframes nm-photo-frame-in {
+          from { opacity: 0; clip-path: inset(0 0 100% 0); }
+          to { opacity: 1; clip-path: inset(0 0 0 0); }
+        }
+        @keyframes nm-meta-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes nm-dark-sweep {
+          0% { transform: translateX(-100%) skewX(-12deg); opacity: 0; }
+          30% { opacity: 1; }
+          100% { transform: translateX(180%) skewX(-12deg); opacity: 0; }
+        }
 
-        .nm-hero-eyebrow { animation: nm-fade-up 900ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
-        .nm-hero-name { animation: nm-fade-up 1100ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both; }
-        .nm-hero-tag { animation: nm-fade-up 1100ms cubic-bezier(0.22, 1, 0.36, 1) 280ms both; }
-        .nm-hero-meta { animation: nm-fade-up 1000ms cubic-bezier(0.22, 1, 0.36, 1) 420ms both; }
-        .nm-hero-photo { animation: nm-fade-in 1400ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both; }
-        .nm-hero-rule { transform-origin: left; animation: nm-rule 1200ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both; }
+        .nm-hero-eyebrow { animation: nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
+        .nm-hero-tag { animation: nm-meta-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 760ms both; }
+        .nm-hero-meta { animation: nm-meta-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both; }
+        .nm-hero-rule {
+          transform-origin: left;
+          animation: nm-rule-grow 1100ms cubic-bezier(0.22, 1, 0.36, 1) 880ms both;
+        }
+        .nm-hero-photo-frame {
+          animation: nm-photo-frame-in 1300ms cubic-bezier(0.7, 0, 0.2, 1) 220ms both;
+        }
+        .nm-hero-photo-img {
+          animation: nm-ken-burns 14s ease-in-out 1100ms infinite alternate;
+        }
+        .nm-hero-photo-sweep {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 30%, rgba(252,211,77,0.55) 50%, transparent 70%);
+          mix-blend-mode: screen;
+          animation: nm-photo-sweep 1800ms cubic-bezier(0.7, 0, 0.2, 1) 600ms 1 both;
+          pointer-events: none;
+          z-index: 4;
+        }
 
         .nm-link {
           color: var(--nm-ink);
@@ -176,11 +213,24 @@ export default function NelsonMerchanPage() {
           transition: background 220ms ease, transform 220ms ease, box-shadow 220ms ease;
           box-shadow: 0 1px 2px rgba(0,0,0,0.04);
           cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+        .nm-btn-primary::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 35%, rgba(252,211,77,0.35) 50%, transparent 65%);
+          transform: translateX(-110%) skewX(-14deg);
+          transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .nm-btn-primary:hover {
           background: var(--nm-gold-deep);
           transform: translateY(-1px);
           box-shadow: 0 14px 30px -10px rgba(133,77,14,0.35);
+        }
+        .nm-btn-primary:hover::after {
+          transform: translateX(120%) skewX(-14deg);
         }
 
         .nm-btn-ghost {
@@ -273,6 +323,35 @@ export default function NelsonMerchanPage() {
           background-size: 80px 80px;
         }
 
+        .nm-stat-cell {
+          opacity: 0;
+          transform: translateY(18px);
+          animation: nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .nm-rec-row {
+          opacity: 0;
+          transform: translateX(-22px);
+          animation: nm-rec-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes nm-rec-in { to { opacity: 1; transform: translateX(0); } }
+
+        .nm-dark-block { position: relative; }
+        .nm-dark-block::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent 35%, rgba(252,211,77,0.18) 50%, transparent 65%);
+          transform: translateX(-110%) skewX(-12deg);
+          pointer-events: none;
+          z-index: 1;
+        }
+        .nm-dark-block.is-in::after {
+          animation: nm-dark-sweep 2200ms cubic-bezier(0.7, 0, 0.2, 1) 200ms 1 both;
+        }
+
+        .nm-headline-stack { display: block; }
+        .nm-headline-stack > * { display: block; }
+
         @media (max-width: 880px) {
           .nm-hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; text-align: left !important; }
           .nm-hero-photo-wrap { order: -1; max-width: 320px !important; margin: 0 !important; }
@@ -284,7 +363,8 @@ export default function NelsonMerchanPage() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .nm-hero-eyebrow, .nm-hero-name, .nm-hero-tag, .nm-hero-meta, .nm-hero-photo, .nm-hero-rule { animation: none !important; }
+          .nm-hero-eyebrow, .nm-hero-tag, .nm-hero-meta, .nm-hero-rule, .nm-hero-photo-frame, .nm-hero-photo-img, .nm-hero-photo-sweep, .nm-stat-cell, .nm-rec-row, .nm-dark-block.is-in::after { animation: none !important; }
+          .nm-hero-photo-sweep { display: none !important; }
         }
       `}</style>
 
@@ -371,21 +451,40 @@ export default function NelsonMerchanPage() {
                 </span>
               </div>
 
-              <h1
-                className="nm-display nm-hero-name"
-                style={{
-                  fontSize: 'clamp(3.4rem, 8.4vw, 6.6rem)',
-                  lineHeight: 0.95,
-                  margin: '0 0 24px',
-                  color: 'var(--nm-ink)',
-                }}
-              >
-                Nelson
-                <br />
-                <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>
+              <div className="nm-headline-stack" style={{ marginBottom: 24 }}>
+                <SplitWords
+                  as="h1"
+                  className="nm-display"
+                  style={{
+                    fontSize: 'clamp(3.4rem, 8.4vw, 6.6rem)',
+                    lineHeight: 0.95,
+                    margin: 0,
+                    color: 'var(--nm-ink)',
+                  }}
+                  baseDelay={120}
+                  perWordDelay={120}
+                  duration={1100}
+                  triggerOnLoad
+                >
+                  Nelson
+                </SplitWords>
+                <SplitWords
+                  as="span"
+                  className="nm-display-italic"
+                  style={{
+                    fontSize: 'clamp(3.4rem, 8.4vw, 6.6rem)',
+                    lineHeight: 0.95,
+                    margin: 0,
+                    color: 'var(--nm-gold-deep)',
+                  }}
+                  baseDelay={360}
+                  perWordDelay={120}
+                  duration={1100}
+                  triggerOnLoad
+                >
                   Merchan.
-                </span>
-              </h1>
+                </SplitWords>
+              </div>
 
               <p
                 className="nm-hero-tag"
@@ -453,7 +552,7 @@ export default function NelsonMerchanPage() {
             </div>
 
             <div
-              className="nm-hero-photo nm-hero-photo-wrap"
+              className="nm-hero-photo-frame nm-hero-photo-wrap"
               style={{
                 position: 'relative',
                 width: '100%',
@@ -475,27 +574,30 @@ export default function NelsonMerchanPage() {
                   background:
                     'linear-gradient(135deg, rgba(202,138,4,0.0) 35%, rgba(202,138,4,0.18) 100%)',
                   pointerEvents: 'none',
-                  zIndex: 2,
+                  zIndex: 3,
                 }}
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/nelson-merchan.jpg"
                 alt="Nelson Merchan, Business Advisor at the Connecticut Small Business Development Center"
+                className="nm-hero-photo-img"
                 style={{
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
                   display: 'block',
                   filter: 'contrast(1.02) saturate(0.96)',
+                  transformOrigin: 'center',
                 }}
               />
+              <div className="nm-hero-photo-sweep" aria-hidden="true" />
               <div
                 style={{
                   position: 'absolute',
                   left: 18,
                   bottom: 18,
-                  zIndex: 3,
+                  zIndex: 5,
                   background: 'rgba(28,25,23,0.78)',
                   color: '#FAFAF9',
                   padding: '8px 14px',
@@ -505,6 +607,7 @@ export default function NelsonMerchanPage() {
                   textTransform: 'uppercase',
                   backdropFilter: 'blur(10px)',
                   fontWeight: 500,
+                  animation: 'nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 1400ms both',
                 }}
               >
                 CT SBDC &middot; UConn
@@ -514,13 +617,14 @@ export default function NelsonMerchanPage() {
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* THE WORK */}
       <section className="nm-section" id="work">
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 48, maxWidth: 980 }}>
-          <div className="nm-eyebrow">The work</div>
-          <p
+          <Reveal><div className="nm-eyebrow">The work</div></Reveal>
+          <SplitWords
+            as="p"
             className="nm-display"
             style={{
               fontSize: 'clamp(1.7rem, 3.4vw, 2.6rem)',
@@ -529,83 +633,48 @@ export default function NelsonMerchanPage() {
               margin: 0,
               maxWidth: 920,
             }}
+            perWordDelay={28}
+            duration={900}
           >
-            Nelson advises small business owners across the Ridgefield, Danbury, New Milford, and Southbury corridor at no cost. He sits in the room when a vineyard pitches its first bank, when a chocolatier writes a plan that holds together, when an immigrant founder builds the company they sketched on a napkin. Connecticut’s Small Business Development Center is publicly funded. Nelson is the version of that program that picks up the phone.
-          </p>
+            {`Nelson advises small business owners across the Ridgefield, Danbury, New Milford, and Southbury corridor at no cost. He sits in the room when a vineyard pitches its first bank, when a chocolatier writes a plan that holds together, when an immigrant founder builds the company they sketched on a napkin. Connecticut’s Small Business Development Center is publicly funded. Nelson is the version of that program that picks up the phone.`}
+          </SplitWords>
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* STATS */}
       <section className="nm-section-tight">
         <Reveal>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: 0,
-              border: '1px solid var(--nm-line)',
-              borderRadius: 18,
-              overflow: 'hidden',
-              background: '#FFFFFF',
-            }}
-          >
-            {[
-              { num: 100, suffix: '+', label: 'Small businesses advised', sub: 'one-on-one, per public record' },
-              { num: 19, suffix: ' yrs', label: 'Building CLICROI', sub: 'founded 2006' },
-              { num: 16, suffix: ' yrs', label: 'Counseling Connecticut', sub: 'SCORE since 2010, SBDC for over a decade' },
-              { num: 2, suffix: ' langs', label: 'English & Spanish', sub: 'fluent advising in both' },
-            ].map((s, i) => (
-              <div
-                key={s.label}
-                style={{
-                  padding: '36px 28px',
-                  borderRight: i < 3 ? '1px solid var(--nm-line)' : 'none',
-                  borderBottom: 'none',
-                }}
-              >
-                <div
-                  className="nm-display"
-                  style={{
-                    fontSize: 'clamp(2.6rem, 4.6vw, 3.6rem)',
-                    color: 'var(--nm-ink)',
-                    lineHeight: 1,
-                    marginBottom: 12,
-                    letterSpacing: '-0.04em',
-                  }}
-                >
-                  <Counter to={s.num} suffix={s.suffix} />
-                </div>
-                <div style={{ fontSize: '0.96rem', color: 'var(--nm-ink)', fontWeight: 500, marginBottom: 4 }}>
-                  {s.label}
-                </div>
-                <div style={{ fontSize: '0.84rem', color: 'var(--nm-ink-faint)', lineHeight: 1.55 }}>
-                  {s.sub}
-                </div>
-              </div>
-            ))}
-          </div>
+          <StatsGrid />
         </Reveal>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* WHAT HE DOES */}
       <section className="nm-section" id="services">
-        <div className="nm-eyebrow" style={{ marginBottom: 16 }}>What he does</div>
-        <h2 className="nm-section-h">
-          No-cost. <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>Confidential.</span>
-          <br />
-          The kind of help most founders never know is free.
-        </h2>
-        <p className="nm-section-lead">
-          The CT SBDC is a partnership between UConn and the U.S. Small Business Administration. Every meeting with Nelson is paid for by that mandate. Founders bring the work. He brings two decades of Connecticut market knowledge, a network of bankers, and the patience to walk a plan through five revisions.
-        </p>
+        <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>What he does</div></Reveal>
+        <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} baseDelay={0} perWordDelay={70}>
+            No-cost.
+          </SplitWords>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={140} perWordDelay={70}>
+            Confidential.
+          </SplitWords>
+          <SplitWords as="span" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-ink)' }} baseDelay={300} perWordDelay={50}>
+            The kind of help most founders never know is free.
+          </SplitWords>
+        </div>
+        <Reveal delay={400}>
+          <p className="nm-section-lead" style={{ marginTop: 24 }}>
+            The CT SBDC is a partnership between UConn and the U.S. Small Business Administration. Every meeting with Nelson is paid for by that mandate. Founders bring the work. He brings two decades of Connecticut market knowledge, a network of bankers, and the patience to walk a plan through five revisions.
+          </p>
+        </Reveal>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           {SERVICES.map((s, i) => (
-            <Reveal key={s.label} delay={i * 100}>
+            <Reveal key={s.label} delay={i * 140}>
               <div className="nm-card" style={{ height: '100%' }}>
                 <div
                   style={{
@@ -645,17 +714,24 @@ export default function NelsonMerchanPage() {
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* RECEIPTS / TESTIMONIALS */}
       <section className="nm-section" id="receipts">
-        <div className="nm-eyebrow" style={{ marginBottom: 16 }}>The receipts</div>
-        <h2 className="nm-section-h">
-          The people who built things <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>with him in the room.</span>
-        </h2>
-        <p className="nm-section-lead">
-          Six businesses across Greater Danbury and Western Connecticut, in their own words. Pulled from public CT SBDC records and the Greater Danbury Chamber of Commerce.
-        </p>
+        <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>The receipts</div></Reveal>
+        <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={60}>
+            The people who built things
+          </SplitWords>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={420} perWordDelay={70}>
+            with him in the room.
+          </SplitWords>
+        </div>
+        <Reveal delay={500}>
+          <p className="nm-section-lead" style={{ marginTop: 24 }}>
+            Six businesses across Greater Danbury and Western Connecticut, in their own words. Pulled from public CT SBDC records and the Greater Danbury Chamber of Commerce.
+          </p>
+        </Reveal>
 
         <div
           style={{
@@ -665,7 +741,7 @@ export default function NelsonMerchanPage() {
           }}
         >
           {TESTIMONIALS.map((t, i) => (
-            <Reveal key={t.name} delay={i * 80}>
+            <Reveal key={t.name} delay={i * 110}>
               <figure className="nm-quote-card" style={{ height: '100%', margin: 0 }}>
                 <blockquote
                   className="nm-display"
@@ -698,147 +774,37 @@ export default function NelsonMerchanPage() {
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* CASE STUDY: AQUILA'S NEST */}
       <section className="nm-section">
         <Reveal>
-          <div
-            style={{
-              position: 'relative',
-              borderRadius: 24,
-              overflow: 'hidden',
-              padding: 'clamp(40px, 5vw, 72px)',
-              background: 'var(--nm-ink)',
-              color: 'var(--nm-cream)',
-            }}
-          >
-            <div
-              aria-hidden="true"
-              style={{
-                position: 'absolute',
-                top: '-180px',
-                right: '-100px',
-                width: 460,
-                height: 460,
-                borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(202,138,4,0.32), transparent 65%)',
-                filter: 'blur(70px)',
-                animation: 'nm-blob-a 24s ease-in-out infinite',
-                pointerEvents: 'none',
-              }}
-            />
-            <div
-              aria-hidden="true"
-              className="nm-grid-overlay"
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0.07,
-                maskImage: 'radial-gradient(ellipse at center, black 0%, transparent 75%)',
-                WebkitMaskImage: 'radial-gradient(ellipse at center, black 0%, transparent 75%)',
-                pointerEvents: 'none',
-              }}
-            />
-            <div style={{ position: 'relative', maxWidth: 760 }}>
-              <div className="nm-eyebrow" style={{ color: 'rgba(250,250,249,0.6)', marginBottom: 20 }}>
-                One of many
-              </div>
-              <h3
-                className="nm-display"
-                style={{
-                  fontSize: 'clamp(2rem, 4.4vw, 3.2rem)',
-                  lineHeight: 1.04,
-                  margin: '0 0 24px',
-                  color: 'var(--nm-cream)',
-                }}
-              >
-                A vineyard in Sandy Hook walked in with a plan.{' '}
-                <span className="nm-display-italic" style={{ color: '#FCD34D' }}>
-                  Nelson walked them out with $190,000 and a building permit.
-                </span>
-              </h3>
-              <p
-                style={{
-                  fontSize: '1.04rem',
-                  lineHeight: 1.7,
-                  color: 'rgba(250,250,249,0.78)',
-                  margin: '0 0 36px',
-                  maxWidth: 640,
-                }}
-              >
-                Nelson reviewed the business plan, evaluated funding paths, introduced the founders to local banks, and shepherded the working capital application through approval. Aquila&apos;s Nest Vineyards opened with a $120,000 SBA 7(a) loan and a $70,000 commercial bank loan secured. The facility has since exceeded its business goals and created twenty-nine jobs in Western Connecticut.
-              </p>
-
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                  gap: 16,
-                }}
-              >
-                {[
-                  { num: '$190K', label: 'Financing secured' },
-                  { num: '29', label: 'Jobs created' },
-                  { num: '7(a)', label: 'SBA loan structure' },
-                  { num: '1', label: 'Patient advisor' },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    style={{
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 14,
-                      padding: '20px 22px',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                  >
-                    <div
-                      className="nm-display"
-                      style={{
-                        fontSize: '1.8rem',
-                        color: '#FCD34D',
-                        lineHeight: 1,
-                        marginBottom: 8,
-                      }}
-                    >
-                      {s.num}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '0.78rem',
-                        color: 'rgba(250,250,249,0.6)',
-                        letterSpacing: '0.06em',
-                      }}
-                    >
-                      {s.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <DarkSweepBlock />
         </Reveal>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* ROLES & AFFILIATIONS */}
       <section className="nm-section" id="roles">
-        <div className="nm-eyebrow" style={{ marginBottom: 16 }}>Roles &amp; affiliations</div>
-        <h2 className="nm-section-h">
-          One man.{' '}
-          <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>
+        <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Roles &amp; affiliations</div></Reveal>
+        <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={70}>
+            One man.
+          </SplitWords>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={220} perWordDelay={80}>
             Six chairs.
-          </span>
-        </h2>
-        <p className="nm-section-lead">
-          Nelson&apos;s reach is structural. He sits on the boards and committees that decide where Greater Danbury invests its civic energy. The same network entrepreneurs benefit from when he routes them somewhere only a board seat can open.
-        </p>
+          </SplitWords>
+        </div>
+        <Reveal delay={300}>
+          <p className="nm-section-lead" style={{ marginTop: 24 }}>
+            Nelson&apos;s reach is structural. He sits on the boards and committees that decide where Greater Danbury invests its civic energy. The same network entrepreneurs benefit from when he routes them somewhere only a board seat can open.
+          </p>
+        </Reveal>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
           {ROLES.map((r, i) => (
-            <Reveal key={r.org} delay={i * 60}>
+            <Reveal key={r.org} delay={i * 90}>
               <div className="nm-card" style={{ height: '100%' }}>
                 <div className="nm-eyebrow" style={{ fontSize: '0.66rem', marginBottom: 14, color: 'var(--nm-gold-deep)' }}>
                   {r.role}
@@ -864,22 +830,25 @@ export default function NelsonMerchanPage() {
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* RECOGNITION */}
       <section className="nm-section">
-        <div className="nm-eyebrow" style={{ marginBottom: 16 }}>Recognition</div>
-        <h2 className="nm-section-h">
-          Three awards in twelve years.{' '}
-          <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>
+        <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Recognition</div></Reveal>
+        <div className="nm-headline-stack">
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={60}>
+            Three awards in twelve years.
+          </SplitWords>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={460} perWordDelay={70}>
             None of them on his bio.
-          </span>
-        </h2>
+          </SplitWords>
+        </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0, marginTop: 32 }}>
           {RECOGNITION.map((r, i) => (
-            <Reveal key={r.year} delay={i * 80}>
+            <Reveal key={r.year} delay={i * 130}>
               <div
+                className="nm-rec-row"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '120px 1fr auto',
@@ -888,6 +857,7 @@ export default function NelsonMerchanPage() {
                   borderTop: i === 0 ? '1px solid var(--nm-line-strong)' : '1px solid var(--nm-line)',
                   borderBottom: i === RECOGNITION.length - 1 ? '1px solid var(--nm-line-strong)' : 'none',
                   alignItems: 'baseline',
+                  animationDelay: `${i * 130}ms`,
                 }}
               >
                 <div
@@ -929,28 +899,21 @@ export default function NelsonMerchanPage() {
         </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* THROUGHLINE — DANBURY ECOSYSTEM */}
       <section className="nm-section" id="throughline">
-        <Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: 920 }}>
-            <div className="nm-eyebrow" style={{ marginBottom: 24 }}>The Danbury throughline</div>
-            <h2
-              className="nm-display"
-              style={{
-                fontSize: 'clamp(2rem, 4.4vw, 3.2rem)',
-                lineHeight: 1.04,
-                color: 'var(--nm-ink)',
-                margin: '0 0 32px',
-                letterSpacing: '-0.035em',
-              }}
-            >
-              158 Main Street is a small building.{' '}
-              <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>
-                The decade that came out of it is not.
-              </span>
-            </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: 920 }}>
+          <Reveal><div className="nm-eyebrow" style={{ marginBottom: 24 }}>The Danbury throughline</div></Reveal>
+          <div className="nm-headline-stack" style={{ marginBottom: 32 }}>
+            <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={55}>
+              158 Main Street is a small building.
+            </SplitWords>
+            <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={440} perWordDelay={70}>
+              The decade that came out of it is not.
+            </SplitWords>
+          </div>
+          <Reveal delay={500}>
             <div
               style={{
                 fontSize: '1.06rem',
@@ -969,40 +932,33 @@ export default function NelsonMerchanPage() {
                 Fourteen years on, that ecosystem is being asked to scale statewide. Whoever does that work will start by knowing the names already on the door. Nelson&apos;s is one of the first.
               </p>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
       </section>
 
-      <hr className="nm-rule" />
+      <Reveal as="div"><hr className="nm-rule" /></Reveal>
 
       {/* REACH HIM */}
       <section className="nm-section" id="reach">
-        <Reveal>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 32,
-              alignItems: 'start',
-            }}
-          >
-            <div>
-              <div className="nm-eyebrow" style={{ marginBottom: 16 }}>Reach him</div>
-              <h2
-                className="nm-display"
-                style={{
-                  fontSize: 'clamp(2rem, 4.2vw, 3rem)',
-                  lineHeight: 1.04,
-                  color: 'var(--nm-ink)',
-                  margin: '0 0 24px',
-                  letterSpacing: '-0.035em',
-                }}
-              >
-                If you&apos;re a Greater Danbury entrepreneur,{' '}
-                <span className="nm-display-italic" style={{ color: 'var(--nm-gold-deep)' }}>
-                  start here.
-                </span>
-              </h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 32,
+            alignItems: 'start',
+          }}
+        >
+          <div>
+            <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Reach him</div></Reveal>
+            <div className="nm-headline-stack" style={{ marginBottom: 24 }}>
+              <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={50}>
+                If you&apos;re a Greater Danbury entrepreneur,
+              </SplitWords>
+              <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={460} perWordDelay={70}>
+                start here.
+              </SplitWords>
+            </div>
+            <Reveal delay={500}>
               <p
                 style={{
                   fontSize: '1.02rem',
@@ -1014,7 +970,9 @@ export default function NelsonMerchanPage() {
               >
                 CT SBDC advising is free, confidential, and publicly funded. Email Nelson directly, sign up through the official portal, or stop by the Greater Danbury Chamber of Commerce.
               </p>
+            </Reveal>
 
+            <Reveal delay={600}>
               <div className="nm-cta-stack" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <a href="mailto:nelson.2.merchan@uconn.edu" className="nm-btn-primary">
                   Email Nelson
@@ -1031,8 +989,10 @@ export default function NelsonMerchanPage() {
                   Request free advising
                 </a>
               </div>
-            </div>
+            </Reveal>
+          </div>
 
+          <Reveal delay={200}>
             <div
               style={{
                 background: '#FFFFFF',
@@ -1096,8 +1056,8 @@ export default function NelsonMerchanPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
       </section>
 
       {/* FOOTER */}
@@ -1211,6 +1171,199 @@ export default function NelsonMerchanPage() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function StatsGrid() {
+  const STATS = [
+    { num: 100, suffix: '+', label: 'Small businesses advised', sub: 'one-on-one, per public record' },
+    { num: 19, suffix: ' yrs', label: 'Building CLICROI', sub: 'founded 2006' },
+    { num: 16, suffix: ' yrs', label: 'Counseling Connecticut', sub: 'SCORE since 2010, SBDC for over a decade' },
+    { num: 2, suffix: ' langs', label: 'English & Spanish', sub: 'fluent advising in both' },
+  ];
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gap: 0,
+        border: '1px solid var(--nm-line)',
+        borderRadius: 18,
+        overflow: 'hidden',
+        background: '#FFFFFF',
+      }}
+    >
+      {STATS.map((s, i) => (
+        <div
+          key={s.label}
+          className="nm-stat-cell"
+          style={{
+            padding: '36px 28px',
+            borderRight: i < STATS.length - 1 ? '1px solid var(--nm-line)' : 'none',
+            borderBottom: 'none',
+            animationDelay: `${i * 140}ms`,
+          }}
+        >
+          <div
+            className="nm-display"
+            style={{
+              fontSize: 'clamp(2.6rem, 4.6vw, 3.6rem)',
+              color: 'var(--nm-ink)',
+              lineHeight: 1,
+              marginBottom: 12,
+              letterSpacing: '-0.04em',
+            }}
+          >
+            <Counter to={s.num} suffix={s.suffix} />
+          </div>
+          <div style={{ fontSize: '0.96rem', color: 'var(--nm-ink)', fontWeight: 500, marginBottom: 4 }}>
+            {s.label}
+          </div>
+          <div style={{ fontSize: '0.84rem', color: 'var(--nm-ink-faint)', lineHeight: 1.55 }}>
+            {s.sub}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DarkSweepBlock() {
+  return (
+    <div
+      className="nm-dark-block is-in"
+      style={{
+        position: 'relative',
+        borderRadius: 24,
+        overflow: 'hidden',
+        padding: 'clamp(40px, 5vw, 72px)',
+        background: 'var(--nm-ink)',
+        color: 'var(--nm-cream)',
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          top: '-180px',
+          right: '-100px',
+          width: 460,
+          height: 460,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(202,138,4,0.32), transparent 65%)',
+          filter: 'blur(70px)',
+          animation: 'nm-blob-a 24s ease-in-out infinite',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="nm-grid-overlay"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0.07,
+          maskImage: 'radial-gradient(ellipse at center, black 0%, transparent 75%)',
+          WebkitMaskImage: 'radial-gradient(ellipse at center, black 0%, transparent 75%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div style={{ position: 'relative', maxWidth: 760, zIndex: 2 }}>
+        <div className="nm-eyebrow" style={{ color: 'rgba(250,250,249,0.6)', marginBottom: 20 }}>
+          One of many
+        </div>
+        <div className="nm-headline-stack" style={{ marginBottom: 24 }}>
+          <SplitWords
+            as="h3"
+            className="nm-display"
+            style={{
+              fontSize: 'clamp(2rem, 4.4vw, 3.2rem)',
+              lineHeight: 1.04,
+              margin: 0,
+              color: 'var(--nm-cream)',
+            }}
+            perWordDelay={55}
+          >
+            A vineyard in Sandy Hook walked in with a plan.
+          </SplitWords>
+          <SplitWords
+            as="span"
+            className="nm-display-italic"
+            style={{
+              fontSize: 'clamp(2rem, 4.4vw, 3.2rem)',
+              lineHeight: 1.04,
+              color: '#FCD34D',
+            }}
+            baseDelay={620}
+            perWordDelay={70}
+          >
+            Nelson walked them out with $190,000 and a building permit.
+          </SplitWords>
+        </div>
+        <Reveal delay={900}>
+          <p
+            style={{
+              fontSize: '1.04rem',
+              lineHeight: 1.7,
+              color: 'rgba(250,250,249,0.78)',
+              margin: '0 0 36px',
+              maxWidth: 640,
+            }}
+          >
+            Nelson reviewed the business plan, evaluated funding paths, introduced the founders to local banks, and shepherded the working capital application through approval. Aquila&apos;s Nest Vineyards opened with a $120,000 SBA 7(a) loan and a $70,000 commercial bank loan secured. The facility has since exceeded its business goals and created twenty-nine jobs in Western Connecticut.
+          </p>
+        </Reveal>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: 16,
+          }}
+        >
+          {[
+            { num: '$190K', label: 'Financing secured' },
+            { num: '29', label: 'Jobs created' },
+            { num: '7(a)', label: 'SBA loan structure' },
+            { num: '1', label: 'Patient advisor' },
+          ].map((s, i) => (
+            <Reveal key={s.label} delay={1000 + i * 100}>
+              <div
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 14,
+                  padding: '20px 22px',
+                  backdropFilter: 'blur(8px)',
+                }}
+              >
+                <div
+                  className="nm-display"
+                  style={{
+                    fontSize: '1.8rem',
+                    color: '#FCD34D',
+                    lineHeight: 1,
+                    marginBottom: 8,
+                  }}
+                >
+                  {s.num}
+                </div>
+                <div
+                  style={{
+                    fontSize: '0.78rem',
+                    color: 'rgba(250,250,249,0.6)',
+                    letterSpacing: '0.06em',
+                  }}
+                >
+                  {s.label}
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
