@@ -19,6 +19,17 @@ async function loadDashboard(userId: number) {
   const usersRes = await db.execute('SELECT name FROM nst_users ORDER BY name');
   const allUsers = (usersRes.rows as unknown as Array<{ name: string }>).map((r) => String(r.name));
 
+  const wrongRes = await db.execute({
+    sql: `SELECT COUNT(DISTINCT question_id) as c
+          FROM nst_answers
+          WHERE user_id = ? AND correct = 0
+            AND question_id NOT IN (
+              SELECT question_id FROM nst_answers WHERE user_id = ? AND correct = 1
+            )`,
+    args: [userId, userId],
+  });
+  const wrongCount = Number((wrongRes.rows[0] as unknown as { c: number })?.c || 0);
+
   const classes = Object.entries(BANK.classes)
     .sort(([a], [b]) => Number(a) - Number(b))
     .map(([key, v]) => ({
@@ -38,13 +49,13 @@ async function loadDashboard(userId: number) {
     correct: progress[key]?.correct ?? 0,
   }));
 
-  return { classes, labs, allUsers };
+  return { classes, labs, allUsers, wrongCount };
 }
 
 export default async function NstDashboardPage() {
   const user = await getCurrentUserId();
   if (!user) redirect('/NST/login');
-  const { classes, labs, allUsers } = await loadDashboard(user.id);
+  const { classes, labs, allUsers, wrongCount } = await loadDashboard(user.id);
 
   return (
     <>
@@ -55,6 +66,9 @@ export default async function NstDashboardPage() {
           <p className="muted">Classes 1-9 are multiple choice. Classes 10-15 and labs have MC + open response.</p>
           <div className="row">
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
+            <Link href="/NST/review" className="btn ghost big">
+              Review wrong{wrongCount > 0 ? ` (${wrongCount})` : ''}
+            </Link>
             <Link href="/NST/compare" className="btn ghost big">Compare with friends</Link>
           </div>
         </section>

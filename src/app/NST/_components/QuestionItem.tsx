@@ -17,7 +17,7 @@ type Props = {
   q: Question;
   index: number;
   classKey: string;
-  mode?: 'study' | 'exam';
+  mode?: 'study' | 'exam' | 'review';
   initial?: { answer?: string; correct?: number | null };
   showTag?: boolean;
 };
