@@ -27,7 +27,7 @@ export async function GET() {
   }
 
   const seed = user.id + Math.floor(Date.now() / (1000 * 60 * 60));
-  const mc = shuffleSeeded(mcPool, seed).slice(0, 20);
+  const mc = shuffleSeeded(mcPool, seed).slice(0, 25);
   const open = shuffleSeeded(openPool, seed + 1).slice(0, 5);
   return NextResponse.json({ items: [...mc, ...open] });
 }
