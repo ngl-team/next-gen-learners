@@ -118,9 +118,10 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
         </>
       ) : (
         <>
+          <div className="brevity-hint">Be concise. 3 words to 3 sentences per part — the professor grades for efficiency.</div>
           <textarea
             className="open-answer"
-            placeholder="Type your answer..."
+            placeholder="Type your answer (3 words to 3 sentences per part)..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />

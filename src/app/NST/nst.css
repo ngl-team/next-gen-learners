@@ -111,7 +111,8 @@
 .nst .feedback .ok { color: var(--green); }
 .nst .feedback .bad { color: var(--red); }
 
-.nst .open-answer { width: 100%; min-height: 120px; background: var(--card-2); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 14px; padding: 12px; border-radius: 8px; resize: vertical; }
+.nst .brevity-hint { font-size: 12px; color: var(--accent); margin: 0 0 6px; font-weight: 500; }
+.nst .open-answer { width: 100%; min-height: 100px; background: var(--card-2); border: 1px solid var(--border); color: var(--text); font-family: inherit; font-size: 14px; padding: 12px; border-radius: 8px; resize: vertical; }
 .nst .open-answer:focus { outline: none; border-color: var(--primary); }
 
 .nst .open-actions { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }

@@ -49,7 +49,7 @@ export default function ExamPage() {
         <Link className="back" href="/NST">&larr; back</Link>
         <h1>Simulated Final</h1>
         <p className="muted">
-          Mixed MC and open response drawn from all classes. Answers save automatically.
+          Mixed MC and open response drawn from all classes. Answers save automatically. Keep open answers tight — 3 words to 3 sentences per part.
         </p>
         {!items ? (
           <div className="spinner">Loading exam…</div>

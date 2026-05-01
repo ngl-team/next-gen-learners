@@ -30,7 +30,7 @@ export default async function StudyPage({ params }: { params: Promise<{ classKey
       <main className="wrap">
         <Link className="back" href="/NST">&larr; back</Link>
         <h1>{cls.title}</h1>
-        <p className="muted">Multiple choice auto-grades. Open response auto-saves; reveal rubric to self-grade.</p>
+        <p className="muted">Multiple choice auto-grades. Open response auto-saves; reveal rubric to self-grade. Keep open answers tight — 3 words to 3 sentences per part.</p>
         <div className="qlist">
           {cls.questions.map((q, i) => (
             <QuestionItem
