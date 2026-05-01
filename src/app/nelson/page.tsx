@@ -323,17 +323,21 @@ export default function NelsonMerchanPage() {
           background-size: 80px 80px;
         }
 
-        .nm-stat-cell {
-          opacity: 0;
-          transform: translateY(18px);
-          animation: nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
         .nm-rec-row {
-          opacity: 0;
-          transform: translateX(-22px);
-          animation: nm-rec-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          display: grid;
+          grid-template-columns: 120px 1fr auto;
+          gap: 24px;
+          padding: 28px 0;
+          align-items: baseline;
         }
-        @keyframes nm-rec-in { to { opacity: 1; transform: translateX(0); } }
+        .nm-contact-row {
+          display: grid;
+          grid-template-columns: 90px 1fr;
+          gap: 18px;
+          padding: 14px 0;
+          align-items: baseline;
+        }
+        .nm-contact-value { word-break: break-word; overflow-wrap: anywhere; }
 
         .nm-dark-block { position: relative; }
         .nm-dark-block::after {
@@ -361,9 +365,20 @@ export default function NelsonMerchanPage() {
           .nm-cta-stack { flex-direction: column !important; align-items: stretch !important; }
           .nm-cta-stack > * { justify-content: center; }
         }
+        @media (max-width: 640px) {
+          .nm-rec-row {
+            grid-template-columns: 1fr;
+            gap: 6px;
+            padding: 22px 0;
+          }
+          .nm-rec-row .nm-rec-org { text-align: left !important; min-width: 0 !important; }
+          .nm-contact-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+          .nm-contact-row .nm-contact-key { font-size: 0.62rem; }
+          .nm-contact-value { font-size: 0.92rem !important; }
+        }
 
         @media (prefers-reduced-motion: reduce) {
-          .nm-hero-eyebrow, .nm-hero-tag, .nm-hero-meta, .nm-hero-rule, .nm-hero-photo-frame, .nm-hero-photo-img, .nm-hero-photo-sweep, .nm-stat-cell, .nm-rec-row, .nm-dark-block.is-in::after { animation: none !important; }
+          .nm-hero-eyebrow, .nm-hero-tag, .nm-hero-meta, .nm-hero-rule, .nm-hero-photo-frame, .nm-hero-photo-img, .nm-hero-photo-sweep, .nm-dark-block.is-in::after { animation: none !important; }
           .nm-hero-photo-sweep { display: none !important; }
         }
       `}</style>
@@ -636,7 +651,7 @@ export default function NelsonMerchanPage() {
             perWordDelay={16}
             duration={550}
           >
-            {`Nelson advises small business owners across the Ridgefield, Danbury, New Milford, and Southbury corridor at no cost. He sits in the room when a vineyard pitches its first bank, when a chocolatier writes a plan that holds together, when an immigrant founder builds the company they sketched on a napkin. Connecticut’s Small Business Development Center is publicly funded. Nelson is the version of that program that picks up the phone.`}
+            {`Nelson advises Greater Danbury entrepreneurs at no cost. He is the version of Connecticut’s Small Business Development Center that picks up the phone.`}
           </SplitWords>
         </div>
       </section>
@@ -645,9 +660,7 @@ export default function NelsonMerchanPage() {
 
       {/* STATS */}
       <section className="nm-section-tight">
-        <Reveal>
-          <StatsGrid />
-        </Reveal>
+        <StatsGrid />
       </section>
 
       <Reveal as="div"><hr className="nm-rule" /></Reveal>
@@ -778,9 +791,7 @@ export default function NelsonMerchanPage() {
 
       {/* CASE STUDY: AQUILA'S NEST */}
       <section className="nm-section">
-        <Reveal>
-          <DarkSweepBlock />
-        </Reveal>
+        <DarkSweepBlock />
       </section>
 
       <Reveal as="div"><hr className="nm-rule" /></Reveal>
@@ -843,55 +854,49 @@ export default function NelsonMerchanPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0, marginTop: 32 }}>
           {RECOGNITION.map((r, i) => (
-            <Reveal key={r.year} delay={i * 70}>
+            <div
+              key={r.year}
+              className="nm-rec-row"
+              style={{
+                borderTop: i === 0 ? '1px solid var(--nm-line-strong)' : '1px solid var(--nm-line)',
+                borderBottom: i === RECOGNITION.length - 1 ? '1px solid var(--nm-line-strong)' : 'none',
+              }}
+            >
               <div
-                className="nm-rec-row"
+                className="nm-display"
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr auto',
-                  gap: 24,
-                  padding: '28px 0',
-                  borderTop: i === 0 ? '1px solid var(--nm-line-strong)' : '1px solid var(--nm-line)',
-                  borderBottom: i === RECOGNITION.length - 1 ? '1px solid var(--nm-line-strong)' : 'none',
-                  alignItems: 'baseline',
-                  animationDelay: `${i * 70}ms`,
+                  fontSize: '2.2rem',
+                  color: 'var(--nm-gold-deep)',
+                  lineHeight: 1,
+                  letterSpacing: '-0.03em',
                 }}
               >
-                <div
-                  className="nm-display"
-                  style={{
-                    fontSize: '2.2rem',
-                    color: 'var(--nm-gold-deep)',
-                    lineHeight: 1,
-                    letterSpacing: '-0.03em',
-                  }}
-                >
-                  {r.year}
-                </div>
-                <div
-                  className="nm-display"
-                  style={{
-                    fontSize: 'clamp(1.2rem, 2.2vw, 1.6rem)',
-                    color: 'var(--nm-ink)',
-                    lineHeight: 1.25,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  {r.body}
-                </div>
-                <div
-                  style={{
-                    fontSize: '0.86rem',
-                    color: 'var(--nm-ink-soft)',
-                    textAlign: 'right',
-                    minWidth: 200,
-                    letterSpacing: '0.01em',
-                  }}
-                >
-                  {r.org}
-                </div>
+                {r.year}
               </div>
-            </Reveal>
+              <div
+                className="nm-display"
+                style={{
+                  fontSize: 'clamp(1.2rem, 2.2vw, 1.6rem)',
+                  color: 'var(--nm-ink)',
+                  lineHeight: 1.25,
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                {r.body}
+              </div>
+              <div
+                className="nm-rec-org"
+                style={{
+                  fontSize: '0.86rem',
+                  color: 'var(--nm-ink-soft)',
+                  textAlign: 'right',
+                  minWidth: 200,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                {r.org}
+              </div>
+            </div>
           ))}
         </div>
       </section>
@@ -1028,17 +1033,13 @@ export default function NelsonMerchanPage() {
               ].map((row, i, arr) => (
                 <div
                   key={row.k}
+                  className="nm-contact-row"
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: '90px 1fr',
-                    gap: 18,
-                    padding: '14px 0',
                     borderBottom: i < arr.length - 1 ? '1px solid var(--nm-line)' : 'none',
-                    alignItems: 'baseline',
                   }}
                 >
-                  <div className="nm-eyebrow" style={{ fontSize: '0.66rem' }}>{row.k}</div>
-                  <div style={{ fontSize: '0.94rem', color: 'var(--nm-ink)', lineHeight: 1.55 }}>
+                  <div className="nm-eyebrow nm-contact-key" style={{ fontSize: '0.66rem' }}>{row.k}</div>
+                  <div className="nm-contact-value" style={{ fontSize: '0.94rem', color: 'var(--nm-ink)', lineHeight: 1.55 }}>
                     {row.href ? (
                       <a href={row.href} className="nm-link" {...(row.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
                         {row.v}
@@ -1193,12 +1194,10 @@ function StatsGrid() {
       {STATS.map((s, i) => (
         <div
           key={s.label}
-          className="nm-stat-cell"
           style={{
             padding: '36px 28px',
             borderRight: i < STATS.length - 1 ? '1px solid var(--nm-line)' : 'none',
             borderBottom: 'none',
-            animationDelay: `${i * 80}ms`,
           }}
         >
           <div
