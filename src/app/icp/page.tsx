@@ -1,90 +1,59 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Ideal Client Profile | Next Generation Learners',
+  title: 'Who we build for | Next Generation Learners',
   description:
-    'The exact buyer Next Generation Learners builds AI for. Domain experts running proven, repeated, high-volume processes with the authority to fix them.',
+    'Custom AI for people running a proven, repeated, high-volume process they hate. Three sections: what we have done, who we work with, the pains we take off their plate.',
 };
 
 const segments = [
   {
-    n: '01',
-    title: 'Superintendents and private school heads',
-    detail:
-      '300+ emails a day. Board prep weekly. Hiring rubrics. Parent communications. PD planning. Strategic plans.',
-    anchor: 'Anchor case: Superintendent Christopher Roche, Woodstock Public Schools (CT)',
-    marker: 'Comp marker: $175K+, decision authority on $5K–$25K personal or PD reimbursement spend.',
+    label: 'Superintendents and private school heads',
+    pain:
+      'You wake up to 300 unread emails before your first call. Board prep eats Sunday night. By the time you finish the parent escalations, you have not made a single strategic decision. Your team has stopped bringing you problems because they know you are buried.',
+    fix:
+      'Email Voice Agent that drafts replies in your voice. Cabinet that handles board prep, hiring rubrics, parent communications, PD planning. Lives in your tenant. Your data never leaves.',
+    proof: 'Building this right now for Superintendent Christopher Roche, Woodstock Public Schools (CT). First agent ships May 7.',
   },
   {
-    n: '02',
-    title: 'Real estate brokers in $750K+ markets',
-    detail:
-      'Weekly expired-listing pulls. Skip-tracing. Owner resolution including LLC chains. Kanban pipelines. 24-month lookbacks.',
-    anchor: 'Anchor case: Zalen Stason, The Prosperity Group (Wellesley, MA)',
-    marker: 'Comp marker: $200K+ commission income. Lead-gen runs as a defined weekly workflow.',
+    label: 'Real estate brokers in $750K+ markets',
+    pain:
+      'Saturday mornings are MLS pulls. Sunday is skip-tracing. You spend more hours owning your lead-gen process than you do in front of buyers. Spokeo lapsed last month because you ran out of time to manage the subscription.',
+    fix:
+      'Custom lead-gen tool: weekly expired-listing pulls, owner resolution including LLC chains, skip-tracing with grandkids included, kanban pipeline that auto-advances on outreach result. You wake up Monday to 100 leads, not a workflow.',
+    proof: 'Hunter, shipping for Zalen Stason, The Prosperity Group (Wellesley, MA).',
   },
   {
-    n: '03',
-    title: 'CPAs, attorneys, financial advisors',
-    detail:
-      'Recurring client document intake. Tax-prep checklists. Partner-letter drafting. Intake call summaries. Independent or small-partner practices.',
-    anchor: 'Recognizable shape: 200+ active clients, billed by the hour, owns book of business',
-    marker: 'Comp marker: $250K+ partner draw.',
+    label: 'CPAs, attorneys, financial advisors',
+    pain:
+      'Tax season is fourteen-hour days. You bill seventy hours a month on intake, document prep, and partner letters that AI could draft in two minutes. Your strategic clients get whatever attention you have left, which is none.',
+    fix:
+      'Document intake agent. Partner-letter drafter trained on your voice. Intake-call summarizer. Recurring-client checklist automation. Your hours go back to the strategic work that actually compounds your book.',
+    proof: 'Buildable on the same architecture as the superintendent Cabinet.',
   },
   {
-    n: '04',
-    title: 'Family-business owners and small CEOs',
-    detail:
-      'Owner is the bottleneck on hiring, vendor management, customer escalations, internal comms. Has stopped growing because admin eats every hour.',
-    anchor: 'Recognizable shape: $1M–$25M revenue, owner-operator, no internal IT or ops team',
-    marker: 'Comp marker: 10–50 employees.',
+    label: 'Family-business owners and small CEOs',
+    pain:
+      'You are the bottleneck. Hiring, vendor calls, customer escalations, internal comms. You stopped growing eighteen months ago because every new dollar created two new tasks for you personally. You cannot delegate what you cannot document.',
+    fix:
+      'AI agents that absorb the parts of your job no one else can do yet. Vendor follow-up, customer triage, hiring intake, weekly all-hands prep. Documents your tribal knowledge into prompts your team can run.',
+    proof: 'Same agency stack used to build custom tools for our retainer clients.',
   },
   {
-    n: '05',
-    title: 'Faith-aligned mission leaders',
-    detail:
-      'Diocese partnerships. Donor communications. Parishioner triage. Employee benefits roll-outs. Parish business administrators, Catholic CEO/founders, Legatus members.',
-    anchor: 'Recognizable shape: leads a faith-mission organization OR runs a private business while serving a Catholic ministry',
-    marker: 'Comp marker: institutional or personal authority on $2,500–$5,000 builds.',
+    label: 'Faith-aligned mission leaders',
+    pain:
+      'Donor communications eat the hours you wanted for ministry. Diocese coordination is in spreadsheets and email threads. You came into this work to serve people, and now you serve email.',
+    fix:
+      'Donor outreach drafted in your voice. Parishioner triage that flags the urgent and drafts the rest. Mission-aligned tools built by someone who shares the why.',
+    proof:
+      'Backed by Chauncey St John (Hallow) and Gary Sheng (Applied AI Society, ex-Google).',
   },
 ];
 
-const disqualifiers = [
-  'Committee or board approval required for $5K spend. Public-school RFP cycles. Hospital procurement. Government.',
-  'No recurring workflow. "Curious about AI" with no specific weekly process to compound. Send them to ChatGPT and a tutorial.',
-  'Wants a SaaS subscription, not a custom build. Direct them to off-the-shelf tools.',
-  'Per-seat pricing expectations. Our stack is BYO-key, scraping, or local hosting.',
-  'Looking to flip or resell what we build. Single-client artifacts only.',
-];
-
-const offerings = [
-  {
-    name: 'Pilot Single Agent',
-    price: '$1,250 founding · $2,500 standard',
-    note: 'One workflow. Custom-built. Lives in their environment.',
-  },
-  {
-    name: 'Active Cabinet',
-    price: '$2,500–$3,000/m founding · $4,000/m standard',
-    note: 'Six agents covering the full operating surface.',
-  },
-  {
-    name: 'Local install (Jarvis)',
-    price: '$2,500 founding · $5,000 standard',
-    note: 'Persistent memory. Brain dump routing. People files.',
-  },
-  {
-    name: 'Custom builds (agency side)',
-    price: 'Project-priced',
-    note: 'Hunter (real estate lead-gen) is the prototype.',
-  },
-];
-
-const credibility = [
-  'Signed Superintendent Christopher Roche, Woodstock Public Schools (CT). Summer AI Cabinet build, first agent ships May 7, $14,500 engagement.',
+const wins = [
+  'Signed Superintendent Christopher Roche, Woodstock Public Schools (CT). $14,500 summer Cabinet engagement. First agent ships May 7.',
   'Hunter (custom real estate lead-gen tool) shipping for The Prosperity Group, Wellesley MA.',
   'Backed by Chauncey St John (Hallow) and Gary Sheng (Applied AI Society, ex-Google).',
-  '18-year-old Babson College student. Founder of Next Generation Learners.',
 ];
 
 export default function ICPPage() {
@@ -167,7 +136,7 @@ export default function ICPPage() {
       </nav>
 
       {/* Hero */}
-      <section style={{ maxWidth: 880, margin: '0 auto', padding: '96px 24px 64px' }}>
+      <section style={{ maxWidth: 880, margin: '0 auto', padding: '96px 24px 48px' }}>
         <div
           style={{
             fontSize: '0.7rem',
@@ -178,7 +147,7 @@ export default function ICPPage() {
             marginBottom: 20,
           }}
         >
-          Ideal Client Profile
+          Who we build for
         </div>
         <h1
           style={{
@@ -188,120 +157,24 @@ export default function ICPPage() {
             letterSpacing: '-0.025em',
             lineHeight: 1.05,
             color: '#1C1917',
-            marginBottom: 32,
+            marginBottom: 28,
           }}
         >
-          Who we build for, and the question that filters every introduction.
+          Custom AI for people running a process they hate, hundreds of times a year.
         </h1>
         <p
           style={{
             fontSize: '1.15rem',
             lineHeight: 1.65,
             color: '#44403C',
-            maxWidth: 640,
+            maxWidth: 660,
           }}
         >
-          A domain expert running a proven, repeated, high-volume process that drains their time, owns their decision authority, and can pay for the lift out of personal or discretionary budget.
-        </p>
-        <p
-          style={{
-            fontSize: '0.95rem',
-            color: '#78716C',
-            marginTop: 16,
-            fontStyle: 'italic',
-          }}
-        >
-          Framework: Applied AI Society "ICP Clarity" practitioner playbook.
+          We build for domain experts with proven, high-volume work and the authority to fix it themselves. Not committees. Not curious shoppers. Operators who feel the cost of their own admin every week.
         </p>
       </section>
 
-      {/* The three signals */}
-      <section
-        className="icp-section"
-        style={{ maxWidth: 880, margin: '0 auto', padding: '48px 24px' }}
-      >
-        <div
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: '#CA8A04',
-            fontWeight: 700,
-            marginBottom: 16,
-          }}
-        >
-          The three qualifying signals
-        </div>
-        <h2
-          style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: '#1C1917',
-            marginBottom: 32,
-          }}
-        >
-          Must hit all three.
-        </h2>
-        <div style={{ display: 'grid', gap: 20 }}>
-          {[
-            {
-              label: 'Domain expertise',
-              body:
-                'They know their craft cold. They have run the same process for years, not weeks.',
-            },
-            {
-              label: 'Volume',
-              body:
-                'The process runs hundreds or thousands of times per year. Not once a quarter. High enough cadence that an AI lift compounds into hours per week back.',
-            },
-            {
-              label: 'Authority',
-              body:
-                'They can say yes to a $1,250–$5,000 build without a board, a committee, or a procurement cycle. Personal or discretionary budget.',
-            },
-          ].map((s, i) => (
-            <div
-              key={s.label}
-              style={{
-                background: 'white',
-                border: '1px solid rgba(28,25,23,0.08)',
-                borderRadius: 16,
-                padding: 28,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '0.7rem',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: '#CA8A04',
-                  fontWeight: 700,
-                  marginBottom: 8,
-                }}
-              >
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <h3
-                style={{
-                  fontFamily: "'Fraunces', Georgia, serif",
-                  fontSize: '1.5rem',
-                  fontWeight: 500,
-                  color: '#1C1917',
-                  marginBottom: 10,
-                }}
-              >
-                {s.label}
-              </h3>
-              <p style={{ fontSize: '1rem', lineHeight: 1.65, color: '#44403C' }}>{s.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Segments */}
+      {/* Section 1: Who we are + what we've done */}
       <section
         className="icp-section"
         style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
@@ -316,321 +189,46 @@ export default function ICPPage() {
             marginBottom: 16,
           }}
         >
-          Who we serve
+          01 — Who we are, what we have done
         </div>
         <h2
           style={{
             fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
+            fontSize: 'clamp(1.9rem, 3.5vw, 2.5rem)',
             fontWeight: 500,
             letterSpacing: '-0.02em',
             color: '#1C1917',
-            marginBottom: 40,
+            marginBottom: 28,
+            lineHeight: 1.15,
           }}
         >
-          Five segments, named.
-        </h2>
-        <div style={{ display: 'grid', gap: 16 }}>
-          {segments.map((s) => (
-            <div
-              key={s.n}
-              style={{
-                background: 'white',
-                border: '1px solid rgba(28,25,23,0.08)',
-                borderRadius: 16,
-                padding: 32,
-                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 12 }}>
-                <span
-                  style={{
-                    fontFamily: "'Fraunces', Georgia, serif",
-                    fontSize: '1.4rem',
-                    color: '#CA8A04',
-                    fontWeight: 500,
-                  }}
-                >
-                  {s.n}
-                </span>
-                <h3
-                  style={{
-                    fontFamily: "'Fraunces', Georgia, serif",
-                    fontSize: '1.4rem',
-                    fontWeight: 500,
-                    color: '#1C1917',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {s.title}
-                </h3>
-              </div>
-              <p style={{ fontSize: '1rem', lineHeight: 1.65, color: '#44403C', marginBottom: 16 }}>
-                {s.detail}
-              </p>
-              <div
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#78716C',
-                  borderTop: '1px solid rgba(28,25,23,0.06)',
-                  paddingTop: 14,
-                  display: 'grid',
-                  gap: 6,
-                }}
-              >
-                <div>{s.anchor}</div>
-                <div>{s.marker}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Disqualifiers */}
-      <section
-        className="icp-section"
-        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
-      >
-        <div
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: '#CA8A04',
-            fontWeight: 700,
-            marginBottom: 16,
-          }}
-        >
-          Politely route elsewhere
-        </div>
-        <h2
-          style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: '#1C1917',
-            marginBottom: 32,
-          }}
-        >
-          Disqualifying signals.
+          A two-person agency that ships custom AI in days, not quarters.
         </h2>
         <div
           style={{
-            background: 'white',
-            border: '1px solid rgba(28,25,23,0.08)',
-            borderRadius: 16,
-            padding: 32,
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+            fontSize: '1.05rem',
+            lineHeight: 1.7,
+            color: '#44403C',
+            display: 'grid',
+            gap: 18,
+            marginBottom: 36,
           }}
         >
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 16 }}>
-            {disqualifiers.map((d, i) => (
-              <li
-                key={i}
-                style={{
-                  paddingLeft: 24,
-                  position: 'relative',
-                  fontSize: '1rem',
-                  lineHeight: 1.6,
-                  color: '#44403C',
-                }}
-              >
-                <span
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    color: '#CA8A04',
-                    fontWeight: 700,
-                  }}
-                >
-                  ×
-                </span>
-                {d}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* Offerings */}
-      <section
-        className="icp-section"
-        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
-      >
-        <div
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: '#CA8A04',
-            fontWeight: 700,
-            marginBottom: 16,
-          }}
-        >
-          What we deliver
-        </div>
-        <h2
-          style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: '#1C1917',
-            marginBottom: 32,
-          }}
-        >
-          Offerings and price.
-        </h2>
-        <div style={{ display: 'grid', gap: 12 }}>
-          {offerings.map((o) => (
-            <div
-              key={o.name}
-              style={{
-                background: 'white',
-                border: '1px solid rgba(28,25,23,0.08)',
-                borderRadius: 12,
-                padding: 24,
-                display: 'grid',
-                gridTemplateColumns: '1fr auto',
-                gap: 16,
-                alignItems: 'start',
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontFamily: "'Fraunces', Georgia, serif",
-                    fontSize: '1.15rem',
-                    fontWeight: 500,
-                    color: '#1C1917',
-                    marginBottom: 6,
-                  }}
-                >
-                  {o.name}
-                </div>
-                <div style={{ fontSize: '0.9rem', color: '#78716C', lineHeight: 1.5 }}>{o.note}</div>
-              </div>
-              <div
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#CA8A04',
-                  fontWeight: 600,
-                  whiteSpace: 'nowrap',
-                  textAlign: 'right',
-                }}
-              >
-                {o.price}
-              </div>
-            </div>
-          ))}
-        </div>
-        <p
-          style={{
-            fontSize: '0.85rem',
-            color: '#78716C',
-            marginTop: 20,
-            fontStyle: 'italic',
-            lineHeight: 1.6,
-          }}
-        >
-          Industry context: custom AI agent builds run $3,500–$15,000 one-time + $500–$2,250/m maintenance. Founding rates sit at the low end of that range as case-study pricing.
-        </p>
-      </section>
-
-      {/* The referral question */}
-      <section
-        className="icp-section"
-        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
-      >
-        <div
-          style={{
-            background: '#1C1917',
-            color: '#FAFAF9',
-            borderRadius: 24,
-            padding: '56px 48px',
-            textAlign: 'center',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '0.7rem',
-              letterSpacing: '0.24em',
-              textTransform: 'uppercase',
-              color: '#CA8A04',
-              fontWeight: 700,
-              marginBottom: 24,
-            }}
-          >
-            How to refer
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Fraunces', Georgia, serif",
-              fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)',
-              fontWeight: 400,
-              letterSpacing: '-0.015em',
-              lineHeight: 1.3,
-              color: '#FAFAF9',
-              maxWidth: 640,
-              margin: '0 auto',
-              fontStyle: 'italic',
-            }}
-          >
-            "Is this person running a process they hate, hundreds of times a year, that they have authority to fix on their own?"
-          </h2>
-          <p
-            style={{
-              marginTop: 28,
-              fontSize: '1rem',
-              color: 'rgba(250,250,249,0.7)',
-              maxWidth: 480,
-              margin: '28px auto 0',
-              lineHeight: 1.6,
-            }}
-          >
-            If yes, send them. If no, save the introduction.
+          <p>
+            Next Generation Learners is run by Brayan Tenesaca, an 18-year-old Babson College founder, and his co-founder Ryan Vincent. We started by running AI literacy programs in Connecticut libraries and schools. We pivoted to building custom AI agents and operating systems for people whose time is too expensive to keep losing to admin.
+          </p>
+          <p>
+            Our edge is speed and specificity. We do not sell a SaaS subscription. We do not run a long discovery cycle. We meet you, listen, and ship a working tool inside two weeks that lives in your environment, on your data, in your voice.
           </p>
         </div>
-      </section>
-
-      {/* Credibility */}
-      <section
-        className="icp-section"
-        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
-      >
-        <div
-          style={{
-            fontSize: '0.7rem',
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color: '#CA8A04',
-            fontWeight: 700,
-            marginBottom: 16,
-          }}
-        >
-          Anchors for credibility
-        </div>
-        <h2
-          style={{
-            fontFamily: "'Fraunces', Georgia, serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            color: '#1C1917',
-            marginBottom: 32,
-          }}
-        >
-          Drop these in any introduction.
-        </h2>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 14 }}>
-          {credibility.map((c, i) => (
+          {wins.map((w, i) => (
             <li
               key={i}
               style={{
                 paddingLeft: 32,
                 position: 'relative',
-                fontSize: '1.02rem',
+                fontSize: '1rem',
                 lineHeight: 1.6,
                 color: '#44403C',
               }}
@@ -646,10 +244,283 @@ export default function ICPPage() {
               >
                 {String(i + 1).padStart(2, '0')}
               </span>
-              {c}
+              {w}
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* Section 2: Who we like to work with */}
+      <section
+        className="icp-section"
+        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
+      >
+        <div
+          style={{
+            fontSize: '0.7rem',
+            letterSpacing: '0.24em',
+            textTransform: 'uppercase',
+            color: '#CA8A04',
+            fontWeight: 700,
+            marginBottom: 16,
+          }}
+        >
+          02 — Who we like to work with
+        </div>
+        <h2
+          style={{
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: 'clamp(1.9rem, 3.5vw, 2.5rem)',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            color: '#1C1917',
+            marginBottom: 28,
+            lineHeight: 1.15,
+          }}
+        >
+          Three signals. All three required.
+        </h2>
+        <div style={{ display: 'grid', gap: 16, marginBottom: 40 }}>
+          {[
+            {
+              label: 'Domain expertise',
+              body: 'They know their craft cold. Years, not weeks.',
+            },
+            {
+              label: 'Volume',
+              body:
+                'The process runs hundreds or thousands of times per year. Cadence high enough that an AI lift compounds into hours per week back.',
+            },
+            {
+              label: 'Authority',
+              body:
+                'They can say yes to a $1,250 to $5,000 build without a board, a committee, or a procurement cycle.',
+            },
+          ].map((s, i) => (
+            <div
+              key={s.label}
+              style={{
+                background: 'white',
+                border: '1px solid rgba(28,25,23,0.08)',
+                borderRadius: 14,
+                padding: 24,
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr',
+                gap: 20,
+                alignItems: 'baseline',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: '1.4rem',
+                  color: '#CA8A04',
+                  fontWeight: 500,
+                  minWidth: 36,
+                }}
+              >
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div>
+                <div
+                  style={{
+                    fontFamily: "'Fraunces', Georgia, serif",
+                    fontSize: '1.25rem',
+                    fontWeight: 500,
+                    color: '#1C1917',
+                    marginBottom: 6,
+                  }}
+                >
+                  {s.label}
+                </div>
+                <div style={{ fontSize: '0.98rem', lineHeight: 1.6, color: '#44403C' }}>
+                  {s.body}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            background: '#1C1917',
+            color: '#FAFAF9',
+            borderRadius: 20,
+            padding: '40px 36px',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              fontSize: '0.7rem',
+              letterSpacing: '0.24em',
+              textTransform: 'uppercase',
+              color: '#CA8A04',
+              fontWeight: 700,
+              marginBottom: 18,
+            }}
+          >
+            The single referral question
+          </div>
+          <p
+            style={{
+              fontFamily: "'Fraunces', Georgia, serif",
+              fontSize: 'clamp(1.3rem, 2.8vw, 1.7rem)',
+              fontWeight: 400,
+              fontStyle: 'italic',
+              lineHeight: 1.4,
+              maxWidth: 640,
+              margin: '0 auto',
+            }}
+          >
+            "Is this person running a process they hate, hundreds of times a year, that they have authority to fix on their own?"
+          </p>
+          <p
+            style={{
+              marginTop: 22,
+              fontSize: '0.95rem',
+              color: 'rgba(250,250,249,0.7)',
+            }}
+          >
+            If yes, send them. If no, save the introduction.
+          </p>
+        </div>
+      </section>
+
+      {/* Section 3: How we can help — pain heavy */}
+      <section
+        className="icp-section"
+        style={{ maxWidth: 880, margin: '0 auto', padding: '64px 24px' }}
+      >
+        <div
+          style={{
+            fontSize: '0.7rem',
+            letterSpacing: '0.24em',
+            textTransform: 'uppercase',
+            color: '#CA8A04',
+            fontWeight: 700,
+            marginBottom: 16,
+          }}
+        >
+          03 — How we can help
+        </div>
+        <h2
+          style={{
+            fontFamily: "'Fraunces', Georgia, serif",
+            fontSize: 'clamp(1.9rem, 3.5vw, 2.5rem)',
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            color: '#1C1917',
+            marginBottom: 16,
+            lineHeight: 1.15,
+          }}
+        >
+          The pains we take off their plate.
+        </h2>
+        <p
+          style={{
+            fontSize: '1.05rem',
+            lineHeight: 1.65,
+            color: '#44403C',
+            marginBottom: 40,
+            maxWidth: 660,
+          }}
+        >
+          Read these out loud. If you recognize someone in the pain, they are who we build for.
+        </p>
+        <div style={{ display: 'grid', gap: 24 }}>
+          {segments.map((s, i) => (
+            <div
+              key={s.label}
+              style={{
+                background: 'white',
+                border: '1px solid rgba(28,25,23,0.08)',
+                borderRadius: 18,
+                padding: 32,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  color: '#CA8A04',
+                  fontWeight: 700,
+                  marginBottom: 10,
+                }}
+              >
+                {String(i + 1).padStart(2, '0')} — {s.label}
+              </div>
+              <p
+                style={{
+                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontSize: '1.25rem',
+                  fontWeight: 400,
+                  fontStyle: 'italic',
+                  lineHeight: 1.5,
+                  color: '#1C1917',
+                  marginBottom: 22,
+                  letterSpacing: '-0.005em',
+                }}
+              >
+                {s.pain}
+              </p>
+              <div
+                style={{
+                  borderTop: '1px solid rgba(28,25,23,0.08)',
+                  paddingTop: 20,
+                  display: 'grid',
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.7rem',
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      color: '#78716C',
+                      fontWeight: 700,
+                      marginBottom: 6,
+                    }}
+                  >
+                    What we build
+                  </div>
+                  <p style={{ fontSize: '1rem', lineHeight: 1.6, color: '#44403C' }}>{s.fix}</p>
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: '0.7rem',
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      color: '#78716C',
+                      fontWeight: 700,
+                      marginBottom: 6,
+                    }}
+                  >
+                    Proof
+                  </div>
+                  <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: '#44403C' }}>
+                    {s.proof}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p
+          style={{
+            fontSize: '0.9rem',
+            color: '#78716C',
+            marginTop: 32,
+            fontStyle: 'italic',
+            lineHeight: 1.6,
+            maxWidth: 660,
+          }}
+        >
+          Pricing for context: a single-agent Pilot starts at $1,250 founding rate. A full operating Cabinet runs $2,500 to $3,000 a month. Custom agency builds are project-priced. Industry standard for this kind of work is $3,500 to $15,000 plus monthly maintenance. We sit at the low end while we stack case studies.
+        </p>
       </section>
 
       {/* Footer */}
