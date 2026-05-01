@@ -164,25 +164,25 @@ export default function NelsonMerchanPage() {
           100% { transform: translateX(180%) skewX(-12deg); opacity: 0; }
         }
 
-        .nm-hero-eyebrow { animation: nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both; }
-        .nm-hero-tag { animation: nm-meta-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 760ms both; }
-        .nm-hero-meta { animation: nm-meta-in 1000ms cubic-bezier(0.22, 1, 0.36, 1) 1000ms both; }
+        .nm-hero-eyebrow { animation: nm-meta-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both; }
+        .nm-hero-tag { animation: nm-meta-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 460ms both; }
+        .nm-hero-meta { animation: nm-meta-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both; }
         .nm-hero-rule {
           transform-origin: left;
-          animation: nm-rule-grow 1100ms cubic-bezier(0.22, 1, 0.36, 1) 880ms both;
+          animation: nm-rule-grow 800ms cubic-bezier(0.22, 1, 0.36, 1) 540ms both;
         }
         .nm-hero-photo-frame {
-          animation: nm-photo-frame-in 1300ms cubic-bezier(0.7, 0, 0.2, 1) 220ms both;
+          animation: nm-photo-frame-in 900ms cubic-bezier(0.7, 0, 0.2, 1) 140ms both;
         }
         .nm-hero-photo-img {
-          animation: nm-ken-burns 14s ease-in-out 1100ms infinite alternate;
+          animation: nm-ken-burns 14s ease-in-out 800ms infinite alternate;
         }
         .nm-hero-photo-sweep {
           position: absolute;
           inset: 0;
           background: linear-gradient(120deg, transparent 30%, rgba(252,211,77,0.55) 50%, transparent 70%);
           mix-blend-mode: screen;
-          animation: nm-photo-sweep 1800ms cubic-bezier(0.7, 0, 0.2, 1) 600ms 1 both;
+          animation: nm-photo-sweep 1200ms cubic-bezier(0.7, 0, 0.2, 1) 380ms 1 both;
           pointer-events: none;
           z-index: 4;
         }
@@ -461,9 +461,9 @@ export default function NelsonMerchanPage() {
                     margin: 0,
                     color: 'var(--nm-ink)',
                   }}
-                  baseDelay={120}
-                  perWordDelay={120}
-                  duration={1100}
+                  baseDelay={60}
+                  perWordDelay={70}
+                  duration={760}
                   triggerOnLoad
                 >
                   Nelson
@@ -477,9 +477,9 @@ export default function NelsonMerchanPage() {
                     margin: 0,
                     color: 'var(--nm-gold-deep)',
                   }}
-                  baseDelay={360}
-                  perWordDelay={120}
-                  duration={1100}
+                  baseDelay={200}
+                  perWordDelay={70}
+                  duration={760}
                   triggerOnLoad
                 >
                   Merchan.
@@ -607,7 +607,7 @@ export default function NelsonMerchanPage() {
                   textTransform: 'uppercase',
                   backdropFilter: 'blur(10px)',
                   fontWeight: 500,
-                  animation: 'nm-meta-in 800ms cubic-bezier(0.22, 1, 0.36, 1) 1400ms both',
+                  animation: 'nm-meta-in 600ms cubic-bezier(0.22, 1, 0.36, 1) 900ms both',
                 }}
               >
                 CT SBDC &middot; UConn
@@ -633,8 +633,8 @@ export default function NelsonMerchanPage() {
               margin: 0,
               maxWidth: 920,
             }}
-            perWordDelay={28}
-            duration={900}
+            perWordDelay={16}
+            duration={550}
           >
             {`Nelson advises small business owners across the Ridgefield, Danbury, New Milford, and Southbury corridor at no cost. He sits in the room when a vineyard pitches its first bank, when a chocolatier writes a plan that holds together, when an immigrant founder builds the company they sketched on a napkin. Connecticut’s Small Business Development Center is publicly funded. Nelson is the version of that program that picks up the phone.`}
           </SplitWords>
@@ -656,17 +656,17 @@ export default function NelsonMerchanPage() {
       <section className="nm-section" id="services">
         <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>What he does</div></Reveal>
         <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
-          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} baseDelay={0} perWordDelay={70}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} baseDelay={0} perWordDelay={36}>
             No-cost.
           </SplitWords>
-          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={140} perWordDelay={70}>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={80} perWordDelay={36}>
             Confidential.
           </SplitWords>
-          <SplitWords as="span" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-ink)' }} baseDelay={300} perWordDelay={50}>
+          <SplitWords as="span" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-ink)' }} baseDelay={170} perWordDelay={28}>
             The kind of help most founders never know is free.
           </SplitWords>
         </div>
-        <Reveal delay={400}>
+        <Reveal delay={220}>
           <p className="nm-section-lead" style={{ marginTop: 24 }}>
             The CT SBDC is a partnership between UConn and the U.S. Small Business Administration. Every meeting with Nelson is paid for by that mandate. Founders bring the work. He brings two decades of Connecticut market knowledge, a network of bankers, and the patience to walk a plan through five revisions.
           </p>
@@ -674,7 +674,7 @@ export default function NelsonMerchanPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           {SERVICES.map((s, i) => (
-            <Reveal key={s.label} delay={i * 140}>
+            <Reveal key={s.label} delay={i * 80}>
               <div className="nm-card" style={{ height: '100%' }}>
                 <div
                   style={{
@@ -720,14 +720,14 @@ export default function NelsonMerchanPage() {
       <section className="nm-section" id="receipts">
         <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>The receipts</div></Reveal>
         <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
-          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={60}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={32}>
             The people who built things
           </SplitWords>
-          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={420} perWordDelay={70}>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={220} perWordDelay={38}>
             with him in the room.
           </SplitWords>
         </div>
-        <Reveal delay={500}>
+        <Reveal delay={260}>
           <p className="nm-section-lead" style={{ marginTop: 24 }}>
             Six businesses across Greater Danbury and Western Connecticut, in their own words. Pulled from public CT SBDC records and the Greater Danbury Chamber of Commerce.
           </p>
@@ -741,7 +741,7 @@ export default function NelsonMerchanPage() {
           }}
         >
           {TESTIMONIALS.map((t, i) => (
-            <Reveal key={t.name} delay={i * 110}>
+            <Reveal key={t.name} delay={i * 60}>
               <figure className="nm-quote-card" style={{ height: '100%', margin: 0 }}>
                 <blockquote
                   className="nm-display"
@@ -789,14 +789,14 @@ export default function NelsonMerchanPage() {
       <section className="nm-section" id="roles">
         <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Roles &amp; affiliations</div></Reveal>
         <div className="nm-headline-stack" style={{ marginBottom: 18 }}>
-          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={70}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={36}>
             One man.
           </SplitWords>
-          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={220} perWordDelay={80}>
+          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={120} perWordDelay={40}>
             Six chairs.
           </SplitWords>
         </div>
-        <Reveal delay={300}>
+        <Reveal delay={160}>
           <p className="nm-section-lead" style={{ marginTop: 24 }}>
             Nelson&apos;s reach is structural. He sits on the boards and committees that decide where Greater Danbury invests its civic energy. The same network entrepreneurs benefit from when he routes them somewhere only a board seat can open.
           </p>
@@ -804,7 +804,7 @@ export default function NelsonMerchanPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
           {ROLES.map((r, i) => (
-            <Reveal key={r.org} delay={i * 90}>
+            <Reveal key={r.org} delay={i * 50}>
               <div className="nm-card" style={{ height: '100%' }}>
                 <div className="nm-eyebrow" style={{ fontSize: '0.66rem', marginBottom: 14, color: 'var(--nm-gold-deep)' }}>
                   {r.role}
@@ -836,17 +836,14 @@ export default function NelsonMerchanPage() {
       <section className="nm-section">
         <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Recognition</div></Reveal>
         <div className="nm-headline-stack">
-          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={60}>
+          <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={32}>
             Three awards in twelve years.
-          </SplitWords>
-          <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2.2rem, 4.6vw, 3.4rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={460} perWordDelay={70}>
-            None of them on his bio.
           </SplitWords>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 0, marginTop: 32 }}>
           {RECOGNITION.map((r, i) => (
-            <Reveal key={r.year} delay={i * 130}>
+            <Reveal key={r.year} delay={i * 70}>
               <div
                 className="nm-rec-row"
                 style={{
@@ -857,7 +854,7 @@ export default function NelsonMerchanPage() {
                   borderTop: i === 0 ? '1px solid var(--nm-line-strong)' : '1px solid var(--nm-line)',
                   borderBottom: i === RECOGNITION.length - 1 ? '1px solid var(--nm-line-strong)' : 'none',
                   alignItems: 'baseline',
-                  animationDelay: `${i * 130}ms`,
+                  animationDelay: `${i * 70}ms`,
                 }}
               >
                 <div
@@ -906,14 +903,14 @@ export default function NelsonMerchanPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', maxWidth: 920 }}>
           <Reveal><div className="nm-eyebrow" style={{ marginBottom: 24 }}>The Danbury throughline</div></Reveal>
           <div className="nm-headline-stack" style={{ marginBottom: 32 }}>
-            <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={55}>
+            <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={28}>
               158 Main Street is a small building.
             </SplitWords>
-            <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={440} perWordDelay={70}>
+            <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.4vw, 3.2rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={220} perWordDelay={36}>
               The decade that came out of it is not.
             </SplitWords>
           </div>
-          <Reveal delay={500}>
+          <Reveal delay={260}>
             <div
               style={{
                 fontSize: '1.06rem',
@@ -951,14 +948,14 @@ export default function NelsonMerchanPage() {
           <div>
             <Reveal><div className="nm-eyebrow" style={{ marginBottom: 16 }}>Reach him</div></Reveal>
             <div className="nm-headline-stack" style={{ marginBottom: 24 }}>
-              <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={50}>
+              <SplitWords as="h2" className="nm-display" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, margin: 0, color: 'var(--nm-ink)' }} perWordDelay={26}>
                 If you&apos;re a Greater Danbury entrepreneur,
               </SplitWords>
-              <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={460} perWordDelay={70}>
+              <SplitWords as="span" className="nm-display-italic" style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.04, color: 'var(--nm-gold-deep)' }} baseDelay={240} perWordDelay={38}>
                 start here.
               </SplitWords>
             </div>
-            <Reveal delay={500}>
+            <Reveal delay={260}>
               <p
                 style={{
                   fontSize: '1.02rem',
@@ -972,7 +969,7 @@ export default function NelsonMerchanPage() {
               </p>
             </Reveal>
 
-            <Reveal delay={600}>
+            <Reveal delay={320}>
               <div className="nm-cta-stack" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <a href="mailto:nelson.2.merchan@uconn.edu" className="nm-btn-primary">
                   Email Nelson
@@ -992,7 +989,7 @@ export default function NelsonMerchanPage() {
             </Reveal>
           </div>
 
-          <Reveal delay={200}>
+          <Reveal delay={120}>
             <div
               style={{
                 background: '#FFFFFF',
@@ -1138,8 +1135,6 @@ export default function NelsonMerchanPage() {
               </p>
               <p style={{ fontSize: '0.84rem', lineHeight: 1.7, margin: '0 0 14px' }}>
                 Next Generation Learners.
-                <br />
-                Built as a thank-you, not a pitch.
               </p>
               <a
                 href="mailto:brayan@nextgenerationlearners.com"
@@ -1203,7 +1198,7 @@ function StatsGrid() {
             padding: '36px 28px',
             borderRight: i < STATS.length - 1 ? '1px solid var(--nm-line)' : 'none',
             borderBottom: 'none',
-            animationDelay: `${i * 140}ms`,
+            animationDelay: `${i * 80}ms`,
           }}
         >
           <div
@@ -1284,7 +1279,7 @@ function DarkSweepBlock() {
               margin: 0,
               color: 'var(--nm-cream)',
             }}
-            perWordDelay={55}
+            perWordDelay={28}
           >
             A vineyard in Sandy Hook walked in with a plan.
           </SplitWords>
@@ -1296,13 +1291,13 @@ function DarkSweepBlock() {
               lineHeight: 1.04,
               color: '#FCD34D',
             }}
-            baseDelay={620}
-            perWordDelay={70}
+            baseDelay={300}
+            perWordDelay={36}
           >
             Nelson walked them out with $190,000 and a building permit.
           </SplitWords>
         </div>
-        <Reveal delay={900}>
+        <Reveal delay={420}>
           <p
             style={{
               fontSize: '1.04rem',
@@ -1329,7 +1324,7 @@ function DarkSweepBlock() {
             { num: '7(a)', label: 'SBA loan structure' },
             { num: '1', label: 'Patient advisor' },
           ].map((s, i) => (
-            <Reveal key={s.label} delay={1000 + i * 100}>
+            <Reveal key={s.label} delay={520 + i * 60}>
               <div
                 style={{
                   background: 'rgba(255,255,255,0.04)',
