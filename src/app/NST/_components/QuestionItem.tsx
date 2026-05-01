@@ -42,9 +42,13 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
 
   const effectiveClassKey = q.class_key || classKey;
 
-  const submitMc = async (idx: number) => {
+  const submitMc = (idx: number) => {
     setPicked(idx);
-    const r = await fetch('/api/nst/answer', {
+    if (typeof q.answer === 'number') {
+      setCorrectIndex(q.answer);
+      setFeedback(idx === q.answer ? 'correct' : 'incorrect');
+    }
+    fetch('/api/nst/answer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -53,10 +57,7 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
         answer: String(idx),
         mode,
       }),
-    });
-    const data = await r.json();
-    setCorrectIndex(data.feedback?.correct_index ?? null);
-    setFeedback(data.correct ? 'correct' : 'incorrect');
+    }).catch(() => {});
   };
 
   const saveOpen = async (value: string) => {
