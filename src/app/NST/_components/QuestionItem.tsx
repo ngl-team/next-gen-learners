@@ -9,6 +9,7 @@ export type Question = {
   choices?: string[];
   answer?: number;
   rubric?: string;
+  explanation?: string;
   class_key?: string;
   class_title?: string;
 };
@@ -115,6 +116,9 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
             {feedback === 'correct' && <span className="ok">Correct.</span>}
             {feedback === 'incorrect' && <span className="bad">Not quite. Correct answer highlighted.</span>}
           </div>
+          {feedback && q.explanation && (
+            <div className="explanation"><strong>Why:</strong> {q.explanation}</div>
+          )}
         </>
       ) : (
         <>

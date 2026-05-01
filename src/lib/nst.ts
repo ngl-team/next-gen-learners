@@ -11,6 +11,7 @@ export type Question = {
   choices?: string[];
   answer?: number;
   rubric?: string;
+  explanation?: string;
 };
 
 export type ClassGroup = {
