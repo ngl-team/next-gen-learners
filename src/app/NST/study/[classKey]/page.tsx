@@ -24,6 +24,15 @@ export default async function StudyPage({ params }: { params: Promise<{ classKey
     answered[row.question_id] = { answer: row.answer, correct: row.correct };
   }
 
+  const bm = await db.execute({
+    sql: 'SELECT question_id FROM nst_bookmarks WHERE user_id = ?',
+    args: [user.id],
+  });
+  const bookmarked = new Set<string>();
+  for (const row of bm.rows as unknown as Array<{ question_id: string }>) {
+    bookmarked.add(row.question_id);
+  }
+
   return (
     <>
       <Header name={user.name} />
@@ -39,6 +48,7 @@ export default async function StudyPage({ params }: { params: Promise<{ classKey
               index={i}
               classKey={classKey}
               initial={answered[q.id]}
+              initialBookmarked={bookmarked.has(q.id)}
             />
           ))}
         </div>

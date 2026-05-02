@@ -18,6 +18,7 @@ export default function Header({ name }: { name: string | null }) {
             <Link href="/NST">Dashboard</Link>
             <Link href="/NST/flashcards">Flashcards</Link>
             <Link href="/NST/drill">Drill open</Link>
+            <Link href="/NST/saved">Saved ★</Link>
             <Link href="/NST/review">Review wrong</Link>
             <Link href="/NST/exam">Simulate Final</Link>
             <Link href="/NST/compare">Compare</Link>

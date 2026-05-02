@@ -15,6 +15,7 @@ export default function DrillPage() {
   const [idx, setIdx] = useState(0);
   const [filter, setFilter] = useState<Filter>('all');
   const [seed, setSeed] = useState<number>(0);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   const load = useCallback(async (f: Filter, s?: number) => {
     const params = new URLSearchParams({ filter: f });
@@ -33,6 +34,8 @@ export default function DrillPage() {
         return;
       }
       setName(me.name);
+      const bm = await fetch('/api/nst/bookmark').then((r) => r.json());
+      setBookmarkedIds(new Set<string>(bm.ids || []));
       await load('all');
     })();
   }, [router, load]);
@@ -115,6 +118,15 @@ export default function DrillPage() {
                 classKey={current.class_key || ''}
                 mode="drill"
                 showTag
+                initialBookmarked={bookmarkedIds.has(current.id)}
+                onBookmarkChange={(on) => {
+                  setBookmarkedIds((prev) => {
+                    const next = new Set(prev);
+                    if (on) next.add(current.id);
+                    else next.delete(current.id);
+                    return next;
+                  });
+                }}
               />
             )}
 

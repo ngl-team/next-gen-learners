@@ -11,6 +11,7 @@ export default function ExamPage() {
   const [name, setName] = useState<string | null>(null);
   const [items, setItems] = useState<Question[] | null>(null);
   const [score, setScore] = useState<string>('');
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     (async () => {
@@ -20,8 +21,12 @@ export default function ExamPage() {
         return;
       }
       setName(me.name);
-      const exam = await fetch('/api/nst/exam').then((r) => r.json());
+      const [exam, bm] = await Promise.all([
+        fetch('/api/nst/exam').then((r) => r.json()),
+        fetch('/api/nst/bookmark').then((r) => r.json()),
+      ]);
       setItems(exam.items);
+      setBookmarkedIds(new Set<string>(bm.ids || []));
     })();
   }, [router]);
 
@@ -64,6 +69,7 @@ export default function ExamPage() {
                   classKey={q.class_key || ''}
                   mode="exam"
                   showTag
+                  initialBookmarked={bookmarkedIds.has(q.id)}
                 />
               ))}
             </div>

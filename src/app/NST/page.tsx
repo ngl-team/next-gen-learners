@@ -30,6 +30,12 @@ async function loadDashboard(userId: number) {
   });
   const wrongCount = Number((wrongRes.rows[0] as unknown as { c: number })?.c || 0);
 
+  const savedRes = await db.execute({
+    sql: 'SELECT COUNT(*) as c FROM nst_bookmarks WHERE user_id = ?',
+    args: [userId],
+  });
+  const savedCount = Number((savedRes.rows[0] as unknown as { c: number })?.c || 0);
+
   const classes = Object.entries(BANK.classes)
     .sort(([a], [b]) => Number(a) - Number(b))
     .map(([key, v]) => ({
@@ -49,13 +55,13 @@ async function loadDashboard(userId: number) {
     correct: progress[key]?.correct ?? 0,
   }));
 
-  return { classes, labs, allUsers, wrongCount };
+  return { classes, labs, allUsers, wrongCount, savedCount };
 }
 
 export default async function NstDashboardPage() {
   const user = await getCurrentUserId();
   if (!user) redirect('/NST/login');
-  const { classes, labs, allUsers, wrongCount } = await loadDashboard(user.id);
+  const { classes, labs, allUsers, wrongCount, savedCount } = await loadDashboard(user.id);
 
   return (
     <>
@@ -68,6 +74,9 @@ export default async function NstDashboardPage() {
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
             <Link href="/NST/drill" className="btn primary big">Drill open response</Link>
             <Link href="/NST/flashcards" className="btn primary big">Flashcards</Link>
+            <Link href="/NST/saved" className="btn ghost big">
+              Saved ★{savedCount > 0 ? ` (${savedCount})` : ''}
+            </Link>
             <Link href="/NST/review" className="btn ghost big">
               Review wrong{wrongCount > 0 ? ` (${wrongCount})` : ''}
             </Link>

@@ -21,9 +21,11 @@ type Props = {
   mode?: 'study' | 'exam' | 'review' | 'drill';
   initial?: { answer?: string; correct?: number | null };
   showTag?: boolean;
+  initialBookmarked?: boolean;
+  onBookmarkChange?: (bookmarked: boolean) => void;
 };
 
-export default function QuestionItem({ q, index, classKey, mode = 'study', initial, showTag = false }: Props) {
+export default function QuestionItem({ q, index, classKey, mode = 'study', initial, showTag = false, initialBookmarked = false, onBookmarkChange }: Props) {
   const [picked, setPicked] = useState<number | null>(() => {
     if (q.type !== 'mc' || !initial?.answer) return null;
     const n = Number(initial.answer);
@@ -39,9 +41,26 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
   const [text, setText] = useState<string>(initial?.answer ?? '');
   const [saved, setSaved] = useState('');
   const [showRubric, setShowRubric] = useState(false);
+  const [bookmarked, setBookmarked] = useState<boolean>(initialBookmarked);
   const lastSave = useRef<number>(0);
 
   const effectiveClassKey = q.class_key || classKey;
+
+  const toggleBookmark = async () => {
+    const next = !bookmarked;
+    setBookmarked(next);
+    onBookmarkChange?.(next);
+    try {
+      await fetch('/api/nst/bookmark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question_id: q.id, class_key: effectiveClassKey, on: next }),
+      });
+    } catch {
+      setBookmarked(!next);
+      onBookmarkChange?.(!next);
+    }
+  };
 
   const submitMc = (idx: number) => {
     setPicked(idx);
@@ -95,6 +114,14 @@ export default function QuestionItem({ q, index, classKey, mode = 'study', initi
         Q{index + 1}
         <span className={`pill ${q.type}`}>{q.type === 'mc' ? 'MC' : 'Open'}</span>
         {showTag && q.class_title && <span className="tag">{q.class_title}</span>}
+        <button
+          className={`bookmark-btn ${bookmarked ? 'on' : ''}`}
+          onClick={toggleBookmark}
+          title={bookmarked ? 'Saved for review — click to remove' : 'Save for review'}
+          aria-label={bookmarked ? 'Saved for review' : 'Save for review'}
+        >
+          {bookmarked ? '★ Saved' : '☆ Save for review'}
+        </button>
       </div>
       <div className="prompt">{q.prompt}</div>
       {q.type === 'mc' ? (

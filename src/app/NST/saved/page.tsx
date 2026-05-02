@@ -6,12 +6,11 @@ import { useRouter } from 'next/navigation';
 import Header from '../_components/Header';
 import QuestionItem, { type Question } from '../_components/QuestionItem';
 
-export default function ReviewPage() {
+export default function SavedPage() {
   const router = useRouter();
   const [name, setName] = useState<string | null>(null);
   const [items, setItems] = useState<Question[] | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     (async () => {
@@ -21,39 +20,42 @@ export default function ReviewPage() {
         return;
       }
       setName(me.name);
-      const [wrong, bm] = await Promise.all([
-        fetch('/api/nst/wrong', { cache: 'no-store' }).then((r) => r.json()),
-        fetch('/api/nst/bookmark').then((r) => r.json()),
-      ]);
-      setItems(wrong.items);
-      setBookmarkedIds(new Set<string>(bm.ids || []));
+      const data = await fetch('/api/nst/bookmark', { cache: 'no-store' }).then((r) => r.json());
+      setItems(data.items || []);
     })();
   }, [router, reloadKey]);
+
+  const handleBookmarkChange = (questionId: string, bookmarked: boolean) => {
+    if (!bookmarked) {
+      setItems((prev) => (prev ? prev.filter((q) => q.id !== questionId) : prev));
+    }
+  };
 
   return (
     <>
       <Header name={name} />
       <main className="wrap">
         <Link className="back" href="/NST">&larr; back</Link>
-        <h1>Review wrong answers</h1>
+        <h1>Saved for review</h1>
         <p className="muted">
-          Every multiple choice question you have ever gotten wrong, cumulative across study and exam modes.
-          Get one right here and it leaves this list automatically.
+          Every question you starred. Tap the ★ on any question to save it; tap again to remove. Bookmarks are kept across study, exam, drill, and review.
         </p>
         {!items ? (
           <div className="spinner">Loading…</div>
         ) : items.length === 0 ? (
           <div className="card">
-            <h3>Nothing to review.</h3>
-            <p className="muted">You have no outstanding wrong answers. Keep practicing in study mode or run a simulated final.</p>
+            <h3>No saved questions yet.</h3>
+            <p className="muted">
+              While studying, hit <strong>☆ Save for review</strong> on any question to add it here. Useful for concepts you got right but want to lock in, or open responses with rubrics you want to keep nearby.
+            </p>
             <div className="row">
               <Link href="/NST" className="btn primary">Back to dashboard</Link>
-              <Link href="/NST/exam" className="btn ghost">Simulate the Final</Link>
+              <Link href="/NST/drill" className="btn ghost">Drill open response</Link>
             </div>
           </div>
         ) : (
           <>
-            <p className="small muted">{items.length} question{items.length === 1 ? '' : 's'} to review.</p>
+            <p className="small muted">{items.length} question{items.length === 1 ? '' : 's'} saved.</p>
             <div className="qlist">
               {items.map((q, i) => (
                 <QuestionItem
@@ -62,8 +64,9 @@ export default function ReviewPage() {
                   index={i}
                   classKey={q.class_key || ''}
                   mode="review"
+                  initialBookmarked
+                  onBookmarkChange={(on) => handleBookmarkChange(q.id, on)}
                   showTag
-                  initialBookmarked={bookmarkedIds.has(q.id)}
                 />
               ))}
             </div>
@@ -71,7 +74,7 @@ export default function ReviewPage() {
               <button className="primary big" onClick={() => setReloadKey((k) => k + 1)}>
                 Refresh list
               </button>
-              <span className="muted">Reload to drop the ones you just got right.</span>
+              <span className="muted">Pulls fresh from the database.</span>
             </div>
           </>
         )}

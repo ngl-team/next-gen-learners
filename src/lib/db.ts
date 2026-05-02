@@ -203,6 +203,17 @@ export async function initDb() {
   `);
 
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS nst_bookmarks (
+      user_id INTEGER NOT NULL,
+      question_id TEXT NOT NULL,
+      class_key TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      PRIMARY KEY (user_id, question_id),
+      FOREIGN KEY (user_id) REFERENCES nst_users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS dh_submissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       help_type TEXT NOT NULL,
