@@ -67,6 +67,7 @@ export default async function NstDashboardPage() {
           <div className="row">
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
             <Link href="/NST/drill" className="btn primary big">Drill open response</Link>
+            <Link href="/NST/flashcards" className="btn primary big">Flashcards</Link>
             <Link href="/NST/review" className="btn ghost big">
               Review wrong{wrongCount > 0 ? ` (${wrongCount})` : ''}
             </Link>

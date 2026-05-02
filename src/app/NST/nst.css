@@ -156,6 +156,67 @@
 .nst .drill-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
 .nst .small { font-size: 12px; }
 
+.nst .fc-stats { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.nst .fc-stats .chip strong { color: var(--text); margin-right: 4px; }
+.nst .fc-stats .chip.review { color: var(--accent); border-color: rgba(167,139,250,0.4); }
+.nst .fc-stats .chip.unseen { color: var(--muted); }
+.nst .fc-stats .chip.total { color: var(--primary); border-color: rgba(91,140,255,0.4); }
+
+.nst .fc-controls {
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 18px;
+}
+.nst .fc-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.nst .fc-label { font-size: 12px; color: var(--muted); letter-spacing: 0.6px; text-transform: uppercase; margin-right: 4px; }
+.nst .fc-select {
+  background: var(--card-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; font-size: 14px; font-family: inherit;
+}
+.nst .fc-select:focus { outline: none; border-color: var(--primary); }
+.nst .fc-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.nst .fc-counter { margin-bottom: 14px; font-size: 14px; color: var(--muted); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.nst .fc-tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); }
+.nst .fc-tag.known { color: var(--green); border-color: rgba(74,222,128,0.4); background: rgba(74,222,128,0.08); }
+.nst .fc-tag.review { color: var(--accent); border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.08); }
+
+.nst .fc-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 40px 32px; min-height: 240px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s; position: relative;
+}
+.nst .fc-card:hover { border-color: var(--primary); }
+.nst .fc-card:active { transform: scale(0.997); }
+.nst .fc-card.flipped { background: var(--card-2); border-color: var(--accent); }
+.nst .fc-category {
+  position: absolute; top: 14px; left: 18px; font-size: 11px; color: var(--muted);
+  letter-spacing: 0.6px; text-transform: uppercase;
+}
+.nst .fc-term { font-size: 30px; font-weight: 700; color: var(--text); line-height: 1.2; margin: 8px 0; }
+.nst .fc-def { font-size: 17px; line-height: 1.55; color: var(--text); max-width: 760px; }
+.nst .fc-hint {
+  position: absolute; bottom: 12px; right: 16px;
+  font-size: 11px; color: var(--muted); letter-spacing: 0.4px;
+}
+
+.nst .fc-actions {
+  margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;
+}
+.nst .good-btn { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.5); color: var(--green); font-weight: 600; }
+.nst .good-btn:hover { background: rgba(74,222,128,0.22); border-color: var(--green); }
+.nst .bad-btn { background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.5); color: var(--accent); font-weight: 600; }
+.nst .bad-btn:hover { background: rgba(167,139,250,0.22); border-color: var(--accent); }
+.nst .fc-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+.nst .fc-tip { margin-top: 14px; text-align: center; }
+
+@media (max-width: 600px) {
+  .nst .fc-actions { grid-template-columns: 1fr 1fr; }
+  .nst .fc-term { font-size: 24px; }
+  .nst .fc-def { font-size: 15px; }
+}
+
 @media (max-width: 600px) {
   .nst h1 { font-size: 22px; }
   .nst h2 { font-size: 18px; }
