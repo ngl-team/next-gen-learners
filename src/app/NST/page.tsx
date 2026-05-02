@@ -66,6 +66,7 @@ export default async function NstDashboardPage() {
           <p className="muted">Classes 1-9 are multiple choice. Classes 10-15 and labs have MC + open response.</p>
           <div className="row">
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
+            <Link href="/NST/drill" className="btn primary big">Drill open response</Link>
             <Link href="/NST/review" className="btn ghost big">
               Review wrong{wrongCount > 0 ? ` (${wrongCount})` : ''}
             </Link>

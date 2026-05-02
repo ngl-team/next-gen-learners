@@ -132,6 +132,30 @@
 
 .nst .spinner { color: var(--muted); padding: 40px; text-align: center; }
 
+.nst .drill-controls {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  flex-wrap: wrap; margin: 20px 0 16px;
+}
+.nst .drill-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.nst .pill-btn {
+  font-size: 13px; padding: 6px 14px; border-radius: 999px;
+  background: var(--card-2); color: var(--muted); border: 1px solid var(--border);
+  cursor: pointer;
+}
+.nst .pill-btn:hover { color: var(--text); border-color: var(--primary); }
+.nst .pill-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+.nst .drill-counter { margin-bottom: 14px; font-size: 14px; color: var(--muted); }
+.nst .drill-progress { margin-top: 8px; }
+.nst .drill-progress .bar { height: 4px; }
+
+.nst .drill-nav {
+  margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+}
+.nst .drill-nav button:disabled { opacity: 0.4; cursor: not-allowed; }
+.nst .small { font-size: 12px; }
+
 @media (max-width: 600px) {
   .nst h1 { font-size: 22px; }
   .nst h2 { font-size: 18px; }
