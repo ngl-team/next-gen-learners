@@ -224,6 +224,55 @@
   .nst .fc-def { font-size: 15px; }
 }
 
+.nst .eq-controls {
+  display: flex; gap: 16px; flex-direction: column;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; margin: 16px 0;
+}
+.nst .eq-search {
+  background: var(--card-2); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: inherit; width: 100%;
+}
+.nst .eq-search:focus { outline: none; border-color: var(--primary); }
+.nst .eq-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.nst .eq-list { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.nst .eq-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 20px;
+}
+.nst .eq-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; margin-bottom: 10px; flex-wrap: wrap;
+}
+.nst .eq-head h3 { margin: 0; font-size: 17px; }
+.nst .eq-formula {
+  font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-size: 19px; font-weight: 600; color: var(--accent);
+  background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.25);
+  padding: 14px 16px; border-radius: 8px; margin: 6px 0 14px;
+  overflow-x: auto; line-height: 1.4;
+}
+.nst .eq-section { margin: 10px 0; }
+.nst .eq-label {
+  font-size: 11px; color: var(--muted); letter-spacing: 0.7px;
+  text-transform: uppercase; margin-bottom: 6px; font-weight: 600;
+}
+.nst .eq-vars { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.nst .eq-vars li { display: flex; gap: 12px; font-size: 14px; align-items: flex-start; }
+.nst .eq-sym {
+  font-family: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  color: var(--primary); font-weight: 600; min-width: 110px; flex-shrink: 0;
+  background: var(--card-2); padding: 2px 8px; border-radius: 4px;
+  border: 1px solid var(--border); text-align: center;
+}
+.nst .eq-meaning { color: var(--text); line-height: 1.5; }
+.nst .eq-use { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+.nst .eq-appears {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--muted);
+}
+
 @media (max-width: 600px) {
   .nst h1 { font-size: 22px; }
   .nst h2 { font-size: 18px; }

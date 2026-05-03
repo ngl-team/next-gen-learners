@@ -1,0 +1,213 @@
+{
+  "equations": [
+    {
+      "name": "Newton's Second Law",
+      "equation": "F = m × a",
+      "category": "Forces & Motion",
+      "variables": [
+        {"sym": "F", "meaning": "Net force (newtons, N)"},
+        {"sym": "m", "meaning": "Mass (kg)"},
+        {"sym": "a", "meaning": "Acceleration (m/s²)"}
+      ],
+      "use": "Predicts how an object accelerates under a net force. Doubling F doubles a; doubling m halves a.",
+      "appears_in": "Class 4 (Forces & Energy), Class 12 (rockets), Lab 4"
+    },
+    {
+      "name": "Net acceleration at liftoff",
+      "equation": "a = (T − m × g) / m",
+      "category": "Rockets & Propulsion",
+      "variables": [
+        {"sym": "a", "meaning": "Net upward acceleration (m/s²)"},
+        {"sym": "T", "meaning": "Thrust (N)"},
+        {"sym": "m", "meaning": "Total rocket mass (kg)"},
+        {"sym": "g", "meaning": "Gravitational acceleration (9.8 m/s² on Earth's surface)"}
+      ],
+      "use": "Tells you whether a rocket lifts off and how fast it accelerates. T must exceed m·g for liftoff. Doubling thrust OR halving mass both double acceleration.",
+      "appears_in": "Class 12 open response, Lab 4"
+    },
+    {
+      "name": "Tsiolkovsky rocket equation",
+      "equation": "Δv = Isp × g₀ × ln(m_initial / m_final)",
+      "category": "Rockets & Propulsion",
+      "variables": [
+        {"sym": "Δv", "meaning": "Change in velocity (m/s) — your delta-v 'budget'"},
+        {"sym": "Isp", "meaning": "Specific impulse — engine efficiency (seconds)"},
+        {"sym": "g₀", "meaning": "Standard gravity (9.81 m/s²)"},
+        {"sym": "m_initial", "meaning": "Mass before burn (rocket + fuel)"},
+        {"sym": "m_final", "meaning": "Mass after burn (rocket only)"}
+      ],
+      "use": "Limits how much delta-v you get from a fixed fuel mass. The 'tyranny of the rocket equation': because of the natural log, doubling delta-v requires WAY more than double the fuel.",
+      "appears_in": "Class 12 (rockets, propulsion comparison)"
+    },
+    {
+      "name": "Speed of light (EM wave relationship)",
+      "equation": "c = λ × f",
+      "category": "Light & EM",
+      "variables": [
+        {"sym": "c", "meaning": "Speed of light ≈ 3 × 10⁸ m/s in vacuum"},
+        {"sym": "λ", "meaning": "Wavelength (meters)"},
+        {"sym": "f", "meaning": "Frequency (hertz, cycles/sec)"}
+      ],
+      "use": "Since c is fixed in vacuum, longer wavelength means lower frequency, and vice versa. Lets you convert between λ and f for any photon.",
+      "appears_in": "Class 5 (Light), Class 6 (EM Spectrum), Lab 2"
+    },
+    {
+      "name": "Planck's equation",
+      "equation": "E = h × f",
+      "category": "Light & EM",
+      "variables": [
+        {"sym": "E", "meaning": "Photon energy (joules)"},
+        {"sym": "h", "meaning": "Planck's constant ≈ 6.626 × 10⁻³⁴ J·s"},
+        {"sym": "f", "meaning": "Frequency (Hz)"}
+      ],
+      "use": "Photon energy is proportional to frequency. Higher-frequency light (UV, X-ray, gamma) carries more energy per photon than lower-frequency light (radio, IR).",
+      "appears_in": "Class 5 (Light), Class 6 (EM Spectrum)"
+    },
+    {
+      "name": "Wien's Displacement Law",
+      "equation": "λ_peak = b / T",
+      "category": "Light & EM",
+      "variables": [
+        {"sym": "λ_peak", "meaning": "Wavelength of peak emission (meters)"},
+        {"sym": "b", "meaning": "Wien's constant ≈ 2.898 × 10⁻³ m·K"},
+        {"sym": "T", "meaning": "Absolute temperature (kelvin)"}
+      ],
+      "use": "Peak emission wavelength is inversely proportional to temperature. Hotter objects peak bluer (shorter wavelengths). The Sun (5800 K) peaks in visible; cool stars (3000 K) peak in red/IR.",
+      "appears_in": "Class 5 (Light), Lab 2"
+    },
+    {
+      "name": "Diffraction limit (resolution)",
+      "equation": "θ ≈ λ / D",
+      "category": "Telescopes & Instruments",
+      "variables": [
+        {"sym": "θ", "meaning": "Smallest resolvable angle (radians)"},
+        {"sym": "λ", "meaning": "Observed wavelength"},
+        {"sym": "D", "meaning": "Aperture diameter (mirror or array baseline)"}
+      ],
+      "use": "Sets the maximum sharpness of any telescope. Longer wavelengths or smaller apertures = blurrier images. Why radio scopes need huge dishes (or interferometric arrays) for good resolution.",
+      "appears_in": "Class 7 (Telescopes), Class 6 (EM Spectrum)"
+    },
+    {
+      "name": "Foucault pendulum period",
+      "equation": "T = 2π × √(L / g)",
+      "category": "Lab Concepts",
+      "variables": [
+        {"sym": "T", "meaning": "Period of one full swing (seconds)"},
+        {"sym": "L", "meaning": "Length of pendulum (meters)"},
+        {"sym": "g", "meaning": "Gravitational acceleration (9.8 m/s² on Earth)"}
+      ],
+      "use": "Period depends only on length and gravity. Used in Lab 1 to back out the Museum of Science Boston pendulum length: L = g × (T / 2π)². For T = 8.75 s and g = 9.8, L ≈ 19.0 m.",
+      "appears_in": "Lab 1 (Pendulums)"
+    },
+    {
+      "name": "Drake Equation",
+      "equation": "N = R* × fp × ne × fl × fi × fc × L",
+      "category": "Astrobiology",
+      "variables": [
+        {"sym": "N", "meaning": "Number of communicating civilizations in the Milky Way"},
+        {"sym": "R*", "meaning": "Star formation rate (~5–10 Sun-like stars/year)"},
+        {"sym": "fp", "meaning": "Fraction of stars with planets (~1, from Kepler)"},
+        {"sym": "ne", "meaning": "Habitable-zone planets per system"},
+        {"sym": "fl", "meaning": "Fraction where life arises"},
+        {"sym": "fi", "meaning": "Fraction with intelligent life"},
+        {"sym": "fc", "meaning": "Fraction with detectable communication"},
+        {"sym": "L", "meaning": "Lifetime of detectable civilization (most uncertain term)"}
+      ],
+      "use": "Multiplicative estimate of the number of contactable civilizations. Earlier terms are well-constrained; biology and L terms span many orders of magnitude.",
+      "appears_in": "Class 3 (Cosmic Address), Class 11 (Astrobiology)"
+    },
+    {
+      "name": "Hubble's Law",
+      "equation": "v = H₀ × d",
+      "category": "Cosmology & Distance",
+      "variables": [
+        {"sym": "v", "meaning": "Recession velocity of a galaxy (km/s)"},
+        {"sym": "H₀", "meaning": "Hubble constant (~70 km/s/Mpc)"},
+        {"sym": "d", "meaning": "Distance to galaxy (Mpc)"}
+      ],
+      "use": "Galaxies recede at speeds proportional to their distance — direct evidence for an expanding universe. Used as the topmost rung of the cosmic distance ladder for very far galaxies.",
+      "appears_in": "Class 16 (Cosmology)"
+    },
+    {
+      "name": "Kepler's Third Law",
+      "equation": "T² ∝ a³",
+      "category": "Forces & Motion",
+      "variables": [
+        {"sym": "T", "meaning": "Orbital period"},
+        {"sym": "a", "meaning": "Semi-major axis (average orbital distance)"}
+      ],
+      "use": "Period squared is proportional to semi-major axis cubed. With G and M known: T² = (4π² / GM) × a³. Lets you compute orbital periods or distances from one another.",
+      "appears_in": "Class 4 (Forces & Energy)"
+    },
+    {
+      "name": "Earth's rotation rate",
+      "equation": "360° / 24 h = 15° per hour",
+      "category": "Cosmic Geometry",
+      "variables": [
+        {"sym": "Rotation rate", "meaning": "Degrees of rotation per hour"}
+      ],
+      "use": "Earth turns 15° each hour, which is also why each time zone spans roughly 15° of longitude.",
+      "appears_in": "Class 3 (Cosmic Address)"
+    },
+    {
+      "name": "Polaris altitude = latitude",
+      "equation": "altitude(Polaris) = observer's latitude",
+      "category": "Cosmic Geometry",
+      "variables": [
+        {"sym": "altitude", "meaning": "Angle of Polaris above the horizon (degrees)"},
+        {"sym": "latitude", "meaning": "Observer's latitude (degrees, northern hemisphere)"}
+      ],
+      "use": "Because Polaris sits nearly on Earth's rotational axis, its angle above the horizon equals your latitude. At the North Pole, Polaris is overhead (90°); at the equator, it's on the horizon (0°).",
+      "appears_in": "Class 3 (Cosmic Address)"
+    },
+    {
+      "name": "Sidereal vs solar day",
+      "equation": "sidereal day = 23h 56m   |   solar day = 24h",
+      "category": "Cosmic Geometry",
+      "variables": [
+        {"sym": "Sidereal day", "meaning": "One full rotation relative to the STARS"},
+        {"sym": "Solar day", "meaning": "One rotation relative to the SUN (longer because Earth also moves along its orbit)"}
+      ],
+      "use": "Explains why a star rises ~4 minutes earlier each night. The 4-minute difference per day adds up to one full extra rotation per year.",
+      "appears_in": "Class 3 (Cosmic Address)"
+    },
+    {
+      "name": "Conservation of Energy",
+      "equation": "E_total = E_kinetic + E_potential + ... = constant",
+      "category": "Forces & Motion",
+      "variables": [
+        {"sym": "E_total", "meaning": "Total energy in a closed system (joules)"},
+        {"sym": "E_kinetic", "meaning": "(1/2) × m × v²"},
+        {"sym": "E_potential", "meaning": "m × g × h (gravitational, near Earth's surface)"}
+      ],
+      "use": "Energy transforms between forms but is never created or destroyed in a closed system. Foundational to mechanics, thermodynamics, and orbital dynamics.",
+      "appears_in": "Class 4 (Forces & Energy)"
+    },
+    {
+      "name": "Special relativity time dilation",
+      "equation": "Δt' = Δt / √(1 − v² / c²)",
+      "category": "Relativity",
+      "variables": [
+        {"sym": "Δt", "meaning": "Time interval in moving frame (proper time)"},
+        {"sym": "Δt'", "meaning": "Time interval as measured from stationary frame"},
+        {"sym": "v", "meaning": "Relative velocity"},
+        {"sym": "c", "meaning": "Speed of light"}
+      ],
+      "use": "Moving clocks tick slower from a stationary observer's frame. At v = 0.95c, the factor is ~3.2× — what makes interstellar travel within a human lifetime conceivable for the traveler, while Earth ages much more.",
+      "appears_in": "Class 17 (Relativity), Twin Paradox question"
+    },
+    {
+      "name": "Length contraction",
+      "equation": "L' = L × √(1 − v² / c²)",
+      "category": "Relativity",
+      "variables": [
+        {"sym": "L", "meaning": "Length in rest frame"},
+        {"sym": "L'", "meaning": "Length measured from moving frame"},
+        {"sym": "v", "meaning": "Relative velocity"},
+        {"sym": "c", "meaning": "Speed of light"}
+      ],
+      "use": "Distance to a destination shrinks for a fast-moving observer. From the astronaut's frame at 0.95c, the trip to Alpha Centauri (4.25 ly) looks like ~1.3 ly — the partner equation to time dilation.",
+      "appears_in": "Class 17 (Relativity)"
+    }
+  ]
+}

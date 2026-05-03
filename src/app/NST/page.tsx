@@ -74,6 +74,7 @@ export default async function NstDashboardPage() {
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
             <Link href="/NST/drill" className="btn primary big">Drill open response</Link>
             <Link href="/NST/flashcards" className="btn primary big">Flashcards</Link>
+            <Link href="/NST/equations" className="btn primary big">Equations</Link>
             <Link href="/NST/saved" className="btn ghost big">
               Saved ★{savedCount > 0 ? ` (${savedCount})` : ''}
             </Link>
