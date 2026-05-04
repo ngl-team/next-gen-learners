@@ -51,6 +51,15 @@ export default function NotecardPage() {
             <li>
               <strong>Star type tradeoffs</strong> (G/K/M) and <strong>TRAPPIST-1 finding</strong> — the rubric awards bonus credit for choosing K-dwarfs as Goldilocks targets and citing JWST&rsquo;s no-atmosphere result on TRAPPIST-1d.
             </li>
+            <li>
+              <strong>Two-body comparison (Mars + Enceladus)</strong> — Q34 asks for two bodies with different terrains, two techs each, and what was found. Mars (rocky) vs Enceladus (icy crust + plumes) maximizes the contrast and both have <em>actual</em> mission results to cite (Europa Clipper hasn&rsquo;t arrived). Side 3.
+            </li>
+            <li>
+              <strong>Lorentz factor + kinetic energy</strong> — γ shows up in any relativity question; KE = ½mv² and ⟨KE⟩ = (3/2)kT bridge mechanics and kinetic molecular theory. Both formulas, both unforgiving if you forget the form.
+            </li>
+            <li>
+              <strong>Rocket force diagram</strong> — Q22, Q24 ask you to identify the four forces on a rocket and which is hardest to overcome at launch. A drawn diagram is the fastest way to recall thrust/drag/lift/weight in the moment.
+            </li>
           </ul>
           <p>
             <strong>What is NOT on the card:</strong> definitions of basic terms (wavelength, mass) you already know, and the 3-part answer template — drill that into muscle memory instead. The card is for facts, not structure.
@@ -138,6 +147,79 @@ export default function NotecardPage() {
               <div className="nc-row">LEO orbit ~7.8 km/s · escape 11.2 km/s · Falcon 9 ~$1,500/kg</div>
               <div className="nc-row">Alpha Centauri 4.25 ly · CMB 2.7 K</div>
               <div className="nc-row"><strong>Lab errors (any):</strong> timing precision · calibration · environmental noise · small N</div>
+            </div>
+          </div>
+        </div>
+
+        <h2>Third side</h2>
+        <p className="muted small">Denser than a real 3×5 — squeeze it onto a back-of-back overflow card or shrink your handwriting. Worth the space; this whole card answers Q34 plus relativity and KE.</p>
+        <div className="notecard nc-tall">
+          <div className="nc-redline" />
+          <div className="nc-content">
+            <div className="nc-section">
+              <div className="nc-h">TWO BODIES · DIFFERENT TERRAINS · 2 TECHS EACH</div>
+              <div className="nc-row"><span className="nc-k">MARS (rocky)</span><span><strong>Perseverance</strong> at Jezero Crater</span></div>
+              <div className="nc-row"><span className="nc-k">  → SHERLOC</span><span>UV Raman/fluorescence · finds ORGANIC molecules in rocks (biosignatures)</span></div>
+              <div className="nc-row"><span className="nc-k">  → PIXL</span><span>X-ray fluorescence · maps elemental composition, textures of past life</span></div>
+              <div className="nc-row"><em>Found: organic carbon compounds, ancient lakebed, sample cache for Mars Sample Return</em></div>
+              <div className="nc-row"><span className="nc-k">ENCELADUS (icy + plumes)</span><span><strong>Cassini</strong> (1997–2017)</span></div>
+              <div className="nc-row"><span className="nc-k">  → INMS</span><span>Ion/Neutral Mass Spec · flew through plumes · detected H₂O, CO₂, CH₄, NH₃, complex organics, H₂</span></div>
+              <div className="nc-row"><span className="nc-k">  → CDA</span><span>Cosmic Dust Analyzer · caught ice grains · silica nanoparticles → hydrothermal vents on ocean floor</span></div>
+              <div className="nc-row"><em>Found: subsurface ocean, organics + H₂ (energy source), seafloor vents — Earth-life-cradle analogue</em></div>
+              <div className="nc-row"><strong>Why different tech:</strong> Mars = dry rocky surface needs in-situ rock analysis (rover + arm). Enceladus = active plumes, fly-through sampling enough — no lander needed.</div>
+            </div>
+
+            <div className="nc-section">
+              <div className="nc-h">LORENTZ FACTOR · KINETIC ENERGY</div>
+              <div className="nc-row"><span className="nc-k">γ =</span><span>1 / √(1 − v²/c²) · at v=0.95c, γ ≈ 3.2</span></div>
+              <div className="nc-row"><span className="nc-k">  uses</span><span>time dilation Δt&prime; = γΔt · length contraction L&prime; = L/γ · mass-energy E = γmc²</span></div>
+              <div className="nc-row"><span className="nc-k">KE</span><span>= ½ m v²  (single particle)</span></div>
+              <div className="nc-row"><span className="nc-k">⟨KE⟩</span><span>= (3/2) k T  (kinetic molecular theory · k = Boltzmann 1.38×10⁻²³ J/K)</span></div>
+              <div className="nc-row"><em>Higher T → higher avg KE → faster molecules. Why hot gas radiates at higher freq (Wien).</em></div>
+            </div>
+
+            <div className="nc-section">
+              <div className="nc-h">ROCKET — FOUR FORCES</div>
+              <div className="nc-rocket">
+                <svg viewBox="0 0 280 220" className="nc-rocket-svg" aria-label="Rocket force diagram">
+                  <line x1="140" y1="20" x2="140" y2="200" stroke="#1a1a2e" strokeWidth="0.5" strokeDasharray="2,2" />
+                  <line x1="40" y1="120" x2="240" y2="120" stroke="#1a1a2e" strokeWidth="0.5" strokeDasharray="2,2" />
+                  <g>
+                    <polygon points="140,75 130,105 150,105" fill="#fefdf6" stroke="#1a1a2e" strokeWidth="1.5" />
+                    <rect x="130" y="105" width="20" height="40" fill="#fefdf6" stroke="#1a1a2e" strokeWidth="1.5" />
+                    <polygon points="130,145 122,155 130,155" fill="#fefdf6" stroke="#1a1a2e" strokeWidth="1.5" />
+                    <polygon points="150,145 158,155 150,155" fill="#fefdf6" stroke="#1a1a2e" strokeWidth="1.5" />
+                    <polygon points="135,145 145,145 142,158 138,158" fill="#f87171" stroke="#1a1a2e" strokeWidth="0.8" />
+                  </g>
+                  <g stroke="#2a3a8e" strokeWidth="2" fill="#2a3a8e">
+                    <line x1="140" y1="105" x2="140" y2="35" />
+                    <polygon points="140,30 135,40 145,40" />
+                    <text x="148" y="55" fontSize="13" fontWeight="700" fill="#2a3a8e">THRUST ↑</text>
+                  </g>
+                  <g stroke="#1a1a2e" strokeWidth="2" fill="#1a1a2e">
+                    <line x1="140" y1="160" x2="140" y2="200" />
+                    <polygon points="140,205 135,195 145,195" />
+                    <text x="148" y="195" fontSize="13" fontWeight="700">WEIGHT ↓ (mg)</text>
+                  </g>
+                  <g stroke="#b45309" strokeWidth="2" fill="#b45309">
+                    <line x1="155" y1="125" x2="220" y2="125" />
+                    <polygon points="225,125 215,120 215,130" />
+                    <text x="170" y="142" fontSize="13" fontWeight="700">DRAG →</text>
+                  </g>
+                  <g stroke="#15803d" strokeWidth="2" fill="#15803d">
+                    <line x1="125" y1="125" x2="60" y2="125" />
+                    <polygon points="55,125 65,120 65,130" />
+                    <text x="60" y="142" fontSize="13" fontWeight="700">LIFT ←</text>
+                  </g>
+                </svg>
+                <div className="nc-rocket-notes">
+                  <div className="nc-row"><span className="nc-k">Thrust ↑</span><span>from expelled exhaust (Newton 3rd)</span></div>
+                  <div className="nc-row"><span className="nc-k">Weight ↓</span><span>= m·g · HARDEST to overcome at launch</span></div>
+                  <div className="nc-row"><span className="nc-k">Drag</span><span>aerodynamic resistance · max near sea level, zero in vacuum</span></div>
+                  <div className="nc-row"><span className="nc-k">Lift</span><span>perpendicular to motion · matters for winged vehicles</span></div>
+                  <div className="nc-row"><strong>Net: a = (T − mg)/m</strong> — must be &gt; 0 for liftoff</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

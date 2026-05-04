@@ -324,6 +324,22 @@
   font-family: 'SF Mono', Menlo, monospace; font-size: 11px;
 }
 
+.nst .notecard.nc-tall { aspect-ratio: auto; }
+
+.nst .nc-rocket {
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.nst .nc-rocket-svg {
+  width: 200px; height: auto; flex-shrink: 0;
+  background: rgba(255,255,255,0.4); border-radius: 4px;
+}
+.nst .nc-rocket-notes { flex: 1; display: flex; flex-direction: column; }
+
+@media (max-width: 720px) {
+  .nst .nc-rocket { flex-direction: column; }
+  .nst .nc-rocket-svg { width: 160px; align-self: center; }
+}
+
 .nst .nc-tips {
   background: var(--card); border: 1px solid var(--border); border-radius: 12px;
   padding: 18px 22px; margin: 18px 0;
