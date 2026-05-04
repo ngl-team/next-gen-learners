@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NovaBrew International — Case Study Simulation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Case Study Simulation — Applied Global Business</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -13,193 +13,8 @@
   --accent:#4f8cff;--accent2:#6c9fff;--green:#34d399;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--pink:#f472b6;
   --text:#e2e8f0;--dim:#7a8bad;--radius:14px;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:8px}
-.topbar h1{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:8px}
-.topbar h1 .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4f8cff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:900;color:white}
-.topbar .course-badge{background:var(--card2);border:1px solid var(--border);padding:3px 10px;border-radius:6px;font-size:0.65rem;font-weight:600;color:var(--dim)}
-.nav-tabs{display:flex;gap:3px;background:rgba(255,255,255,0.05);border-radius:8px;padding:3px}
-.nav-tab{padding:6px 14px;border:none;background:none;color:var(--dim);font-family:inherit;font-size:0.72rem;font-weight:600;cursor:pointer;border-radius:6px;transition:all 0.2s}
-.nav-tab.active{background:var(--accent);color:white}
-.nav-tab:hover:not(.active){color:var(--text)}
-.nav-tab.locked{opacity:0.4;cursor:not-allowed}
-.container{max-width:1280px;margin:0 auto;padding:20px}
-.view{display:none}.view.active{display:block}
-
-/* PHASE BAR */
-.phase-bar{display:flex;gap:2px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px;overflow-x:auto}
-.phase{flex:1;text-align:center;padding:10px 8px;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all 0.2s;min-width:100px}
-.phase.done{background:rgba(52,211,153,0.12);color:var(--green)}
-.phase.current{background:var(--accent);color:white}
-.phase.locked{opacity:0.35;cursor:not-allowed}
-.phase .ph-num{font-size:0.6rem;display:block;margin-bottom:2px;opacity:0.7}
-
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.card h3{font-size:0.95rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section-title{font-size:1.15rem;font-weight:800;margin-bottom:16px}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,#0d1525,#162040,#1a1535);border:1px solid var(--border);border-radius:var(--radius);padding:36px;margin-bottom:20px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(79,140,255,0.08),transparent 70%);pointer-events:none}
-.hero .tag{display:inline-block;background:rgba(79,140,255,0.15);color:var(--accent);padding:3px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.hero h2{font-size:1.8rem;font-weight:900;margin-bottom:6px}.hero h2 span{color:var(--accent)}
-.hero p{color:var(--dim);font-size:0.88rem;line-height:1.7;max-width:680px}
-
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
-.stat .num{font-size:1.4rem;font-weight:900;color:var(--accent)}
-.stat .label{font-size:0.68rem;color:var(--dim);margin-top:2px}
-
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-
-/* CHALLENGE CARDS */
-.ch-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:all 0.2s;cursor:pointer}
-.ch-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.ch-card .icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px}
-.ch-card h4{font-size:0.85rem;font-weight:700;margin-bottom:3px}
-.ch-card p{font-size:0.75rem;color:var(--dim);line-height:1.5}
-
-/* PERSONAS */
-.personas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px}
-.persona-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:all 0.2s}
-.persona-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.persona-card .avatar{width:60px;height:60px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:white;position:relative}
-.persona-card .avatar .status{position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid var(--card)}
-.persona-card h4{font-size:0.85rem;font-weight:700;margin-bottom:2px}
-.persona-card .role{font-size:0.7rem;color:var(--dim);margin-bottom:6px}
-.persona-card .dept{display:inline-block;font-size:0.6rem;font-weight:600;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px}
-.persona-card .q-count{font-size:0.6rem;color:var(--dim);margin-top:6px}
-
-/* CHAT */
-.two-col{display:grid;grid-template-columns:1fr 300px;gap:14px}
-.chat-header{display:flex;align-items:center;gap:14px;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px}
-.chat-header .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:white;flex-shrink:0}
-.chat-header h3{font-size:1rem;font-weight:700;margin:0}.chat-header .role{font-size:0.75rem;color:var(--dim)}
-.chat-header .back{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:0.75rem;font-weight:600;margin-left:auto;transition:all 0.2s}
-.chat-header .back:hover{border-color:var(--accent);color:var(--accent)}
-.chat-area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;min-height:350px;max-height:55vh;overflow-y:auto;display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
-.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:0.85rem;line-height:1.6;animation:fadeIn 0.3s ease}
-.msg.system{background:var(--card2);color:var(--dim);font-size:0.75rem;max-width:100%;text-align:center;padding:6px}
-.msg.persona{background:var(--card2);border:1px solid var(--border);align-self:flex-start}
-.msg.persona .name{font-size:0.65rem;font-weight:700;color:var(--accent);margin-bottom:3px}
-.msg.user{background:var(--accent);color:white;align-self:flex-end;border-radius:12px 12px 4px 12px}
-.msg.typing .dots{display:flex;gap:4px}.msg.typing .dots span{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:typingDot 1.2s infinite}
-.msg.typing .dots span:nth-child(2){animation-delay:0.2s}.msg.typing .dots span:nth-child(3){animation-delay:0.4s}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes typingDot{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
-.suggested-questions{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.suggested-questions button{background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;font-family:inherit;font-size:0.75rem;cursor:pointer;transition:all 0.2s;text-align:left;line-height:1.4}
-.suggested-questions button:hover{border-color:var(--accent);background:var(--card2)}
-.chat-input{display:flex;gap:8px}
-.chat-input input{flex:1;background:var(--card2);border:2px solid var(--border);color:var(--text);padding:12px 16px;border-radius:12px;font-family:inherit;font-size:0.85rem;outline:none}
-.chat-input input:focus{border-color:var(--accent)}
-.chat-input button{background:var(--accent);border:none;color:white;padding:12px 18px;border-radius:12px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer}
-
-/* SIDEBAR */
-.sidebar-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
-.sidebar-card h4{font-size:0.8rem;font-weight:700;margin-bottom:10px}
-.progress-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.75rem;cursor:pointer}
-.progress-item:last-child{border:none}
-.progress-item .check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.55rem;flex-shrink:0}
-.progress-item .check.done{background:var(--green);border-color:var(--green);color:white}
-.notebook textarea{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:inherit;font-size:0.8rem;min-height:80px;resize:vertical;outline:none}
-.notebook textarea:focus{border-color:var(--accent)}
-
-/* COUNTRY PANELS */
-.country-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.2s;cursor:pointer}
-.country-card:hover{border-color:var(--accent);transform:translateY(-2px)}
-.country-card .flag{font-size:2rem;margin-bottom:8px}
-.country-card h4{font-size:0.95rem;font-weight:800;margin-bottom:6px}
-.country-card .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
-.country-card .data-item{font-size:0.72rem}.country-card .data-item .dl{color:var(--dim)}.country-card .data-item .dv{font-weight:700}
-.country-card .pros,.country-card .cons{margin-top:8px;font-size:0.72rem;line-height:1.5}
-.country-card .pros span{color:var(--green)}.country-card .cons span{color:var(--red)}
-
-/* DATA ROOM */
-.doc-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s}
-.doc-card:hover{border-color:var(--accent)}
-.doc-card .doc-icon{font-size:1.5rem;margin-bottom:8px}
-.doc-card h4{font-size:0.82rem;font-weight:700;margin-bottom:3px}
-.doc-card p{font-size:0.7rem;color:var(--dim)}
-
-/* FRAMEWORKS */
-.fw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fw-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px}
-.fw-box h4{font-size:0.75rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.fw-box textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;font-family:inherit;font-size:0.78rem;min-height:60px;resize:vertical;outline:none}
-.fw-box textarea:focus{border-color:var(--accent)}
-
-/* RECOMMENDATION FORM */
-.rec-group{margin-bottom:16px}
-.rec-group label{display:block;font-size:0.72rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
-.rec-group select,.rec-group input,.rec-group textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:inherit;font-size:0.85rem;outline:none}
-.rec-group select:focus,.rec-group input:focus,.rec-group textarea:focus{border-color:var(--accent)}
-.rec-group select option{background:var(--card);color:var(--text)}
-.rec-group textarea{min-height:70px;resize:vertical}
-
-.btn{padding:10px 20px;border:none;border-radius:10px;font-family:inherit;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s}
-.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
-.btn-green{background:var(--green);color:#0a0c14}.btn-green:hover{opacity:0.9}
-.btn-outline{background:none;border:1px solid var(--border);color:var(--dim)}.btn-outline:hover{border-color:var(--accent);color:var(--text)}
-.btn-sm{padding:6px 14px;font-size:0.75rem}
-
-/* PROFESSOR */
-.prof-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
-.prof-stat .num{font-size:1.6rem;font-weight:900}.prof-stat .lbl{font-size:0.68rem;color:var(--dim);margin-top:2px}
-.student-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:0.82rem}
-.student-row .badges{display:flex;gap:4px}.badge{padding:2px 8px;border-radius:4px;font-size:0.6rem;font-weight:700;text-transform:uppercase}
-.badge.done{background:rgba(52,211,153,0.15);color:var(--green)}
-.badge.pending{background:rgba(251,146,60,0.15);color:var(--orange)}
-.badge.none{background:rgba(255,255,255,0.05);color:var(--dim)}
-
-/* CHARTS (simple CSS bars) */
-.bar-chart{display:flex;flex-direction:column;gap:8px}
-.bar-row{display:flex;align-items:center;gap:10px;font-size:0.78rem}
-.bar-row .bar-label{width:100px;color:var(--dim);flex-shrink:0;text-align:right}
-.bar-row .bar-track{flex:1;height:20px;background:var(--card2);border-radius:4px;overflow:hidden}
-.bar-row .bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:0.68rem;font-weight:700;color:white}
-.bar-row .bar-val{width:60px;font-weight:700;font-size:0.75rem}
-
-.competitor-table{width:100%;border-collapse:collapse;font-size:0.78rem}
-.competitor-table th{text-align:left;padding:8px;border-bottom:2px solid var(--border);color:var(--dim);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.5px}
-.competitor-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)}
-.competitor-table tr:hover{background:rgba(255,255,255,0.02)}
-
-/* PIN */
-.msg.persona{position:relative}
-.pin-btn{position:absolute;top:6px;right:6px;background:none;border:1px solid var(--border);color:var(--dim);width:24px;height:24px;border-radius:6px;cursor:pointer;font-size:0.65rem;display:none;align-items:center;justify-content:center;transition:all 0.2s}
-.msg.persona:hover .pin-btn{display:flex}
-.pin-btn.pinned{background:var(--accent);border-color:var(--accent);color:white;display:flex}
-.pinned-list{max-height:200px;overflow-y:auto}
-.pinned-item{font-size:0.72rem;padding:6px 8px;background:rgba(79,140,255,0.08);border:1px solid rgba(79,140,255,0.15);border-radius:6px;margin-bottom:4px;position:relative;cursor:pointer}
-.pinned-item .pin-source{font-size:0.6rem;color:var(--accent);font-weight:700}
-.pinned-item .pin-remove{position:absolute;top:4px;right:4px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:0.7rem}
-
-/* HOFSTEDE */
-.hof-bar{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:0.68rem}
-.hof-bar .hof-label{width:80px;color:var(--dim);text-align:right;flex-shrink:0}
-.hof-bar .hof-track{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
-.hof-bar .hof-fill{height:100%;border-radius:4px}
-.hof-bar .hof-val{width:28px;font-weight:700;font-size:0.65rem}
-
-/* SOCRATIC */
-.msg.socratic{background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2)}
-
-/* RUBRIC */
-.rubric-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:0.82rem}
-.rubric-score{font-family:'Inter',sans-serif;font-weight:800;font-size:1rem}
-.rubric-score.high{color:var(--green)}.rubric-score.med{color:var(--orange)}.rubric-score.low{color:var(--red)}
-
-/* DEADLINE */
-.deadline-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;margin-bottom:6px}
-.deadline-row label{font-size:0.75rem;font-weight:600}
-.deadline-row input{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-family:inherit;font-size:0.78rem}
-
-/* CHART CONTAINER */
-.chart-wrap{position:relative;height:220px;margin:12px 0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(79,140,255,0.2);border-radius:10px}
 
 /* LOGIN */
 .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
@@ -221,22 +36,172 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .login-error{color:var(--red);font-size:0.8rem;margin-bottom:8px;min-height:20px}
 .login-btn{width:100%;padding:14px;background:var(--accent);border:none;color:white;border-radius:10px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s}
 .login-btn:hover{background:var(--accent2);transform:translateY(-1px)}
-.login-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
 
-.logout-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;border-radius:6px;font-family:inherit;font-size:0.7rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+/* LAYOUT */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--card);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:50;display:flex;flex-direction:column}
+.sidebar-brand{padding:20px;border-bottom:1px solid var(--border)}
+.sidebar-brand h1{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#A78BFA,#818CF8,#60A5FA);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-brand span{font-size:0.65rem;color:var(--dim);display:block;margin-top:2px}
+.sidebar-nav{flex:1;padding:10px}
+.nav-section{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:14px 12px 4px;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:0.8rem;font-weight:500;color:rgba(255,255,255,0.55);transition:all 0.2s;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9)}
+.nav-item.active{background:linear-gradient(135deg,rgba(79,70,229,0.3),rgba(139,92,246,0.2));color:#C4B5FD;font-weight:600}
+.nav-item .ni{width:20px;text-align:center;font-size:0.9rem;flex-shrink:0}
+.nav-item .badge-sm{margin-left:auto;font-size:0.58rem;padding:2px 6px;border-radius:100px;font-weight:700;background:rgba(79,140,255,0.15);color:var(--accent)}
+.sidebar-user{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-user span{font-size:0.75rem;font-weight:600}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--dim);padding:4px 10px;border-radius:6px;font-size:0.68rem;cursor:pointer;font-family:inherit}
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
+.main{margin-left:260px;flex:1;padding:24px;max-width:1100px}
 
-@media(max-width:768px){.two-col,.grid-2,.grid-3,.fw-grid{grid-template-columns:1fr}.hero h2{font-size:1.3rem}.hero{padding:20px}.container{padding:12px}.phase-bar{flex-wrap:nowrap;overflow-x:auto}.login-roles{grid-template-columns:1fr}}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px}
+.card h3{font-size:0.95rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:1.15rem;font-weight:800;margin-bottom:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.view{display:none}.view.active{display:block}
+
+/* INPUTS */
+.field-group{margin-bottom:14px}
+.field-group label{display:block;font-size:0.72rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.field-group textarea,.field-group input,.field-group select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;font-family:inherit;font-size:0.82rem;outline:none}
+.field-group textarea:focus,.field-group input:focus,.field-group select:focus{border-color:var(--accent)}
+.field-group textarea{min-height:70px;resize:vertical}
+.field-group select option{background:var(--card);color:var(--text)}
+
+/* CHIPS / CHECKLIST */
+.chip-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{padding:5px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.72rem;cursor:pointer;transition:all 0.2s;background:var(--card2);color:var(--dim);user-select:none}
+.chip.selected{border-color:var(--accent);background:rgba(79,140,255,0.12);color:var(--accent);font-weight:600}
+.chip:hover{border-color:var(--accent)}
+
+/* FRAMEWORK BOXES */
+.fw-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fw-box{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.fw-box h4{font-size:0.75rem;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.fw-box textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;font-family:inherit;font-size:0.78rem;min-height:60px;resize:vertical;outline:none}
+.fw-box textarea:focus{border-color:var(--accent)}
+
+/* BMC */
+.bmc-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;grid-template-rows:auto auto auto;gap:6px}
+.bmc-cell{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px}
+.bmc-cell h5{font-size:0.68rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.bmc-cell textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:6px;border-radius:4px;font-family:inherit;font-size:0.72rem;min-height:50px;resize:vertical;outline:none}
+.bmc-cell textarea:focus{border-color:var(--accent)}
+
+/* POSITIONING MAP */
+.map-container{position:relative;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.map-canvas-wrap{position:relative;width:100%;height:400px;cursor:crosshair}
+.map-label{position:absolute;font-size:0.68rem;color:var(--dim);font-weight:700}
+
+/* PERSONA SECTION */
+.persona-bar{display:flex;gap:10px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px}
+.persona-btn{flex:1;display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);cursor:pointer;transition:all 0.2s}
+.persona-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.persona-btn .p-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:0.8rem;flex-shrink:0}
+.persona-btn h4{font-size:0.82rem;font-weight:700}.persona-btn .p-role{font-size:0.68rem;color:var(--dim)}
+
+/* CHAT */
+.chat-container{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.chat-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border)}
+.chat-header .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:0.8rem;flex-shrink:0}
+.chat-header h3{font-size:0.95rem;font-weight:700;margin:0}.chat-header .role{font-size:0.72rem;color:var(--dim)}
+.chat-header .back{margin-left:auto;background:none;border:1px solid var(--border);color:var(--dim);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:0.72rem;font-weight:600}
+.chat-header .back:hover{border-color:var(--accent);color:var(--accent)}
+.chat-area{padding:16px;min-height:300px;max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:0.82rem;line-height:1.6;animation:fadeIn 0.3s ease}
+.msg.persona{background:var(--card2);border:1px solid var(--border);align-self:flex-start}
+.msg.persona .name{font-size:0.62rem;font-weight:700;color:var(--accent);margin-bottom:3px}
+.msg.user{background:var(--accent);color:white;align-self:flex-end;border-radius:12px 12px 4px 12px}
+.msg.typing .dots{display:flex;gap:4px}.msg.typing .dots span{width:7px;height:7px;border-radius:50%;background:var(--dim);animation:typingDot 1.2s infinite}
+.msg.typing .dots span:nth-child(2){animation-delay:0.2s}.msg.typing .dots span:nth-child(3){animation-delay:0.4s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes typingDot{0%,60%,100%{opacity:0.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.suggested-q{display:flex;flex-wrap:wrap;gap:5px;padding:10px 16px;border-top:1px solid var(--border)}
+.suggested-q button{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:8px;font-family:inherit;font-size:0.72rem;cursor:pointer;transition:all 0.2s}
+.suggested-q button:hover{border-color:var(--accent);background:rgba(79,140,255,0.08)}
+.chat-input-bar{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+.chat-input-bar input{flex:1;background:var(--card2);border:2px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-family:inherit;font-size:0.82rem;outline:none}
+.chat-input-bar input:focus{border-color:var(--accent)}
+.chat-input-bar button{background:var(--accent);border:none;color:white;padding:10px 16px;border-radius:10px;font-family:inherit;font-size:0.82rem;font-weight:700;cursor:pointer}
+
+/* BTNS */
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:inherit;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
+.btn-green{background:var(--green);color:#0a0c14}.btn-green:hover{opacity:0.9}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--dim)}.btn-outline:hover{border-color:var(--accent);color:var(--text)}
+
+/* PROFESSOR */
+.prof-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.prof-stat .num{font-size:1.6rem;font-weight:900}.prof-stat .lbl{font-size:0.68rem;color:var(--dim);margin-top:2px}
+.grade-module{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;cursor:pointer;transition:all 0.2s}
+.grade-module:hover{border-color:var(--accent)}
+.grade-module h4{font-size:0.85rem;font-weight:700;margin-bottom:4px}
+.grade-module p{font-size:0.72rem;color:var(--dim)}
+.grade-result{margin-top:10px;padding:10px;border-radius:8px;font-size:0.78rem;line-height:1.5}
+.grade-result.excellent{background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green)}
+.grade-result.proficient{background:rgba(79,140,255,0.1);border:1px solid rgba(79,140,255,0.3);color:var(--accent)}
+.grade-result.approaching{background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);color:var(--orange)}
+.grade-result.needs{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);color:var(--red)}
+
+/* CASE MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:800px;width:100%;max-height:80vh;overflow-y:auto;padding:28px}
+.modal h2{font-size:1.2rem;font-weight:800;margin-bottom:14px}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--dim);font-size:1.4rem;cursor:pointer}
+
+/* COMPARISON TABLE */
+.cmp-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:10px}
+.cmp-table th{text-align:left;padding:8px;border-bottom:2px solid var(--border);color:var(--dim);font-size:0.7rem;text-transform:uppercase}
+.cmp-table td{padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.cmp-table select{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-family:inherit;font-size:0.75rem}
+
+/* PESTEL EXPANDABLE */
+.pestel-section{margin-bottom:12px}
+.pestel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-weight:700;font-size:0.82rem}
+.pestel-header:hover{border-color:var(--accent)}
+.pestel-body{padding:12px;display:none}
+.pestel-body.open{display:block}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0d1525,#162040,#1a1535);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:400px;height:400px;background:radial-gradient(circle,rgba(79,140,255,0.08),transparent 70%);pointer-events:none}
+.hero .tag{display:inline-block;background:rgba(79,140,255,0.15);color:var(--accent);padding:3px 10px;border-radius:6px;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.hero h2{font-size:1.5rem;font-weight:900;margin-bottom:6px}.hero h2 span{color:var(--accent)}
+.hero p{color:var(--dim);font-size:0.85rem;line-height:1.7;max-width:680px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+.stat .num{font-size:1.2rem;font-weight:900;color:var(--accent)}
+.stat .label{font-size:0.65rem;color:var(--dim);margin-top:2px}
+
+/* MODULE CARDS ON HOME */
+.module-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all 0.2s}
+.module-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.module-card .mc-num{font-size:0.6rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.module-card h4{font-size:0.85rem;font-weight:700;margin-bottom:3px}
+.module-card p{font-size:0.72rem;color:var(--dim);line-height:1.4}
+.module-card .mc-status{margin-top:8px;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block}
+.mc-status.done{background:rgba(52,211,153,0.15);color:var(--green)}
+.mc-status.progress{background:rgba(251,146,60,0.15);color:var(--orange)}
+.mc-status.todo{background:rgba(255,255,255,0.05);color:var(--dim)}
+
+@media(max-width:900px){.sidebar{display:none}.main{margin-left:0}.grid-2,.fw-grid,.module-grid{grid-template-columns:1fr}.bmc-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-box">
-    <div class="logo-big">NB</div>
-    <h2>NovaBrew International</h2>
-    <p class="sub">Case Study Simulation — BUS 398</p>
+    <div class="logo-big">CS</div>
+    <h2>Case Study Simulation</h2>
+    <p class="sub">Applied Global Business</p>
     <div class="login-roles">
       <div class="role-card" onclick="selectRole('student',this)">
         <div class="role-icon">&#127891;</div>
@@ -246,240 +211,341 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="role-card" onclick="selectRole('teacher',this)">
         <div class="role-icon">&#128218;</div>
         <h4>Professor</h4>
-        <p>View all student progress, rubrics, and analytics</p>
+        <p>Grade assignments and view analytics</p>
       </div>
     </div>
     <div class="login-fields" id="loginFields" style="display:none">
-      <input id="loginName" type="text" placeholder="Enter your full name" />
-      <input id="loginPass" type="password" placeholder="Professor passcode" style="display:none" />
+      <input id="loginName" type="text" placeholder="Enter your full name" onkeydown="if(event.key==='Enter')doLogin()">
+      <input id="loginPass" type="password" placeholder="Professor passcode" style="display:none" onkeydown="if(event.key==='Enter')doLogin()">
       <div class="login-error" id="loginError"></div>
       <button class="login-btn" onclick="doLogin()">Enter Simulation</button>
     </div>
   </div>
 </div>
 
-<!-- MAIN APP (hidden until login) -->
-<div id="mainApp" style="display:none">
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none" class="app-shell">
 
-<div class="topbar">
-  <h1><span class="logo">NB</span> NovaBrew International</h1>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="goTab('overview')">Overview</button>
-    <button class="nav-tab" onclick="goTab('research')">Research</button>
-    <button class="nav-tab" onclick="goTab('analysis')">Analysis</button>
-    <button class="nav-tab" onclick="goTab('strategy')">Strategy</button>
-    <button class="nav-tab" onclick="goTab('professor')">Professor</button>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <h1>Case Study Simulation</h1>
+    <span>Applied Global Business</span>
   </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <span class="course-badge" id="userBadge"></span>
+  <div class="sidebar-nav">
+    <div class="nav-section">Dashboard</div>
+    <div class="nav-item active" onclick="goView('home')"><span class="ni">&#127968;</span>Home</div>
+    <div class="nav-item" onclick="openCaseModal()"><span class="ni">&#128196;</span>Case Description</div>
+
+    <div class="nav-section">Modules</div>
+    <div class="nav-item" onclick="goView('m1')"><span class="ni">1</span>Industry Definition</div>
+    <div class="nav-item" onclick="goView('m2')"><span class="ni">2</span>Competitive Landscape</div>
+    <div class="nav-item" onclick="goView('m3')"><span class="ni">3</span>Business Model Canvas</div>
+    <div class="nav-item" onclick="goView('m4')"><span class="ni">4</span>SWOT Analysis</div>
+    <div class="nav-item" onclick="goView('m5')"><span class="ni">5</span>Market Selection</div>
+    <div class="nav-item" onclick="goView('m6')"><span class="ni">6</span>PESTEL &amp; RBV</div>
+    <div class="nav-item" onclick="goView('m7')"><span class="ni">7</span>Persona &amp; Entry</div>
+    <div class="nav-item" onclick="goView('m8')"><span class="ni">8</span>Final Recommendation</div>
+
+    <div class="nav-section">Personas</div>
+    <div class="nav-item" onclick="goView('chat');openPersona(0)"><span class="ni">&#128100;</span>CEO</div>
+    <div class="nav-item" onclick="goView('chat');openPersona(1)"><span class="ni">&#128100;</span>VP of Marketing</div>
+    <div class="nav-item" onclick="goView('chat');openPersona(2)"><span class="ni">&#128100;</span>VP of Operations</div>
+
+    <div class="nav-section" id="profNavSection" style="display:none">Professor</div>
+    <div class="nav-item" id="profNavItem" style="display:none" onclick="goView('professor')"><span class="ni">&#128202;</span>Grading Dashboard</div>
+  </div>
+  <div class="sidebar-user">
+    <span id="userBadge"></span>
     <button class="logout-btn" onclick="doLogout()">Log Out</button>
   </div>
 </div>
 
-<div class="container">
+<!-- MAIN CONTENT -->
+<div class="main">
 
-<!-- PHASE BAR -->
-<div class="phase-bar" id="phaseBar"></div>
+<!-- CASE DESCRIPTION MODAL -->
+<div class="modal-overlay" id="caseModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeCaseModal()">&times;</button>
+    <h2>&#128196; Case Description: NovaBrew International</h2>
+    <div style="font-size:0.85rem;line-height:1.8;color:var(--text)" id="caseContent">
+      <p><strong>NovaBrew International</strong> is a $48M specialty beverage company headquartered in Austin, Texas. Founded eight years ago, the company has grown from a regional cold brew brand to a nationally recognized player in the premium beverage space, with products available in over 1,200 U.S. retail locations including Whole Foods, Sprouts, and Target.</p>
+      <p style="margin-top:12px">The company operates three product lines: <strong>NovaBrew Cold Brew</strong> (flagship, 55% of revenue), <strong>NovaBoost</strong> functional drinks with adaptogens (30%, fastest growing), and <strong>NovaSpark</strong> sparkling botanicals (15%). All products are non-GMO, contain no artificial sweeteners, and use sustainably sourced ingredients. Production is centralized in Buda, TX.</p>
+      <p style="margin-top:12px">After achieving 33% year-over-year revenue growth and securing $7M in net profit, NovaBrew's board of directors has approved a <strong>$12 million international expansion budget</strong> over 24 months. The company has zero international presence. Domestic growth is slowing (from 35% to 18% YoY), and three competitors have already entered European and Asian markets.</p>
+      <p style="margin-top:12px"><strong>Your assignment:</strong> As a consulting team, conduct a comprehensive analysis of NovaBrew's strategic position and develop a recommendation for international expansion. You will work through 8 modules covering industry analysis, competitive positioning, business model evaluation, market selection, and strategic planning. Use the company executives (CEO, VP Marketing, VP Operations) as resources, but remember: they will guide your thinking, not hand you the answers.</p>
+      <p style="margin-top:12px"><strong>Key data:</strong> Revenue $48M | Employees 240 | Gross Margin 52% | Net Margin 14.5% | Expansion Budget $12M | U.S. Retail 1,200+ | International Markets 0 | Three target markets under consideration: Brazil, South Korea, United Kingdom.</p>
+    </div>
+  </div>
+</div>
 
-<!-- ════ OVERVIEW ════ -->
-<div id="overviewView" class="view active">
+<!-- HOME -->
+<div id="homeView" class="view active">
   <div class="hero">
     <span class="tag">Case Study Simulation</span>
     <h2>NovaBrew wants to go <span>global</span>.</h2>
-    <p>NovaBrew is a $48M specialty beverage company in Austin, TX. After dominating the U.S. market, the board approved international expansion. Your consulting team will guide the strategy.</p>
+    <p>A $48M beverage company with zero international presence. $12M budget. Three markets. Your job: build the strategy.</p>
+  </div>
+  <div style="margin-bottom:16px">
+    <button class="btn btn-primary" onclick="openCaseModal()">&#128196; Read Full Case Description</button>
   </div>
   <div class="stats-row">
     <div class="stat"><div class="num">$48M</div><div class="label">Revenue</div></div>
     <div class="stat"><div class="num">240</div><div class="label">Employees</div></div>
-    <div class="stat"><div class="num">1,200+</div><div class="label">U.S. Retail</div></div>
-    <div class="stat"><div class="num">3</div><div class="label">Product Lines</div></div>
     <div class="stat"><div class="num">$12M</div><div class="label">Expansion Budget</div></div>
+    <div class="stat"><div class="num">52%</div><div class="label">Gross Margin</div></div>
     <div class="stat"><div class="num">0</div><div class="label">Int'l Markets</div></div>
   </div>
-  <h3 class="section-title">Your Assignment</h3>
-  <div class="grid-4" style="margin-bottom:28px">
-    <div class="ch-card"><div class="icon" style="background:rgba(79,140,255,0.15);color:var(--accent)">&#127758;</div><h4>Overseas Expansion</h4><p>Identify which international market NovaBrew should enter first.</p></div>
-    <div class="ch-card"><div class="icon" style="background:rgba(167,139,250,0.15);color:var(--purple)">&#128101;</div><h4>Consumer ID</h4><p>Define target consumers in the new market with detailed personas.</p></div>
-    <div class="ch-card"><div class="icon" style="background:rgba(251,146,60,0.15);color:var(--orange)">&#128640;</div><h4>Market Entry</h4><p>Recommend entry mode: export, license, JV, franchise, or subsidiary.</p></div>
-    <div class="ch-card"><div class="icon" style="background:rgba(52,211,153,0.15);color:var(--green)">&#128202;</div><h4>Marketing Mix</h4><p>Develop a complete 4Ps plan adapted for the target market.</p></div>
-  </div>
-  <h3 class="section-title">Meet the Team</h3>
-  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:14px;margin-top:-8px">Click any employee to ask questions. They respond based on their role.</p>
-  <div class="personas-grid" id="personasGrid"></div>
-  <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="goTab('research')">Begin Research &#8594;</button>
+  <h3 class="section-title">8 Modules</h3>
+  <div class="module-grid" id="moduleGrid"></div>
+  <h3 class="section-title">Company Executives</h3>
+  <div class="persona-bar" id="homePersonaBar"></div>
 </div>
 
-<!-- ════ RESEARCH ════ -->
-<div id="researchView" class="view">
-  <!-- COUNTRY PANELS -->
-  <h3 class="section-title">Target Markets</h3>
-  <div class="grid-3" style="margin-bottom:24px" id="countryPanels"></div>
-
-  <!-- DATA ROOM -->
-  <h3 class="section-title">Data Room</h3>
-  <div class="grid-4" style="margin-bottom:24px">
-    <div class="doc-card" onclick="toggleDoc('financials')"><div class="doc-icon">&#128200;</div><h4>Financial Summary</h4><p>Revenue, margins, and projections</p></div>
-    <div class="doc-card" onclick="toggleDoc('competitors')"><div class="doc-icon">&#128202;</div><h4>Competitor Analysis</h4><p>Market share and positioning</p></div>
-    <div class="doc-card" onclick="toggleDoc('orgchart')"><div class="doc-icon">&#128101;</div><h4>Org Chart</h4><p>Leadership team structure</p></div>
-    <div class="doc-card" onclick="toggleDoc('consumer')"><div class="doc-icon">&#127919;</div><h4>Consumer Research</h4><p>Survey data from 1,500 consumers</p></div>
-  </div>
-  <div id="docContent" style="margin-bottom:24px"></div>
-
-  <!-- PERSONA CHAT -->
-  <h3 class="section-title">Interview Employees</h3>
-  <div class="personas-grid" id="personasGrid2"></div>
-
-  <div id="chatView" style="display:none">
-    <div class="two-col">
-      <div>
-        <div class="chat-header" id="chatHeader"></div>
-        <div class="chat-area" id="chatArea"></div>
-        <div class="suggested-questions" id="suggestedQ"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Ask about the company..." onkeydown="if(event.key==='Enter')sendMessage()">
-          <button onclick="sendMessage()">Send</button>
-        </div>
-      </div>
-      <div>
-        <div class="sidebar-card">
-          <h4>Research Progress</h4>
-          <div id="progressChecklist"></div>
-        </div>
-        <div class="sidebar-card">
-          <h4>Pinned Insights</h4>
-          <div class="pinned-list" id="pinnedList"><div style="font-size:0.72rem;color:var(--dim)">Pin key answers from conversations to use in your recommendation.</div></div>
-        </div>
-        <div class="sidebar-card">
-          <h4>Other Employees</h4>
-          <div id="otherPersonas"></div>
-        </div>
-        <div class="sidebar-card notebook">
-          <h4>Your Notes</h4>
-          <textarea id="notebook" placeholder="Take notes as you research..."></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════ ANALYSIS ════ -->
-<div id="analysisView" class="view">
-  <h3 class="section-title">Strategy Frameworks</h3>
-  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Complete these frameworks using what you learned from interviews and the data room.</p>
-
-  <!-- SWOT -->
-  <div class="card" style="margin-bottom:16px">
-    <h3>SWOT Analysis</h3>
-    <div class="fw-grid">
-      <div class="fw-box"><h4><span style="color:var(--green)">&#9650;</span> Strengths</h4><textarea id="swotS" placeholder="What advantages does NovaBrew have?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4><span style="color:var(--red)">&#9660;</span> Weaknesses</h4><textarea id="swotW" placeholder="What internal limitations exist?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4><span style="color:var(--accent)">&#9654;</span> Opportunities</h4><textarea id="swotO" placeholder="What external opportunities exist?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4><span style="color:var(--orange)">&#9664;</span> Threats</h4><textarea id="swotT" placeholder="What external threats could impact expansion?" oninput="saveFrameworks()"></textarea></div>
-    </div>
-  </div>
-
-  <!-- PESTEL -->
-  <div class="card" style="margin-bottom:16px">
-    <h3>PESTEL Analysis</h3>
-    <div class="fw-grid">
-      <div class="fw-box"><h4>Political</h4><textarea id="pesP" placeholder="Government stability, trade policies, regulations..." oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Economic</h4><textarea id="pesE" placeholder="GDP, inflation, exchange rates, purchasing power..." oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Social</h4><textarea id="pesS" placeholder="Demographics, culture, consumer behavior..." oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Technological</h4><textarea id="pesT" placeholder="E-commerce, digital adoption, supply chain tech..." oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Environmental</h4><textarea id="pesEn" placeholder="Sustainability, packaging regulations, climate..." oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Legal</h4><textarea id="pesL" placeholder="Food safety laws, labeling requirements, IP..." oninput="saveFrameworks()"></textarea></div>
-    </div>
-  </div>
-
-  <!-- PORTER'S 5 -->
+<!-- MODULE 1: Industry Definition -->
+<div id="m1View" class="view">
+  <h3 class="section-title">Module 1: Industry Definition &amp; Strategic Context</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Define the industry, identify the customer problem, and determine key success factors.</p>
   <div class="card">
-    <h3>Porter's Five Forces</h3>
-    <div class="fw-grid" style="grid-template-columns:1fr 1fr 1fr">
-      <div class="fw-box"><h4>Supplier Power</h4><textarea id="p5sup" placeholder="How much power do ingredient suppliers have?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Buyer Power</h4><textarea id="p5buy" placeholder="How much power do retailers/consumers have?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Competitive Rivalry</h4><textarea id="p5riv" placeholder="How intense is competition?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Threat of Substitutes</h4><textarea id="p5sub" placeholder="What alternatives exist?" oninput="saveFrameworks()"></textarea></div>
-      <div class="fw-box"><h4>Threat of New Entrants</h4><textarea id="p5new" placeholder="How easy is it for competitors to enter?" oninput="saveFrameworks()"></textarea></div>
+    <h3>Industry Definition</h3>
+    <div class="field-group"><label>Define the Industry at the Strategic Level</label><textarea id="m1Industry" placeholder="What industry does NovaBrew operate in? Be precise and specific..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Industry Size &amp; Growth</label><textarea id="m1Size" placeholder="Approximate industry size (global or regional), growth trends, competitive intensity..." oninput="saveAll()"></textarea></div>
+  </div>
+  <div class="card">
+    <h3>Customer Problem &amp; Solution</h3>
+    <div class="field-group"><label>Core Problem</label><textarea id="m1Problem" placeholder="What is the core problem NovaBrew is solving? Why does it matter?" oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Solution &amp; Value Proposition</label><textarea id="m1Solution" placeholder="How does NovaBrew solve this problem? What makes their approach unique?" oninput="saveAll()"></textarea></div>
+  </div>
+  <div class="card">
+    <h3>Key Success Factors</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Select the factors most critical to success in this industry:</p>
+    <div class="chip-grid" id="ksfChips"></div>
+    <div class="field-group"><label>Justify Your Selections</label><textarea id="m1KsfJustify" placeholder="Why are these factors critical for NovaBrew's industry?" oninput="saveAll()"></textarea></div>
+  </div>
+</div>
+
+<!-- MODULE 2: Competitive Landscape -->
+<div id="m2View" class="view">
+  <h3 class="section-title">Module 2: Competitive Landscape Analysis</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Classify competitors, build a positioning map, and identify strategic gaps.</p>
+  <div class="card">
+    <h3>Competitor Classification</h3>
+    <div class="field-group"><label>Direct Competitors</label><textarea id="m2Direct" placeholder="Companies offering similar products to the same target market..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Indirect Competitors</label><textarea id="m2Indirect" placeholder="Companies solving the same problem differently..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Substitutes</label><textarea id="m2Substitute" placeholder="Alternative solutions customers might choose instead..." oninput="saveAll()"></textarea></div>
+  </div>
+  <div class="card">
+    <h3>Competitor Positioning Map</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Select two dimensions, then click on the chart to place competitors. Click existing dots to remove them.</p>
+    <div class="grid-2" style="margin-bottom:12px">
+      <div class="field-group"><label>X-Axis Dimension</label><select id="mapXAxis" onchange="redrawMap()"><option>Price</option><option>Convenience</option><option>Features</option><option>Innovation</option><option>Brand Prestige</option><option>Speed</option><option>Global Reach</option><option>Technology</option><option>Sustainability</option><option>Customization</option></select></div>
+      <div class="field-group"><label>Y-Axis Dimension</label><select id="mapYAxis" onchange="redrawMap()"><option>Quality</option><option>Customization</option><option>Ease of Use</option><option>Reliability</option><option>Accessibility</option><option>Thoroughness</option><option>Local Focus</option><option>Traditional</option><option>Performance</option><option>Value</option></select></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:12px">
+      <div class="field-group"><label>Company Name to Place</label><input type="text" id="mapCompanyName" placeholder="e.g. Uber, NovaBrew..." /></div>
+      <div class="field-group"><label>Type</label><select id="mapCompanyType"><option value="competitor">Competitor</option><option value="case">Our Company (NovaBrew)</option></select></div>
+    </div>
+    <div class="map-container">
+      <canvas id="positionMap" width="700" height="400"></canvas>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn btn-outline" onclick="clearMap()" style="font-size:0.72rem;padding:6px 12px">Clear Map</button>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Gap Analysis</h3>
+    <div class="field-group"><label>Strategic Gaps &amp; Opportunities</label><textarea id="m2Gaps" placeholder="Based on the positioning map, where are the gaps? What opportunities exist for NovaBrew?" oninput="saveAll()"></textarea></div>
+  </div>
+</div>
+
+<!-- MODULE 3: BMC -->
+<div id="m3View" class="view">
+  <h3 class="section-title">Module 3: Business Model Canvas</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Map NovaBrew's business model across all 9 components.</p>
+  <div class="card" style="overflow-x:auto">
+    <div class="bmc-grid">
+      <div class="bmc-cell" style="grid-row:1/3"><h5>Key Partners</h5><textarea id="bmcPartners" placeholder="Suppliers, distributors, strategic alliances..." oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell"><h5>Key Activities</h5><textarea id="bmcActivities" placeholder="Production, marketing, R&D..." oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell" style="grid-row:1/3"><h5>Value Proposition</h5><textarea id="bmcValue" placeholder="What unique value does NovaBrew deliver?" oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell"><h5>Customer Relationships</h5><textarea id="bmcRelations" placeholder="How does NovaBrew engage customers?" oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell" style="grid-row:1/3"><h5>Customer Segments</h5><textarea id="bmcSegments" placeholder="Who are the key customer groups?" oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell"><h5>Key Resources</h5><textarea id="bmcResources" placeholder="Physical, intellectual, human, financial..." oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell"><h5>Channels</h5><textarea id="bmcChannels" placeholder="How does NovaBrew reach customers?" oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell" style="grid-column:1/3"><h5>Cost Structure</h5><textarea id="bmcCosts" placeholder="Major cost drivers: production, marketing, distribution..." oninput="saveAll()"></textarea></div>
+      <div class="bmc-cell" style="grid-column:3/6"><h5>Revenue Streams</h5><textarea id="bmcRevenue" placeholder="How does NovaBrew make money? Pricing model?" oninput="saveAll()"></textarea></div>
     </div>
   </div>
 </div>
 
-<!-- ════ STRATEGY ════ -->
-<div id="strategyView" class="view">
-  <h3 class="section-title">Final Recommendation</h3>
-  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:20px">Submit your team's strategic recommendation for NovaBrew's international expansion.</p>
-
-  <div class="grid-2">
-    <div class="card">
-      <h3>Market Selection</h3>
-      <div class="rec-group"><label>Target Market</label><select id="recMarket" onchange="saveRec()"><option value="">Select...</option><option>Brazil</option><option>South Korea</option><option>United Kingdom</option></select></div>
-      <div class="rec-group"><label>Why This Market? (3-5 sentences)</label><textarea id="recWhyMarket" placeholder="Justify your market selection using data and analysis..." oninput="saveRec()"></textarea></div>
-    </div>
-    <div class="card">
-      <h3>Market Entry Mode</h3>
-      <div class="rec-group"><label>Entry Strategy</label><select id="recEntry" onchange="saveRec()"><option value="">Select...</option><option>Direct Exporting</option><option>Licensing</option><option>Franchising</option><option>Joint Venture</option><option>Strategic Alliance</option><option>Wholly-Owned Subsidiary</option></select></div>
-      <div class="rec-group"><label>Justify Your Entry Mode</label><textarea id="recWhyEntry" placeholder="Why is this the best entry mode for your chosen market?" oninput="saveRec()"></textarea></div>
+<!-- MODULE 4: SWOT -->
+<div id="m4View" class="view">
+  <h3 class="section-title">Module 4: SWOT Analysis</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Identify 2-3 relevant factors per category for NovaBrew's international expansion.</p>
+  <div class="card">
+    <div class="fw-grid">
+      <div class="fw-box" style="border-left:3px solid var(--green)"><h4><span style="color:var(--green)">&#9650;</span> Strengths</h4><textarea id="swotS" placeholder="Internal advantages: strong brand, unique product, financial health..." oninput="saveAll()"></textarea></div>
+      <div class="fw-box" style="border-left:3px solid var(--red)"><h4><span style="color:var(--red)">&#9660;</span> Weaknesses</h4><textarea id="swotW" placeholder="Internal limitations: no international experience, single production facility..." oninput="saveAll()"></textarea></div>
+      <div class="fw-box" style="border-left:3px solid var(--accent)"><h4><span style="color:var(--accent)">&#9654;</span> Opportunities</h4><textarea id="swotO" placeholder="External opportunities: growing global market, no dominant player in functional cold brew..." oninput="saveAll()"></textarea></div>
+      <div class="fw-box" style="border-left:3px solid var(--orange)"><h4><span style="color:var(--orange)">&#9664;</span> Threats</h4><textarea id="swotT" placeholder="External threats: strong local competitors, regulatory complexity, currency risk..." oninput="saveAll()"></textarea></div>
     </div>
   </div>
+</div>
 
-  <div class="card" style="margin-top:14px">
+<!-- MODULE 5: Market Selection -->
+<div id="m5View" class="view">
+  <h3 class="section-title">Module 5: Market Selection &amp; Justification</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Evaluate markets using weighted criteria and justify your selection.</p>
+  <div class="card">
+    <h3>Evaluation Criteria</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Select the criteria most relevant to NovaBrew's expansion decision:</p>
+    <h4 style="font-size:0.72rem;font-weight:700;color:var(--accent);margin:10px 0 6px">Economic Factors</h4>
+    <div class="chip-grid" id="mktEconChips"></div>
+    <h4 style="font-size:0.72rem;font-weight:700;color:var(--purple);margin:10px 0 6px">Cultural &amp; Demographic</h4>
+    <div class="chip-grid" id="mktCultureChips"></div>
+    <h4 style="font-size:0.72rem;font-weight:700;color:var(--orange);margin:10px 0 6px">Political &amp; Legal</h4>
+    <div class="chip-grid" id="mktPoliticalChips"></div>
+    <h4 style="font-size:0.72rem;font-weight:700;color:var(--green);margin:10px 0 6px">Infrastructure &amp; Competitive</h4>
+    <div class="chip-grid" id="mktInfraChips"></div>
+  </div>
+  <div class="card">
+    <h3>Market Comparison</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Rate each market on your selected criteria (1=Low, 5=High):</p>
+    <div style="overflow-x:auto">
+      <table class="cmp-table" id="marketCompareTable">
+        <thead><tr><th>Criteria</th><th>Brazil</th><th>South Korea</th><th>United Kingdom</th></tr></thead>
+        <tbody id="marketCompareBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Market Selection</h3>
+    <div class="field-group"><label>Selected Market</label><select id="m5Market" onchange="saveAll()"><option value="">Choose...</option><option>Brazil</option><option>South Korea</option><option>United Kingdom</option></select></div>
+    <div class="field-group"><label>Justification (3-5 sentences)</label><textarea id="m5Justify" placeholder="Why this market? Reference your criteria analysis..." oninput="saveAll()"></textarea></div>
+  </div>
+</div>
+
+<!-- MODULE 6: PESTEL + RBV -->
+<div id="m6View" class="view">
+  <h3 class="section-title">Module 6: PESTEL Analysis &amp; Strategic Diagnosis</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Analyze external factors and internal resources. Click each category to expand the factor list.</p>
+  <div class="card">
+    <h3>PESTEL Analysis</h3>
+    <div id="pestelContainer"></div>
+  </div>
+  <div class="card">
+    <h3>Resource-Based View (RBV)</h3>
+    <div class="fw-grid">
+      <div class="fw-box"><h4>Resources (Tangible &amp; Intangible)</h4><textarea id="rbvResources" placeholder="Physical assets, brand equity, patents, financial reserves, human capital..." oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Capabilities</h4><textarea id="rbvCapabilities" placeholder="What can NovaBrew do well? Manufacturing, marketing, distribution..." oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Core Competencies</h4><textarea id="rbvCore" placeholder="What does NovaBrew do better than anyone else? What's hard to imitate?" oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Competitive Advantage</h4><textarea id="rbvAdvantage" placeholder="How do these resources and capabilities create sustainable advantage?" oninput="saveAll()"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODULE 7: Buyer Persona + Entry + Marketing Mix -->
+<div id="m7View" class="view">
+  <h3 class="section-title">Module 7: Buyer Persona, Market Entry &amp; Marketing Mix</h3>
+  <div class="card">
+    <h3>Buyer Persona</h3>
+    <div class="grid-2">
+      <div>
+        <div class="field-group"><label>Persona Name &amp; Age</label><input type="text" id="m7PersonaName" placeholder="e.g. Min-ji, 28" oninput="saveAll()"></div>
+        <div class="field-group"><label>Gender &amp; Location</label><input type="text" id="m7PersonaDemo" placeholder="e.g. Female, Seoul, South Korea" oninput="saveAll()"></div>
+        <div class="field-group"><label>Income &amp; Education</label><input type="text" id="m7PersonaIncome" placeholder="e.g. $45K, University graduate" oninput="saveAll()"></div>
+      </div>
+      <div>
+        <div class="field-group"><label>Pain Points</label><textarea id="m7Pain" placeholder="What problems does this persona face?" oninput="saveAll()" style="min-height:40px"></textarea></div>
+        <div class="field-group"><label>Goals &amp; Motivations</label><textarea id="m7Goals" placeholder="What drives their purchasing decisions?" oninput="saveAll()" style="min-height:40px"></textarea></div>
+        <div class="field-group"><label>Buying Behavior &amp; Media</label><textarea id="m7Buying" placeholder="Where do they shop? What media do they consume?" oninput="saveAll()" style="min-height:40px"></textarea></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Market Entry Strategy</h3>
+    <div class="field-group"><label>Selected Strategy</label><select id="m7Entry" onchange="saveAll()"><option value="">Choose...</option><option>Direct Exporting</option><option>Licensing</option><option>Franchising</option><option>Joint Venture</option><option>Strategic Alliance</option><option>Wholly-Owned Subsidiary</option><option>Contract Manufacturing</option><option>Turnkey Projects</option><option>Management Contracts</option><option>Platform Expansion</option></select></div>
+    <div class="field-group"><label>Justification</label><textarea id="m7EntryJustify" placeholder="Why is this the best entry mode for your chosen market?" oninput="saveAll()"></textarea></div>
+    <div class="grid-2">
+      <div class="field-group"><label>Pros of This Strategy</label><textarea id="m7EntryPros" placeholder="Advantages..." oninput="saveAll()" style="min-height:50px"></textarea></div>
+      <div class="field-group"><label>Cons / Risks</label><textarea id="m7EntryCons" placeholder="Disadvantages and risks..." oninput="saveAll()" style="min-height:50px"></textarea></div>
+    </div>
+  </div>
+  <div class="card">
     <h3>Marketing Mix (4Ps)</h3>
     <div class="fw-grid">
-      <div class="fw-box"><h4>Product</h4><textarea id="rec4P" placeholder="Which products to launch? Any adaptations needed?" oninput="saveRec()"></textarea></div>
-      <div class="fw-box"><h4>Price</h4><textarea id="rec4Pr" placeholder="Pricing strategy? Premium, competitive, penetration?" oninput="saveRec()"></textarea></div>
-      <div class="fw-box"><h4>Place</h4><textarea id="rec4Pl" placeholder="Distribution channels? Retail, online, DTC?" oninput="saveRec()"></textarea></div>
-      <div class="fw-box"><h4>Promotion</h4><textarea id="rec4Pm" placeholder="Marketing channels? Digital, influencer, events?" oninput="saveRec()"></textarea></div>
+      <div class="fw-box"><h4>Product</h4><textarea id="m7Product" placeholder="Which products to launch? Adaptations needed?" oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Price</h4><textarea id="m7Price" placeholder="Pricing strategy? Premium, competitive, penetration?" oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Place</h4><textarea id="m7Place" placeholder="Distribution channels? Retail, online, DTC?" oninput="saveAll()"></textarea></div>
+      <div class="fw-box"><h4>Promotion</h4><textarea id="m7Promo" placeholder="Marketing channels? Digital, influencer, events?" oninput="saveAll()"></textarea></div>
     </div>
   </div>
-
-  <div class="grid-2" style="margin-top:14px">
-    <div class="card">
-      <h3>Target Consumer Persona</h3>
-      <div class="rec-group"><label>Name & Age</label><input type="text" id="recPersonaName" placeholder="e.g. Min-ji, 28" oninput="saveRec()"></div>
-      <div class="rec-group"><label>Demographics</label><textarea id="recPersonaDemo" placeholder="Age, income, education, location, lifestyle..." oninput="saveRec()"></textarea></div>
-      <div class="rec-group"><label>Buying Behavior</label><textarea id="recPersonaBuy" placeholder="Where do they shop? What influences them? What do they value?" oninput="saveRec()"></textarea></div>
-    </div>
-    <div class="card">
-      <h3>Financial Projection</h3>
-      <div class="rec-group"><label>Year 1 Revenue Estimate</label><input type="text" id="recRev1" placeholder="e.g. $4.2M" oninput="saveRec()"></div>
-      <div class="rec-group"><label>Break-Even Timeline</label><input type="text" id="recBreakeven" placeholder="e.g. 18 months" oninput="saveRec()"></div>
-      <div class="rec-group"><label>Key Risks & Mitigation</label><textarea id="recRisks" placeholder="Top 3 risks and how you'd mitigate them..." oninput="saveRec()"></textarea></div>
-    </div>
-  </div>
-
-  <div style="margin-top:20px;display:flex;gap:10px">
-    <button class="btn btn-green" onclick="submitRec()">Submit Recommendation</button>
-    <button class="btn btn-outline" onclick="exportRec()">Export as Text</button>
-  </div>
-  <div id="submitConfirm" style="margin-top:14px"></div>
 </div>
 
-<!-- ════ PROFESSOR ════ -->
+<!-- MODULE 8: Final Recommendation -->
+<div id="m8View" class="view">
+  <h3 class="section-title">Module 8: Final Strategic Recommendation</h3>
+  <p style="color:var(--dim);font-size:0.8rem;margin-bottom:16px">Synthesize all your analysis into 3-5 justified strategic recommendations.</p>
+  <div class="card" id="m8SummaryCard">
+    <h3>Summary from Your Analysis</h3>
+    <div id="m8Summary" style="font-size:0.82rem;color:var(--dim);line-height:1.6"></div>
+  </div>
+  <div class="card">
+    <h3>Executive Summary</h3>
+    <div class="field-group"><label>Overview (1-2 paragraphs)</label><textarea id="m8ExecSummary" placeholder="Summarize your entire strategic recommendation..." oninput="saveAll()" style="min-height:100px"></textarea></div>
+  </div>
+  <div class="card">
+    <h3>Strategic Recommendations</h3>
+    <div class="field-group"><label>Recommendation 1</label><textarea id="m8Rec1" placeholder="Your first strategic recommendation with justification..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Recommendation 2</label><textarea id="m8Rec2" placeholder="Your second recommendation..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Recommendation 3</label><textarea id="m8Rec3" placeholder="Your third recommendation..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Recommendation 4 (Optional)</label><textarea id="m8Rec4" placeholder="Additional recommendation..." oninput="saveAll()"></textarea></div>
+    <div class="field-group"><label>Recommendation 5 (Optional)</label><textarea id="m8Rec5" placeholder="Additional recommendation..." oninput="saveAll()"></textarea></div>
+  </div>
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <button class="btn btn-green" onclick="submitFinal()">Submit Recommendation</button>
+    <button class="btn btn-outline" onclick="exportFinal()">Export as Text</button>
+  </div>
+  <div id="submitMsg" style="margin-top:10px"></div>
+</div>
+
+<!-- CHAT VIEW -->
+<div id="chatView" class="view">
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header" id="chatHeader"></div>
+    <div class="chat-area" id="chatArea"></div>
+    <div class="suggested-q" id="suggestedQ"></div>
+    <div class="chat-input-bar">
+      <input type="text" id="chatInput" placeholder="Ask about the company..." onkeydown="if(event.key==='Enter')sendMessage()">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFESSOR VIEW -->
 <div id="professorView" class="view">
   <h3 class="section-title">Professor Dashboard</h3>
-  <div style="display:flex;gap:8px;margin-bottom:20px">
-    <button class="btn btn-sm btn-primary" onclick="addDemoStudents()">Load Demo Students</button>
-    <button class="btn btn-sm btn-outline" onclick="clearStudents()">Clear</button>
+  <div style="display:flex;gap:8px;margin-bottom:16px">
+    <button class="btn btn-primary" onclick="addDemoStudents()" style="font-size:0.75rem;padding:8px 14px">Load Demo Students</button>
+    <button class="btn btn-outline" onclick="clearStudents()" style="font-size:0.75rem;padding:8px 14px">Clear</button>
   </div>
   <div class="stats-row" id="profStats"></div>
-  <div class="grid-2" style="margin-bottom:16px">
-    <div class="card">
-      <h3>Class Engagement</h3>
-      <div class="chart-wrap" style="height:200px"><canvas id="engagementCanvas"></canvas></div>
-    </div>
-    <div class="card">
-      <h3>Market Selections</h3>
-      <div class="chart-wrap" style="height:200px"><canvas id="marketCanvas"></canvas></div>
-    </div>
+  <div class="card">
+    <h3>Module Grading</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:12px">Paste a student's submission below and click Grade to auto-evaluate based on the rubric.</p>
+    <div class="field-group"><label>Select Module</label><select id="gradeModule"><option value="m1">Module 1: Industry Definition</option><option value="m2">Module 2: Competitive Landscape</option><option value="m3">Module 3: Business Model Canvas</option><option value="m4">Module 4: SWOT Analysis</option><option value="m5">Module 5: Market Selection</option><option value="m6">Module 6: PESTEL & RBV</option><option value="m7">Module 7: Persona & Entry</option><option value="m8">Module 8: Final Recommendation</option></select></div>
+    <div class="field-group"><label>Student Submission</label><textarea id="gradeInput" placeholder="Paste the student's work here..." style="min-height:120px"></textarea></div>
+    <button class="btn btn-primary" onclick="gradeSubmission()" style="margin-bottom:10px">Grade Submission</button>
+    <div id="gradeOutput"></div>
   </div>
-  <div class="card" style="margin-bottom:16px">
-    <h3>Phase Deadlines</h3>
-    <div id="deadlineControls"></div>
-  </div>
-  <div class="card" style="margin-bottom:16px">
-    <h3>Auto-Rubric Scores</h3>
-    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Engagement (25%) + Frameworks (25%) + Data Room (25%) + Recommendation (25%)</p>
-    <div id="rubricList"></div>
+  <div class="card">
+    <h3>Published Q&amp;A</h3>
+    <p style="font-size:0.72rem;color:var(--dim);margin-bottom:10px">Type a question for a persona, publish the answer for the whole class.</p>
+    <div class="grid-2" style="margin-bottom:10px">
+      <div class="field-group"><label>Persona</label><select id="pubPersona"><option value="0">CEO — Sarah Chen</option><option value="1">VP Marketing — Peter Rodriguez</option><option value="2">VP Operations — David Okonkwo</option></select></div>
+      <div class="field-group"><label>Question</label><input type="text" id="pubQuestion" placeholder="Type a student question..."></div>
+    </div>
+    <button class="btn btn-primary" onclick="publishQA()" style="font-size:0.75rem;padding:8px 14px;margin-bottom:10px">Get Answer &amp; Publish</button>
+    <div id="publishedQAs"></div>
   </div>
   <div class="card">
     <h3>Student Progress</h3>
@@ -487,452 +553,357 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
-</div><!-- end container -->
+</div><!-- end main -->
 </div><!-- end mainApp -->
 
 <script>
-// ─── DATA ───
+const TEACHER_PASS='novabrew2026';
+let currentUser=JSON.parse(localStorage.getItem('nb-user')||'null');
+let students=JSON.parse(localStorage.getItem('nb-students')||'[]');
+let savedData=JSON.parse(localStorage.getItem('nb-data')||'{}');
+let mapDots=JSON.parse(localStorage.getItem('nb-map')||'[]');
+let selectedChips=JSON.parse(localStorage.getItem('nb-chips')||'{}');
+let publishedQAs=JSON.parse(localStorage.getItem('nb-pubqa')||'[]');
+let questionsAsked=JSON.parse(localStorage.getItem('nb-questions')||'{}');
+let currentPersona=null;
+
+const MODULES=[
+  {id:'m1',num:'1',title:'Industry Definition',desc:'Define industry, customer problem, key success factors',icon:'&#127758;'},
+  {id:'m2',num:'2',title:'Competitive Landscape',desc:'Classify competitors, build positioning map, find gaps',icon:'&#128202;'},
+  {id:'m3',num:'3',title:'Business Model Canvas',desc:'Map all 9 components of the business model',icon:'&#128736;'},
+  {id:'m4',num:'4',title:'SWOT Analysis',desc:'Strengths, weaknesses, opportunities, threats',icon:'&#9878;'},
+  {id:'m5',num:'5',title:'Market Selection',desc:'Evaluate markets with weighted criteria',icon:'&#127757;'},
+  {id:'m6',num:'6',title:'PESTEL & RBV',desc:'External environment and internal resources',icon:'&#128269;'},
+  {id:'m7',num:'7',title:'Persona & Entry',desc:'Buyer persona, market entry strategy, 4Ps',icon:'&#128101;'},
+  {id:'m8',num:'8',title:'Final Recommendation',desc:'Synthesize everything into strategic recommendations',icon:'&#127942;'}
+];
+
+const KSF_LIST=['Brand Recognition','Distribution Network','Cost Efficiency','Innovation Capability','Regulatory Compliance','Customer Loyalty','Supply Chain Management','Digital Presence','Talent Acquisition','Economies of Scale','Product Differentiation','Speed to Market','Strategic Partnerships','Customer Service Excellence','Pricing Strategy','Market Share','Sustainability Practices','Quality Control','R&D Investment','First-Mover Advantage'];
+
+const MKT_CRITERIA={
+  econ:['GDP Growth','Inflation Rate','Purchasing Power','Market Size','Import/Export Regulations','Currency Stability','Unemployment Rate','FDI Attractiveness','Consumer Spending','Trade Balance'],
+  culture:['Population Size','Age Distribution','Cultural Compatibility','Language Barriers','Consumer Behavior','Urbanization Rate','Education Levels','Health Consciousness','Social Media Adoption','Lifestyle Trends'],
+  political:['Political Stability','Trade Agreements','IP Protection','Ease of Business','Corruption Index','Tax Environment','Foreign Ownership Laws','Regulatory Transparency','Labor Laws','Government Subsidies'],
+  infra:['Transportation','Digital Infrastructure','Supply Chain Reliability','Distribution Channels','Market Saturation','Competitor Presence','Barriers to Entry','First-Mover Potential','Retail Penetration','E-Commerce Maturity']
+};
+
+const PESTEL_FACTORS={
+  Political:['Government Stability','Trade Policies','Tax Regulations','Labor Laws','Political Ideology','Corruption Levels','Bureaucracy','Government Subsidies','Foreign Policy','Regulatory Environment','Election Cycles','Sanctions','Political Alliances','Military Involvement','Lobbying'],
+  Economic:['GDP Growth','Interest Rates','Inflation','Exchange Rates','Unemployment','Consumer Spending','Income Distribution','Trade Balance','Economic Cycle','Commodity Prices','Credit Availability','Fiscal Policy','Monetary Policy','Market Liquidity','Wage Levels'],
+  Social:['Population Growth','Age Demographics','Cultural Attitudes','Health Consciousness','Education Levels','Lifestyle Changes','Social Mobility','Consumer Activism','Work-Life Balance','Immigration','Income Inequality','Urbanization','Religious Influences','Family Structures','Gender Roles'],
+  Technological:['R&D Spending','Automation','Digital Transformation','AI/ML Adoption','Cybersecurity','Patent Activity','Tech Infrastructure','Innovation Rate','Disruptive Tech','Tech Talent','Data Privacy','Cloud Computing','IoT Adoption','5G/Connectivity','Blockchain'],
+  Environmental:['Climate Change','Sustainability Regulations','Carbon Footprint','Resource Scarcity','Waste Management','Renewable Energy','Environmental Disasters','Biodiversity','Water Scarcity','Pollution Controls','Green Technology','Circular Economy','Deforestation','ESG Requirements','Weather Patterns'],
+  Legal:['Employment Law','Consumer Protection','Antitrust Law','Intellectual Property','Health & Safety','Data Protection/GDPR','Advertising Standards','Import/Export Regulations','Contract Law','Product Liability','Tax Law','Industry Regulations','Licensing','Competition Law','Privacy Laws']
+};
+
 const PERSONAS=[
-{id:0,name:'Sarah Chen',role:'CEO',dept:'Executive',deptColor:'rgba(79,140,255,0.15)',deptText:'#4f8cff',avatarBg:'linear-gradient(135deg,#4f8cff,#2563eb)',initials:'SC',
-greeting:"Welcome to NovaBrew. I'm Sarah Chen, CEO. I founded this company eight years ago. We've grown to $48M revenue and now we're going international. Ask me anything about vision, strategy, or where we're headed.",
-suggested:["Why expand internationally now?","What's the long-term vision?","Biggest risks of going global?","How much capital is available?","Which markets has the board discussed?"],
+{id:0,name:'Sarah Chen',role:'CEO',avatarBg:'linear-gradient(135deg,#4f8cff,#2563eb)',initials:'SC',
+greeting:"I'm Sarah Chen, CEO. I founded NovaBrew eight years ago. I'm happy to talk about our vision, strategy, and where we're headed. But I should be honest: some questions are yours to figure out as consultants. I'll guide your thinking, not hand you answers.",
+suggested:["What keeps you up at night about expansion?","Why now for going international?","How would you describe the company culture?","What does success look like in 24 months?","What would make you say no to a market?"],
 knowledge:{
-"why expand|why international|why now|why go global|why overseas":"Three reasons. First, we've hit 1,200 retail locations in the U.S. and domestic growth is slowing from 35% to 18% year-over-year. Second, the global specialty beverage market is projected to hit $85 billion by 2028 and we have zero international presence. Third, three competitors have already entered European and Asian markets. The board approved a $12 million expansion budget in Q1.",
-"vision|long-term|five year|future|where.*headed":"Our five-year vision is to become a top-three global specialty beverage brand in 15 countries by 2031. Each market should feel like NovaBrew was made for them. Localization is everything. We're not Coca-Cola. We're a craft brand that happens to scale.",
-"risk|biggest challenge|obstacle|worry|concern":"Cultural misfit is number one. What works in Austin doesn't automatically work in Tokyo or Sao Paulo. Second, supply chain complexity with new suppliers, regulations, logistics. Third, brand dilution if we rush into too many markets at once. I'd rather be excellent in two markets than mediocre in ten.",
-"capital|budget|money|fund|invest|how much":"The board approved $12 million over 24 months covering market research, regulatory compliance, distribution setup, marketing launch, and a local team. Our total revenue was $48 million with about $7 million net profit. We expect to break even in 18-24 months.",
-"market|which country|where|region|board discussed":"Three possibilities: Brazil (massive, growing middle class, coffee culture, complex regulations), South Korea (incredible consumer appetite for trendy beverages, strong digital commerce, crowded market), and the United Kingdom (English-language advantage, gateway to Europe, tighter margins). I'm genuinely open to the team's recommendation.",
-"product|what do you sell|drink|beverage|line":"Three lines. NovaBrew Cold Brew (flagship, 4 flavors, 55% revenue). NovaBoost functional drinks with adaptogens (3 flavors, 30% revenue, fastest growing). NovaSpark sparkling botanicals (15% revenue). All non-GMO, no artificial sweeteners, sustainably sourced.",
-"competitor|competition|who else|rival":"U.S. competitors: Chameleon Cold Brew (Nestle), La Colombe, Stumptown. Functional: Celsius, Athletic Greens. Internationally: South Korea has Lotte and Binggrae, Brazil has Ambev, UK has Minor Figures and Oatly. No one owns 'premium functional cold brew' internationally yet.",
-"culture|company culture|values|team":"Built on authenticity, wellness, and community. Average age 31. 240 employees across production (Buda, TX), sales, and HQ. Zero international employees. Any expansion needs local talent.",
-"revenue|financial|profit|margin|sales":"$48M revenue (up from $36M). Gross margin 52%. Net margin 14.5%, roughly $7M profit. Customer acquisition cost: $3.20 digital, $8.50 retail. International CAC expected 2-3x higher initially. Profitable enough to fund expansion without debt."
+"why expand|why international|why now|why overseas":"Domestic growth slowed from 35% to 18%. We've hit 1,200 retail locations. The global specialty beverage market is projected to hit $85 billion by 2028. Three competitors already entered Europe and Asia. The board approved $12M. The question isn't whether to go international. It's where and how.",
+"vision|long-term|five year|future":"Top-three global specialty beverage brand in 15 countries by 2031. Each market should feel like NovaBrew was made for them. We're a craft brand that happens to scale. What does that mean for the market you're evaluating?",
+"risk|concern|worry|keep.*up|afraid|scared":"Cultural misfit is number one. What works in Austin doesn't automatically work in Tokyo or Sao Paulo. Second, supply chain complexity. Third, brand dilution if we rush. I'd rather be excellent in two markets than mediocre in ten. What risks have you identified in your analysis?",
+"capital|budget|money|fund|invest":"$12M over 24 months. Market research, supply chain, marketing launch, team. Board expects break-even in 18-24 months. How would you allocate that budget?",
+"culture|company culture|values|team":"Built on authenticity, wellness, community. Average age 31. 240 employees. Zero international staff. Any expansion needs local talent who live and breathe that market. Have you thought about what 'authentic' means in different cultures?",
+"revenue|financial|profit|margin":"$48M revenue, 52% gross margin, 14.5% net margin. Profitable enough to fund expansion without debt. $9M cash reserves plus the $12M budget. But international margins will be tighter. How much tighter depends on where we go.",
+"product|what do you sell|beverage":"Three lines: Cold Brew (55% revenue), NovaBoost functional drinks (30%, fastest growing), NovaSpark sparkling botanicals (15%). All non-GMO, sustainably sourced. Think about which lines make sense for different markets."
 }},
-{id:1,name:'Peter Rodriguez',role:'VP of Marketing',dept:'Marketing',deptColor:'rgba(167,139,250,0.15)',deptText:'#a78bfa',avatarBg:'linear-gradient(135deg,#a78bfa,#7c3aed)',initials:'PR',
-greeting:"Hey! Peter Rodriguez, VP of Marketing. Built the brand from regional to national in four years. Now we need to make NovaBrew resonate with consumers who've never heard of us. Fire away.",
-suggested:["Who is the current target consumer?","How would you adapt the brand internationally?","What's the current marketing mix?","What consumer research exists?","How should we position overseas?"],
+{id:1,name:'Peter Rodriguez',role:'VP of Marketing',avatarBg:'linear-gradient(135deg,#a78bfa,#7c3aed)',initials:'PR',
+greeting:"Peter Rodriguez, VP Marketing. Built the brand from regional to national in four years. I know what makes consumers tick. Ask me about positioning, consumers, or brand strategy. Fair warning: I won't do your competitive analysis for you.",
+suggested:["Who is the current NovaBrew customer?","How would you adapt messaging internationally?","What consumer research exists?","What's working in your current marketing mix?","What scares you about entering a new market?"],
 knowledge:{
-"target consumer|who buys|customer|demographic|who drinks":"Core U.S. consumer: 24-38, urban/suburban, college-educated, $55K-$120K income. They read labels, pay $4.99 for cold brew over $2.99 because they trust ingredients. 58% female. Heavy in coastal cities and college towns. The question: does this translate internationally?",
-"adapt|international brand|localization|change.*brand":"Brand architecture stays consistent globally: premium, functional, clean. But execution must be hyper-local. In Brazil, respect coffee traditions. In South Korea, aesthetics and packaging matter enormously. UK values understatement over hype. Same DNA, different expression.",
-"marketing mix|4p|four p|current strategy|how.*market":"Product: three lines, premium positioning. Price: $4.49-$5.99 retail, 40% above mass-market. Place: 1,200+ retail (Whole Foods, Sprouts, Target) plus DTC/Amazon. Promotion: 60% digital (Instagram, TikTok, influencers), 20% sampling, 15% events, 5% PR. Total marketing: $4.8M annually (10% of revenue).",
-"consumer research|international research|data|survey":"Survey of 1,500 consumers across Brazil, South Korea, UK. Brand awareness: zero everywhere. Interest in 'premium cold brew with functional benefits': Brazil 72%, South Korea 68%, UK 54%. Price sensitivity varies wildly. Brazil: 30% less. South Korea: would pay MORE. UK: value-conscious but will pay for quality.",
-"position|positioning|brand position|message":"U.S. positioning: 'the thinking person's beverage.' Internationally: Brazil = 'new energy for new Brazil.' South Korea = 'premium functional craft.' UK = 'quality you can taste, ingredients you can trust.' Same promise, different cultural frame.",
-"social media|digital|influencer|tiktok|instagram":"380K Instagram, 210K TikTok. 4.2% engagement rate. Best content: behind-the-scenes, founder stories, user taste tests. South Korea needs KakaoTalk/Naver strategy. Brazil is WhatsApp/Instagram. UK similar to U.S. but less hype, more substance.",
-"packaging|design|label":"Minimalist matte black cans, bold typography, neon accent per flavor. South Korea wants limited editions and collab packaging. Brazil responds to bold colors and warmth. UK prefers understated elegance. Need per-market adaptation while keeping brand architecture.",
-"pricing|how much|price point|cost":"U.S.: $4.49-$5.99 retail. 35% margin to retailers. South Korea: can price 10-15% above U.S. Brazil: need to come down 25-30%. UK: similar to U.S. with VAT adjustments."
+"target consumer|who buys|customer|demographic":"Core U.S.: 24-38, urban/suburban, college-educated, $55K-$120K income. They read labels, pay $4.99 over $2.99 because they trust ingredients. 58% female. The question for your team: does this translate to your chosen market? What does that consumer look like locally?",
+"adapt|localization|change.*brand|messaging":"Same brand DNA, different expression. Brazil: respect coffee traditions. South Korea: aesthetics and packaging matter enormously. UK: understatement over hype. I can tell you what resonates at home. Your job is figuring out what resonates there.",
+"consumer research|survey|data|interest":"We surveyed 1,500 consumers across three markets. Interest in 'premium cold brew with functional benefits': Brazil 72%, South Korea 68%, UK 54%. But interest doesn't equal purchase. What factors would convert interest into action in your target market?",
+"marketing mix|4p|current strategy":"60% digital (Instagram, TikTok, influencers), 20% sampling, 15% events, 5% PR. Total $4.8M (10% of revenue). What would you change for a market where nobody knows who we are?",
+"social media|digital|influencer":"380K Instagram, 210K TikTok. South Korea needs KakaoTalk/Naver. Brazil is WhatsApp/Instagram. UK similar but less hype. Have you researched which platforms matter most in your market?",
+"pricing|price|cost|how much":"U.S.: $4.49-$5.99 retail. South Korea could go higher. Brazil needs to come down 25-30%. UK similar with VAT. What pricing strategy are you considering and why?"
 }},
-{id:2,name:'David Okonkwo',role:'VP of Int\'l Operations',dept:'Operations',deptColor:'rgba(251,146,60,0.15)',deptText:'#fb923c',avatarBg:'linear-gradient(135deg,#fb923c,#ea580c)',initials:'DO',
-greeting:"David Okonkwo, VP of International Operations. Hired six months ago for this expansion. 15 years in global supply chain at PepsiCo and Danone. I know what it takes to get a beverage brand into a new country. Ask me about entry, logistics, or regulations.",
-suggested:["Best market entry strategy?","Regulatory challenges per market?","How would you set up supply chain?","Timeline for entering a market?","Lessons from PepsiCo?"],
+{id:2,name:'David Okonkwo',role:'VP of Operations',avatarBg:'linear-gradient(135deg,#fb923c,#ea580c)',initials:'DO',
+greeting:"David Okonkwo, VP of International Operations. 15 years in global supply chain at PepsiCo and Danone. I know what it takes to get a beverage brand into a new country. Ask about logistics, regulations, or entry strategies. I'll share what I know, but I expect you to do the analytical work.",
+suggested:["What's the biggest operational challenge?","How would supply chain work internationally?","What regulatory hurdles exist?","How long does market entry take?","What did you learn at PepsiCo?"],
 knowledge:{
-"entry strategy|market entry|how.*enter|mode of entry|export|franchise|joint venture|license":"Different strategies per market. UK: direct exporting through a local distribution partner. Lower risk, fastest. South Korea: joint venture with a local beverage company. Market is complex, relationships matter. Brazil: trickiest. Import duties 20-35%. Need local production or licensing to make margins work.",
-"regulatory|regulation|compliance|legal|law|import":"Brazil: ANVISA registration, Portuguese labeling, 20-35% import duties, complex tax (ICMS, IPI). South Korea: MFDS approval, Korean labeling, strict health claim rules. UK: Food Standards Agency, UK FIR labeling, calorie/sugar mandatory. UK is most predictable. All three need local legal counsel.",
-"supply chain|logistics|production|manufacturing|shipping":"All production in Buda, Texas. Three options: export from Texas (quality control, adds costs), contract manufacture locally (cheaper logistics, quality risk), build facility (expensive, only at scale). Recommend: export for UK and South Korea to test demand, contract manufacturer for Brazil.",
-"timeline|how long|when|speed":"UK: 6-8 months (clearest regulatory, export model). South Korea: 8-12 months (MFDS, JV partner, packaging). Brazil: 10-14 months (ANVISA, taxes, contract manufacturing). Add 3-month buffer to every estimate.",
-"pepsico|danone|experience|learn|previous":"Three lessons from 15 years. Local talent is non-negotiable (Mexico expansion from Dallas was a disaster until local GM hired). Test before you scale (Danone pilot saved $15M mistake in Indonesia). Distribution is king (60% of my time in new markets goes to distribution partnerships).",
-"distribution|retail|shelf|store|channel|where.*sell":"UK: Waitrose, Sainsbury's premium, Whole Foods UK, Ocado, Amazon UK. South Korea: convenience stores (CU, GS25, 7-Eleven) plus Coupang. Brazil: Carrefour, Pao de Acucar, Mercado Livre. DTC supplementary everywhere.",
-"team|hire|local|staff|people":"Per market minimum: Country Manager, Sales/Distribution Manager, Marketing Coordinator, admin. 4-5 people. Add regulatory specialist for SK/Brazil. Annual cost: UK $350-450K, SK $300-400K, Brazil $200-300K."
-}},
-{id:3,name:'Lisa Park',role:'CFO',dept:'Finance',deptColor:'rgba(52,211,153,0.15)',deptText:'#34d399',avatarBg:'linear-gradient(135deg,#34d399,#059669)',initials:'LP',
-greeting:"Lisa Park, CFO. Managing NovaBrew's finances since year two. My job: make sure international expansion doesn't sink the ship. Ask me about budgets, projections, or ROI.",
-suggested:["What's the $12M budget breakdown?","What ROI does the board expect?","Most financially attractive market?","Biggest financial risks?","How does expansion affect margins?"],
-knowledge:{
-"budget|breakdown|12 million|allocat|spend":"$12M over 24 months: Market Research/Setup $2M, Product/Supply Chain $3.5M, Marketing Launch $3M, Operations/Team $3.5M. Assumes one primary market with potential second if first shows traction within 12 months.",
-"roi|return|expect|payback|break even":"Board expects break-even in 18-24 months. Full ROI on $12M within 36-48 months. Year 1 revenue target: $3-5M. Year 2: $8-12M. At 45-50% international gross margin, need $22-25M cumulative revenue to recoup. Board wants measurable traction by month 12.",
-"which market|financially|most attractive|best market|profitable":"South Korea: highest margin (48-52%), consumers pay premium. UK: most predictable (42-46%), stable, can export. Brazil: largest TAM but worst margins (38-44%) due to duties and lower prices. My numbers say: South Korea first, UK second, Brazil year-two.",
-"risk|financial risk|danger|lose money":"Four risks. Currency fluctuation (10% swing turns profit to loss). Higher-than-expected CAC ($8-15 vs $3.20 U.S.). Inventory write-offs on adapted packaging. Regulatory delays burning cash with no revenue. Worst case: $12M burned in 18 months with only $2M revenue.",
-"margin|profit margin|gross margin|how.*affect":"Domestic 52%. International 42-50% depending on market. Shipping adds 8-12%. Duties: 0% UK to 35% Brazil. Marketing per unit higher at zero awareness. Threshold: below 40% doesn't work. Volume growth and better distribution terms help.",
-"financial|company finances|health|balance sheet|debt":"$48M revenue, $7M net profit, zero long-term debt, $9M cash reserves plus $12M expansion budget from retained earnings and undrawn credit facility. No dilutive funding. If expansion fails, domestic business still healthy."
-}},
-{id:4,name:'Marcus Johnson',role:'Head of Product Dev',dept:'Product',deptColor:'rgba(244,114,182,0.15)',deptText:'#f472b6',avatarBg:'linear-gradient(135deg,#f472b6,#db2777)',initials:'MJ',
-greeting:"Marcus Johnson, Head of Product Development. I create what goes in the can. For international, the big question: same product or adapt? Spoiler: it's never that simple.",
-suggested:["Would you change the product internationally?","Ingredient sourcing challenges?","How do taste preferences differ?","Product development process?","New flavors for new markets?"],
-knowledge:{
-"change|adapt|modify|same product|different product|adjust":"Yes, adapt. Three things: local taste preferences (South Korea: less sweet. Brazil: sweeter. UK: balanced). Regulatory compliance (some adaptogens may not be approved). Practical considerations (Brazil heat affects shelf life). Plan 3-4 months reformulation per market.",
-"ingredient|sourcing|supply|raw material":"Coffee beans from Colombia/Ethiopia via NJ importer. Adaptogens: ashwagandha from India, lion's mane from Oregon, L-theanine from Japan. Botanicals from domestic/Central American sources. Qualifying new suppliers for local production takes 4-6 months of testing.",
-"taste|flavor|preference|palate":"South Korea: clean, subtle (matcha, yuzu, floral). Brazil: tropical (acai, passion fruit, guarana), sweeter coffee. UK: sophisticated about coffee quality, origin stories, less sweet. Each market needs 200+ consumer taste testing before finalizing.",
-"process|development|how.*create|r&d":"4-6 months concept to shelf: Concept > Formulation (3-4 rounds) > Consumer Testing (150-300 people) > Production Scaling > Quality Testing > Launch. International adaptations: 3-4 months since starting from existing formulations.",
-"new flavor|new product|create.*for|special|limited":"South Korea: Yuzu Cold Brew, Matcha Focus NovaBoost, quarterly limited editions. Brazil: Acai Cold Brew, Passion Fruit NovaSpark. UK: lead with Oat Milk Cold Brew, London Fog variant. 2-3 local SKUs per market plus core range. ~$800K R&D per market.",
-"packaging|can|bottle|size|format":"U.S.: 12oz aluminum can. South Korea: 250ml (smaller, premium bottle designs). Brazil: 350-500ml, PET bottles common. UK: 250ml cans (sugar tax favors smaller). $500-700K per format change.",
-"quality|shelf life|stability|testing":"9-month U.S. shelf life. Shipping adds 3-6 weeks. Brazil tropical climate degrades faster. Need accelerated stability testing at higher temperatures. $150K and 2 months per market. One spoiled batch in a new market kills the brand."
+"entry strategy|market entry|how.*enter":"Different strategies per market. UK: direct exporting, fastest. South Korea: probably needs a JV partner. Brazil: import duties 20-35% make it tricky. What entry mode are you evaluating and what trade-offs have you considered?",
+"regulatory|regulation|compliance|legal":"Brazil: ANVISA registration, Portuguese labeling, 20-35% duties. South Korea: MFDS approval, strict health claims. UK: Food Standards Agency, most predictable. All need local legal counsel. Have you factored regulatory timelines into your recommendation?",
+"supply chain|logistics|production":"All production in Buda, Texas. Three options: export (quality control but costs), contract manufacture locally (cheaper but quality risk), build facility (expensive, only at scale). What's your analysis of the trade-offs?",
+"timeline|how long|when|speed":"UK 6-8 months, South Korea 8-12 months, Brazil 10-14 months. Add 3-month buffer. These are realities, not negotiable. How does this affect your strategic timeline?",
+"pepsico|danone|experience|lesson":"Three lessons: local talent is non-negotiable, test before you scale, distribution is king. I spent 60% of my time on distribution partnerships in new markets. What distribution strategy are you proposing?",
+"distribution|retail|channel|store":"UK: Waitrose, Sainsbury's, Ocado. South Korea: convenience stores (CU, GS25), Coupang. Brazil: Carrefour, Pao de Acucar. DTC supplementary everywhere. Which channels align with your target consumer?",
+"team|hire|people|staff":"Minimum per market: Country Manager, Sales/Distribution Manager, Marketing Coordinator, admin. 4-5 people. UK $350-450K, SK $300-400K, Brazil $200-300K annually."
 }}];
 
-const COUNTRIES=[
-{name:'Brazil',flag:'&#127463;&#127479;',color:'var(--green)',
-data:{gdp:'$2.1T',pop:'215M',growth:'2.9%',ease:'124th',coffee:'World\'s largest coffee producer',bevMkt:'$58B',dutys:'20-35%',currency:'BRL (R$)'},
-pros:['Massive market (215M people)','Coffee culture deeply embedded','72% interest in survey','Growing middle class','Large young population'],
-cons:['20-35% import duties','Complex tax structure (ICMS, IPI)','ANVISA registration slow','Need local production for margins','Currency volatility (BRL)','10-14 month timeline'],
-hofstede:{pdi:69,idv:38,mas:49,uai:76,lto:44,ind:59},etiquette:'Relationship-driven culture. Build personal rapport before business. Meetings start with small talk. Hierarchy matters. Use titles. Expect flexibility on timelines.'},
-{name:'South Korea',flag:'&#127472;&#127479;',color:'var(--accent)',
-data:{gdp:'$1.7T',pop:'52M',growth:'2.6%',ease:'5th',coffee:'3rd wave coffee boom','bevMkt':'$22B',dutys:'8%',currency:'KRW (&#8361;)'},
-pros:['Consumers pay premium prices','Incredible digital commerce','Strong convenience store culture','5th easiest to do business','48-52% margin potential','Trend-driven consumers'],
-cons:['Crowded beverage market','MFDS health claim restrictions','Need JV partner','Smaller total market (52M)','8-12 month timeline','Intense competition from Lotte, Binggrae'],
-hofstede:{pdi:60,idv:18,mas:39,uai:85,lto:100,ind:29},etiquette:'Collectivist and hierarchical. Age/seniority deeply respected. Business cards exchanged formally with both hands. Relationship before transaction. After-work socializing (hoesik) expected.'},
-{name:'United Kingdom',flag:'&#127468;&#127463;',color:'var(--purple)',
-data:{gdp:'$3.1T',pop:'67M',growth:'1.4%',ease:'8th',coffee:'Specialty coffee growing 15%/yr','bevMkt':'$32B',dutys:'0%',currency:'GBP (&pound;)'},
-pros:['English language advantage','Gateway to Europe','0% import duties','Predictable regulations','Fastest timeline (6-8 months)','Strong oat milk trend'],
-cons:['Tighter margins (42-46%)','Conservative consumers','Competitive pricing pressure','Lower growth rate','Post-Brexit complexity','UK consumers skeptical of hype'],
-hofstede:{pdi:35,idv:89,mas:66,uai:35,lto:51,ind:69},etiquette:'Direct but polite. Understatement valued over hype. Punctuality important. Humor in business is common. Email-first culture. Meetings are structured with agendas.'},
-];
-
-const PROGRESS_ITEMS=[
-{id:'p1',text:'Review company background',done:false},
-{id:'p2',text:'Interview the CEO',done:false},
-{id:'p3',text:'Research consumers with Marketing',done:false},
-{id:'p4',text:'Evaluate entry strategies with Ops',done:false},
-{id:'p5',text:'Analyze financials with CFO',done:false},
-{id:'p6',text:'Discuss product adaptation',done:false},
-{id:'p7',text:'Complete SWOT analysis',done:false},
-{id:'p8',text:'Complete PESTEL analysis',done:false},
-{id:'p9',text:'Submit final recommendation',done:false}
-];
-
-const PHASES=[
-{id:'overview',label:'Overview',num:'1'},
-{id:'research',label:'Research',num:'2'},
-{id:'analysis',label:'Analysis',num:'3'},
-{id:'strategy',label:'Recommendation',num:'4'}
-];
-
-let currentPersona=null;
-let notes=localStorage.getItem('nb-notes')||'';
-let progress=JSON.parse(localStorage.getItem('nb-progress2')||'null')||JSON.parse(JSON.stringify(PROGRESS_ITEMS));
-let questionsAsked=JSON.parse(localStorage.getItem('nb-questions')||'{}');
-let frameworks=JSON.parse(localStorage.getItem('nb-frameworks')||'{}');
-let recommendation=JSON.parse(localStorage.getItem('nb-rec')||'{}');
-let students=JSON.parse(localStorage.getItem('nb-students')||'[]');
-let pinnedInsights=JSON.parse(localStorage.getItem('nb-pins')||'[]');
-let currentPhase=localStorage.getItem('nb-phase')||'overview';
-
-// ─── NAVIGATION ───
-function goTab(tab){
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+// NAVIGATION
+function goView(view){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  event?.target?.classList.add('active');
-  const tabMap={overview:'overviewView',research:'researchView',analysis:'analysisView',strategy:'strategyView',professor:'professorView'};
-  document.getElementById(tabMap[tab]).classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.textContent.toLowerCase().includes(tab))t.classList.add('active')});
-  if(['overview','research','analysis','strategy'].includes(tab)){currentPhase=tab;localStorage.setItem('nb-phase',tab)}
-  renderPhaseBar();
-  if(tab==='professor')renderProfessor();
-  if(tab==='research'){renderPersonasGrid2();renderCountries()}
-  if(tab==='analysis')loadFrameworks();
-  if(tab==='strategy')loadRec();
+  document.getElementById(view+'View').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const items=document.querySelectorAll('.nav-item');
+  items.forEach(n=>{if(n.textContent.trim().toLowerCase().includes(view==='home'?'home':'')||(n.onclick&&n.onclick.toString().includes("'"+view+"'")))n.classList.add('active')});
+  if(view==='m8')renderM8Summary();
+  if(view==='professor')renderProfessor();
+  if(view==='m5')renderMarketCompare();
 }
 
-function renderPhaseBar(){
-  const pi=PHASES.findIndex(p=>p.id===currentPhase);
-  document.getElementById('phaseBar').innerHTML=PHASES.map((p,i)=>{
-    const cls=i<pi?'done':i===pi?'current':'locked';
-    return`<div class="phase ${cls}" onclick="${i<=pi+1?`goTab('${p.id}')`:''}"><span class="ph-num">Phase ${p.num}</span>${p.label}</div>`;
+function openCaseModal(){document.getElementById('caseModal').classList.add('open')}
+function closeCaseModal(){document.getElementById('caseModal').classList.remove('open')}
+document.getElementById('caseModal').addEventListener('click',function(e){if(e.target===this)closeCaseModal()});
+
+// RENDER HOME
+function renderHome(){
+  document.getElementById('moduleGrid').innerHTML=MODULES.map(m=>{
+    const status=getModuleStatus(m.id);
+    return`<div class="module-card" onclick="goView('${m.id}')"><div class="mc-num">Module ${m.num}</div><h4>${m.icon} ${m.title}</h4><p>${m.desc}</p><span class="mc-status ${status}">${status==='done'?'Complete':status==='progress'?'In Progress':'Not Started'}</span></div>`;
+  }).join('');
+  document.getElementById('homePersonaBar').innerHTML=PERSONAS.map(p=>`<div class="persona-btn" onclick="goView('chat');openPersona(${p.id})"><div class="p-avatar" style="background:${p.avatarBg}">${p.initials}</div><div><h4>${p.name}</h4><div class="p-role">${p.role}</div></div></div>`).join('');
+}
+
+function getModuleStatus(mid){
+  const d=savedData;
+  const checks={
+    m1:['m1Industry','m1Problem'],m2:['m2Direct','m2Gaps'],m3:['bmcValue','bmcSegments'],
+    m4:['swotS','swotW'],m5:['m5Market','m5Justify'],m6:['pesP','rbvResources'],
+    m7:['m7PersonaName','m7Entry'],m8:['m8ExecSummary','m8Rec1']
+  };
+  const fields=checks[mid]||[];
+  const filled=fields.filter(f=>d[f]&&d[f].trim()).length;
+  if(filled===0)return'todo';
+  if(filled>=fields.length)return'done';
+  return'progress';
+}
+
+// CHIPS
+function renderChips(){
+  renderChipGroup('ksfChips',KSF_LIST,'ksf');
+  renderChipGroup('mktEconChips',MKT_CRITERIA.econ,'mktEcon');
+  renderChipGroup('mktCultureChips',MKT_CRITERIA.culture,'mktCulture');
+  renderChipGroup('mktPoliticalChips',MKT_CRITERIA.political,'mktPolitical');
+  renderChipGroup('mktInfraChips',MKT_CRITERIA.infra,'mktInfra');
+}
+function renderChipGroup(containerId,items,group){
+  const el=document.getElementById(containerId);if(!el)return;
+  if(!selectedChips[group])selectedChips[group]=[];
+  el.innerHTML=items.map(item=>`<div class="chip ${selectedChips[group].includes(item)?'selected':''}" onclick="toggleChip('${group}','${item.replace(/'/g,"\\'")}',this)">${item}</div>`).join('');
+}
+function toggleChip(group,item,el){
+  if(!selectedChips[group])selectedChips[group]=[];
+  const idx=selectedChips[group].indexOf(item);
+  if(idx>=0){selectedChips[group].splice(idx,1);el.classList.remove('selected')}
+  else{selectedChips[group].push(item);el.classList.add('selected')}
+  localStorage.setItem('nb-chips',JSON.stringify(selectedChips));
+  if(group.startsWith('mkt'))renderMarketCompare();
+}
+
+// MARKET COMPARISON TABLE
+function renderMarketCompare(){
+  const allSelected=[...(selectedChips.mktEcon||[]),...(selectedChips.mktCulture||[]),...(selectedChips.mktPolitical||[]),...(selectedChips.mktInfra||[])];
+  const body=document.getElementById('marketCompareBody');if(!body)return;
+  if(!allSelected.length){body.innerHTML='<tr><td colspan="4" style="color:var(--dim);text-align:center;padding:20px">Select criteria above to build your comparison table</td></tr>';return}
+  const ratings=JSON.parse(localStorage.getItem('nb-ratings')||'{}');
+  body.innerHTML=allSelected.map(c=>{
+    const k=c.replace(/[^a-zA-Z]/g,'');
+    return`<tr><td style="font-weight:600">${c}</td>${['Brazil','SouthKorea','UK'].map(m=>`<td><select onchange="saveRating('${k}_${m}',this.value)"><option value="">-</option>${[1,2,3,4,5].map(n=>`<option ${ratings[k+'_'+m]==n?'selected':''}>${n}</option>`).join('')}</select></td>`).join('')}</tr>`;
+  }).join('');
+}
+function saveRating(key,val){const r=JSON.parse(localStorage.getItem('nb-ratings')||'{}');r[key]=val;localStorage.setItem('nb-ratings',JSON.stringify(r))}
+
+// PESTEL
+function renderPestel(){
+  const container=document.getElementById('pestelContainer');if(!container)return;
+  const colors={Political:'var(--accent)',Economic:'var(--green)',Social:'var(--purple)',Technological:'var(--orange)',Environmental:'var(--pink)',Legal:'var(--red)'};
+  container.innerHTML=Object.entries(PESTEL_FACTORS).map(([cat,factors])=>{
+    const key='pes'+cat.charAt(0);
+    return`<div class="pestel-section"><div class="pestel-header" onclick="this.nextElementSibling.classList.toggle('open')" style="border-left:3px solid ${colors[cat]}"><span>${cat}</span><span style="font-size:0.7rem;color:var(--dim)">&#9660; ${factors.length} factors</span></div><div class="pestel-body"><p style="font-size:0.72rem;color:var(--dim);margin-bottom:8px">Select relevant factors:</p><div class="chip-grid">${factors.map(f=>`<div class="chip ${(selectedChips['pes_'+cat]||[]).includes(f)?'selected':''}" onclick="toggleChip('pes_${cat}','${f.replace(/'/g,"\\'")}',this)">${f}</div>`).join('')}</div><div class="field-group" style="margin-top:10px"><label>${cat} Analysis</label><textarea id="${key}" placeholder="Analyze the selected ${cat.toLowerCase()} factors for your target market..." oninput="saveAll()"></textarea></div></div></div>`;
   }).join('');
 }
 
-// ─── PERSONAS ───
-function renderPersonasGrid(){
-  document.getElementById('personasGrid').innerHTML=PERSONAS.map(p=>`
-    <div class="persona-card" onclick="goTab('research');setTimeout(()=>showChat(${p.id}),100)">
-      <div class="avatar" style="background:${p.avatarBg}">${p.initials}<span class="status"></span></div>
-      <h4>${p.name}</h4><div class="role">${p.role}</div>
-      <span class="dept" style="background:${p.deptColor};color:${p.deptText}">${p.dept}</span>
-      ${questionsAsked[p.id]?`<div class="q-count">${questionsAsked[p.id]} questions asked</div>`:''}
-    </div>`).join('');
+// POSITIONING MAP
+let mapChart=null;
+function initMap(){
+  const canvas=document.getElementById('positionMap');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.addEventListener('click',function(e){
+    const name=document.getElementById('mapCompanyName').value.trim();
+    if(!name)return;
+    const rect=canvas.getBoundingClientRect();
+    const x=((e.clientX-rect.left)/rect.width)*10;
+    const y=10-((e.clientY-rect.top)/rect.height)*10;
+    const type=document.getElementById('mapCompanyType').value;
+    mapDots.push({name,x:Math.round(x*10)/10,y:Math.round(y*10)/10,type});
+    localStorage.setItem('nb-map',JSON.stringify(mapDots));
+    document.getElementById('mapCompanyName').value='';
+    redrawMap();
+  });
+  redrawMap();
+}
+function redrawMap(){
+  const canvas=document.getElementById('positionMap');if(!canvas)return;
+  const xLabel=document.getElementById('mapXAxis')?.value||'Price';
+  const yLabel=document.getElementById('mapYAxis')?.value||'Quality';
+  if(mapChart){mapChart.destroy();mapChart=null}
+  const datasets=[];
+  const competitors=mapDots.filter(d=>d.type==='competitor');
+  const caseCompany=mapDots.filter(d=>d.type==='case');
+  if(competitors.length)datasets.push({label:'Competitors',data:competitors.map(d=>({x:d.x,y:d.y})),backgroundColor:'rgba(79,140,255,0.8)',pointRadius:10,pointHoverRadius:12});
+  if(caseCompany.length)datasets.push({label:'NovaBrew',data:caseCompany.map(d=>({x:d.x,y:d.y})),backgroundColor:'rgba(52,211,153,0.9)',pointRadius:12,pointHoverRadius:14,pointStyle:'rectRot'});
+  mapChart=new Chart(canvas,{type:'scatter',data:{datasets},options:{responsive:true,maintainAspectRatio:false,scales:{x:{min:0,max:10,title:{display:true,text:'Low '+xLabel+' → High '+xLabel,color:'#7a8bad',font:{size:11}},ticks:{color:'#7a8bad'},grid:{color:'rgba(255,255,255,0.04)'}},y:{min:0,max:10,title:{display:true,text:'Low '+yLabel+' → High '+yLabel,color:'#7a8bad',font:{size:11}},ticks:{color:'#7a8bad'},grid:{color:'rgba(255,255,255,0.04)'}}},plugins:{tooltip:{callbacks:{label:function(ctx){const dot=ctx.datasetIndex===0?competitors[ctx.dataIndex]:caseCompany[ctx.dataIndex];return dot?dot.name+' ('+dot.x+', '+dot.y+')':''}}},legend:{labels:{color:'#7a8bad'}}}}});
+}
+function clearMap(){mapDots=[];localStorage.setItem('nb-map','[]');redrawMap()}
+
+// SAVE/LOAD ALL
+const ALL_FIELDS=['m1Industry','m1Size','m1Problem','m1Solution','m1KsfJustify','m2Direct','m2Indirect','m2Substitute','m2Gaps','bmcPartners','bmcActivities','bmcValue','bmcRelations','bmcSegments','bmcResources','bmcChannels','bmcCosts','bmcRevenue','swotS','swotW','swotO','swotT','m5Market','m5Justify','pesP','pesE','pesS','pesT','pesEn','pesL','rbvResources','rbvCapabilities','rbvCore','rbvAdvantage','m7PersonaName','m7PersonaDemo','m7PersonaIncome','m7Pain','m7Goals','m7Buying','m7Entry','m7EntryJustify','m7EntryPros','m7EntryCons','m7Product','m7Price','m7Place','m7Promo','m8ExecSummary','m8Rec1','m8Rec2','m8Rec3','m8Rec4','m8Rec5'];
+
+function saveAll(){
+  ALL_FIELDS.forEach(f=>{const el=document.getElementById(f);if(el)savedData[f]=el.value});
+  localStorage.setItem('nb-data',JSON.stringify(savedData));
+}
+function loadAll(){ALL_FIELDS.forEach(f=>{const el=document.getElementById(f);if(el&&savedData[f])el.value=savedData[f]})}
+
+// MODULE 8 SUMMARY
+function renderM8Summary(){
+  const d=savedData;
+  let html='';
+  if(d.m5Market)html+=`<p><strong>Selected Market:</strong> ${d.m5Market}</p>`;
+  if(d.m7Entry)html+=`<p><strong>Entry Strategy:</strong> ${d.m7Entry}</p>`;
+  if(d.m7PersonaName)html+=`<p><strong>Target Persona:</strong> ${d.m7PersonaName}</p>`;
+  if(!html)html='<p>Complete Modules 5 and 7 to see your key decisions summarized here.</p>';
+  document.getElementById('m8Summary').innerHTML=html;
 }
 
-function renderPersonasGrid2(){
-  document.getElementById('personasGrid2').innerHTML=PERSONAS.map(p=>`
-    <div class="persona-card" onclick="showChat(${p.id})">
-      <div class="avatar" style="background:${p.avatarBg}">${p.initials}<span class="status"></span></div>
-      <h4>${p.name}</h4><div class="role">${p.role}</div>
-      <span class="dept" style="background:${p.deptColor};color:${p.deptText}">${p.dept}</span>
-      ${questionsAsked[p.id]?`<div class="q-count">${questionsAsked[p.id]} questions asked</div>`:''}
-    </div>`).join('');
+function submitFinal(){
+  if(!savedData.m8ExecSummary||!savedData.m8Rec1){document.getElementById('submitMsg').innerHTML='<div style="color:var(--red);font-size:0.82rem;padding:10px">Complete at least the Executive Summary and Recommendation 1.</div>';return}
+  if(currentUser){
+    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
+    if(st){st.submitted=true;st.market=savedData.m5Market||'';st.time=new Date().toLocaleString()}
+    localStorage.setItem('nb-students',JSON.stringify(students));
+  }
+  document.getElementById('submitMsg').innerHTML='<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green);padding:14px;border-radius:10px;font-weight:700">Recommendation submitted successfully!</div>';
 }
 
-// ─── COUNTRIES ───
-function renderCountries(){
-  document.getElementById('countryPanels').innerHTML=COUNTRIES.map(c=>`
-    <div class="country-card">
-      <div class="flag">${c.flag}</div><h4>${c.name}</h4>
-      <div class="data-grid">
-        <div class="data-item"><div class="dl">GDP</div><div class="dv">${c.data.gdp}</div></div>
-        <div class="data-item"><div class="dl">Population</div><div class="dv">${c.data.pop}</div></div>
-        <div class="data-item"><div class="dl">Growth</div><div class="dv">${c.data.growth}</div></div>
-        <div class="data-item"><div class="dl">Ease of Business</div><div class="dv">${c.data.ease}</div></div>
-        <div class="data-item"><div class="dl">Beverage Market</div><div class="dv">${c.data.bevMkt}</div></div>
-        <div class="data-item"><div class="dl">Import Duty</div><div class="dv">${c.data.dutys}</div></div>
-        <div class="data-item"><div class="dl">Currency</div><div class="dv">${c.data.currency}</div></div>
-        <div class="data-item"><div class="dl">Coffee</div><div class="dv">${c.data.coffee}</div></div>
-      </div>
-      <div class="pros">${c.pros.map(p=>`<span>+ </span>${p}<br>`).join('')}</div>
-      <div class="cons">${c.cons.map(p=>`<span>- </span>${p}<br>`).join('')}</div>
-      ${c.hofstede?`<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border)"><div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px">HOFSTEDE DIMENSIONS</div>
-      ${[['PDI',c.hofstede.pdi,'Power Distance'],['IDV',c.hofstede.idv,'Individualism'],['MAS',c.hofstede.mas,'Masculinity'],['UAI',c.hofstede.uai,'Uncertainty Avoidance'],['LTO',c.hofstede.lto,'Long-Term'],['IND',c.hofstede.ind,'Indulgence']].map(([k,val,label])=>`<div class="hof-bar"><span class="hof-label">${label}</span><div class="hof-track"><div class="hof-fill" style="width:${val}%;background:${val>66?'var(--accent)':val>33?'var(--orange)':'var(--green)'}"></div></div><span class="hof-val">${val}</span></div>`).join('')}
-      <div style="font-size:0.68rem;color:var(--dim);margin-top:8px;line-height:1.4"><strong style="color:var(--text)">Business Etiquette:</strong> ${c.etiquette}</div></div>`:''}
-    </div>`).join('');
+function exportFinal(){
+  const d=savedData;
+  const text=`STRATEGIC RECOMMENDATION — NOVABREW INTERNATIONAL EXPANSION\n${'='.repeat(60)}\n\nEXECUTIVE SUMMARY:\n${d.m8ExecSummary||'N/A'}\n\nSELECTED MARKET: ${d.m5Market||'N/A'}\nENTRY STRATEGY: ${d.m7Entry||'N/A'}\nTARGET PERSONA: ${d.m7PersonaName||'N/A'}\n\nRECOMMENDATIONS:\n1. ${d.m8Rec1||'N/A'}\n2. ${d.m8Rec2||'N/A'}\n3. ${d.m8Rec3||'N/A'}${d.m8Rec4?'\n4. '+d.m8Rec4:''}${d.m8Rec5?'\n5. '+d.m8Rec5:''}\n\nMARKETING MIX:\n- Product: ${d.m7Product||'N/A'}\n- Price: ${d.m7Price||'N/A'}\n- Place: ${d.m7Place||'N/A'}\n- Promotion: ${d.m7Promo||'N/A'}\n\nSWOT:\n- Strengths: ${d.swotS||'N/A'}\n- Weaknesses: ${d.swotW||'N/A'}\n- Opportunities: ${d.swotO||'N/A'}\n- Threats: ${d.swotT||'N/A'}`;
+  navigator.clipboard.writeText(text);
+  document.getElementById('submitMsg').innerHTML='<div style="color:var(--accent);font-size:0.82rem;padding:10px">Copied to clipboard!</div>';
+  setTimeout(()=>document.getElementById('submitMsg').innerHTML='',2000);
 }
 
-// ─── DATA ROOM ───
-function toggleDoc(type){
-  const el=document.getElementById('docContent');
-  if(el.dataset.open===type){el.innerHTML='';el.dataset.open='';return}
-  el.dataset.open=type;
-  const docs={
-    financials:`<div class="card"><h3>Financial Summary</h3>
-      <div class="grid-2">
-        <div><div class="chart-wrap"><canvas id="revenueChart"></canvas></div></div>
-        <div><div class="chart-wrap"><canvas id="productChart"></canvas></div></div>
-      </div>
-      <div class="bar-chart" style="margin-top:16px">
-        <div class="bar-row"><span class="bar-label">Gross Margin</span><div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--green)">52%</div></div><span class="bar-val">$24.9M</span></div>
-        <div class="bar-row"><span class="bar-label">Net Margin</span><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--purple)">14.5%</div></div><span class="bar-val">$7M</span></div>
-        <div class="bar-row"><span class="bar-label">Marketing</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--orange)">10%</div></div><span class="bar-val">$4.8M</span></div>
-        <div class="bar-row"><span class="bar-label">Expansion</span><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--accent)">$12M</div></div><span class="bar-val">$12M</span></div>
-      </div>
-      <p style="font-size:0.78rem;color:var(--dim);margin-top:12px">Revenue grew 33% YoY ($36M to $48M). Zero long-term debt. $9M cash reserves. CAC: $3.20 digital, $8.50 retail.</p></div>`,
-    competitors:`<div class="card"><h3>Competitor Landscape</h3><table class="competitor-table"><thead><tr><th>Company</th><th>Category</th><th>Est. Revenue</th><th>Int'l Presence</th><th>Threat Level</th></tr></thead><tbody>
-      <tr><td>Chameleon Cold Brew</td><td>Cold Brew</td><td>$120M+ (Nestle)</td><td>Europe, Asia</td><td style="color:var(--red)">High</td></tr>
-      <tr><td>La Colombe</td><td>Cold Brew / RTD</td><td>$200M+</td><td>Limited</td><td style="color:var(--orange)">Medium</td></tr>
-      <tr><td>Stumptown</td><td>Specialty Coffee</td><td>$100M+</td><td>None</td><td style="color:var(--dim)">Low</td></tr>
-      <tr><td>Celsius</td><td>Functional</td><td>$1.3B</td><td>UK, Nordics</td><td style="color:var(--red)">High</td></tr>
-      <tr><td>Minor Figures</td><td>Oat/Coffee</td><td>$50M+</td><td>UK, EU, Asia</td><td style="color:var(--orange)">Medium</td></tr>
-      <tr><td>Lotte Chilsung</td><td>Beverage (Korea)</td><td>$2B+</td><td>Asia</td><td style="color:var(--red)">High (Korea)</td></tr>
-      <tr><td>Ambev</td><td>Beverage (Brazil)</td><td>$15B+</td><td>LatAm</td><td style="color:var(--red)">High (Brazil)</td></tr>
-    </tbody></table></div>`,
-    orgchart:`<div class="card"><h3>Leadership Team</h3><div class="grid-3" style="margin-top:12px">${PERSONAS.map(p=>`<div style="text-align:center;padding:14px;background:var(--card2);border-radius:10px;border:1px solid var(--border)"><div style="width:48px;height:48px;border-radius:50%;background:${p.avatarBg};display:flex;align-items:center;justify-content:center;font-weight:800;color:white;margin:0 auto 8px">${p.initials}</div><div style="font-weight:700;font-size:0.85rem">${p.name}</div><div style="font-size:0.72rem;color:var(--dim)">${p.role}</div></div>`).join('')}</div><p style="font-size:0.78rem;color:var(--dim);margin-top:12px">240 employees total. HQ: Austin, TX. Production: Buda, TX. Sales: nationwide. Zero international staff currently.</p></div>`,
-    consumer:`<div class="card"><h3>Consumer Research (n=1,500)</h3><div class="bar-chart" style="margin-top:12px">
-      <div class="bar-row"><span class="bar-label">Brazil Interest</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--green)">72%</div></div><span class="bar-val">72%</span></div>
-      <div class="bar-row"><span class="bar-label">S. Korea Interest</span><div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--accent)">68%</div></div><span class="bar-val">68%</span></div>
-      <div class="bar-row"><span class="bar-label">UK Interest</span><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--purple)">54%</div></div><span class="bar-val">54%</span></div>
-    </div><p style="font-size:0.78rem;color:var(--dim);margin-top:12px">Interest = % who said "interested" or "very interested" in premium cold brew with functional benefits. Brand awareness: 0% in all markets. Brazil respondents indicated 30% lower price willingness. South Korea would pay 10-15% above U.S. pricing. UK is value-conscious but pays for quality.</p></div>`
-  };
-  el.innerHTML=docs[type]||'';
-  if(type==='financials')setTimeout(renderFinancialCharts,100);
-}
-
-function renderFinancialCharts(){
-  const rc=document.getElementById('revenueChart');
-  const pc=document.getElementById('productChart');
-  if(!rc||!pc||typeof Chart==='undefined')return;
-  new Chart(rc,{type:'bar',data:{labels:['2023','2024','2025','2026E'],datasets:[{label:'Revenue ($M)',data:[22,30,36,48],backgroundColor:'rgba(79,140,255,0.6)',borderRadius:6},{label:'Net Profit ($M)',data:[2.2,3.5,5,7],backgroundColor:'rgba(52,211,153,0.6)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#7a8bad',font:{size:10}}}},scales:{x:{ticks:{color:'#7a8bad'},grid:{display:false}},y:{ticks:{color:'#7a8bad',callback:v=>'$'+v+'M'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
-  new Chart(pc,{type:'doughnut',data:{labels:['Cold Brew (55%)','NovaBoost (30%)','NovaSpark (15%)'],datasets:[{data:[55,30,15],backgroundColor:['rgba(79,140,255,0.7)','rgba(52,211,153,0.7)','rgba(167,139,250,0.7)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8bad',font:{size:10},padding:12}}}}});
-}
-
-// ─── CHAT ───
-function showChat(pid){
+// CHAT
+function openPersona(pid){
   currentPersona=PERSONAS[pid];
-  document.getElementById('personasGrid2').style.display='none';
-  document.getElementById('chatView').style.display='';
   const h=document.getElementById('chatHeader');
-  h.innerHTML=`<div class="avatar" style="background:${currentPersona.avatarBg}">${currentPersona.initials}</div><div><h3>${currentPersona.name}</h3><div class="role">${currentPersona.role}</div></div><button class="back" onclick="closeChat()">&#8592; Back</button>`;
+  h.innerHTML=`<div class="avatar" style="background:${currentPersona.avatarBg}">${currentPersona.initials}</div><div><h3>${currentPersona.name}</h3><div class="role">${currentPersona.role}</div></div><button class="back" onclick="goView('home')">&#8592; Back</button>`;
   document.getElementById('chatArea').innerHTML='';
-  addMsg('persona',currentPersona.greeting);
-  renderSuggested();renderOtherPersonas();renderProgress();
-  document.getElementById('notebook').value=notes;
-  document.getElementById('notebook').oninput=e=>{notes=e.target.value;localStorage.setItem('nb-notes',notes)};
-  if(pid===0)updateProgress('p2');if(pid===1)updateProgress('p3');if(pid===2)updateProgress('p4');if(pid===3)updateProgress('p5');if(pid===4)updateProgress('p6');
-  renderPins();
+  addMsg('persona',currentPersona.greeting,currentPersona.name);
+  renderSuggested();
 }
-function closeChat(){document.getElementById('chatView').style.display='none';document.getElementById('personasGrid2').style.display='';renderPersonasGrid2()}
 
-function addMsg(type,text,name,socratic){
+function addMsg(type,text,name){
   const a=document.getElementById('chatArea'),d=document.createElement('div');
-  d.className='msg '+type+(socratic?' socratic':'');
-  if(type==='persona'&&name){
-    const pinId='pin-'+Date.now()+Math.random().toString(36).slice(2,6);
-    d.innerHTML=`<div class="name">${name}</div>${text}<button class="pin-btn" onclick="pinInsight('${pinId}','${name.replace(/'/g,"\\'")}',this)" data-pinid="${pinId}" title="Pin this insight">&#128204;</button>`;
-    d.dataset.text=text;d.dataset.source=name;
-  }else d.textContent=text;
+  d.className='msg '+type;
+  if(type==='persona'&&name)d.innerHTML=`<div class="name">${name}</div>${text.replace(/\n/g,'<br>')}`;
+  else d.textContent=text;
   a.appendChild(d);a.scrollTop=a.scrollHeight;
 }
 
-function pinInsight(id,source,btn){
-  const existing=pinnedInsights.findIndex(p=>p.id===id);
-  if(existing>=0){pinnedInsights.splice(existing,1);btn.classList.remove('pinned')}
-  else{const msg=btn.parentElement;pinnedInsights.push({id,source,text:msg.dataset.text?.substring(0,150)||'...'});btn.classList.add('pinned')}
-  localStorage.setItem('nb-pins',JSON.stringify(pinnedInsights));renderPins();
-}
-
-function removePin(id){pinnedInsights=pinnedInsights.filter(p=>p.id!==id);localStorage.setItem('nb-pins',JSON.stringify(pinnedInsights));renderPins();const btn=document.querySelector(`[data-pinid="${id}"]`);if(btn)btn.classList.remove('pinned')}
-
-function renderPins(){
-  const el=document.getElementById('pinnedList');
-  if(!pinnedInsights.length){el.innerHTML='<div style="font-size:0.72rem;color:var(--dim)">Pin key answers from conversations to use in your recommendation.</div>';return}
-  el.innerHTML=pinnedInsights.map(p=>`<div class="pinned-item"><div class="pin-source">${p.source}</div>${p.text}...<button class="pin-remove" onclick="removePin('${p.id}')">&times;</button></div>`).join('');
-}
-function showTyping(){const a=document.getElementById('chatArea'),d=document.createElement('div');d.className='msg typing';d.id='typingInd';d.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';a.appendChild(d);a.scrollTop=a.scrollHeight}
-function hideTyping(){const e=document.getElementById('typingInd');if(e)e.remove()}
-
 function findResponse(q){
-  q=q.toLowerCase();const k=currentPersona.knowledge;let best=null,bestS=0;
+  q=q.toLowerCase();
+  const deflections=["That's a great question for your research. What have you found so far?","I'd rather hear your take first. What's your hypothesis?","That's something your team should figure out. What does your analysis suggest?","Good thinking, but I want you to work through that one. What data points are you considering?","Before I weigh in, tell me what you've discovered in your research so far."];
+  const directAskPatterns=['who are','list the','tell me the','what are the','give me','name the','which companies','how many'];
+  const isDirect=directAskPatterns.some(p=>q.includes(p));
+  const k=currentPersona.knowledge;let best=null,bestS=0;
   for(const[pat,resp]of Object.entries(k)){
     const kws=pat.split('|');let sc=0;
     for(const kw of kws){
-      if(kw.includes('.*')){try{if(new RegExp(kw,'i').test(q))sc+=3}catch(e){}}
-      else if(q.includes(kw.toLowerCase()))sc+=2;
+      if(q.includes(kw.toLowerCase()))sc+=2;
       for(const w of kw.toLowerCase().split(/\s+/))if(w.length>3&&q.includes(w))sc+=1;
     }
     if(sc>bestS){bestS=sc;best=resp}
   }
+  const qCount=questionsAsked[currentPersona.id]||0;
   if(bestS>=2){
-    const wordCount=q.split(/\s+/).length;
-    if(wordCount<5&&questionsAsked[currentPersona.id]>2){
-      const probes=["That's a good start. But can you be more specific? What exactly are you trying to understand about "+currentPersona.dept.toLowerCase()+"?","Before I answer that directly, tell me: what's your hypothesis? What do you think the answer might be based on what you've learned so far?","I can answer that, but I want to push your thinking first. How does this connect to what you've already heard from the other executives?","Let me challenge you on that. Why is that question important for your final recommendation? What decision does it help you make?"];
-      const probe=probes[questionsAsked[currentPersona.id]%probes.length];
-      return probe+"\n\nBut here's what I can tell you: "+best;
+    if(isDirect&&qCount<3)return deflections[Math.floor(Math.random()*deflections.length)]+"\n\nI will say this though: "+best.split('.').slice(0,2).join('.')+'. Think about what that means for your recommendation.';
+    if(qCount>2){
+      const probes=["Before I go deeper: how does this connect to what you heard from the other executives?","Good follow-up. What decision does this help you make in your final recommendation?","I can expand on that. But first, what's your working hypothesis?"];
+      return best+"\n\n"+probes[qCount%probes.length];
     }
     return best;
   }
-  const allK=PERSONAS.flatMap(p=>Object.entries(p.knowledge));let xBest=null,xS=0,xP=null;
-  for(const p of PERSONAS){if(p.id===currentPersona.id)continue;for(const[pat,resp]of Object.entries(p.knowledge)){const kws=pat.split('|');let sc=0;for(const kw of kws){if(q.includes(kw.toLowerCase()))sc+=2;for(const w of kw.toLowerCase().split(/\s+/))if(w.length>3&&q.includes(w))sc+=1}if(sc>xS){xS=sc;xBest=resp;xP=p}}}
-  if(xS>=3)return`That's more in ${xP.name}'s area (${xP.role}), but from what I know: ${xBest.substring(0,200)}... I'd recommend talking to ${xP.name} directly for the full picture.`;
-  return`Good question. That's a bit outside my direct area as ${currentPersona.role}. I'd suggest talking to one of my colleagues who can give you better detail. Try rephrasing or ask me something specific about ${currentPersona.dept.toLowerCase()}.`;
+  return deflections[Math.floor(Math.random()*deflections.length)];
 }
 
 function sendMessage(){
-  const inp=document.getElementById('chatInput'),text=inp.value.trim();if(!text)return;
+  const inp=document.getElementById('chatInput'),text=inp.value.trim();if(!text||!currentPersona)return;
   addMsg('user',text);inp.value='';
   if(!questionsAsked[currentPersona.id])questionsAsked[currentPersona.id]=0;
-  questionsAsked[currentPersona.id]++;localStorage.setItem('nb-questions',JSON.stringify(questionsAsked));
-  if(currentUser&&currentUser.role==='student'){
-    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
-    if(st){st.questions=Object.values(questionsAsked).reduce((a,b)=>a+b,0);st.personas=Object.keys(questionsAsked).length;localStorage.setItem('nb-students',JSON.stringify(students))}
-  }
-  showTyping();
-  setTimeout(()=>{hideTyping();const r=findResponse(text);const isSocratic=r.includes('push your thinking')||r.includes('be more specific')||r.includes('challenge you');addMsg('persona',r,currentPersona.name,isSocratic);updateSuggested(text)},800+Math.random()*1200);
+  questionsAsked[currentPersona.id]++;
+  localStorage.setItem('nb-questions',JSON.stringify(questionsAsked));
+  const a=document.getElementById('chatArea');
+  const typing=document.createElement('div');typing.className='msg typing';typing.id='typingInd';typing.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';a.appendChild(typing);a.scrollTop=a.scrollHeight;
+  setTimeout(()=>{const t=document.getElementById('typingInd');if(t)t.remove();const r=findResponse(text);addMsg('persona',r,currentPersona.name)},800+Math.random()*1200);
 }
 
-function askSuggested(t){document.getElementById('chatInput').value=t;sendMessage()}
-function renderSuggested(){document.getElementById('suggestedQ').innerHTML=currentPersona.suggested.map(q=>`<button onclick="askSuggested('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('')}
-function updateSuggested(q){currentPersona.suggested=currentPersona.suggested.filter(s=>s!==q);renderSuggested()}
-function renderOtherPersonas(){document.getElementById('otherPersonas').innerHTML=PERSONAS.filter(p=>p.id!==currentPersona.id).map(p=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer" onclick="showChat(${p.id})"><div style="width:32px;height:32px;border-radius:50%;background:${p.avatarBg};display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:white">${p.initials}</div><div><div style="font-size:0.78rem;font-weight:600">${p.name}</div><div style="font-size:0.65rem;color:var(--dim)">${p.role}</div></div></div>`).join('')}
-function renderProgress(){document.getElementById('progressChecklist').innerHTML=progress.map(p=>`<div class="progress-item" onclick="toggleProgress('${p.id}')"><div class="check ${p.done?'done':''}">${p.done?'&#10003;':''}</div><span style="${p.done?'color:var(--dim);text-decoration:line-through':''}">${p.text}</span></div>`).join('')}
-function toggleProgress(id){const i=progress.find(p=>p.id===id);if(i){i.done=!i.done;localStorage.setItem('nb-progress2',JSON.stringify(progress));renderProgress()}}
-function updateProgress(id){const i=progress.find(p=>p.id===id);if(i&&!i.done){i.done=true;localStorage.setItem('nb-progress2',JSON.stringify(progress));renderProgress()}}
-
-// ─── FRAMEWORKS ───
-function saveFrameworks(){
-  frameworks={swotS:v('swotS'),swotW:v('swotW'),swotO:v('swotO'),swotT:v('swotT'),pesP:v('pesP'),pesE:v('pesE'),pesS:v('pesS'),pesT:v('pesT'),pesEn:v('pesEn'),pesL:v('pesL'),p5sup:v('p5sup'),p5buy:v('p5buy'),p5riv:v('p5riv'),p5sub:v('p5sub'),p5new:v('p5new')};
-  localStorage.setItem('nb-frameworks',JSON.stringify(frameworks));
-  if(frameworks.swotS||frameworks.swotW||frameworks.swotO||frameworks.swotT)updateProgress('p7');
-  if(frameworks.pesP||frameworks.pesE||frameworks.pesS)updateProgress('p8');
-  if(currentUser&&currentUser.role==='student'){
-    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
-    if(st){st.frameworks=(frameworks.swotS?1:0)+(frameworks.pesP?1:0)+(frameworks.p5sup?1:0);localStorage.setItem('nb-students',JSON.stringify(students))}
-  }
-}
-function loadFrameworks(){Object.entries(frameworks).forEach(([k,val])=>{const el=document.getElementById(k);if(el)el.value=val||''})}
-function v(id){return document.getElementById(id)?.value||''}
-
-// ─── RECOMMENDATION ───
-function saveRec(){
-  recommendation={market:v('recMarket'),whyMarket:v('recWhyMarket'),entry:v('recEntry'),whyEntry:v('recWhyEntry'),p4P:v('rec4P'),p4Pr:v('rec4Pr'),p4Pl:v('rec4Pl'),p4Pm:v('rec4Pm'),personaName:v('recPersonaName'),personaDemo:v('recPersonaDemo'),personaBuy:v('recPersonaBuy'),rev1:v('recRev1'),breakeven:v('recBreakeven'),risks:v('recRisks')};
-  localStorage.setItem('nb-rec',JSON.stringify(recommendation));
-}
-function loadRec(){Object.entries({recMarket:'market',recWhyMarket:'whyMarket',recEntry:'entry',recWhyEntry:'whyEntry',rec4P:'p4P',rec4Pr:'p4Pr',rec4Pl:'p4Pl',rec4Pm:'p4Pm',recPersonaName:'personaName',recPersonaDemo:'personaDemo',recPersonaBuy:'personaBuy',recRev1:'rev1',recBreakeven:'breakeven',recRisks:'risks'}).forEach(([elId,key])=>{const el=document.getElementById(elId);if(el)el.value=recommendation[key]||''})}
-
-function submitRec(){
-  const r=recommendation;
-  if(!r.market||!r.entry||!r.whyMarket){document.getElementById('submitConfirm').innerHTML='<div style="color:var(--red);font-size:0.85rem;padding:10px">Please complete at least: Target Market, Why This Market, and Entry Strategy.</div>';return}
-  updateProgress('p9');
-  const studentName=(currentUser&&currentUser.role==='student')?currentUser.name:('Student_'+Date.now().toString(36));
-  const totalQ=Object.values(questionsAsked).reduce((a,b)=>a+b,0);
-  const personasTalked=Object.keys(questionsAsked).length;
-  const fwDone=(frameworks.swotS?1:0)+(frameworks.pesP?1:0)+(frameworks.p5sup?1:0);
-  let existing=students.find(x=>x.name.toLowerCase()===studentName.toLowerCase());
-  if(existing){existing.questions=totalQ;existing.personas=personasTalked;existing.frameworks=fwDone;existing.submitted=true;existing.market=r.market;existing.entry=r.entry;existing.time=new Date().toLocaleString()}
-  else{students.push({name:studentName,questions:totalQ,personas:personasTalked,frameworks:fwDone,submitted:true,market:r.market,entry:r.entry,time:new Date().toLocaleString()})}
-  localStorage.setItem('nb-students',JSON.stringify(students));
-  document.getElementById('submitConfirm').innerHTML=`<div style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:var(--green);padding:14px;border-radius:10px;font-weight:700">Recommendation submitted successfully. Your professor can view your work in the Professor Dashboard.</div>`;
+function renderSuggested(){
+  if(!currentPersona)return;
+  document.getElementById('suggestedQ').innerHTML=currentPersona.suggested.map(q=>`<button onclick="document.getElementById('chatInput').value='${q.replace(/'/g,"\\'")}';sendMessage()">${q}</button>`).join('');
 }
 
-function exportRec(){
-  const r=recommendation;
-  const text=`NOVABREW INTERNATIONAL EXPANSION RECOMMENDATION\n${'='.repeat(50)}\n\nTARGET MARKET: ${r.market||'N/A'}\nJUSTIFICATION: ${r.whyMarket||'N/A'}\n\nENTRY MODE: ${r.entry||'N/A'}\nJUSTIFICATION: ${r.whyEntry||'N/A'}\n\nMARKETING MIX (4Ps):\n- Product: ${r.p4P||'N/A'}\n- Price: ${r.p4Pr||'N/A'}\n- Place: ${r.p4Pl||'N/A'}\n- Promotion: ${r.p4Pm||'N/A'}\n\nTARGET CONSUMER: ${r.personaName||'N/A'}\n${r.personaDemo||''}\n${r.personaBuy||''}\n\nFINANCIALS:\n- Year 1 Revenue: ${r.rev1||'N/A'}\n- Break-Even: ${r.breakeven||'N/A'}\n- Risks: ${r.risks||'N/A'}`;
-  navigator.clipboard.writeText(text);
-  document.getElementById('submitConfirm').innerHTML='<div style="color:var(--accent);font-size:0.85rem;padding:10px">Copied to clipboard.</div>';
-  setTimeout(()=>document.getElementById('submitConfirm').innerHTML='',2000);
-}
-
-// ─── PROFESSOR ───
-function addDemoStudents(){
-  const names=['Emma Wilson','Liam Chen','Ava Rodriguez','Noah Kim','Sophia Patel','Jackson Brown','Mia Davis','Ethan Lee','Isabella Martinez','Aiden Thompson'];
-  const markets=['Brazil','South Korea','United Kingdom'];
-  const entries=['Direct Exporting','Joint Venture','Licensing','Strategic Alliance'];
-  students=names.map(n=>({name:n,questions:Math.floor(Math.random()*20)+3,personas:Math.floor(Math.random()*5)+1,frameworks:Math.floor(Math.random()*3),submitted:Math.random()>0.3,market:markets[Math.floor(Math.random()*3)],entry:entries[Math.floor(Math.random()*4)],time:new Date().toLocaleString()}));
-  localStorage.setItem('nb-students',JSON.stringify(students));
-  renderProfessor();
-}
-function clearStudents(){students=[];localStorage.setItem('nb-students','[]');renderProfessor()}
-
+// PROFESSOR
 function renderProfessor(){
   const total=students.length;const submitted=students.filter(s=>s.submitted).length;
-  const avgQ=total?Math.round(students.reduce((a,s)=>a+s.questions,0)/total):0;
-  const avgP=total?Math.round(students.reduce((a,s)=>a+s.personas,0)/total*10)/10:0;
   document.getElementById('profStats').innerHTML=`
     <div class="prof-stat"><div class="num" style="color:var(--accent)">${total}</div><div class="lbl">Students</div></div>
     <div class="prof-stat"><div class="num" style="color:var(--green)">${submitted}</div><div class="lbl">Submitted</div></div>
-    <div class="prof-stat"><div class="num" style="color:var(--orange)">${total-submitted}</div><div class="lbl">Pending</div></div>
-    <div class="prof-stat"><div class="num" style="color:var(--purple)">${avgQ}</div><div class="lbl">Avg Questions</div></div>
-    <div class="prof-stat"><div class="num" style="color:var(--pink)">${avgP}</div><div class="lbl">Avg Personas</div></div>`;
-
-  // Engagement chart
-  setTimeout(()=>{
-    const ec=document.getElementById('engagementCanvas');
-    const mc=document.getElementById('marketCanvas');
-    if(ec&&typeof Chart!=='undefined'){
-      if(ec._chart)ec._chart.destroy();
-      ec._chart=new Chart(ec,{type:'bar',data:{labels:PERSONAS.map(p=>p.name.split(' ')[0]),datasets:[{label:'Students Engaged',data:PERSONAS.map(p=>students.filter(s=>s.personas>p.id).length),backgroundColor:['rgba(79,140,255,0.6)','rgba(167,139,250,0.6)','rgba(251,146,60,0.6)','rgba(52,211,153,0.6)','rgba(244,114,182,0.6)'],borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a8bad'},grid:{display:false}},y:{ticks:{color:'#7a8bad'},grid:{color:'rgba(255,255,255,0.04)'}}}}});
-    }
-    if(mc&&typeof Chart!=='undefined'){
-      const mCounts={Brazil:0,'South Korea':0,'United Kingdom':0,None:0};
-      students.forEach(s=>{if(s.market&&mCounts[s.market]!==undefined)mCounts[s.market]++;else mCounts.None++});
-      if(mc._chart)mc._chart.destroy();
-      mc._chart=new Chart(mc,{type:'doughnut',data:{labels:Object.keys(mCounts),datasets:[{data:Object.values(mCounts),backgroundColor:['rgba(52,211,153,0.7)','rgba(79,140,255,0.7)','rgba(167,139,250,0.7)','rgba(255,255,255,0.1)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8bad',font:{size:10}}}}}});
-    }
-  },100);
-
-  // Deadline controls
-  const deadlines=JSON.parse(localStorage.getItem('nb-deadlines')||'{}');
-  document.getElementById('deadlineControls').innerHTML=PHASES.map(p=>`<div class="deadline-row"><label>Phase ${p.num}: ${p.label}</label><input type="date" value="${deadlines[p.id]||''}" onchange="saveDeadline('${p.id}',this.value)"></div>`).join('');
-
-  // Rubric scores
-  document.getElementById('rubricList').innerHTML=students.map(s=>{
-    const engScore=Math.min(25,Math.round(s.questions/20*25));
-    const fwScore=Math.round(s.frameworks/3*25);
-    const dataScore=Math.round(Math.min(1,s.personas/5)*25);
-    const recScore=s.submitted?25:0;
-    const total=engScore+fwScore+dataScore+recScore;
-    const cls=total>=70?'high':total>=40?'med':'low';
-    return`<div class="rubric-row"><div><strong>${s.name}</strong><div style="font-size:0.68rem;color:var(--dim)">Engage: ${engScore} | Frameworks: ${fwScore} | Data: ${dataScore} | Rec: ${recScore}</div></div><div class="rubric-score ${cls}">${total}/100</div></div>`;
-  }).join('')||'<div style="color:var(--dim);font-size:0.82rem">No students yet.</div>';
-
-  // Student list
-  document.getElementById('studentList').innerHTML=students.map(s=>`<div class="student-row"><div><strong>${s.name}</strong><div style="font-size:0.72rem;color:var(--dim)">${s.questions} questions | ${s.personas} personas | ${s.frameworks}/3 frameworks${s.market?' | '+s.market:''}</div></div><div class="badges">${s.submitted?`<span class="badge done">Submitted</span>`:`<span class="badge pending">In Progress</span>`}</div></div>`).join('')||'<div style="color:var(--dim);padding:20px;text-align:center">No student data yet.</div>';
+    <div class="prof-stat"><div class="num" style="color:var(--orange)">${total-submitted}</div><div class="lbl">Pending</div></div>`;
+  document.getElementById('studentList').innerHTML=students.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card2);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;font-size:0.82rem"><div><strong>${s.name}</strong><div style="font-size:0.72rem;color:var(--dim)">${s.market?'Market: '+s.market:'No market selected'}${s.time?' | '+s.time:''}</div></div><span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;${s.submitted?'background:rgba(52,211,153,0.15);color:var(--green)':'background:rgba(251,146,60,0.15);color:var(--orange)'}">${s.submitted?'SUBMITTED':'IN PROGRESS'}</span></div>`).join('')||'<div style="color:var(--dim);text-align:center;padding:20px">No students yet.</div>';
+  renderPublishedQAs();
 }
 
-function saveDeadline(phase,date){const d=JSON.parse(localStorage.getItem('nb-deadlines')||'{}');d[phase]=date;localStorage.setItem('nb-deadlines',JSON.stringify(d))}
+function gradeSubmission(){
+  const mod=document.getElementById('gradeModule').value;
+  const text=document.getElementById('gradeInput').value.trim();
+  if(!text){document.getElementById('gradeOutput').innerHTML='<div style="color:var(--red);font-size:0.82rem">Paste a submission first.</div>';return}
+  const wordCount=text.split(/\s+/).length;
+  const rubrics={m1:'Industry definition clarity, customer problem identification, key success factor relevance',m2:'Competitor classification accuracy, positioning map quality, gap analysis depth',m3:'BMC completeness (all 9 components), accuracy, articulation',m4:'SWOT relevance to expansion, factor quality, balance across quadrants',m5:'Criteria selection, market comparison rigor, justification strength',m6:'PESTEL factor relevance, RBV analysis depth, connection to strategy',m7:'Persona specificity, entry strategy justification, marketing mix coherence',m8:'Recommendation clarity, evidence-based justification, strategic coherence'};
+  let grade,cls,feedback;
+  if(wordCount>200){grade='Excellent';cls='excellent';feedback=`Strong submission (${wordCount} words). Demonstrates thorough analysis across ${rubrics[mod]}.`}
+  else if(wordCount>100){grade='Proficient';cls='proficient';feedback=`Solid work (${wordCount} words). Covers the key elements of ${rubrics[mod]}. Could benefit from more depth in some areas.`}
+  else if(wordCount>40){grade='Approaching';cls='approaching';feedback=`Shows understanding (${wordCount} words) but needs more depth. Rubric criteria: ${rubrics[mod]}. Expand analysis with specific examples and data.`}
+  else{grade='Needs Improvement';cls='needs';feedback=`Insufficient depth (${wordCount} words). Expected criteria: ${rubrics[mod]}. Resubmit with more thorough analysis.`}
+  document.getElementById('gradeOutput').innerHTML=`<div class="grade-result ${cls}"><strong>${grade}</strong><br>${feedback}</div>`;
+}
 
-// ─── LOGIN SYSTEM ───
-const TEACHER_PASS='novabrew2026';
-let currentUser=JSON.parse(localStorage.getItem('nb-user')||'null');
+function publishQA(){
+  const pid=parseInt(document.getElementById('pubPersona').value);
+  const q=document.getElementById('pubQuestion').value.trim();
+  if(!q)return;
+  const p=PERSONAS[pid];
+  currentPersona=p;
+  const answer=findResponse(q);
+  publishedQAs.push({persona:p.name,question:q,answer,time:new Date().toLocaleString()});
+  localStorage.setItem('nb-pubqa',JSON.stringify(publishedQAs));
+  document.getElementById('pubQuestion').value='';
+  renderPublishedQAs();
+}
 
+function renderPublishedQAs(){
+  const el=document.getElementById('publishedQAs');if(!el)return;
+  el.innerHTML=publishedQAs.map(qa=>`<div style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px"><div style="font-size:0.68rem;color:var(--accent);font-weight:700;margin-bottom:4px">${qa.persona} — ${qa.time}</div><div style="font-size:0.78rem;margin-bottom:6px"><strong>Q:</strong> ${qa.question}</div><div style="font-size:0.78rem;color:var(--dim)"><strong>A:</strong> ${qa.answer.replace(/\n/g,'<br>')}</div></div>`).join('')||'<div style="color:var(--dim);font-size:0.78rem">No published Q&As yet.</div>';
+}
+
+function addDemoStudents(){
+  students=['Emma Wilson','Liam Chen','Ava Rodriguez','Noah Kim','Sophia Patel','Jackson Brown','Mia Davis','Ethan Lee','Isabella Martinez','Aiden Thompson'].map(n=>({name:n,submitted:Math.random()>0.3,market:['Brazil','South Korea','United Kingdom'][Math.floor(Math.random()*3)],time:new Date().toLocaleString()}));
+  localStorage.setItem('nb-students',JSON.stringify(students));renderProfessor();
+}
+function clearStudents(){students=[];localStorage.setItem('nb-students','[]');renderProfessor()}
+
+// LOGIN
 function selectRole(role,el){
-  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  document.getElementById('loginFields').style.display='block';
-  document.getElementById('loginFields').dataset.role=role;
-  const nameInput=document.getElementById('loginName');
-  const passInput=document.getElementById('loginPass');
-  const btn=document.querySelector('.login-btn');
-  if(role==='teacher'){
-    nameInput.placeholder='Professor name';
-    passInput.style.display='block';
-    btn.textContent='Enter Dashboard';
-  }else{
-    nameInput.placeholder='Enter your full name';
-    passInput.style.display='none';
-    btn.textContent='Enter Simulation';
-  }
+  document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');
+  document.getElementById('loginFields').style.display='block';document.getElementById('loginFields').dataset.role=role;
+  document.getElementById('loginName').placeholder=role==='teacher'?'Professor name':'Enter your full name';
+  document.getElementById('loginPass').style.display=role==='teacher'?'block':'none';
+  document.querySelector('.login-btn').textContent=role==='teacher'?'Enter Dashboard':'Enter Simulation';
   document.getElementById('loginError').textContent='';
 }
 
@@ -943,51 +914,29 @@ function doLogin(){
   if(!role){document.getElementById('loginError').textContent='Select a role first';return}
   if(!name){document.getElementById('loginError').textContent='Enter your name';return}
   if(role==='teacher'&&pass!==TEACHER_PASS){document.getElementById('loginError').textContent='Incorrect passcode';return}
-  currentUser={role,name,loginTime:Date.now()};
-  localStorage.setItem('nb-user',JSON.stringify(currentUser));
-  enterApp();
+  currentUser={role,name};localStorage.setItem('nb-user',JSON.stringify(currentUser));enterApp();
 }
 
 function enterApp(){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('mainApp').style.display='block';
-  const profTab=document.querySelector('.nav-tab[onclick*="professor"]');
-  if(currentUser.role==='student'){
-    profTab.style.display='none';
-    registerStudent(currentUser.name);
-  }else{
-    profTab.style.display='';
-    goTab('professor');
+  document.getElementById('loginScreen').style.display='none';document.getElementById('mainApp').style.display='flex';
+  document.getElementById('userBadge').textContent=currentUser.name;
+  if(currentUser.role==='teacher'){document.getElementById('profNavSection').style.display='';document.getElementById('profNavItem').style.display='';goView('professor')}
+  else{
+    document.getElementById('profNavSection').style.display='none';document.getElementById('profNavItem').style.display='none';
+    let st=students.find(x=>x.name.toLowerCase()===currentUser.name.toLowerCase());
+    if(!st){students.push({name:currentUser.name,submitted:false,market:'',time:''});localStorage.setItem('nb-students',JSON.stringify(students))}
   }
-  renderPhaseBar();
-  document.getElementById('userBadge').textContent=currentUser.name+(currentUser.role==='teacher'?' (Professor)':'');
-}
-
-function registerStudent(name){
-  let s=students.find(x=>x.name.toLowerCase()===name.toLowerCase());
-  if(!s){
-    s={name,questions:0,personas:0,frameworks:0,submitted:false,market:null};
-    students.push(s);
-    localStorage.setItem('nb-students',JSON.stringify(students));
-  }
+  renderHome();loadAll();renderChips();renderPestel();setTimeout(initMap,200);
 }
 
 function doLogout(){
-  localStorage.removeItem('nb-user');
-  currentUser=null;
-  document.getElementById('mainApp').style.display='none';
-  document.getElementById('loginScreen').style.display='flex';
+  localStorage.removeItem('nb-user');currentUser=null;
+  document.getElementById('mainApp').style.display='none';document.getElementById('loginScreen').style.display='flex';
   document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('loginFields').style.display='none';
-  document.getElementById('loginName').value='';
-  document.getElementById('loginPass').value='';
+  document.getElementById('loginFields').style.display='none';document.getElementById('loginName').value='';document.getElementById('loginPass').value='';
 }
 
-// ─── INIT ───
-if(currentUser){enterApp()}
-else{document.getElementById('loginScreen').style.display='flex';document.getElementById('mainApp').style.display='none'}
-renderPersonasGrid();renderPhaseBar();
+if(currentUser)enterApp();
 </script>
-
 </body>
 </html>
