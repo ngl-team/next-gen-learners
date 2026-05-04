@@ -73,6 +73,7 @@ export default async function NstDashboardPage() {
           <div className="row">
             <Link href="/NST/exam" className="btn primary big">Simulate the Final</Link>
             <Link href="/NST/notecard" className="btn primary big">3×5 Notecard</Link>
+            <Link href="/NST/spectroscopy" className="btn primary big">Spectroscopy</Link>
             <Link href="/NST/drill" className="btn primary big">Drill open response</Link>
             <Link href="/NST/flashcards" className="btn primary big">Flashcards</Link>
             <Link href="/NST/equations" className="btn primary big">Equations</Link>
