@@ -23,12 +23,15 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  const key = req.nextUrl.searchParams.get('key');
+  const validKey = process.env.TRACKING_KEY || 'jarvis-track-2026';
+  const authed = (await isAuthenticated()) || key === validKey;
+  if (!authed) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: CORS_HEADERS });
   const summary = req.nextUrl.searchParams.get('summary');
   if (summary === '1') {
-    return NextResponse.json(await getClientTrackingSummary());
+    return NextResponse.json(await getClientTrackingSummary(), { headers: CORS_HEADERS });
   }
   const product = req.nextUrl.searchParams.get('product') || undefined;
   const limit = parseInt(req.nextUrl.searchParams.get('limit') || '50');
-  return NextResponse.json(await getClientVisits(product, limit));
+  return NextResponse.json(await getClientVisits(product, limit), { headers: CORS_HEADERS });
 }
