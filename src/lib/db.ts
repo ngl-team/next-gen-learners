@@ -168,6 +168,18 @@ export async function initDb() {
   `);
 
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS client_tracking (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product TEXT NOT NULL,
+      page TEXT NOT NULL,
+      user_agent TEXT DEFAULT '',
+      ip TEXT DEFAULT '',
+      referrer TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS proposals (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       slug TEXT NOT NULL UNIQUE,
@@ -640,6 +652,28 @@ export async function deleteBrainDump(id: number) {
 export async function getQuickLogs(limit = 30) {
   await initDb();
   return (await db.execute({ sql: "SELECT ql.*, c.name as contact_name FROM quick_logs ql LEFT JOIN contacts c ON ql.contact_id = c.id ORDER BY ql.created_at DESC LIMIT ?", args: [limit] })).rows;
+}
+
+// ── Client Tracking ──────────────────────────────────────────────
+export async function logClientVisit(data: { product: string; page: string; user_agent: string; ip: string; referrer: string }) {
+  await initDb();
+  await db.execute({ sql: 'INSERT INTO client_tracking (product, page, user_agent, ip, referrer) VALUES (?,?,?,?,?)', args: [data.product, data.page, data.user_agent, data.ip, data.referrer] });
+}
+
+export async function getClientVisits(product?: string, limit = 50) {
+  await initDb();
+  if (product) {
+    return (await db.execute({ sql: 'SELECT * FROM client_tracking WHERE product = ? ORDER BY created_at DESC LIMIT ?', args: [product, limit] })).rows;
+  }
+  return (await db.execute({ sql: 'SELECT * FROM client_tracking ORDER BY created_at DESC LIMIT ?', args: [limit] })).rows;
+}
+
+export async function getClientTrackingSummary() {
+  await initDb();
+  const products = (await db.execute(
+    "SELECT product, COUNT(*) as total_visits, COUNT(CASE WHEN date(created_at) = date('now') THEN 1 END) as today_visits, MAX(created_at) as last_visit FROM client_tracking GROUP BY product ORDER BY last_visit DESC"
+  )).rows;
+  return products;
 }
 
 export async function insertQuickLog(data: { contact_id: number | null; channel: string; note: string }) {
