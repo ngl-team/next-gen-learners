@@ -9,24 +9,22 @@
 
 ## 0. Cover Memo
 
-Frank,
-
-You said in early May that the USB board has been asked to write the bank's AI policy, and that the conversation around the table is still circling the same three things: regulation, client information leaving the bank, and cybersecurity. This brief is built specifically around those three concerns and the asset profile of USB. It is not a sales document and there is no service offer in it. It is a thank-you for the partnership conversation you spent on me last week.
+This brief was prepared in response to a request from a Union Savings Bank director for a research perspective on AI adoption at a $3B community bank. It is built around the three concerns currently driving the board's AI conversation: regulation, client information leakage, and cybersecurity. It is not a sales document. There is no service offer in it.
 
 **The five things the paper says, in order of board relevance:**
 
 1. The megabank AI playbook does not transfer to a $3B community bank. The right reference set is Bankwell ($3.2B, CT), Webster, Eastern, Citizens, Live Oak, and Customers. Their public moves and public mistakes are mapped in Section 5.
 2. Regulators have not issued an AI rule for community banks. They have made clear that AI is governed by the existing model risk and third-party risk frameworks (SR 11-7, OCC 2023-17, the FFIEC AIO booklet, CFPB Circulars 2022-03 and 2023-03, and the FinCEN 2018 Joint Statement). All cited with verifiable URLs in Section 4.
-3. The board's instinct that "we should just ask AI" for the policy is closer to right than wrong, and Section 8 contains a working policy template that can be the starting point at the next board meeting.
+3. The instinct that the board should "just ask AI" for the policy is closer to right than wrong, and Section 8 contains a working policy template that can be the starting point at the next board meeting.
 4. The single highest-risk AI surface for USB right now is not a model the bank deploys. It is generative-AI-enabled fraud aimed at the bank, and email compromise is the leading vector. FinCEN issued the first formal Deepfake Alert (FIN-2024-Alert004) in November 2024.
 5. A practical, sequenced 12-month roadmap exists for a community bank starting from zero. It is in Section 6. Month one is policy and inventory, not technology purchase.
 
 **What matters most to read carefully:**
 
-- For Frank: Sections 2, 4, and 8. The community-bank thesis, the regulatory frame, and the policy template you can hand the board.
-- For Chelen: Sections 3, 5, 6, and 7. The use-case map, peer studies (with the contact section so peer CEOs are reachable), the 12-month roadmap, and the build-versus-buy reality.
+- For board policy work: Sections 2, 4, and 8. The community-bank thesis, the regulatory frame, and the policy template.
+- For executive operating decisions: Sections 3, 5, 6, and 7. The use-case map, peer studies (with a contact section so peer CEOs are reachable), the 12-month roadmap, and the build-versus-buy reality.
 
-**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and a few small private-sector clients. He has been mentored by Frank Rowella for five years. He is writing this paper as a gift, not as a vendor pitch. Reachable at brayan@nextgenerationlearners.com.
+**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and a few small private-sector clients. He is writing this paper as a research gift, not as a vendor pitch. Reachable at brayan@nextgenerationlearners.com.
 
 ---
 
@@ -104,7 +102,7 @@ This is the highest-leverage AI use case for USB. Risk reduction and efficiency 
 
 ### 3.3 Customer-Facing Automation Under PII Constraints
 
-This is the use case where Frank's "client information going out" concern lives directly. The architectural question is sovereign-data, not model-quality.
+This is the use case where the board's stated "client information going out" concern lives directly. The architectural question is sovereign-data, not model-quality.
 
 - **What it is.** AI-assisted retail and small-business interactions through the bank's website, mobile app, and contact center. Includes virtual assistants, agent-assist tools, intelligent IVR, and proactive outreach.
 - **Regulatory exposure**: Medium. GLBA Safeguards Rule applies to any vendor handling NPI. The 2021 FTC amendments (effective 2023) require encryption, MFA, and board reporting on the information security program.[^ftc2021] CFPB UDAAP authority covers any deceptive AI behavior.
@@ -133,7 +131,7 @@ The board should approach this use case with the most caution. Recommendation: d
 
 ### 3.5 Internal Research and Document Drafting
 
-This is where Frank's "just ask AI" instinct becomes real. It is also the lowest-risk place to start.
+This is where the board-level "just ask AI" instinct becomes real. It is also the lowest-risk place to start.
 
 - **What it is.** Microsoft Copilot, ChatGPT Enterprise, or Claude for Enterprise deployed to the bank's full headcount for internal productivity: drafting board materials, summarizing examiner letters, drafting policies, summarizing internal meetings, building Excel models.
 - **Regulatory exposure**: Low when contracted correctly. Vendor must contractually agree not to train on bank data and must offer tenant isolation. This is standard with Microsoft Copilot for M365, OpenAI Enterprise, and Anthropic Enterprise contracts.
@@ -222,7 +220,7 @@ The OCC's 2025 statements signal that an AI/MRM RFI is under consideration.[^occ
 
 ### 4.3 Reputation Risk
 
-This is what Frank named most directly in our April conversation: "client information going out... it could ruin your reputation which is a risk to the bank."
+This is the concern most directly named at the board level: client information going out, with reputation damage as the underlying risk to the bank.
 
 Reputation risk in an AI context resolves to four concrete failure modes:
 
@@ -638,4 +636,4 @@ The following template is a working starting draft. It is structured to align wi
 
 ---
 
-*End of paper. Prepared by Brayan Tenesaca, May 3, 2026, at Frank Rowella's request, as a gift to the Union Savings Bank board.*
+*End of paper. Prepared by Brayan Tenesaca, May 3, 2026, as a research gift to the Union Savings Bank board.*
