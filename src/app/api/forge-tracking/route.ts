@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { logClientVisit, getClientVisits, getClientTrackingSummary } from '@/lib/db';
+import { logClientVisit, getClientVisits, getClientTrackingSummary, getClientTrackingHistory } from '@/lib/db';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -27,11 +27,21 @@ export async function GET(req: NextRequest) {
   const validKey = process.env.TRACKING_KEY || 'jarvis-track-2026';
   const authed = (await isAuthenticated()) || key === validKey;
   if (!authed) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: CORS_HEADERS });
+
+  const from = req.nextUrl.searchParams.get('from') || undefined;
+  const to = req.nextUrl.searchParams.get('to') || undefined;
+  const product = req.nextUrl.searchParams.get('product') || undefined;
+
   const summary = req.nextUrl.searchParams.get('summary');
   if (summary === '1') {
-    return NextResponse.json(await getClientTrackingSummary(), { headers: CORS_HEADERS });
+    return NextResponse.json(await getClientTrackingSummary(from, to), { headers: CORS_HEADERS });
   }
-  const product = req.nextUrl.searchParams.get('product') || undefined;
+
+  const history = req.nextUrl.searchParams.get('history');
+  if (history === '1') {
+    return NextResponse.json(await getClientTrackingHistory(product, from, to), { headers: CORS_HEADERS });
+  }
+
   const limit = parseInt(req.nextUrl.searchParams.get('limit') || '50');
-  return NextResponse.json(await getClientVisits(product, limit), { headers: CORS_HEADERS });
+  return NextResponse.json(await getClientVisits(product, limit, from, to), { headers: CORS_HEADERS });
 }

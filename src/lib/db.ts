@@ -660,20 +660,44 @@ export async function logClientVisit(data: { product: string; page: string; user
   await db.execute({ sql: 'INSERT INTO client_tracking (product, page, user_agent, ip, referrer) VALUES (?,?,?,?,?)', args: [data.product, data.page, data.user_agent, data.ip, data.referrer] });
 }
 
-export async function getClientVisits(product?: string, limit = 50) {
+export async function getClientVisits(product?: string, limit = 50, from?: string, to?: string) {
   await initDb();
-  if (product) {
-    return (await db.execute({ sql: 'SELECT * FROM client_tracking WHERE product = ? ORDER BY created_at DESC LIMIT ?', args: [product, limit] })).rows;
-  }
-  return (await db.execute({ sql: 'SELECT * FROM client_tracking ORDER BY created_at DESC LIMIT ?', args: [limit] })).rows;
+  const conditions: string[] = [];
+  const args: (string | number)[] = [];
+  if (product) { conditions.push('product = ?'); args.push(product); }
+  if (from) { conditions.push('date(created_at) >= ?'); args.push(from); }
+  if (to) { conditions.push('date(created_at) <= ?'); args.push(to); }
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  args.push(limit);
+  return (await db.execute({ sql: `SELECT * FROM client_tracking ${where} ORDER BY created_at DESC LIMIT ?`, args })).rows;
 }
 
-export async function getClientTrackingSummary() {
+export async function getClientTrackingSummary(from?: string, to?: string) {
   await initDb();
-  const products = (await db.execute(
-    "SELECT product, COUNT(*) as total_visits, COUNT(CASE WHEN date(created_at) = date('now') THEN 1 END) as today_visits, MAX(created_at) as last_visit FROM client_tracking GROUP BY product ORDER BY last_visit DESC"
-  )).rows;
+  const conditions: string[] = [];
+  const args: string[] = [];
+  if (from) { conditions.push('date(created_at) >= ?'); args.push(from); }
+  if (to) { conditions.push('date(created_at) <= ?'); args.push(to); }
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  const products = (await db.execute({
+    sql: `SELECT product, COUNT(*) as total_visits, COUNT(CASE WHEN date(created_at) = date('now') THEN 1 END) as today_visits, MAX(created_at) as last_visit, MIN(created_at) as first_visit FROM client_tracking ${where} GROUP BY product ORDER BY last_visit DESC`,
+    args
+  })).rows;
   return products;
+}
+
+export async function getClientTrackingHistory(product?: string, from?: string, to?: string) {
+  await initDb();
+  const conditions: string[] = [];
+  const args: string[] = [];
+  if (product) { conditions.push('product = ?'); args.push(product); }
+  if (from) { conditions.push('date(created_at) >= ?'); args.push(from); }
+  if (to) { conditions.push('date(created_at) <= ?'); args.push(to); }
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  return (await db.execute({
+    sql: `SELECT product, date(created_at) as date, COUNT(*) as visits FROM client_tracking ${where} GROUP BY product, date(created_at) ORDER BY date DESC`,
+    args
+  })).rows;
 }
 
 export async function insertQuickLog(data: { contact_id: number | null; channel: string; note: string }) {
