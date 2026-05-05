@@ -3,18 +3,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { questions, type Question } from './data/questions';
+import { extraQuestions } from './data/extraQuestions';
 import { codeSections, codeNotes } from './data/rcode';
 import { topics } from './data/topics';
 import { traps } from './data/traps';
+import { guideSections } from './data/topicGuide';
 
-type Tab = 'quiz' | 'traps' | 'guide' | 'rcode';
+const ALL_QUESTIONS: Question[] = [...questions, ...extraQuestions];
+
+type Tab = 'topics' | 'quiz' | 'traps' | 'guide' | 'rcode';
 const USERS = ['Brayan', 'Eli', 'Manu'] as const;
 type User = (typeof USERS)[number];
 
 const TABS: { id: Tab; label: string; sub: string }[] = [
-  { id: 'quiz', label: 'Practice Quiz', sub: '50 Q from your midterm + review' },
+  { id: 'topics', label: 'By Topic', sub: 'Walk the official topic guide' },
+  { id: 'quiz', label: 'Practice Quiz', sub: 'All questions, mixed' },
   { id: 'traps', label: 'Mistake Drill', sub: 'The 7 traps to memorize' },
-  { id: 'guide', label: 'Study Guide', sub: 'Topic by topic' },
+  { id: 'guide', label: 'Study Guide', sub: 'Concept reference' },
   { id: 'rcode', label: 'R Code Reference', sub: 'Every line, explained' },
 ];
 
@@ -86,6 +91,7 @@ export default function AqmPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {tab === 'topics' && <TopicGuideSection user={user} />}
         {tab === 'quiz' && <QuizSection user={user} />}
         {tab === 'traps' && <TrapsSection />}
         {tab === 'guide' && <GuideSection />}
@@ -152,18 +158,9 @@ function UserBadge({ user, onSwitch }: { user: User; onSwitch: () => void }) {
 
 /* QUIZ ====================================================== */
 
-function QuizSection({ user }: { user: User }) {
-  const allTopics = useMemo(() => {
-    const set = new Set<string>();
-    questions.forEach(q => set.add(q.topic));
-    return ['All topics', 'Just the ones you got wrong', ...Array.from(set)];
-  }, []);
-
-  const [filter, setFilter] = useState('All topics');
-  const [shuffleSeed, setShuffleSeed] = useState(0);
+function useUserProgress(user: User) {
   const [picked, setPicked] = useState<Record<number, number>>({});
 
-  // Load this user's saved progress on mount and whenever user changes
   useEffect(() => {
     try {
       const raw = localStorage.getItem(progressKey(user));
@@ -178,12 +175,26 @@ function QuizSection({ user }: { user: User }) {
     localStorage.setItem(progressKey(user), JSON.stringify(next));
   };
 
+  return { picked, savePicked };
+}
+
+function QuizSection({ user }: { user: User }) {
+  const allTopics = useMemo(() => {
+    const set = new Set<string>();
+    ALL_QUESTIONS.forEach(q => set.add(q.topic));
+    return ['All topics', 'Just the ones you got wrong', ...Array.from(set)];
+  }, []);
+
+  const [filter, setFilter] = useState('All topics');
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const { picked, savePicked } = useUserProgress(user);
+
   const filtered = useMemo(() => {
-    let list = questions;
+    let list = ALL_QUESTIONS;
     if (filter === 'Just the ones you got wrong') {
-      list = questions.filter(q => q.youGotWrong);
+      list = ALL_QUESTIONS.filter(q => q.youGotWrong);
     } else if (filter !== 'All topics') {
-      list = questions.filter(q => q.topic === filter);
+      list = ALL_QUESTIONS.filter(q => q.topic === filter);
     }
     if (shuffleSeed > 0) {
       list = [...list].sort(() => Math.random() - 0.5);
@@ -193,7 +204,7 @@ function QuizSection({ user }: { user: User }) {
 
   const answered = Object.keys(picked).length;
   const correct = Object.entries(picked).filter(([id, idx]) => {
-    const q = questions.find(x => x.id === Number(id));
+    const q = ALL_QUESTIONS.find(x => x.id === Number(id));
     return q && q.correctIndex === idx;
   }).length;
 
@@ -230,7 +241,7 @@ function QuizSection({ user }: { user: User }) {
         </div>
         <div className="text-sm text-white/70">
           <span className="font-bold text-emerald-300">{correct}</span> / {answered} correct ·{' '}
-          <span className="text-white/50">{questions.length} total in bank</span>
+          <span className="text-white/50">{ALL_QUESTIONS.length} total in bank</span>
         </div>
       </div>
 
@@ -245,6 +256,135 @@ function QuizSection({ user }: { user: User }) {
           />
         ))}
       </div>
+    </div>
+  );
+}
+
+/* TOPIC GUIDE =============================================== */
+
+function TopicGuideSection({ user }: { user: User }) {
+  const { picked, savePicked } = useUserProgress(user);
+  const [openId, setOpenId] = useState<string | null>(guideSections[0]?.id ?? null);
+
+  const onPick = (qid: number, idx: number) => {
+    savePicked({ ...picked, [qid]: idx });
+  };
+
+  const stats = useMemo(() => {
+    const map: Record<string, { answered: number; correct: number; total: number }> = {};
+    for (const sec of guideSections) {
+      let answered = 0;
+      let correct = 0;
+      for (const qid of sec.questionIds) {
+        const q = ALL_QUESTIONS.find(x => x.id === qid);
+        if (!q) continue;
+        const chosen = picked[qid];
+        if (chosen !== undefined) {
+          answered++;
+          if (chosen === q.correctIndex) correct++;
+        }
+      }
+      map[sec.id] = { answered, correct, total: sec.questionIds.length };
+    }
+    return map;
+  }, [picked]);
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-5 sm:p-6">
+        <h2 className="text-xl font-bold text-white mb-2">Walk the official topic guide</h2>
+        <p className="text-white/70 text-sm">
+          Built from the Final Exam Topic Guide PDF. Each section lists what the professor said you need to know,
+          followed by practice questions targeting those exact bullets. Your answers save automatically.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {guideSections.map(sec => {
+          const s = stats[sec.id];
+          const pct = s.total === 0 ? 0 : Math.round((s.correct / Math.max(s.answered, 1)) * 100);
+          const isOpen = openId === sec.id;
+          return (
+            <button
+              key={sec.id}
+              onClick={() => { setOpenId(sec.id); document.getElementById(`sec-${sec.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+              className={`text-left rounded-lg border px-3 py-2.5 transition-colors ${
+                isOpen ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <div className="text-xs sm:text-sm font-semibold text-white">{sec.title}</div>
+              <div className="text-[11px] text-white/50 mt-0.5">
+                {s.answered}/{s.total} answered
+                {s.answered > 0 && <span className="ml-2 text-emerald-300/80">{pct}% correct</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {guideSections.map(sec => {
+        const s = stats[sec.id];
+        const sectionQuestions = sec.questionIds
+          .map(id => ALL_QUESTIONS.find(q => q.id === id))
+          .filter((q): q is Question => Boolean(q));
+
+        return (
+          <div
+            key={sec.id}
+            id={`sec-${sec.id}`}
+            className="bg-white/5 border border-white/10 rounded-xl overflow-hidden scroll-mt-4"
+          >
+            <button
+              onClick={() => setOpenId(openId === sec.id ? null : sec.id)}
+              className="w-full text-left p-5 sm:p-6 flex items-start justify-between gap-4 hover:bg-white/[0.03]"
+            >
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-white">{sec.title}</h3>
+                <div className="text-sm text-white/50 mt-1">
+                  {s.answered}/{s.total} answered ·{' '}
+                  <span className="text-emerald-300/80">{s.correct} correct</span>
+                </div>
+              </div>
+              <span className={`text-white/40 text-xl transition-transform ${openId === sec.id ? 'rotate-180' : ''}`}>▾</span>
+            </button>
+
+            {openId === sec.id && (
+              <div className="px-5 sm:px-6 pb-6 space-y-5">
+                <div className="bg-black/30 border border-white/10 rounded-lg p-4">
+                  <div className="text-xs uppercase tracking-wider text-white/50 mb-2">From the official topic guide</div>
+                  <ul className="list-disc list-outside ml-5 space-y-1 text-sm text-white/85">
+                    {sec.bullets.map(b => <li key={b}>{b}</li>)}
+                  </ul>
+                </div>
+
+                {sec.studyTip && (
+                  <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-4">
+                    <div className="text-xs uppercase tracking-wider text-emerald-300/70 mb-1">Quick framing</div>
+                    <p className="text-sm text-white/90 leading-relaxed">{sec.studyTip}</p>
+                  </div>
+                )}
+
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-white/50 mb-3">
+                    Practice questions ({sectionQuestions.length})
+                  </div>
+                  <div className="space-y-4">
+                    {sectionQuestions.map((q, i) => (
+                      <QuizCard
+                        key={q.id}
+                        q={q}
+                        index={i}
+                        chosenIndex={picked[q.id]}
+                        onPick={(idx) => onPick(q.id, idx)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
