@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { questions, type Question } from './data/questions';
 import { codeSections, codeNotes } from './data/rcode';
@@ -8,30 +8,61 @@ import { topics } from './data/topics';
 import { traps } from './data/traps';
 
 type Tab = 'quiz' | 'traps' | 'guide' | 'rcode';
+const USERS = ['Brayan', 'Eli', 'Manu'] as const;
+type User = (typeof USERS)[number];
 
 const TABS: { id: Tab; label: string; sub: string }[] = [
   { id: 'quiz', label: 'Practice Quiz', sub: '50 Q from your midterm + review' },
-  { id: 'traps', label: 'Mistake Drill', sub: 'The 7 things you got wrong' },
+  { id: 'traps', label: 'Mistake Drill', sub: 'The 7 traps to memorize' },
   { id: 'guide', label: 'Study Guide', sub: 'Topic by topic' },
   { id: 'rcode', label: 'R Code Reference', sub: 'Every line, explained' },
 ];
 
+const USER_KEY = 'aqm:user';
+const progressKey = (u: User) => `aqm:progress:${u}`;
+
 export default function AqmPage() {
   const [tab, setTab] = useState<Tab>('quiz');
+  const [user, setUser] = useState<User | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(USER_KEY) : null;
+    if (saved && (USERS as readonly string[]).includes(saved)) setUser(saved as User);
+    setHydrated(true);
+  }, []);
+
+  const pickUser = (u: User) => {
+    setUser(u);
+    localStorage.setItem(USER_KEY, u);
+  };
+
+  const switchUser = () => {
+    setUser(null);
+    localStorage.removeItem(USER_KEY);
+  };
+
+  if (!hydrated) {
+    return <main className="min-h-screen bg-[#0F0F1A]" />;
+  }
+
+  if (!user) {
+    return <SignInScreen onPick={pickUser} />;
+  }
 
   return (
     <main className="min-h-screen bg-[#0F0F1A] text-white">
       <header className="border-b border-white/10 bg-gradient-to-br from-[#1E1B4B] via-[#312E81] to-[#0F0F1A]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <Link href="/" className="text-xs text-white/50 hover:text-white/80 uppercase tracking-[0.2em]">
               ← Next Generation Learners
             </Link>
-            <span className="text-xs text-white/40 uppercase tracking-[0.2em]">Personal study tool</span>
+            <UserBadge user={user} onSwitch={switchUser} />
           </div>
           <h1 className="text-3xl sm:text-5xl font-bold">AQM 2000 — Final Prep</h1>
           <p className="text-white/60 mt-3 max-w-2xl">
-            Built from your 13 R scripts, midterm screenshots, course notes, and the final-exam review PDF.
+            Hi <span className="text-white font-semibold">{user}</span>. Your progress saves automatically on this device.
             Drill the practice questions first, then attack the mistake list, then skim the guide and the R reference.
           </p>
         </div>
@@ -55,7 +86,7 @@ export default function AqmPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {tab === 'quiz' && <QuizSection />}
+        {tab === 'quiz' && <QuizSection user={user} />}
         {tab === 'traps' && <TrapsSection />}
         {tab === 'guide' && <GuideSection />}
         {tab === 'rcode' && <RCodeSection />}
@@ -70,9 +101,58 @@ export default function AqmPage() {
   );
 }
 
+/* SIGN IN =================================================== */
+
+function SignInScreen({ onPick }: { onPick: (u: User) => void }) {
+  return (
+    <main className="min-h-screen bg-[#0F0F1A] text-white flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <p className="text-xs text-white/40 uppercase tracking-[0.3em] mb-3">AQM 2000 Final Prep</p>
+          <h1 className="text-3xl sm:text-4xl font-bold">Who&apos;s studying?</h1>
+          <p className="text-white/60 mt-3 text-sm">Pick your name. Your quiz progress saves on this device.</p>
+        </div>
+        <div className="space-y-3">
+          {USERS.map(u => (
+            <button
+              key={u}
+              onClick={() => onPick(u)}
+              className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl px-6 py-5 text-left transition-colors group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-semibold text-white">{u}</span>
+                <span className="text-white/30 group-hover:text-white/70 transition-colors">→</span>
+              </div>
+            </button>
+          ))}
+        </div>
+        <p className="text-white/30 text-xs text-center mt-6">
+          Three users. Pick anyone — progress is local to this device, no password needed.
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function UserBadge({ user, onSwitch }: { user: User; onSwitch: () => void }) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      <span className="px-2 py-1 rounded-md bg-emerald-500/15 text-emerald-300 font-semibold">
+        Signed in as {user}
+      </span>
+      <button
+        onClick={onSwitch}
+        className="text-white/50 hover:text-white px-2 py-1 rounded-md hover:bg-white/10"
+      >
+        Switch
+      </button>
+    </div>
+  );
+}
+
 /* QUIZ ====================================================== */
 
-function QuizSection() {
+function QuizSection({ user }: { user: User }) {
   const allTopics = useMemo(() => {
     const set = new Set<string>();
     questions.forEach(q => set.add(q.topic));
@@ -82,6 +162,21 @@ function QuizSection() {
   const [filter, setFilter] = useState('All topics');
   const [shuffleSeed, setShuffleSeed] = useState(0);
   const [picked, setPicked] = useState<Record<number, number>>({});
+
+  // Load this user's saved progress on mount and whenever user changes
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(progressKey(user));
+      setPicked(raw ? JSON.parse(raw) : {});
+    } catch {
+      setPicked({});
+    }
+  }, [user]);
+
+  const savePicked = (next: Record<number, number>) => {
+    setPicked(next);
+    localStorage.setItem(progressKey(user), JSON.stringify(next));
+  };
 
   const filtered = useMemo(() => {
     let list = questions;
@@ -102,6 +197,12 @@ function QuizSection() {
     return q && q.correctIndex === idx;
   }).length;
 
+  const resetProgress = () => {
+    if (confirm(`Reset ${user}'s saved progress on every question? This cannot be undone.`)) {
+      savePicked({});
+    }
+  };
+
   return (
     <div>
       <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6 mb-6 flex flex-wrap gap-3 items-center justify-between">
@@ -115,15 +216,21 @@ function QuizSection() {
             {allTopics.map(t => <option key={t}>{t}</option>)}
           </select>
           <button
-            onClick={() => { setShuffleSeed(s => s + 1); setPicked({}); }}
+            onClick={() => setShuffleSeed(s => s + 1)}
             className="text-sm bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-md"
           >
-            Shuffle &amp; reset
+            Shuffle order
+          </button>
+          <button
+            onClick={resetProgress}
+            className="text-sm bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 px-3 py-2 rounded-md"
+          >
+            Reset my progress
           </button>
         </div>
         <div className="text-sm text-white/70">
-          <span className="font-bold text-white">{correct}</span> / {answered} correct ·{' '}
-          <span className="text-white/50">{filtered.length} total</span>
+          <span className="font-bold text-emerald-300">{correct}</span> / {answered} correct ·{' '}
+          <span className="text-white/50">{questions.length} total in bank</span>
         </div>
       </div>
 
@@ -134,7 +241,7 @@ function QuizSection() {
             q={q}
             index={i}
             chosenIndex={picked[q.id]}
-            onPick={(idx) => setPicked(prev => ({ ...prev, [q.id]: idx }))}
+            onPick={(idx) => savePicked({ ...picked, [q.id]: idx })}
           />
         ))}
       </div>
