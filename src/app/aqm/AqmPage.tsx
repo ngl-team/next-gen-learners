@@ -692,11 +692,12 @@ const playbooks: { topic: string; trigger: string; method: string[]; watchFor: s
     topic: 'Naive Bayes',
     trigger: '"Given X, probability of class Y", text classification',
     method: [
-      'P(class | features) ∝ P(class) × Π P(feature | class).',
-      'Pick the class with the highest product.',
+      'For each class, compute: P(class) × P(feature1 | class) × P(feature2 | class) × ... (multiply across all features).',
+      'Pick the class with the highest result.',
+      'Symbols: ∝ = "proportional to" (the missing constant is the same for every class, so it doesn\'t change which class wins). Π = "product of" (multiply across all features).',
       '"Naive" = assumes features are independent given the class.',
     ],
-    watchFor: 'A zero-frequency feature wipes the whole product to 0. Use Laplace smoothing.',
+    watchFor: 'A zero-frequency feature wipes the whole product to 0. Use Laplace smoothing (add 1 to every count).',
   },
   {
     topic: 'Normalization',
