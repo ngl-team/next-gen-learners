@@ -591,6 +591,217 @@ const cheatConcepts: { name: string; rule: string; why: string }[] = [
   },
 ];
 
+const playbooks: { topic: string; trigger: string; method: string[]; watchFor: string }[] = [
+  {
+    topic: 'Technique Matching',
+    trigger: '"predict / classify / group / find patterns" + an outcome variable',
+    method: [
+      'Identify the outcome.',
+      'Numeric outcome → Regression.',
+      'Categorical outcome (yes/no, class A/B) → Classification.',
+      '"Items together / baskets / co-occur" → Association Rules.',
+      '"Group similar people/items by profile" → Clustering.',
+    ],
+    watchFor: 'Clustering vs Association Rules: similar PEOPLE = clustering, items in same BASKET = association rules.',
+  },
+  {
+    topic: 'Association Rules',
+    trigger: '"lift / support / confidence" or "{A} → {B}"',
+    method: [
+      'Support(X) = count(X) / total transactions.',
+      'Confidence(A→B) = Support(A∩B) / Support(A).',
+      'Lift(A→B) = Confidence(A→B) / Support(B). Lift > 1 = positive association.',
+    ],
+    watchFor: 'Confidence divides by LHS support, not RHS. Longer rules → support DOWN, confidence often UP.',
+  },
+  {
+    topic: 'Linear Regression — Dummies',
+    trigger: 'Coefficient on a factor / category variable',
+    method: [
+      'Find the BASELINE level (the one not in the model).',
+      'Coefficient = average difference vs baseline, all else equal.',
+      'Phrase: "On average, [level] is [coef] higher than [BASELINE], holding all else constant."',
+    ],
+    watchFor: 'You lose points if you forget "as compared to [BASELINE]" or drop "all else equal".',
+  },
+  {
+    topic: 'Linear Regression',
+    trigger: 'lm(...), slope coefficient, prediction',
+    method: [
+      'Slope: "for each +1 in X, Y changes by [coef], holding all else constant."',
+      'Predict: Y = b0 + b1*X1 + b2*X2 + ... .',
+      'R² = % of variance in Y explained by the model.',
+    ],
+    watchFor: 'Always include "all else equal". R² ≠ correlation r.',
+  },
+  {
+    topic: 'Logistic Regression',
+    trigger: 'glm(... family=binomial), log-odds, odds ratio',
+    method: [
+      'Coefficient is in LOG-ODDS. Exponentiate: exp(b) = multiplier on ODDS.',
+      'Phrase: "For each +1 in X, the odds of [outcome] are multiplied by exp(b), all else equal."',
+      'Probability: p = 1 / (1 + exp(-(b0 + b1*X1 + ...))).',
+    ],
+    watchFor: '✗ additive on odds · ✗ % on probability · ✗ multiplicative on log-odds. ✓ multiplicative on ODDS.',
+  },
+  {
+    topic: 'Classification Evaluation',
+    trigger: 'Confusion matrix, sensitivity, specificity, precision',
+    method: [
+      'Accuracy = (TP+TN) / total.',
+      'Sensitivity = TP / (TP+FN). Of actual positives, % caught.',
+      'Specificity = TN / (TN+FP). Of actual negatives, % correctly rejected.',
+      'Precision = TP / (TP+FP). Of predicted positives, % truly positive.',
+    ],
+    watchFor: 'Sensitivity divides by ROW (actual P); Precision divides by COLUMN (predicted P). Different denominators.',
+  },
+  {
+    topic: 'Classification Trees',
+    trigger: 'rpart(), tree splits, leaves',
+    method: [
+      'Tree splits on the variable that best separates classes at each node.',
+      'Read top-down: follow each condition true/false to a leaf.',
+      'Leaf gives the predicted class.',
+      'Prune (cp, maxdepth) to fight overfitting.',
+    ],
+    watchFor: 'A "perfect" training tree usually has terrible test error — overfitting.',
+  },
+  {
+    topic: 'Clustering',
+    trigger: 'k-means, "groups of similar X", no labeled outcome',
+    method: [
+      'Normalize features first (distance-based).',
+      'Choose k. Assign points to nearest centroid; recompute; repeat until stable.',
+      'Interpret each cluster by the mean of its members.',
+    ],
+    watchFor: 'Skip normalization → big-scale variables dominate distance and break clusters.',
+  },
+  {
+    topic: 'kNN',
+    trigger: 'k-nearest neighbors, distance-based prediction',
+    method: [
+      'Normalize features.',
+      'For a new point, find the k nearest training points.',
+      'Classification: majority vote. Regression: average.',
+      'Small k = high variance; large k = smoother but biased.',
+    ],
+    watchFor: 'Forgetting to normalize is the #1 kNN mistake (same as clustering).',
+  },
+  {
+    topic: 'Naive Bayes',
+    trigger: '"Given X, probability of class Y", text classification',
+    method: [
+      'P(class | features) ∝ P(class) × Π P(feature | class).',
+      'Pick the class with the highest product.',
+      '"Naive" = assumes features are independent given the class.',
+    ],
+    watchFor: 'A zero-frequency feature wipes the whole product to 0. Use Laplace smoothing.',
+  },
+  {
+    topic: 'Normalization',
+    trigger: '"Min-max", "z-score", "scale", "standardize"',
+    method: [
+      'Min-max: x_new = (x − min) / (max − min). Min → 0, Max → 1.',
+      'Z-score: x_new = (x − mean) / sd.',
+      'Required before kNN, k-means, neural nets.',
+    ],
+    watchFor: 'If asked which OBSERVATION → 0, return the ROW INDEX of the smallest value, not the value itself.',
+  },
+  {
+    topic: 'ggplot',
+    trigger: 'ggplot(...), geom_bar, fill, aes',
+    method: [
+      'aes(x=, y=, fill=) maps data → chart.',
+      'geom_bar() defaults to COUNTING rows.',
+      'Plotting a real value (revenue, totals) → use stat="identity".',
+      'Stacked = geom_bar(stat="identity") + fill=Var. 100% = position="fill".',
+    ],
+    watchFor: 'geom_stacked() does NOT exist — it\'s a fake trap answer.',
+  },
+  {
+    topic: 'Train/Test',
+    trigger: 'train/test split, holdout, cross-validation',
+    method: [
+      'Split BEFORE fitting (usually 70/30 or 80/20).',
+      'Fit on TRAIN only.',
+      'Evaluate on TEST: compare predicted vs actual.',
+      'Cross-validation = repeat k times for stable estimate.',
+    ],
+    watchFor: 'Never tune on the test set — test is final, untouched evaluation.',
+  },
+  {
+    topic: 'Evaluation',
+    trigger: 'RMSE, MAE, R², residuals, step()',
+    method: [
+      'RMSE = sqrt(mean((y−ŷ)²)) — penalizes big errors.',
+      'MAE = mean(|y−ŷ|) — treats errors equally.',
+      'Compare models on the TEST set.',
+      'step(model) drops weak predictors → fights OVERFITTING.',
+    ],
+    watchFor: 'step() is about overfitting only — NOT benchmarks, scaling, or outcome type.',
+  },
+  {
+    topic: 'Analytics Types',
+    trigger: '"Descriptive vs predictive vs prescriptive"',
+    method: [
+      'Descriptive: what HAPPENED (dashboards, summaries).',
+      'Predictive: what WILL happen (regression, classification).',
+      'Prescriptive: what SHOULD we do (optimization, recommendations).',
+    ],
+    watchFor: 'Predicting churn = predictive. Recommending an action = prescriptive.',
+  },
+  {
+    topic: 'Classical vs Modern',
+    trigger: '"Classical stats vs data mining / ML"',
+    method: [
+      'Classical: small data, hypothesis-driven, p-values, inference.',
+      'Modern: big data, prediction-driven, validated on holdout.',
+      'Modern cares about predictive accuracy on test set, not p-values.',
+    ],
+    watchFor: 'A "significant" p-value coefficient can still be a useless predictor.',
+  },
+  {
+    topic: 'Foundations',
+    trigger: 'Supervised vs unsupervised, technique definitions',
+    method: [
+      'Supervised: labeled outcome (regression, classification, kNN, trees).',
+      'Unsupervised: NO labeled outcome (clustering, association rules).',
+    ],
+    watchFor: 'Clustering and association rules are BOTH unsupervised — distinguish by data shape, not labels.',
+  },
+  {
+    topic: 'Process',
+    trigger: 'CRISP-DM, data mining process steps',
+    method: [
+      'Business understanding → Data understanding → Data prep → Modeling → Evaluation → Deployment.',
+      'Most time goes to DATA PREP, not modeling.',
+      'Iterative — revisit earlier steps as you learn.',
+    ],
+    watchFor: 'Don\'t pick "modeling" as most time-intensive — it\'s data prep.',
+  },
+  {
+    topic: 'R Basics',
+    trigger: 'R syntax, assignment, columns, factors',
+    method: [
+      'Assign: <-  (or =). df$col reads a column.',
+      'read.csv("file"); summary(df).',
+      'is.factor(), as.factor(), levels() for categoricals.',
+    ],
+    watchFor: '== is comparison, = is assignment. Don\'t mix them.',
+  },
+  {
+    topic: 'R Workflow',
+    trigger: 'library, fit, step, predict pipeline',
+    method: [
+      'library(...) loads the package.',
+      'Fit: model <- lm(y ~ ., data=train).',
+      'Reduce: model <- step(model).',
+      'Predict: predict(model, newdata=test).',
+    ],
+    watchFor: 'predict() needs the SAME columns as train — don\'t rename or drop columns between.',
+  },
+];
+
 function CheatSheetSection({ user }: { user: User }) {
   const { picked } = useUserProgress(user);
   const [notes, setNotes] = useState('');
@@ -614,6 +825,15 @@ function CheatSheetSection({ user }: { user: User }) {
     [picked]
   );
 
+  const myPlaybooks = useMemo(() => {
+    const counts: Record<string, number> = {};
+    mistakes.forEach(q => { counts[q.topic] = (counts[q.topic] || 0) + 1; });
+    return playbooks
+      .filter(p => counts[p.topic])
+      .map(p => ({ ...p, missed: counts[p.topic] }))
+      .sort((a, b) => b.missed - a.missed);
+  }, [mistakes]);
+
   const answered = Object.keys(picked).length;
   const wrongCount = mistakes.length;
   const print = () => window.print();
@@ -625,8 +845,8 @@ function CheatSheetSection({ user }: { user: User }) {
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold text-white mb-1">Your cheat sheet</h2>
             <p className="text-white/70 text-sm">
-              Front and back of one page. The front lists every question you got wrong on the practice quizzes — answer + why, in your own data.
-              The back is your formulas, key concepts, and R one-liners. Edit the &quot;My notes&quot; box to add anything else; it saves automatically. Print it and bring it.
+              Front: a playbook for every topic you&apos;ve missed. Each card tells you how to RECOGNIZE the problem type, the METHOD to solve it, and the trap to watch for — so on the real test you can match a new question to a card and follow the steps.
+              Back: formulas, key concepts, R one-liners, your notes.
             </p>
             {answered === 0 && (
               <p className="text-amber-300/90 text-sm mt-3">
@@ -662,20 +882,22 @@ function CheatSheetSection({ user }: { user: User }) {
 
         <section>
           <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
-            Every question I got wrong
+            My playbooks (topics where I&apos;ve missed at least one)
           </h4>
-          {mistakes.length === 0 ? (
-            <p className="text-gray-600 italic text-[11px]">No mistakes tracked yet. Start the practice quiz.</p>
+          {myPlaybooks.length === 0 ? (
+            <p className="text-gray-600 italic text-[11px]">No mistakes tracked yet — start the practice quiz and playbooks for your weak topics will appear here.</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] leading-snug">
-              {mistakes.map(q => (
-                <div key={q.id} className="border-l-2 border-black pl-2 break-inside-avoid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-[10px] leading-snug">
+              {myPlaybooks.map(p => (
+                <div key={p.topic} className="border-l-2 border-black pl-2 break-inside-avoid">
                   <div className="font-bold">
-                    [{q.topic}] #{q.id}
+                    {p.topic} <span className="text-gray-600 font-normal">({p.missed}× missed)</span>
                   </div>
-                  <div>{q.prompt}</div>
-                  <div className="font-mono">✓ {q.options[q.correctIndex]}</div>
-                  <div className="italic">{q.explanation}</div>
+                  <div className="italic">If you see: {p.trigger}</div>
+                  <ol className="list-decimal list-inside ml-0">
+                    {p.method.map((m, i) => <li key={i}>{m}</li>)}
+                  </ol>
+                  <div>⚠ {p.watchFor}</div>
                 </div>
               ))}
             </div>
