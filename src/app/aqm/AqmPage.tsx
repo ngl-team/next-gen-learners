@@ -591,6 +591,49 @@ const cheatConcepts: { name: string; rule: string; why: string }[] = [
   },
 ];
 
+const rSymbols: { sym: string; meaning: string }[] = [
+  { sym: '<-  or  =', meaning: 'assign. x <- 5 stores 5 in x. (Both work; <- is preferred style.)' },
+  { sym: '~', meaning: '"as a function of". lm(y ~ x) reads "predict y from x".' },
+  { sym: '.', meaning: 'inside a formula = "all OTHER columns". lm(y ~ ., data=d) uses every other column as a predictor.' },
+  { sym: '$', meaning: 'column accessor. df$age = the age column.' },
+  { sym: '==', meaning: 'equality TEST. df$x == 1 returns TRUE/FALSE for each row.' },
+  { sym: '!=', meaning: 'NOT equal. sum(predictions != actual) counts wrong predictions.' },
+  { sym: '>  <  >=  <=', meaning: 'comparisons. Used to filter rows.' },
+  { sym: '&  |', meaning: 'AND, OR. df[df$x > 5 & df$y < 10, ] keeps rows where BOTH are true.' },
+  { sym: 'df[i, j]', meaning: 'row i, column j. df[1, ] = row 1, all cols. df[, "x"] = all rows, col x. Comma matters.' },
+  { sym: 'df[-i, ]', meaning: 'NEGATIVE index = "everything except". test = df[-train_idx, ].' },
+  { sym: 'c(1,2,3)', meaning: 'create a vector. c() = combine values into one list.' },
+  { sym: 'df$col = NULL', meaning: 'DELETE that column from df.' },
+  { sym: 'NA', meaning: 'missing value. na.omit(df) drops any row that has an NA.' },
+  { sym: 'TRUE / FALSE', meaning: 'logicals. R also accepts T / F as shortcuts. sum(TRUE+FALSE+TRUE) = 2.' },
+  { sym: '#', meaning: 'comment. Everything after # on the line is ignored.' },
+];
+
+const rPatterns: { task: string; code: string; meaning: string }[] = [
+  { task: 'Read CSV', code: 'df = read.csv("file.csv")', meaning: 'Load a CSV into a data frame called df.' },
+  { task: 'Inspect', code: 'str(df) · summary(df) · head(df)', meaning: 'str = column names + types. summary = stats per column. head = first 6 rows.' },
+  { task: 'Convert to factor', code: 'df$Fuel_Type = as.factor(df$Fuel_Type)', meaning: 'Categorical with levels. Naive Bayes needs factors. Numbers that mean categories should be factors.' },
+  { task: 'Drop column', code: 'df$Model = NULL', meaning: 'Remove the Model column. Common before training to drop ID-like columns.' },
+  { task: 'Drop NA rows', code: 'df = na.omit(df)', meaning: 'Remove any row with a missing value.' },
+  { task: 'Train/test split', code: 'set.seed(1234); N=nrow(df); idx=sample(N, round(N*0.7)); train=df[idx,]; test=df[-idx,]', meaning: 'Seed = reproducible. Pick 70% of row indexes at random. Slice train and test with [idx,] and [-idx,].' },
+  { task: 'Linear regression', code: 'model = lm(Price ~ ., data=train)', meaning: 'Numeric outcome. ~ . means "use all other columns as predictors".' },
+  { task: 'Logistic regression', code: 'model = glm(Y ~ ., data=train, family=binomial)', meaning: 'Binary outcome (TRUE/FALSE, 1/0). family=binomial is what makes glm logistic.' },
+  { task: 'Reduce predictors', code: 'model = step(model)', meaning: 'Backward selection: drops weak predictors based on AIC. Fights overfitting.' },
+  { task: 'Predict on test', code: 'predictions = predict(model, test)', meaning: 'Apply the trained model to the test set. Linear regression returns numbers.' },
+  { task: 'Predict probabilities (logistic)', code: 'predict(model, test, type="response")', meaning: 'type="response" returns PROBABILITIES (0–1). Without it, you get raw log-odds.' },
+  { task: 'Cutoff to TRUE/FALSE', code: 'preds_TF = (predictions > 0.5)', meaning: 'Anything above 0.5 → TRUE, below → FALSE.' },
+  { task: 'Odds multiplier', code: 'exp(coef(model))', meaning: 'Exponentiate logistic coefficients to get the multiplicative effect on ODDS.' },
+  { task: 'Confusion matrix', code: 'table(preds_TF, test$Y)', meaning: 'Crosstab of predictions vs actuals.' },
+  { task: 'Error rate', code: 'sum(preds != actual) / nrow(test)', meaning: 'Fraction of test rows where prediction was wrong.' },
+  { task: 'kNN classification', code: 'model = knn3(Y ~ ., data=train, k=3); predict(model, test, type="class")', meaning: 'k nearest neighbors. Standardize first. type="class" returns the predicted label.' },
+  { task: 'Decision tree', code: 'model = rpart(Y ~ ., data=train); rpart.plot(model)', meaning: 'Tree splits data by best-separating variable. Plot to see the rules.' },
+  { task: 'k-means clustering', code: 'model = kmeans(df, centers=3, nstart=25)', meaning: 'Unsupervised. Standardize df first. centers=k. nstart = how many random starts.' },
+  { task: 'Standardize', code: 'pp = preProcess(df, c("center","scale")); df = predict(pp, df)', meaning: 'Mean=0, SD=1. Required before kNN, k-means, neural nets.' },
+  { task: 'ggplot bar (count)', code: 'ggplot(df, aes(x=Region)) + geom_bar()', meaning: 'Default counts rows per category.' },
+  { task: 'ggplot bar (value)', code: 'ggplot(df, aes(x=Region, y=Sales)) + geom_bar(stat="identity")', meaning: 'stat="identity" plots the actual y value, not a count.' },
+  { task: 'Decode example', code: 'glm(ISHIGHVAL ~ ., data=training, family=binomial)', meaning: 'glm = generalized linear model. ISHIGHVAL = outcome. ~ . = predict using all other columns. data=training = which data frame. family=binomial = makes it logistic regression (binary outcome).' },
+];
+
 const playbooks: { topic: string; trigger: string; method: string[]; watchFor: string }[] = [
   {
     topic: 'Technique Matching',
@@ -914,7 +957,7 @@ function CheatSheetSection({ user }: { user: User }) {
         <header className="flex items-start justify-between mb-3 border-b-2 border-black pb-2">
           <div>
             <h3 className="text-base font-bold leading-tight">AQM 2000 — Cheat Sheet · Back</h3>
-            <p className="text-[10px] text-gray-700">Formulas, key concepts, R one-liners, your notes</p>
+            <p className="text-[10px] text-gray-700">Formulas · Key concepts · R cheat sheet · Your notes</p>
           </div>
         </header>
 
@@ -953,34 +996,49 @@ function CheatSheetSection({ user }: { user: User }) {
           </section>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[10px] leading-snug">
-          <section className="space-y-1">
-            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
-              R one-liners
-            </h4>
-            {codeNotes.map(n => (
-              <div key={n.rule} className="leading-snug">
-                <code className="bg-gray-200 px-1 rounded font-mono text-[9px]">{n.rule}</code>
-                <span className="ml-1">— {n.detail}</span>
+        <section className="mb-3">
+          <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+            R cheat sheet — symbols you must read
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] leading-snug">
+            {rSymbols.map(s => (
+              <div key={s.sym} className="break-inside-avoid">
+                <code className="bg-gray-200 px-1 rounded font-mono text-[9px]">{s.sym}</code>
+                <span className="ml-1">— {s.meaning}</span>
               </div>
             ))}
-          </section>
+          </div>
+        </section>
 
-          <section className="space-y-2">
-            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
-              My notes
-            </h4>
-            {notesLoaded && (
-              <textarea
-                value={notes}
-                onChange={e => saveNotes(e.target.value)}
-                placeholder="Formulas, gotchas, mnemonics, key thresholds. Saves automatically."
-                className="w-full text-[10px] border border-gray-400 rounded p-2 bg-white text-black resize-y focus:outline-none focus:border-black print:border-0 print:p-0"
-                style={{ minHeight: '14rem' }}
-              />
-            )}
-          </section>
-        </div>
+        <section className="mb-3">
+          <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+            R cheat sheet — patterns by task
+          </h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-[10px] leading-snug">
+            {rPatterns.map(p => (
+              <div key={p.task} className="border-l-2 border-black pl-2 break-inside-avoid">
+                <div className="font-bold">{p.task}</div>
+                <code className="block bg-gray-100 px-1 rounded font-mono text-[9px] whitespace-pre-wrap break-words">{p.code}</code>
+                <div className="italic">{p.meaning}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+            My notes
+          </h4>
+          {notesLoaded && (
+            <textarea
+              value={notes}
+              onChange={e => saveNotes(e.target.value)}
+              placeholder="Formulas, gotchas, mnemonics, key thresholds. Saves automatically."
+              className="w-full text-[10px] border border-gray-400 rounded p-2 bg-white text-black resize-y focus:outline-none focus:border-black print:border-0 print:p-0"
+              style={{ minHeight: '8rem' }}
+            />
+          )}
+        </section>
       </article>
     </div>
   );
