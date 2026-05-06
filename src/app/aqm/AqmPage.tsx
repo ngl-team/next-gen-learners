@@ -590,6 +590,14 @@ const cheatFormulas: { name: string; expr: string; example: string; meaning: str
   },
 ];
 
+const cheatConcepts: { name: string; rule: string; why: string }[] = [
+  {
+    name: 'Rule length tradeoff (Association Rules)',
+    rule: 'Longer rules → support goes DOWN, confidence often goes UP.',
+    why: 'More items = fewer baskets match them all (lower support). When those rare matches do happen, the rule is more specific and more predictive (higher confidence). Support and confidence do NOT stay the same.',
+  },
+];
+
 function CheatSheetSection({ user }: { user: User }) {
   const { picked } = useUserProgress(user);
   const [notes, setNotes] = useState('');
@@ -733,6 +741,23 @@ function CheatSheetSection({ user }: { user: User }) {
                   <div className="font-mono">= {f.expr}</div>
                   <div className="font-mono">= {f.example}</div>
                   <div className="italic">{f.meaning}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {cheatConcepts.length > 0 && (
+          <section className="mb-3">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+              Key concepts
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] leading-snug">
+              {cheatConcepts.map(c => (
+                <div key={c.name} className="border-l-2 border-black pl-2">
+                  <div className="font-bold">{c.name}</div>
+                  <div>{c.rule}</div>
+                  <div className="italic">{c.why}</div>
                 </div>
               ))}
             </div>
