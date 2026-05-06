@@ -11,13 +11,15 @@ import { guideSections } from './data/topicGuide';
 
 const ALL_QUESTIONS: Question[] = [...questions, ...extraQuestions];
 
-type Tab = 'topics' | 'quiz' | 'traps' | 'guide' | 'rcode';
+type Tab = 'topics' | 'quiz' | 'mistakes' | 'cheatsheet' | 'traps' | 'guide' | 'rcode';
 const USERS = ['Brayan', 'Eli', 'Manu'] as const;
 type User = (typeof USERS)[number];
 
 const TABS: { id: Tab; label: string; sub: string }[] = [
   { id: 'topics', label: 'By Topic', sub: 'Walk the official topic guide' },
   { id: 'quiz', label: 'Practice Quiz', sub: 'All questions, mixed' },
+  { id: 'mistakes', label: 'My Mistakes', sub: 'Every question you missed' },
+  { id: 'cheatsheet', label: 'Cheat Sheet', sub: 'Auto-built from your misses' },
   { id: 'traps', label: 'Mistake Drill', sub: 'The 7 traps to memorize' },
   { id: 'guide', label: 'Study Guide', sub: 'Concept reference' },
   { id: 'rcode', label: 'R Code Reference', sub: 'Every line, explained' },
@@ -25,6 +27,7 @@ const TABS: { id: Tab; label: string; sub: string }[] = [
 
 const USER_KEY = 'aqm:user';
 const progressKey = (u: User) => `aqm:progress:${u}`;
+const cheatNotesKey = (u: User) => `aqm:cheatsheet:${u}`;
 
 export default function AqmPage() {
   const [tab, setTab] = useState<Tab>('quiz');
@@ -93,6 +96,8 @@ export default function AqmPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {tab === 'topics' && <TopicGuideSection user={user} />}
         {tab === 'quiz' && <QuizSection user={user} />}
+        {tab === 'mistakes' && <MistakesSection user={user} />}
+        {tab === 'cheatsheet' && <CheatSheetSection user={user} />}
         {tab === 'traps' && <TrapsSection />}
         {tab === 'guide' && <GuideSection />}
         {tab === 'rcode' && <RCodeSection />}
@@ -478,6 +483,249 @@ function QuizCard({
           {q.trap && <p className="text-amber-300/90 mt-2"><span className="text-white/50">Trap: </span>{q.trap}</p>}
         </div>
       )}
+    </div>
+  );
+}
+
+/* MISTAKES ================================================== */
+
+function MistakesSection({ user }: { user: User }) {
+  const { picked } = useUserProgress(user);
+
+  const mistakes = useMemo(
+    () => ALL_QUESTIONS.filter(q => {
+      const chosen = picked[q.id];
+      return chosen !== undefined && chosen !== q.correctIndex;
+    }),
+    [picked]
+  );
+
+  const byTopic = useMemo(() => {
+    const map: Record<string, Question[]> = {};
+    mistakes.forEach(q => {
+      if (!map[q.topic]) map[q.topic] = [];
+      map[q.topic].push(q);
+    });
+    return Object.entries(map).sort((a, b) => b[1].length - a[1].length);
+  }, [mistakes]);
+
+  if (mistakes.length === 0) {
+    return (
+      <div className="bg-white/5 border border-white/10 rounded-xl p-6 sm:p-10 text-center">
+        <h2 className="text-xl font-bold text-white mb-2">No mistakes tracked yet</h2>
+        <p className="text-white/60 text-sm max-w-md mx-auto">
+          Answer questions in <span className="text-white">Practice Quiz</span> or <span className="text-white">By Topic</span>.
+          Anything you get wrong will land here automatically, grouped by topic, so you can review your weak spots in one place.
+        </p>
+      </div>
+    );
+  }
+
+  const topTopic = byTopic[0];
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-5 sm:p-6">
+        <h2 className="text-xl font-bold text-white mb-2">
+          {mistakes.length} mistake{mistakes.length === 1 ? '' : 's'} across {byTopic.length} topic{byTopic.length === 1 ? '' : 's'}
+        </h2>
+        <p className="text-white/70 text-sm">
+          Top topic to drill: <span className="text-rose-300 font-semibold">{topTopic[0]}</span> ({topTopic[1].length} missed).
+          The <span className="text-white">Cheat Sheet</span> tab pulls patterns from this list automatically as you keep practicing.
+        </p>
+      </div>
+
+      {byTopic.map(([topic, qs]) => (
+        <div key={topic} className="bg-white/5 border border-white/10 rounded-xl p-5 sm:p-6">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h3 className="text-lg font-bold text-white">{topic}</h3>
+            <span className="text-xs px-2 py-1 rounded-full bg-rose-500/20 text-rose-300 font-semibold">
+              {qs.length} missed
+            </span>
+          </div>
+          <div className="space-y-4">
+            {qs.map((q, i) => (
+              <QuizCard
+                key={q.id}
+                q={q}
+                index={i}
+                chosenIndex={picked[q.id]}
+                onPick={() => {}}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* CHEAT SHEET =============================================== */
+
+type Pattern = {
+  topic: string;
+  count: number;
+  rule: string;
+  drill: string;
+};
+
+function CheatSheetSection({ user }: { user: User }) {
+  const { picked } = useUserProgress(user);
+  const [notes, setNotes] = useState('');
+  const [notesLoaded, setNotesLoaded] = useState(false);
+
+  useEffect(() => {
+    setNotes(localStorage.getItem(cheatNotesKey(user)) || '');
+    setNotesLoaded(true);
+  }, [user]);
+
+  const saveNotes = (v: string) => {
+    setNotes(v);
+    localStorage.setItem(cheatNotesKey(user), v);
+  };
+
+  const patterns: Pattern[] = useMemo(() => {
+    const wrong = ALL_QUESTIONS.filter(q => {
+      const chosen = picked[q.id];
+      return chosen !== undefined && chosen !== q.correctIndex;
+    });
+
+    const counts: Record<string, number> = {};
+    wrong.forEach(q => { counts[q.topic] = (counts[q.topic] || 0) + 1; });
+
+    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+    return top.map(([topic, count]) => {
+      const trap = traps.find(t => {
+        const tt = t.topic.toLowerCase();
+        const qt = topic.toLowerCase();
+        return tt.includes(qt) || qt.includes(tt) || tt.split(' ').some(w => w.length > 4 && qt.includes(w));
+      });
+      const sample = wrong.find(w => w.topic === topic);
+      const rule = trap?.rule || sample?.trap || sample?.explanation || '';
+      const drill = trap?.drill || '';
+      return { topic, count, rule, drill };
+    });
+  }, [picked]);
+
+  const answered = Object.keys(picked).length;
+  const wrongCount = patterns.reduce((s, p) => s + p.count, 0);
+  const print = () => window.print();
+
+  return (
+    <div className="space-y-6 aqm-cheatsheet">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-5 sm:p-6 print:hidden">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl font-bold text-white mb-1">Your cheat sheet</h2>
+            <p className="text-white/70 text-sm">
+              Front and back of one page. The front auto-fills from your top mistake patterns. The back is your high-leverage R + traps reference.
+              Edit the &quot;My notes&quot; box to add anything you want; it saves automatically. Print it and bring it.
+            </p>
+            {answered === 0 && (
+              <p className="text-amber-300/90 text-sm mt-3">
+                Answer some questions first — the front side fills in once you have mistakes to learn from.
+              </p>
+            )}
+            {answered > 0 && wrongCount === 0 && (
+              <p className="text-emerald-300/90 text-sm mt-3">
+                No mistakes yet — front side will populate the first time you miss one. Back side is ready to print.
+              </p>
+            )}
+          </div>
+          <button
+            onClick={print}
+            className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-sm px-4 py-2.5 rounded-md whitespace-nowrap"
+          >
+            Print sheet
+          </button>
+        </div>
+      </div>
+
+      {/* FRONT */}
+      <article className="cheat-page bg-white text-black rounded-xl border-2 border-white/15 p-5 sm:p-6 print:rounded-none print:border-0 print:p-0">
+        <header className="flex items-start justify-between mb-3 border-b-2 border-black pb-2">
+          <div>
+            <h3 className="text-base font-bold leading-tight">AQM 2000 — Cheat Sheet · Front</h3>
+            <p className="text-[10px] text-gray-700">{user} · personal weak-spot drill from missed questions</p>
+          </div>
+          <div className="text-[10px] text-gray-700 text-right">
+            {answered} answered · {wrongCount} mistakes mapped
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] leading-snug">
+          <section className="space-y-2">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
+              Top mistake patterns (drill these)
+            </h4>
+            {patterns.length === 0 ? (
+              <p className="text-gray-600 italic text-[11px]">No mistakes tracked yet. Start the practice quiz.</p>
+            ) : patterns.map(p => (
+              <div key={p.topic} className="border-l-2 border-black pl-2">
+                <div className="font-bold text-[11px]">
+                  {p.topic} <span className="text-gray-600 font-normal">({p.count}× missed)</span>
+                </div>
+                {p.rule && <div className="text-[10px]">{p.rule}</div>}
+                {p.drill && <div className="text-[10px] italic mt-0.5">→ {p.drill}</div>}
+              </div>
+            ))}
+          </section>
+
+          <section className="space-y-2">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
+              My notes
+            </h4>
+            {notesLoaded && (
+              <textarea
+                value={notes}
+                onChange={e => saveNotes(e.target.value)}
+                placeholder="Formulas, gotchas, mnemonics, key thresholds. Saves automatically."
+                className="w-full text-[11px] border border-gray-400 rounded p-2 bg-white text-black resize-y focus:outline-none focus:border-black print:border-0 print:p-0"
+                style={{ minHeight: '14rem' }}
+              />
+            )}
+          </section>
+        </div>
+      </article>
+
+      <div className="cheat-page-break" />
+
+      {/* BACK */}
+      <article className="cheat-page bg-white text-black rounded-xl border-2 border-white/15 p-5 sm:p-6 print:rounded-none print:border-0 print:p-0">
+        <header className="flex items-start justify-between mb-3 border-b-2 border-black pb-2">
+          <div>
+            <h3 className="text-base font-bold leading-tight">AQM 2000 — Cheat Sheet · Back</h3>
+            <p className="text-[10px] text-gray-700">High-leverage reference: traps + R one-liners</p>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[10px] leading-snug">
+          <section className="space-y-1.5">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
+              7 traps to internalize
+            </h4>
+            {traps.map((t, i) => (
+              <div key={t.topic} className="border-l-2 border-black pl-2">
+                <div className="font-bold text-[10px]">{i + 1}. {t.topic}</div>
+                <div>{t.rule}</div>
+              </div>
+            ))}
+          </section>
+
+          <section className="space-y-1">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
+              R one-liners
+            </h4>
+            {codeNotes.map(n => (
+              <div key={n.rule} className="leading-snug">
+                <code className="bg-gray-200 px-1 rounded font-mono text-[9px]">{n.rule}</code>
+                <span className="ml-1">— {n.detail}</span>
+              </div>
+            ))}
+          </section>
+        </div>
+      </article>
     </div>
   );
 }
