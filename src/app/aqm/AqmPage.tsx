@@ -562,13 +562,6 @@ function MistakesSection({ user }: { user: User }) {
 
 /* CHEAT SHEET =============================================== */
 
-type Pattern = {
-  topic: string;
-  count: number;
-  rule: string;
-  drill: string;
-};
-
 const cheatFormulas: { name: string; expr: string; example: string; meaning: string }[] = [
   {
     name: 'Sensitivity (Recall, TPR)',
@@ -613,32 +606,16 @@ function CheatSheetSection({ user }: { user: User }) {
     localStorage.setItem(cheatNotesKey(user), v);
   };
 
-  const patterns: Pattern[] = useMemo(() => {
-    const wrong = ALL_QUESTIONS.filter(q => {
+  const mistakes = useMemo(
+    () => ALL_QUESTIONS.filter(q => {
       const chosen = picked[q.id];
       return chosen !== undefined && chosen !== q.correctIndex;
-    });
-
-    const counts: Record<string, number> = {};
-    wrong.forEach(q => { counts[q.topic] = (counts[q.topic] || 0) + 1; });
-
-    const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6);
-
-    return top.map(([topic, count]) => {
-      const trap = traps.find(t => {
-        const tt = t.topic.toLowerCase();
-        const qt = topic.toLowerCase();
-        return tt.includes(qt) || qt.includes(tt) || tt.split(' ').some(w => w.length > 4 && qt.includes(w));
-      });
-      const sample = wrong.find(w => w.topic === topic);
-      const rule = trap?.rule || sample?.trap || sample?.explanation || '';
-      const drill = trap?.drill || '';
-      return { topic, count, rule, drill };
-    });
-  }, [picked]);
+    }),
+    [picked]
+  );
 
   const answered = Object.keys(picked).length;
-  const wrongCount = patterns.reduce((s, p) => s + p.count, 0);
+  const wrongCount = mistakes.length;
   const print = () => window.print();
 
   return (
@@ -648,8 +625,8 @@ function CheatSheetSection({ user }: { user: User }) {
           <div className="flex-1 min-w-0">
             <h2 className="text-xl font-bold text-white mb-1">Your cheat sheet</h2>
             <p className="text-white/70 text-sm">
-              Front and back of one page. The front auto-fills from your top mistake patterns. The back is your high-leverage R + traps reference.
-              Edit the &quot;My notes&quot; box to add anything you want; it saves automatically. Print it and bring it.
+              Front and back of one page. The front lists every question you got wrong on the practice quizzes — answer + why, in your own data.
+              The back is your formulas, key concepts, and R one-liners. Edit the &quot;My notes&quot; box to add anything else; it saves automatically. Print it and bring it.
             </p>
             {answered === 0 && (
               <p className="text-amber-300/90 text-sm mt-3">
@@ -683,39 +660,27 @@ function CheatSheetSection({ user }: { user: User }) {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] leading-snug">
-          <section className="space-y-2">
-            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
-              Top mistake patterns (drill these)
-            </h4>
-            {patterns.length === 0 ? (
-              <p className="text-gray-600 italic text-[11px]">No mistakes tracked yet. Start the practice quiz.</p>
-            ) : patterns.map(p => (
-              <div key={p.topic} className="border-l-2 border-black pl-2">
-                <div className="font-bold text-[11px]">
-                  {p.topic} <span className="text-gray-600 font-normal">({p.count}× missed)</span>
+        <section>
+          <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+            Every question I got wrong
+          </h4>
+          {mistakes.length === 0 ? (
+            <p className="text-gray-600 italic text-[11px]">No mistakes tracked yet. Start the practice quiz.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] leading-snug">
+              {mistakes.map(q => (
+                <div key={q.id} className="border-l-2 border-black pl-2 break-inside-avoid">
+                  <div className="font-bold">
+                    [{q.topic}] #{q.id}
+                  </div>
+                  <div>{q.prompt}</div>
+                  <div className="font-mono">✓ {q.options[q.correctIndex]}</div>
+                  <div className="italic">{q.explanation}</div>
                 </div>
-                {p.rule && <div className="text-[10px]">{p.rule}</div>}
-                {p.drill && <div className="text-[10px] italic mt-0.5">→ {p.drill}</div>}
-              </div>
-            ))}
-          </section>
-
-          <section className="space-y-2">
-            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
-              My notes
-            </h4>
-            {notesLoaded && (
-              <textarea
-                value={notes}
-                onChange={e => saveNotes(e.target.value)}
-                placeholder="Formulas, gotchas, mnemonics, key thresholds. Saves automatically."
-                className="w-full text-[11px] border border-gray-400 rounded p-2 bg-white text-black resize-y focus:outline-none focus:border-black print:border-0 print:p-0"
-                style={{ minHeight: '14rem' }}
-              />
-            )}
-          </section>
-        </div>
+              ))}
+            </div>
+          )}
+        </section>
       </article>
 
       <div className="cheat-page-break" />
@@ -725,7 +690,7 @@ function CheatSheetSection({ user }: { user: User }) {
         <header className="flex items-start justify-between mb-3 border-b-2 border-black pb-2">
           <div>
             <h3 className="text-base font-bold leading-tight">AQM 2000 — Cheat Sheet · Back</h3>
-            <p className="text-[10px] text-gray-700">High-leverage reference: formulas, traps, R one-liners</p>
+            <p className="text-[10px] text-gray-700">Formulas, key concepts, R one-liners, your notes</p>
           </div>
         </header>
 
@@ -765,18 +730,6 @@ function CheatSheetSection({ user }: { user: User }) {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[10px] leading-snug">
-          <section className="space-y-1.5">
-            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
-              7 traps to internalize
-            </h4>
-            {traps.map((t, i) => (
-              <div key={t.topic} className="border-l-2 border-black pl-2">
-                <div className="font-bold text-[10px]">{i + 1}. {t.topic}</div>
-                <div>{t.rule}</div>
-              </div>
-            ))}
-          </section>
-
           <section className="space-y-1">
             <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
               R one-liners
@@ -787,6 +740,21 @@ function CheatSheetSection({ user }: { user: User }) {
                 <span className="ml-1">— {n.detail}</span>
               </div>
             ))}
+          </section>
+
+          <section className="space-y-2">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5">
+              My notes
+            </h4>
+            {notesLoaded && (
+              <textarea
+                value={notes}
+                onChange={e => saveNotes(e.target.value)}
+                placeholder="Formulas, gotchas, mnemonics, key thresholds. Saves automatically."
+                className="w-full text-[10px] border border-gray-400 rounded p-2 bg-white text-black resize-y focus:outline-none focus:border-black print:border-0 print:p-0"
+                style={{ minHeight: '14rem' }}
+              />
+            )}
           </section>
         </div>
       </article>
