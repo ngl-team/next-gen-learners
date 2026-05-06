@@ -582,6 +582,12 @@ const cheatFormulas: { name: string; expr: string; example: string; meaning: str
     example: '90 / (90 + 20) = 90 / 110 ≈ 0.82',
     meaning: 'Of all the actual negatives (110), we correctly rejected 90.',
   },
+  {
+    name: 'Lift (A → B)',
+    expr: 'Confidence(A → B) / Support(B)',
+    example: '(150/300) / (250/1000) = 0.5 / 0.25 = 2.0',
+    meaning: '1,000 baskets, diapers in 300, beer in 250, both in 150. Beer is 2× more likely when diapers are in the basket vs random. Lift > 1 = positive association.',
+  },
 ];
 
 function CheatSheetSection({ user }: { user: User }) {
