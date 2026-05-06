@@ -569,6 +569,15 @@ type Pattern = {
   drill: string;
 };
 
+const cheatFormulas: { name: string; expr: string; example: string; meaning: string }[] = [
+  {
+    name: 'Sensitivity (Recall, TPR)',
+    expr: 'TP / (TP + FN)',
+    example: '80 / (80 + 10) = 80 / 90 ≈ 0.89',
+    meaning: 'Of all the actual positives (90), we caught 80.',
+  },
+];
+
 function CheatSheetSection({ user }: { user: User }) {
   const { picked } = useUserProgress(user);
   const [notes, setNotes] = useState('');
@@ -696,9 +705,27 @@ function CheatSheetSection({ user }: { user: User }) {
         <header className="flex items-start justify-between mb-3 border-b-2 border-black pb-2">
           <div>
             <h3 className="text-base font-bold leading-tight">AQM 2000 — Cheat Sheet · Back</h3>
-            <p className="text-[10px] text-gray-700">High-leverage reference: traps + R one-liners</p>
+            <p className="text-[10px] text-gray-700">High-leverage reference: formulas, traps, R one-liners</p>
           </div>
         </header>
+
+        {cheatFormulas.length > 0 && (
+          <section className="mb-3">
+            <h4 className="font-bold uppercase tracking-wide text-[10px] border-b border-black pb-0.5 mb-1.5">
+              Key formulas
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] leading-snug">
+              {cheatFormulas.map(f => (
+                <div key={f.name} className="border-l-2 border-black pl-2">
+                  <div className="font-bold">{f.name}</div>
+                  <div className="font-mono">= {f.expr}</div>
+                  <div className="font-mono">= {f.example}</div>
+                  <div className="italic">{f.meaning}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[10px] leading-snug">
           <section className="space-y-1.5">
