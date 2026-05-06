@@ -576,6 +576,12 @@ const cheatFormulas: { name: string; expr: string; example: string; meaning: str
     example: '80 / (80 + 10) = 80 / 90 ≈ 0.89',
     meaning: 'Of all the actual positives (90), we caught 80.',
   },
+  {
+    name: 'Specificity (TNR)',
+    expr: 'TN / (TN + FP)',
+    example: '90 / (90 + 20) = 90 / 110 ≈ 0.82',
+    meaning: 'Of all the actual negatives (110), we correctly rejected 90.',
+  },
 ];
 
 function CheatSheetSection({ user }: { user: User }) {
