@@ -648,7 +648,8 @@ const playbooks: { topic: string; trigger: string; method: string[]; watchFor: s
     topic: 'Classification Evaluation',
     trigger: 'Confusion matrix, sensitivity, specificity, precision',
     method: [
-      'Accuracy = (TP+TN) / total.',
+      'Legend: T=True (model was right), F=False (model was wrong). 2nd letter = what model PREDICTED. So TP = predicted yes & actually yes; FN = predicted no but actually yes.',
+      'Accuracy = (TP+TN) / total.   total = TP+TN+FP+FN.',
       'Sensitivity = TP / (TP+FN). Of actual positives, % caught.',
       'Specificity = TN / (TN+FP). Of actual negatives, % correctly rejected.',
       'Precision = TP / (TP+FP). Of predicted positives, % truly positive.',
