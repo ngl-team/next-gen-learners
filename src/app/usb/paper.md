@@ -1,30 +1,29 @@
 # Artificial Intelligence at a $3B Community Bank: A Research Brief for Union Savings Bank
 
-**Prepared at the request of**: Frank Rowella, Director, Union Savings Bank
-**Intended readers**: USB Board of Directors and Chelen Reyes, CEO
 **Author**: Brayan Tenesaca
+**Intended readers**: USB Board of Directors and Chelen Reyes, CEO
 **Date**: May 3, 2026
 
 ---
 
 ## 0. Cover Memo
 
-This brief was prepared in response to a request from a Union Savings Bank director for a research perspective on AI adoption at a $3B community bank. It is built around the three concerns currently driving the board's AI conversation: regulation, client information leakage, and cybersecurity. It is not a sales document. There is no service offer in it.
+In an early-May conversation, Frank Rowella mentioned that the USB board has been asked to draft an AI policy and that the discussion keeps returning to three concerns: regulation, client information leakage, and cybersecurity. He did not ask for any research. The decision to assemble this brief was the author's. It is offered in appreciation of the time Frank Rowella and Chelen Reyes have given over the past several years. There is no service offer attached and no NGL pitch inside.
 
 **The five things the paper says, in order of board relevance:**
 
 1. The megabank AI playbook does not transfer to a $3B community bank. The right reference set is Bankwell ($3.2B, CT), Webster, Eastern, Citizens, Live Oak, and Customers. Their public moves and public mistakes are mapped in Section 5.
 2. Regulators have not issued an AI rule for community banks. They have made clear that AI is governed by the existing model risk and third-party risk frameworks (SR 11-7, OCC 2023-17, the FFIEC AIO booklet, CFPB Circulars 2022-03 and 2023-03, and the FinCEN 2018 Joint Statement). All cited with verifiable URLs in Section 4.
-3. The instinct that the board should "just ask AI" for the policy is closer to right than wrong, and Section 8 contains a working policy template that can be the starting point at the next board meeting.
-4. The single highest-risk AI surface for USB right now is not a model the bank deploys. It is generative-AI-enabled fraud aimed at the bank, and email compromise is the leading vector. FinCEN issued the first formal Deepfake Alert (FIN-2024-Alert004) in November 2024.
-5. A practical, sequenced 12-month roadmap exists for a community bank starting from zero. It is in Section 6. Month one is policy and inventory, not technology purchase.
+3. The instinct that the board should "just ask AI" for the policy is closer to right than wrong. Section 8 contains a working policy template that can be the starting point at the next board meeting.
+4. The single highest-risk AI surface for USB right now is not a model the bank deploys. It is generative-AI-enabled fraud aimed at the bank. Email compromise is the leading vector. FinCEN issued the first formal Deepfake Alert (FIN-2024-Alert004) in November 2024.
+5. A practical, sequenced 12-month roadmap exists for a community bank starting from zero. It is in Section 6. Month one is policy and inventory. Technology purchases follow.
 
 **What matters most to read carefully:**
 
 - For board policy work: Sections 2, 4, and 8. The community-bank thesis, the regulatory frame, and the policy template.
 - For executive operating decisions: Sections 3, 5, 6, and 7. The use-case map, peer studies (with a contact section so peer CEOs are reachable), the 12-month roadmap, and the build-versus-buy reality.
 
-**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and a few small private-sector clients. He is writing this paper as a research gift, not as a vendor pitch. Reachable at brayan@nextgenerationlearners.com.
+**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and a few small private-sector clients. The paper is a research gift. There is no service offer attached. Reachable at brayan@nextgenerationlearners.com.
 
 ---
 
@@ -32,16 +31,16 @@ This brief was prepared in response to a request from a Union Savings Bank direc
 
 A $3B community bank like USB faces a different AI problem than JPMorgan or Citizens. The community bank cannot afford a 24-person AI governance team. It cannot fund a $300M three-year transformation. It cannot embed OpenAI engineers in its operations on a multi-year deal. Yet it is governed by the same SR 11-7, the same FFIEC examination handbook, the same CFPB adverse-action rule, and the same BSA expectations as banks 25 times its size.
 
-The asymmetry has a single resolution: a community bank's AI strategy must be vendor-led and governance-first, not model-build-first. The bank's competitive advantage is not its ability to train a model. It is the trust relationship and local data its lenders accumulate over decades. The board's job is to write the policy that lets the bank use AI without leaking that trust.
+The asymmetry has a single resolution: a community bank's AI strategy must be vendor-led and governance-first. Building models in-house is the wrong mode at this asset tier. The bank's competitive advantage is the trust relationship and local data its lenders accumulate over decades. The board's job is to write the policy that lets the bank use AI without leaking that trust.
 
 The paper recommends a six-part posture for USB:
 
 1. **Adopt the NIST AI Risk Management Framework as the spine of the bank's AI policy.** It is the framework regulators and bank counsel are converging on.
-2. **Inventory every AI tool already in the building.** This includes the LLM features inside Microsoft 365, the AI features inside the bank's core, the fraud and AML systems, and any employee personal use of ChatGPT. The inventory is the first deliverable, not the policy.
-3. **Treat client information leakage as a contract-and-architecture problem, not a policy problem.** Section 7 names the vendors that contractually do not train on bank data and that offer tenant isolation.
+2. **Inventory every AI tool already in the building.** This includes the LLM features inside Microsoft 365, the AI features inside the bank's core, the fraud and AML systems, and any employee personal use of ChatGPT. The inventory comes before the policy.
+3. **Treat client information leakage as a contract-and-architecture problem.** A policy alone will not solve it. Section 7 names the vendors that contractually do not train on bank data and that offer tenant isolation.
 4. **Make the BSA and fraud function the first AI value-creation use case.** Verafin or Abrigo. Both have 1,000+ community-bank deployments. The board's BSA risk and the board's AI ambition meet in the same investment.
 5. **Wait on AI in credit underwriting.** CFPB Circulars 2022-03 and 2023-03 made adverse-action explainability a strict-liability problem. A community bank does not have to be the test case.
-6. **Treat board and senior-staff AI literacy as a separate program, not a byproduct of vendor demos.** A two-day curriculum is sketched in Section 8.
+6. **Treat board and senior-staff AI literacy as a separate program.** Vendor demos do not substitute for it. A two-day curriculum is sketched in Section 8.
 
 The bank that executes this posture in the next 12 months will be at the front of the Connecticut community-bank pack. The bank that does nothing will not be punished by regulators in 2026, but it will be visibly behind Bankwell, Webster, and Eastern by the end of 2027.
 
@@ -53,9 +52,9 @@ Most published AI-in-banking writing assumes the reader is JPMorgan. JPMorgan ha
 
 The community-bank thesis runs in three claims.
 
-**Claim 1: The community bank's competitive advantage is local data and local trust, not model quality.** A megabank's AI advantage compounds because it has more transactions, more product lines, and more data engineers. A community bank cannot win that race. It can win the race for which lender remembers that a borrower's seasonal revenue dipped in 2008 and recovered, and which lender knows the borrower's children. AI's role at a community bank is to take the friction out of that relationship, not to replace it with a model.
+**Claim 1: The community bank's competitive advantage is local data and local trust.** Model quality is where megabanks compete. A megabank's AI advantage compounds because it has more transactions, more product lines, and more data engineers. A community bank cannot win that race. It can win the race for which lender remembers that a borrower's seasonal revenue dipped in 2008 and recovered, and which lender knows the borrower's children. AI's role at a community bank is to take the friction out of that relationship. It is not there to replace it.
 
-**Claim 2: The community bank's binding constraint is governance bandwidth, not technology spend.** The Treasury report on AI cybersecurity risk (March 2024) put a name to this: the "capability gap" between large institutions and smaller ones is widening, and smaller institutions face higher concentration risk because they depend on a handful of vendors.[^treasury] A $3B bank that buys five AI tools without a governance framework around them is in a worse position than a $3B bank that runs zero AI tools.
+**Claim 2: The community bank's binding constraint is governance bandwidth.** Technology spend is not the limiting factor. The Treasury report on AI cybersecurity risk (March 2024) put a name to this: the "capability gap" between large institutions and smaller ones is widening, and smaller institutions face higher concentration risk because they depend on a handful of vendors.[^treasury] A $3B bank that buys five AI tools without a governance framework around them is in a worse position than a $3B bank that runs zero AI tools.
 
 **Claim 3: The community bank's regulatory exposure is asymmetric.** A community bank does not get the legal-team cushion of a megabank. A single OCC or FDIC enforcement action on a model risk failure or a third-party data breach can dominate the bank's earnings narrative for two quarters. The community bank therefore should not be a regulatory test case. It should be the bank that adopts AI with discipline that is visible to its examiners.
 
@@ -102,7 +101,7 @@ This is the highest-leverage AI use case for USB. Risk reduction and efficiency 
 
 ### 3.3 Customer-Facing Automation Under PII Constraints
 
-This is the use case where the board's stated "client information going out" concern lives directly. The architectural question is sovereign-data, not model-quality.
+This is the use case where the board's stated "client information going out" concern lives directly. The architectural question is about sovereign data. Model quality is secondary.
 
 - **What it is.** AI-assisted retail and small-business interactions through the bank's website, mobile app, and contact center. Includes virtual assistants, agent-assist tools, intelligent IVR, and proactive outreach.
 - **Regulatory exposure**: Medium. GLBA Safeguards Rule applies to any vendor handling NPI. The 2021 FTC amendments (effective 2023) require encryption, MFA, and board reporting on the information security program.[^ftc2021] CFPB UDAAP authority covers any deceptive AI behavior.
@@ -116,7 +115,7 @@ This is the use case where the board's stated "client information going out" con
 
 ### 3.4 Loan Underwriting Decision Support
 
-The board should approach this use case with the most caution. Recommendation: do not deploy AI in consumer credit decisions in 2026. Use AI for support, not for the decision.
+The board should approach this use case with the most caution. Recommendation: do not deploy AI in consumer credit decisions in 2026. AI can support the underwriter. It should not make or recommend the decision itself.
 
 - **What it is.** AI used to extract information from documents (tax returns, bank statements, K-1s), to populate underwriting templates, to flag anomalies, and to assist commercial credit memos.
 - **Regulatory exposure**: High. CFPB Circular 2022-03 (May 2022) established that ECOA and Regulation B's adverse-action-notice requirements apply identically to AI-driven credit decisions. A creditor's inability to explain its own model is not a defense.[^cfpb2022] CFPB Circular 2023-03 (September 2023) extended this: creditors cannot fall back on the CFPB sample form checkboxes when those reasons do not match the actual driver of denial.[^cfpb2023] The CT Attorney General's February 2026 AI memorandum confirmed that existing CT consumer protection and civil rights laws apply to AI-driven lending, with no safe harbor for unintentional discriminatory output.[^ctag]
@@ -143,12 +142,12 @@ This is where the board-level "just ask AI" instinct becomes real. It is also th
 
 ### 3.6 Cybersecurity and Threat Detection
 
-This is on the board's list and it deserves its own line. AI's role in cybersecurity is mostly about defense against AI-enabled attacks, not just AI as a defense tool.
+This is on the board's list and it deserves its own line. AI's role in cybersecurity is mostly about defense against AI-enabled attacks. AI as a defense tool is the smaller half of the picture.
 
 - **What it is.** AI-powered email defense (the leading attack vector), AI-powered managed detection and response, identity attack detection, and deepfake and synthetic-identity defense at onboarding.
 - **Regulatory exposure**: Medium. NYDFS Part 500 (Second Amendment, November 2023) is the de facto Northeast benchmark for board-level cyber accountability.[^nydfs500] FFIEC IT Handbook AIO booklet treats AI/ML as an in-scope examined IT control as of 2021.[^ffiecaio] FinCEN issued FIN-2024-Alert004 in November 2024 specifically on deepfake-enabled fraud against banks, with nine red-flag indicators and a SAR filing instruction.[^fincendeep]
 - **Implementation risk**: Low to Medium. Vendor field is mature.
-- **Rough first-year ROI**: Avoidance, not creation. Email-based BEC fraud regularly costs community banks six- and seven-figure write-downs. A single prevented incident pays for the program.
+- **Rough first-year ROI**: Measured in losses avoided. Email-based BEC fraud regularly costs community banks six- and seven-figure write-downs. A single prevented incident pays for the program.
 - **Recommended vendors**: Abnormal Security for email (sits on top of M365), Arctic Wolf for managed detection and response (Gartner Customers' Choice 2026, fit for banks without an in-house SOC), SentinelOne via COCC for endpoint (CT-relevant given COCC's CT headquarters and partnership). See Section 7.
 
 [^nydfs500]: NYDFS, "Cybersecurity Requirements for Financial Services Companies," 23 NYCRR Part 500, Second Amendment, adopted November 1, 2023. https://www.dfs.ny.gov/system/files/documents/2023/12/rf23_nycrr_part_500_amend02_20231101.pdf
@@ -249,11 +248,11 @@ Bankwell is the closest single comparable in this paper. $3.2B in assets, Connec
 - Anchor Connecticut customer for Kobalt Labs (compliance and risk-review automation).
 - Brian Merritt named CTO in 2025 to advance digital capabilities.[^bwfgmerritt]
 
-**What is publicly known about cost or scope:** Not disclosed. The Casca and Copilot deployments are operational, not capital-intensive.
+**What is publicly known about cost or scope:** Not disclosed. The Casca and Copilot deployments are operational expenses rather than capital projects.
 
 **What worked:** Lead-quality multiplier from Casca. Broad Copilot adoption (~85% of headcount). Public AI narrative is consistent and disciplined.
 
-**What is unresolved:** The bank had material strategic exposure shifts in 2024-2025 around commercial real estate. AI is part of an efficiency push, not a moonshot. The deeper question for the board: AI is helping at the margin, not transforming the bank.
+**What is unresolved:** The bank had material strategic exposure shifts in 2024-2025 around commercial real estate. AI is part of an efficiency push. It is not framed publicly as a moonshot. The deeper question for the board: AI is helping at the margin. It is not yet transforming the bank.
 
 **Why this matters to USB:** Bankwell is the same size, same state, same regulator overlay. Whatever they have done, USB can do.
 
@@ -426,7 +425,7 @@ The roadmap assumes USB has done no formal AI work to date. It is sequenced so t
 **Month 1: Policy and inventory.**
 - Board adopts an AI policy. Use the template in Section 8 as the starting draft. The policy aligns to NIST AI RMF 1.0 and references SR 11-7, OCC 2023-17, and the FFIEC AIO booklet.
 - IT, Compliance, and Risk jointly produce the bank's first AI inventory. The inventory captures every system in production that uses AI/ML, including AI features inside the bank's core, AI features inside the BSA platform, and AI features inside Microsoft 365 if Copilot is in use.
-- Name an AI Governance Officer. This is a part-time hat for an existing senior executive (typically the CRO, CIO, or Chief Compliance Officer), not a new hire.
+- Name an AI Governance Officer. This is a part-time hat for an existing senior executive (typically the CRO, CIO, or Chief Compliance Officer). A new hire is not required.
 
 **Month 2: Vendor governance update.**
 - Update third-party risk management procedures to incorporate AI-specific diligence questions, aligned to OCC 2023-17. New diligence questions cover: training data use, tenant isolation, model explainability, fair-lending testing, breach notification timelines.
@@ -490,7 +489,7 @@ A community bank should buy almost everything and build almost nothing. The ques
 
 There are two areas where USB should build, both small and both internal.
 
-- **Prompt libraries and retrieval indexes for the bank's own knowledge.** The bank's policies, procedures, FAQs, product documentation, and approved external responses should be assembled into a retrieval-augmented index that grounds Copilot and customer service AI outputs. This is a content-engineering task more than a software-engineering task. It belongs to Compliance and Operations, not to IT.
+- **Prompt libraries and retrieval indexes for the bank's own knowledge.** The bank's policies, procedures, FAQs, product documentation, and approved external responses should be assembled into a retrieval-augmented index that grounds Copilot and customer service AI outputs. This is a content-engineering task more than a software-engineering task. It belongs to Compliance and Operations rather than IT.
 - **The bank's AI inventory and governance process.** The artifact of the AI program is the documentation. The bank owns it.
 
 ### 7.2 Buy
@@ -515,7 +514,7 @@ Most categories. The vendor recommendations below are filtered to vendors with n
 - Posh AI. Community-bank-only, MIT spinoff. CCUA partnership for FIs under $300M.
 - Kasisto. KAI Banking platform. Pre-integrated with NCR, FIS, Q2.
 
-**Lending and credit (decision-support, not decision-making):**
+**Lending and credit (decision-support only; the underwriter still makes the call):**
 - nCino with nIQ. Cloud Banking Platform on Salesforce. 2,700+ FI customers.
 - Numerated. End-to-end SMB and commercial lending. Acquired by Moody's November 2024. Originated as an Eastern Bank spin-out.
 - Hebbia. Document research and credit-memo support. Enterprise-priced; right for banks with significant C&I or CRE volume.
@@ -526,7 +525,7 @@ Most categories. The vendor recommendations below are filtered to vendors with n
 
 ### 7.3 Wait
 
-- **AI in consumer credit decisions.** Wait until CFPB and OCC guidance settles further and until in-house fair-lending testing exists. The Bankwell Casca pilot is in lead prequalification, not in the decision itself, which is the right boundary.
+- **AI in consumer credit decisions.** Wait until CFPB and OCC guidance settles further and until in-house fair-lending testing exists. The Bankwell Casca pilot is in lead prequalification only. The decision itself stays with the underwriter, which is the right boundary.
 - **Custom-built LLMs or fine-tunes for the bank's data.** A community bank does not have the data volume or the talent base to make this economical in 2026. The answer is retrieval-augmented generation on top of a vendor LLM.
 - **Voice-cloned executive comms or AI-generated investor communications.** SEC enforcement (Delphia, Global Predictions, March 2024) made AI-misrepresentation a securities-fraud problem.[^secai] The category is not yet ready.
 
@@ -549,7 +548,7 @@ Three vendor-level items the board should be aware of when reviewing third-party
 
 ### 8.1 AI Policy Template (Starting Draft)
 
-The following template is a working starting draft. It is structured to align with NIST AI RMF 1.0 and to be readable by an examiner. It is not a finished policy. The board should treat it as a basis for refinement, not as a finished product.
+The following template is a working starting draft. It is structured to align with NIST AI RMF 1.0 and to be readable by an examiner. It is not a finished policy. The board should treat it as a basis for refinement.
 
 ---
 
