@@ -5,10 +5,20 @@
 //   open <id>
 //   rm <id>
 import { createClient } from '@libsql/client';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
+
+// Auto-load .env.local if Turso vars aren't already set
+if (!process.env.TURSO_DATABASE_URL) {
+  const envPath = resolve(process.cwd(), '.env.local');
+  if (existsSync(envPath) && typeof (process as any).loadEnvFile === 'function') {
+    (process as any).loadEnvFile(envPath);
+  }
+}
 
 const url = process.env.TURSO_DATABASE_URL;
 if (!url) {
-  console.error('Error: TURSO_DATABASE_URL is not set. Source .env first or run from a shell with the env loaded.');
+  console.error('Error: TURSO_DATABASE_URL is not set. Run from the repo root, or source .env.local first.');
   process.exit(1);
 }
 
