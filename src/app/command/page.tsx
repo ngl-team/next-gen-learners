@@ -69,6 +69,7 @@ interface DashboardData {
   quickLogs: QuickLog[];
   brainDumps: BrainDump[];
   activity: { brayan: Activity[]; ryan: Activity[] };
+  todos?: { brayan: number; ryan: number; either: number; total: number };
 }
 
 /* ═══════════════════════════════════════════
@@ -1018,6 +1019,13 @@ export default function CommandPage() {
                   <span className="text-red-400 text-lg font-bold block">{highTouchCount}</span>
                   <span className="text-white/20 text-[10px] tracking-wider uppercase">High Touch</span>
                 </div>
+                <div className="w-px h-8 bg-white/[0.06]" />
+                <a href="/todos" className="text-center group" title="Open shared todos">
+                  <span className="text-cyan-400 text-lg font-bold block group-hover:text-cyan-300 transition-colors">
+                    {data.todos?.total ?? 0}
+                  </span>
+                  <span className="text-white/20 text-[10px] tracking-wider uppercase group-hover:text-white/40 transition-colors">Todos</span>
+                </a>
               </div>
               {/* sync status */}
               <div className="flex items-center gap-2">
@@ -1122,6 +1130,36 @@ export default function CommandPage() {
                   </div>
                 )}
               </div>
+
+              {/* shared todos tile */}
+              <a
+                href="/todos"
+                className="block p-3 rounded-xl bg-cyan-500/[0.04] border border-cyan-500/15 hover:bg-cyan-500/[0.08] hover:border-cyan-500/25 transition-colors"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 className="text-white font-bold text-sm">Shared Todos</h2>
+                  </div>
+                  <span className="text-cyan-400 text-sm font-bold">{data.todos?.total ?? 0}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5 text-center">
+                  <div className="p-1.5 rounded-lg bg-white/[0.02]">
+                    <span className="text-cyan-400 text-sm font-bold block">{data.todos?.brayan ?? 0}</span>
+                    <span className="text-white/30 text-[10px] tracking-wider uppercase">Brayan</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-white/[0.02]">
+                    <span className="text-purple-400 text-sm font-bold block">{data.todos?.ryan ?? 0}</span>
+                    <span className="text-white/30 text-[10px] tracking-wider uppercase">Ryan</span>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-white/[0.02]">
+                    <span className="text-slate-400 text-sm font-bold block">{data.todos?.either ?? 0}</span>
+                    <span className="text-white/30 text-[10px] tracking-wider uppercase">Either</span>
+                  </div>
+                </div>
+              </a>
 
               {/* auto-sent summary */}
               {data.briefing.autoSendable.length > 0 && (

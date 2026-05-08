@@ -226,6 +226,19 @@ export async function initDb() {
   `);
 
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS todos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      notes TEXT DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'open',
+      owner TEXT NOT NULL DEFAULT 'either',
+      created_by TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now')),
+      completed_at TEXT DEFAULT NULL
+    )
+  `);
+
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS dh_submissions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       help_type TEXT NOT NULL,
@@ -708,4 +721,48 @@ export async function insertQuickLog(data: { contact_id: number | null; channel:
     await db.execute({ sql: "UPDATE contacts SET last_contact_date = date('now'), times_contacted = times_contacted + 1 WHERE id = ?", args: [data.contact_id] });
   }
   return r.lastInsertRowid;
+}
+
+// ── Todos ──────────────────────────────────────────────────────
+export async function getTodos(filter?: { owner?: string; status?: string }) {
+  await initDb();
+  const conditions: string[] = [];
+  const args: string[] = [];
+  if (filter?.owner) { conditions.push('owner = ?'); args.push(filter.owner); }
+  if (filter?.status) { conditions.push('status = ?'); args.push(filter.status); }
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  return (await db.execute({
+    sql: `SELECT * FROM todos ${where} ORDER BY status ASC, created_at DESC`,
+    args,
+  })).rows;
+}
+
+export async function getTodoCounts() {
+  await initDb();
+  return (await db.execute(
+    "SELECT owner, COUNT(*) as count FROM todos WHERE status = 'open' GROUP BY owner"
+  )).rows;
+}
+
+export async function insertTodo(data: { title: string; notes: string; owner: string; created_by: string }) {
+  await initDb();
+  const r = await db.execute({
+    sql: 'INSERT INTO todos (title, notes, owner, created_by) VALUES (?,?,?,?)',
+    args: [data.title, data.notes || '', data.owner || 'either', data.created_by || ''],
+  });
+  return r.lastInsertRowid;
+}
+
+export async function updateTodoStatus(id: number, status: string) {
+  await initDb();
+  if (status === 'done') {
+    await db.execute({ sql: "UPDATE todos SET status = ?, completed_at = datetime('now') WHERE id = ?", args: [status, id] });
+  } else {
+    await db.execute({ sql: 'UPDATE todos SET status = ?, completed_at = NULL WHERE id = ?', args: [status, id] });
+  }
+}
+
+export async function deleteTodo(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM todos WHERE id = ?', args: [id] });
 }
