@@ -45,26 +45,25 @@
     .hero h1{font-size:clamp(2rem,4.6vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:14px;color:white}
     .hero-sub{font-size:1rem;color:rgba(255,255,255,0.85);max-width:520px;margin:0 auto;line-height:1.7;font-weight:300}
 
-    .doc{padding-top:24px}
-    .doc h2{font-size:1.25rem;font-weight:800;color:var(--text);margin-top:40px;margin-bottom:14px;letter-spacing:-0.01em}
+    .doc{padding-top:24px;padding-bottom:24px}
+    .doc h2{font-size:1.2rem;font-weight:800;color:var(--text);margin-top:36px;margin-bottom:12px;letter-spacing:-0.01em}
     .doc h2:first-child{margin-top:0}
-    .doc h3{font-size:0.95rem;font-weight:700;color:var(--text);margin-top:24px;margin-bottom:8px}
-    .doc p{font-size:0.95rem;color:var(--text);line-height:1.75;margin-bottom:16px}
-    .doc ul{list-style:none;padding:0;margin:0 0 18px 0}
-    .doc ul li{position:relative;padding-left:22px;margin-bottom:14px;font-size:0.95rem;color:var(--text);line-height:1.7}
+    .doc p{font-size:0.95rem;color:var(--text);line-height:1.75;margin-bottom:14px}
+    .doc strong{color:var(--text);font-weight:700}
+    .doc ul{list-style:none;padding:0;margin:0 0 16px 0}
+    .doc ul li{position:relative;padding-left:22px;margin-bottom:12px;font-size:0.95rem;color:var(--text);line-height:1.7}
     .doc ul li::before{content:'';position:absolute;left:6px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--primary)}
-    .doc ul li strong{color:var(--text);font-weight:700}
-    .doc ol{padding-left:22px;margin:0 0 18px 0}
-    .doc ol li{margin-bottom:14px;font-size:0.95rem;color:var(--text);line-height:1.7;padding-left:6px}
-    .doc ol li::marker{color:var(--primary);font-weight:700}
 
-    .greeting{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:24px}
-    .signoff{margin-top:32px;font-size:1rem;color:var(--text);font-weight:600}
+    .greeting{font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:20px}
+    .signoff{margin-top:28px;font-size:1rem;color:var(--text);font-weight:600}
 
-    .callout{background:var(--indigo-glow);border:1px solid rgba(79,70,229,0.15);border-radius:var(--radius-lg);padding:22px 26px;margin:18px 0}
-    .callout p{margin:0;font-size:0.92rem;color:var(--text);line-height:1.7}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .side-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px}
+    .side-card .label{font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:8px}
+    .side-card h3{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:8px}
+    .side-card p{font-size:0.88rem;color:var(--text-2);line-height:1.65;margin:0}
 
-    .divider{height:1px;background:var(--border);margin:32px 0;border:none}
+    .divider{height:1px;background:var(--border);margin:28px 0;border:none}
 
     footer{background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4);padding:40px 0;text-align:center;margin-top:24px}
     .footer-brand{font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;color:white;font-weight:700;margin-bottom:6px}
@@ -75,6 +74,7 @@
     @media(max-width:768px){
       .section{padding:48px 0}
       .hero{padding:64px 0 48px}
+      .two-col{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -92,7 +92,7 @@
   <div class="hero-content container">
     <div class="hero-badge"><span class="pulse"></span>For Ethan Hale · Miry Brook Technologies</div>
     <h1>NGL Overview</h1>
-    <p class="hero-sub">Where we are. Where we're going. Where you fit.</p>
+    <p class="hero-sub">Custom AI tools for high-volume domain experts. Two sides, one company.</p>
   </div>
 </div>
 
@@ -100,54 +100,52 @@
 
   <p class="greeting">Ethan,</p>
 
-  <p>I told you I'd send something before our follow-up so you could see the real shape of this. Here it is. No spin. Where we actually are, where we're heading, and where I think you fit.</p>
+  <p>Quick overview of the business ahead of our follow-up.</p>
 
-  <h2>What NGL is today</h2>
-  <p>NGL builds custom AI tools for high-volume domain experts. We deliver client-owned software, not SaaS. The customer holds the install, the data, and the keys. We charge for the build and maintain the relationship. No per-seat pricing.</p>
+  <h2>What we do</h2>
 
-  <h3>Active engagements</h3>
-  <ul>
-    <li><strong>Roche (Superintendent, Woodstock Public Schools).</strong> $1,250 paid for consulting. June pilot rebuild on client-owned architecture. The goal is a daily-driver Cabinet that ships clean and gives us our first referenceable case study.</li>
-    <li><strong>Zalen (MA real estate).</strong> Hunter is built. Local Python plus Electron tool for MLS expired-listing skip trace. Runs on his machine with his creds. Demo and close pending.</li>
-    <li><strong>Gina Williams (Emery Public Schools).</strong> Active conversation, choosing between two agent builds. Decision by May 12. Inside-district referral path through her.</li>
-    <li><strong>Pannone (Wooster).</strong> Warming. Wants to see the Roche case study before signing.</li>
-    <li><strong>Three more warm in CT and MA.</strong> Zaleta, Casimiro, Williams on the district side.</li>
-  </ul>
+  <p>NGL builds custom AI tools for high-volume domain experts. Two sides.</p>
 
-  <p>Total cash in to date is small. The pipeline is real. The artifacts are real.</p>
-
-  <h2>What we're testing this summer</h2>
-  <p>Three wedges. Cheap tests. Decided by August.</p>
-
-  <ol>
-    <li><strong>Vertical EdTech.</strong> Superintendent route. Slow cycles, larger contracts, IT gatekeepers. Strongest live-pipeline signal today.</li>
-    <li><strong>Function agent shop.</strong> Hunter-pattern replicated to other domains (real estate, trades, professional services). Faster cycles, smaller contracts, easier to stack.</li>
-    <li><strong>Sovereign delivery.</strong> Compliance-heavy sectors that can't use SaaS. Healthcare, legal, religious orgs, finance. Lowest evidence today, biggest moat if it lands. Forge / Legatus is the parallel proof we can build for sensitive sectors.</li>
-  </ol>
-
-  <p>70% of the summer goes to wedge 1. 20% to wedge 2 close plus replication. 10% to wedge 3 thesis test. By end of August we know which one is the company.</p>
-
-  <h2>Partnership structure with Ryan</h2>
-  <p>60/40 (me / Ryan) until $10k MRR, then 50/50. Milestone-based earning logic stays from your earlier framing about both partners hitting benchmarks. Roles intentionally undefined while we're still exploring. Incorporation, attorney for the partnership doc, and accountant all going up properly from day one (my mom is making sure of that).</p>
-
-  <h2>Where I'm heading on capital</h2>
-  <p>The shape I want is what you described on the call. Brayan plus Ryan keep the operating company. NGL stays founder-led. Plug-in partnership with permanent capital, indie-game-studio model.</p>
-
-  <p>I'm not raising right now. I want to scale on customer revenue first, prove the wedge, and revisit partnership from a clearer position. The reason is not coldness toward you or doubt about MB. It's that I trust myself more if I land paying customers before I take any outside capital. My mom signed off on going all-in this summer, so the cash floor that would have forced an early raise is gone. That changes the timing, not the fit.</p>
-
-  <h2>What I want from this conversation</h2>
-  <p>Two things, in this order.</p>
-
-  <ol>
-    <li>I want you to see NGL clearly so anything we do together later is built on a real picture, not a pitch deck version.</li>
-    <li>I want to hear what you have in mind. If there is a structure or a way to plug in that doesn't require capital placement right now (intros, working sessions, a small first project), I want to hear it. If your read is "let's wait until you're past the wedge tests," that's fine too. I trust your timing.</li>
-  </ol>
-
-  <div class="callout">
-    <p>I'd rather keep you in the loop and walk into a future deal from strength than rush something now and live with a structure I regret.</p>
+  <div class="two-col">
+    <div class="side-card">
+      <div class="label">Agency Side</div>
+      <h3>Sharpen the craft</h3>
+      <p>Custom builds and consulting for individuals and small teams who want AI in their workflow. Recent example: $1,250 paid by a CT superintendent for a single consulting session.</p>
+    </div>
+    <div class="side-card">
+      <div class="label">EdTech Side</div>
+      <h3>Land the big fish</h3>
+      <p>AI infrastructure for school district leadership. Superintendents, chiefs of technology, principals. Longer cycles, bigger contracts, six-figure annual potential. Where the institutional money lives.</p>
+    </div>
   </div>
 
-  <p>Talking Tuesday or Wednesday.</p>
+  <p>We deliver client-owned software, not SaaS. The customer holds the install, the data, and the keys. No per-seat pricing.</p>
+
+  <h2>What's in flight</h2>
+
+  <ul>
+    <li><strong>Roche, Superintendent of Woodstock Public Schools (CT).</strong> $1,250 paid for consulting. June pilot rebuild on client-owned architecture. First referenceable case study lands here.</li>
+    <li><strong>Zalen, MA real estate agent.</strong> Hunter, a local Python plus Electron tool for MLS expired-listing skip trace. Built. Demo and close pending.</li>
+    <li><strong>Gina Williams, Emery Public Schools (CT).</strong> Active conversation. Choosing between two agent builds. Decision by May 12. She is the inside-district path.</li>
+    <li><strong>Pannone, Wooster (MA).</strong> Warming. Wants the Roche case study before signing.</li>
+    <li><strong>Three more warm CT and MA district contacts.</strong> Zaleta, Casimiro, Williams.</li>
+  </ul>
+
+  <h2>How we close</h2>
+
+  <p>Leverage. Every district we open names the next one. Roche told me to talk to the chief of technology at Denver Public Schools. Matt Burns said he would introduce me to Brewster's superintendent. Gina opens Emery from the inside. None of it is lies. It is all true and it all reinforces itself on every call.</p>
+
+  <p>The agency side feeds the EdTech side. We use the smaller builds to sharpen skills, generate tools, and stack proof. Then we walk into superintendents with a working portfolio.</p>
+
+  <h2>Who's running it</h2>
+
+  <p>Brayan Tenesaca and Ryan Vincent. I lead the build and EdTech sales. Ryan owns the agency side and small-business outreach. 60/40 split today, 50/50 once we hit $10k MRR. Roles still flexible while we figure out the right shape.</p>
+
+  <p>I am 18, freshman at Babson, led a keynote for 50 adult educators in April. Spend most of every day building with AI. The reason this works is the gap between people who can build with AI and people who need it is enormous, and right now that gap pays.</p>
+
+  <h2>Why I wanted you to see this</h2>
+
+  <p>You asked on the call what we are really doing. This is what we are really doing. Talking Tuesday or Wednesday.</p>
 
   <p class="signoff">Brayan</p>
 
