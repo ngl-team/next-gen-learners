@@ -337,6 +337,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">NGL Finance</div>
           <div style="display:flex;gap:4px">
             <button class="tab active" id="fintab-overview-btn" onclick="switchFinTab('overview')" style="padding:4px 12px;font-size:0.65rem">Overview</button>
+            <button class="tab" id="fintab-entries-btn" onclick="switchFinTab('entries')" style="padding:4px 12px;font-size:0.65rem">Entries</button>
             <button class="tab" id="fintab-upcoming-btn" onclick="switchFinTab('upcoming')" style="padding:4px 12px;font-size:0.65rem">Upcoming</button>
             <button class="tab" id="fintab-subscriptions-btn" onclick="switchFinTab('subscriptions')" style="padding:4px 12px;font-size:0.65rem">Subscriptions</button>
             <button class="tab" id="fintab-reconciliation-btn" onclick="switchFinTab('reconciliation')" style="padding:4px 12px;font-size:0.65rem">Reconciliation <span id="fintabReconBadge" style="display:none;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;font-size:0.55rem"></span></button>
@@ -442,12 +443,18 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </div>
     </div>
 
-    <div class="card" style="margin-top:12px;padding:16px">
-      <div class="card-title">All Entries</div>
-      <div id="pnlEntries" style="margin-top:10px"></div>
-    </div>
-
     </div><!-- /fintab-overview -->
+
+    <!-- ── ENTRIES TAB ── -->
+    <div id="fintab-entries" style="display:none">
+      <div class="card" style="margin-top:12px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div class="card-title" style="margin:0">All Entries</div>
+          <button class="btn primary" onclick="openPnlAdd()" style="font-size:0.7rem;padding:6px 12px">+ Add Entry</button>
+        </div>
+        <div id="pnlEntries" style="margin-top:10px"></div>
+      </div>
+    </div>
 
     <!-- ── UPCOMING TAB ── -->
     <div id="fintab-upcoming" style="display:none">
@@ -1870,7 +1877,7 @@ let _relFilter='all';
 let _finTab='overview';
 function switchFinTab(t){
   _finTab=t;
-  ['overview','upcoming','subscriptions','reconciliation'].forEach(name=>{
+  ['overview','entries','upcoming','subscriptions','reconciliation'].forEach(name=>{
     const btn=document.getElementById('fintab-'+name+'-btn');
     const panel=document.getElementById('fintab-'+name);
     if(btn)btn.classList.toggle('active',name===t);
