@@ -333,7 +333,15 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   <div class="view" id="view-pnl">
     <div class="card" style="padding:14px 20px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">NGL Finance</div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">NGL Finance</div>
+          <div style="display:flex;gap:4px">
+            <button class="tab active" id="fintab-overview-btn" onclick="switchFinTab('overview')" style="padding:4px 12px;font-size:0.65rem">Overview</button>
+            <button class="tab" id="fintab-upcoming-btn" onclick="switchFinTab('upcoming')" style="padding:4px 12px;font-size:0.65rem">Upcoming</button>
+            <button class="tab" id="fintab-subscriptions-btn" onclick="switchFinTab('subscriptions')" style="padding:4px 12px;font-size:0.65rem">Subscriptions</button>
+            <button class="tab" id="fintab-reconciliation-btn" onclick="switchFinTab('reconciliation')" style="padding:4px 12px;font-size:0.65rem">Reconciliation <span id="fintabReconBadge" style="display:none;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;font-size:0.55rem"></span></button>
+          </div>
+        </div>
         <div style="display:flex;gap:6px;align-items:center">
           <select id="pnlPeriod" onchange="loadPnl()" style="font-size:0.72rem;padding:5px 8px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:inherit">
             <option value="all">All Time</option>
@@ -341,11 +349,13 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
             <option value="quarter">This Quarter</option>
             <option value="year">This Year</option>
           </select>
-          <button class="btn" onclick="openSubAdd()" style="padding:6px 12px">+ Subscription</button>
           <button class="btn primary" onclick="openPnlAdd()" style="padding:6px 14px">+ Entry</button>
         </div>
       </div>
     </div>
+
+    <!-- ── OVERVIEW TAB ── -->
+    <div id="fintab-overview">
 
     <!-- Actual P&L (logged) -->
     <div style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:18px 0 8px 4px">Logged P&L</div>
@@ -379,35 +389,6 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net MRR</div>
         <div style="font-size:1.4rem;font-weight:800;margin-top:4px" id="finNetMrr">$0</div>
       </div>
-    </div>
-
-    <!-- Upcoming payments -->
-    <div class="card" style="margin-top:12px;padding:16px">
-      <div class="card-title">Upcoming Payments (next 60 days)</div>
-      <div id="finUpcoming" style="margin-top:10px"></div>
-    </div>
-
-    <!-- Active subscriptions list -->
-    <div class="card" style="margin-top:12px;padding:16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div class="card-title" style="margin:0">Subscriptions</div>
-        <button class="btn" onclick="openSubAdd()" style="font-size:0.62rem;padding:4px 10px">+ Add</button>
-      </div>
-      <div id="finSubs" style="margin-top:6px"></div>
-    </div>
-
-    <!-- Reconciliation -->
-    <div class="card" style="margin-top:12px;padding:16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div class="card-title" style="margin:0">Reconciliation</div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span id="reconSummary" style="font-size:0.66rem;color:var(--text-3)"></span>
-          <button class="btn" onclick="loadPnl()" style="font-size:0.62rem;padding:4px 10px">Re-check</button>
-          <button class="btn primary" onclick="autoFixAll()" id="reconFixBtn" style="font-size:0.62rem;padding:4px 10px;display:none">Fix All</button>
-        </div>
-      </div>
-      <div style="font-size:0.6rem;color:var(--text-3);margin-bottom:8px">Checks each active subscription has correct past entries (date + amount). Upcoming Payments are derived from subscriptions, so they always match.</div>
-      <div id="reconList" style="margin-top:8px"></div>
     </div>
 
     <!-- Monthly trend -->
@@ -464,6 +445,45 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <div class="card" style="margin-top:12px;padding:16px">
       <div class="card-title">All Entries</div>
       <div id="pnlEntries" style="margin-top:10px"></div>
+    </div>
+
+    </div><!-- /fintab-overview -->
+
+    <!-- ── UPCOMING TAB ── -->
+    <div id="fintab-upcoming" style="display:none">
+      <div class="card" style="margin-top:12px;padding:16px">
+        <div class="card-title">Upcoming Payments (next 60 days)</div>
+        <div style="font-size:0.6rem;color:var(--text-3);margin-top:4px">Derived live from active subscriptions. Edit a subscription's billing day or amount to change what shows here.</div>
+        <div id="finUpcoming" style="margin-top:10px"></div>
+      </div>
+    </div>
+
+    <!-- ── SUBSCRIPTIONS TAB ── -->
+    <div id="fintab-subscriptions" style="display:none">
+      <div class="card" style="margin-top:12px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div class="card-title" style="margin:0">Subscriptions</div>
+          <button class="btn primary" onclick="openSubAdd()" style="font-size:0.7rem;padding:6px 12px">+ Add Subscription</button>
+        </div>
+        <div style="font-size:0.6rem;color:var(--text-3);margin-bottom:8px">Each subscription auto-projects upcoming payments and drives the reconciliation check.</div>
+        <div id="finSubs" style="margin-top:6px"></div>
+      </div>
+    </div>
+
+    <!-- ── RECONCILIATION TAB ── -->
+    <div id="fintab-reconciliation" style="display:none">
+      <div class="card" style="margin-top:12px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div class="card-title" style="margin:0">Reconciliation</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span id="reconSummary" style="font-size:0.66rem;color:var(--text-3)"></span>
+            <button class="btn" onclick="loadPnl()" style="font-size:0.62rem;padding:4px 10px">Re-check</button>
+            <button class="btn primary" onclick="autoFixAll()" id="reconFixBtn" style="font-size:0.62rem;padding:4px 10px;display:none">Fix All</button>
+          </div>
+        </div>
+        <div style="font-size:0.6rem;color:var(--text-3);margin-bottom:8px">Checks each active subscription has correct past entries (date + amount). Upcoming Payments are derived from subscriptions, so they always match.</div>
+        <div id="reconList" style="margin-top:8px"></div>
+      </div>
     </div>
 
     <div class="alert" id="pnlAlert" style="margin-top:12px"></div>
@@ -1475,16 +1495,19 @@ function buildReconciliation(subs, entries){
   // Render
   const summaryEl=document.getElementById('reconSummary');
   const fixBtn=document.getElementById('reconFixBtn');
+  const badge=document.getElementById('fintabReconBadge');
   if(totalIssues===0){
     summaryEl.textContent='All clean';
     summaryEl.style.color='var(--green)';
     fixBtn.style.display='none';
+    if(badge)badge.style.display='none';
   } else {
     summaryEl.textContent=totalIssues+' issue'+(totalIssues===1?'':'s');
     summaryEl.style.color='var(--red)';
     const autoFixable=_reconFixes.length;
     fixBtn.style.display=autoFixable?'inline-block':'none';
     fixBtn.textContent='Fix All ('+autoFixable+')';
+    if(badge){badge.textContent=totalIssues;badge.style.display='inline-block'}
   }
 
   document.getElementById('reconList').innerHTML=rows.length?rows.map(r=>{
@@ -1843,6 +1866,17 @@ Return ONLY valid JSON, no markdown.`;
 // ── CRM Subtabs (Pipeline / Relationships) ─────────────────────────────────
 let _crmSubtab='pipeline';
 let _relFilter='all';
+
+let _finTab='overview';
+function switchFinTab(t){
+  _finTab=t;
+  ['overview','upcoming','subscriptions','reconciliation'].forEach(name=>{
+    const btn=document.getElementById('fintab-'+name+'-btn');
+    const panel=document.getElementById('fintab-'+name);
+    if(btn)btn.classList.toggle('active',name===t);
+    if(panel)panel.style.display=name===t?'block':'none';
+  });
+}
 
 function switchCrmSubtab(sub){
   _crmSubtab=sub;
