@@ -11,7 +11,7 @@ const MASTER_MMD = `flowchart TD
     FORM["Web form"]
     EST["In-house AI estimator<br/>kills Instant Roofer"]
   end
-  subgraph BRAIN["JARVIS - brain on his laptop"]
+  subgraph BRAIN["JARVIS - brain on your laptop"]
     direction TB
     EMAIL["Email assistant<br/>SPRINT 1 - start here"]
     VOICE["Voice profile +<br/>people files"]
@@ -53,7 +53,7 @@ const MASTER_MMD = `flowchart TD
 const EMAIL_MMD = `flowchart LR
   A["New email arrives"] --> B["Jarvis on laptop"]
   B --> C["Reads voice profile<br/>+ past replies"]
-  C --> D["Drafts reply<br/>in Jamil's voice"]
+  C --> D["Drafts reply<br/>in your voice"]
   D --> E["He edits 10 sec<br/>and sends"]
   B --> F["Triage:<br/>lead / vendor / customer / crew"]
   F --> G["Routes to<br/>right folder"]
@@ -94,7 +94,7 @@ const CRM_MMD = `flowchart TD
   class H out`;
 
 const SITE_MMD = `flowchart LR
-  A["Jamil edits<br/>content"] --> B["Simple visual editor"]
+  A["You edit<br/>content"] --> B["Simple visual editor"]
   B --> C["Auto-deploy"]
   C --> D["tecturalconstruction.com"]
   E["Estimator from<br/>Sprint 2"] --> D
@@ -129,7 +129,7 @@ const SPRINTS: Sprint[] = [
     badgeColor: 'green',
     problem: '"I am two days behind on email."',
     plain:
-      "Every morning Jarvis has already read the new emails. Leads, vendors, customers, and crew updates sit in their own bucket. For the replies that need drafting, Jarvis writes them in Jamil's voice from past emails. He reads, tweaks, sends. Twenty minutes instead of two hours.",
+      "Every morning Jarvis has already read the new emails. Leads, vendors, customers, and crew updates sit in their own bucket. For the replies that need drafting, Jarvis writes them in your voice from past emails. You read, tweak, send. Twenty minutes instead of two hours.",
     math: 'Five hours a week back. Twenty plus hours a month. At roofer-owner time value, that pays the build back inside the first month.',
     kills: 'The two-day email backlog. The lost leads sitting unread.',
     ship: 'Two weeks. Same pattern already shipped for a CT superintendent.',
@@ -143,7 +143,7 @@ const SPRINTS: Sprint[] = [
     badgeColor: 'gray',
     problem: '"I like Instant Roofer. I do not like the subscription."',
     plain:
-      "A lead types an address. The tool pulls roof measurements from aerial data, runs them through Tectural's pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. Jamil owns the math, the layout, the data. No subscription forever.",
+      "A lead types an address. The tool pulls roof measurements from aerial data, runs them through your pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. You own the math, the layout, the data. No subscription forever.",
     math: 'Kills $250 a month direct. Three thousand a year. Thirty thousand over ten years on a one-time build.',
     kills: 'Instant Roofer at $250 a month.',
     ship: 'Four to six weeks. Needs aerial measurement API integration and pricing rules captured.',
@@ -157,8 +157,8 @@ const SPRINTS: Sprint[] = [
     badgeColor: 'gray',
     problem: '"I want a CRM in the spirit of JobNimbus, with invoicing wired in."',
     plain:
-      'One dashboard he opens every morning. Every job is a row. Which jobs are in estimate, signed, scheduled, today on the truck, ready to invoice. Click a job and see the photos, the contract, the payment status. Invoicing fires automatically when a job is marked complete.',
-    math: 'A JobNimbus equivalent runs $400 to $800 a month at his crew size. Kill that and reclaim around four hours a week of paperwork on top. Real number is closer to $1,500 a month back.',
+      'One dashboard you open every morning. Every job is a row. Which jobs are in estimate, signed, scheduled, today on the truck, ready to invoice. Click a job and see the photos, the contract, the payment status. Invoicing fires automatically when a job is marked complete.',
+    math: 'A JobNimbus equivalent runs $400 to $800 a month at your crew size. Kill that and reclaim around four hours a week of paperwork on top. Real number is closer to $1,500 a month back.',
     kills: 'JobNimbus-style subscriptions. The paper trail across email, text, and the estimator.',
     ship: 'Six to eight weeks. Integrates Sprint 1 and Sprint 2 into one view.',
     chart: CRM_MMD,
@@ -166,14 +166,14 @@ const SPRINTS: Sprint[] = [
   },
   {
     num: '04',
-    title: 'Custom site he edits himself',
+    title: 'Custom site you edit yourself',
     badge: 'PHASE 4',
     badgeColor: 'gray',
     problem: '"No one builds it the way I want it."',
     plain:
-      'A clean site, built once, edited by Jamil through a simple editor. The Sprint 2 estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant. No more waiting on a contractor to change a headline.',
+      'A clean site, built once, edited by you through a simple editor. The Sprint 2 estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant. No more waiting on a contractor to change a headline.',
     math: 'Kills the offshore web contractor recurring spend. Lead capture front door starts converting visitors instead of sitting still.',
-    kills: 'The Filipino web contractor recurring fee. The mismatch between his taste and what gets shipped.',
+    kills: 'The offshore web contractor recurring fee. The mismatch between your taste and what gets shipped.',
     ship: 'Three to four weeks once Sprint 2 exists.',
     chart: SITE_MMD,
     idPrefix: 'site',
@@ -315,7 +315,7 @@ export default function TecturalPage() {
             }}
           >
             Four tools, mapped to how Tectural already works. Email, estimates, job
-            pipeline, custom site. Jamil owns every one. No subscriptions to rent
+            pipeline, custom site. You own every one. No subscriptions to rent
             forever. End of summer, the whole stack is in-house.
           </p>
         </div>
@@ -358,7 +358,7 @@ export default function TecturalPage() {
             margin: '0 0 32px',
           }}
         >
-          The green node is where we start. The yellow row is what Jamil gets out the
+          The green node is where we start. The yellow row is what you get out the
           other side. Everything in the middle is built once, owned forever.
         </p>
         <Mermaid chart={MASTER_MMD} idPrefix="tectural-master" />
@@ -461,7 +461,7 @@ export default function TecturalPage() {
         }}
       >
         <p style={{ fontSize: 14, color: '#475569', margin: '0 0 8px' }}>
-          Built for Jamil. May 2026.
+          Built for Tectural. May 2026.
         </p>
         <p style={{ fontSize: 14, color: '#475569', margin: 0 }}>
           <a
