@@ -2,10 +2,20 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-type Status = 'lead' | 'estimated' | 'signed' | 'scheduled' | 'installed' | 'invoiced' | 'paid';
+type Status =
+  | 'lead'
+  | 'estimated'
+  | 'drafted'
+  | 'signed'
+  | 'scheduled'
+  | 'installed'
+  | 'invoiced'
+  | 'paid';
+
 type ServiceType = 'roofing' | 'solar';
 type LeadSource = 'phone' | 'website' | 'referral';
 type ServiceFilter = 'all' | ServiceType;
+type ContractTier = 'basic' | 'medium' | 'complex';
 
 type Job = {
   id: string;
@@ -18,13 +28,25 @@ type Job = {
   updatedAt: string;
   serviceType: ServiceType;
   leadSource: LeadSource;
+  contractTier?: ContractTier;
+  contractMaterial?: string;
 };
 
-const STATUS_ORDER: Status[] = ['lead', 'estimated', 'signed', 'scheduled', 'installed', 'invoiced', 'paid'];
+const STATUS_ORDER: Status[] = [
+  'lead',
+  'estimated',
+  'drafted',
+  'signed',
+  'scheduled',
+  'installed',
+  'invoiced',
+  'paid',
+];
 
 const STATUS_META: Record<Status, { label: string; bg: string; border: string; chip: string }> = {
   lead: { label: 'Lead', bg: '#f1f5f9', border: '#cbd5e1', chip: '#475569' },
   estimated: { label: 'Estimated', bg: '#dbeafe', border: '#93c5fd', chip: '#1d4ed8' },
+  drafted: { label: 'Contract Drafted', bg: '#fce7f3', border: '#f9a8d4', chip: '#be185d' },
   signed: { label: 'Signed', bg: '#e0e7ff', border: '#a5b4fc', chip: '#4338ca' },
   scheduled: { label: 'Scheduled', bg: '#fef3c7', border: '#fcd34d', chip: '#b45309' },
   installed: { label: 'Installed', bg: '#dcfce7', border: '#86efac', chip: '#15803d' },
@@ -42,6 +64,25 @@ const SOURCE_META: Record<LeadSource, { label: string }> = {
   website: { label: 'Website' },
   referral: { label: 'Referral' },
 };
+
+const TIER_META: Record<ContractTier, { label: string; range: string; pages: string; bg: string; fg: string }> = {
+  basic: { label: 'Basic', range: '$5K - $20K', pages: '2 pages', bg: '#dcfce7', fg: '#15803d' },
+  medium: { label: 'Medium', range: '$20K - $100K', pages: '4-6 pages', bg: '#fef3c7', fg: '#b45309' },
+  complex: { label: 'Complex', range: '$100K+', pages: '8-10 pages', bg: '#fce7f3', fg: '#be185d' },
+};
+
+const ROOFING_MATERIALS = ['Asphalt shingle', 'Architectural shingle', 'Metal standing seam', 'EPDM rubber', 'TPO membrane', 'Slate', 'Cedar shake'];
+const SOLAR_MATERIALS = ['Panel array (residential)', 'Tesla Solar Roof', 'Battery + storage', 'Commercial solar array', 'Solar carport'];
+
+function materialsForService(service: ServiceType): string[] {
+  return service === 'roofing' ? ROOFING_MATERIALS : SOLAR_MATERIALS;
+}
+
+function suggestTier(amount: number): ContractTier {
+  if (amount >= 100000) return 'complex';
+  if (amount >= 20000) return 'medium';
+  return 'basic';
+}
 
 const SEED_JOBS: Job[] = [
   {
@@ -69,6 +110,20 @@ const SEED_JOBS: Job[] = [
     leadSource: 'website',
   },
   {
+    id: 'j10',
+    customer: 'Aronson Estate',
+    address: '14 Ridgewood Pl, Ridgefield',
+    jobType: 'Full reroof + chimney rebuild',
+    amount: 58000,
+    status: 'drafted',
+    notes: 'Contract drafted Tuesday. Sent to attorney for review. Tier is Medium because of estate liability rider.',
+    updatedAt: '12h ago',
+    serviceType: 'roofing',
+    leadSource: 'referral',
+    contractTier: 'medium',
+    contractMaterial: 'Slate',
+  },
+  {
     id: 'j3',
     customer: 'The Bradley Estate',
     address: '27 Plumtrees Rd, Bethel',
@@ -79,6 +134,8 @@ const SEED_JOBS: Job[] = [
     updatedAt: '3d ago',
     serviceType: 'roofing',
     leadSource: 'referral',
+    contractTier: 'medium',
+    contractMaterial: 'EPDM rubber',
   },
   {
     id: 'j4',
@@ -91,6 +148,8 @@ const SEED_JOBS: Job[] = [
     updatedAt: '4d ago',
     serviceType: 'roofing',
     leadSource: 'phone',
+    contractTier: 'basic',
+    contractMaterial: 'Metal standing seam',
   },
   {
     id: 'j5',
@@ -103,6 +162,8 @@ const SEED_JOBS: Job[] = [
     updatedAt: '1d ago',
     serviceType: 'roofing',
     leadSource: 'referral',
+    contractTier: 'basic',
+    contractMaterial: 'Slate',
   },
   {
     id: 'j6',
@@ -115,6 +176,8 @@ const SEED_JOBS: Job[] = [
     updatedAt: '5d ago',
     serviceType: 'solar',
     leadSource: 'website',
+    contractTier: 'medium',
+    contractMaterial: 'Tesla Solar Roof',
   },
   {
     id: 'j7',
@@ -127,6 +190,8 @@ const SEED_JOBS: Job[] = [
     updatedAt: '1w ago',
     serviceType: 'roofing',
     leadSource: 'referral',
+    contractTier: 'basic',
+    contractMaterial: 'Asphalt shingle',
   },
   {
     id: 'j8',
@@ -152,9 +217,23 @@ const SEED_JOBS: Job[] = [
     serviceType: 'solar',
     leadSource: 'website',
   },
+  {
+    id: 'j11',
+    customer: "Bertelli's Garage",
+    address: '603 Federal Rd, Brookfield',
+    jobType: 'Residential solar + battery',
+    amount: 19500,
+    status: 'drafted',
+    notes: 'Basic contract drafted. Battery rider added for the Powerwall. Awaiting signature.',
+    updatedAt: '8h ago',
+    serviceType: 'solar',
+    leadSource: 'phone',
+    contractTier: 'basic',
+    contractMaterial: 'Battery + storage',
+  },
 ];
 
-const STORAGE_KEY = 'tectural_crm_v2';
+const STORAGE_KEY = 'tectural_crm_v3';
 
 function loadJobs(): Job[] {
   if (typeof window === 'undefined') return SEED_JOBS;
@@ -189,7 +268,9 @@ function newId() {
 type EditState =
   | { mode: 'closed' }
   | { mode: 'edit'; job: Job }
-  | { mode: 'intake' };
+  | { mode: 'intake' }
+  | { mode: 'share'; job: Job }
+  | { mode: 'proposal'; job: Job };
 
 export default function TecturalCRM() {
   const [jobs, setJobs] = useState<Job[]>(SEED_JOBS);
@@ -223,6 +304,7 @@ export default function TecturalCRM() {
     const m: Record<Status, Job[]> = {
       lead: [],
       estimated: [],
+      drafted: [],
       signed: [],
       scheduled: [],
       installed: [],
@@ -282,15 +364,7 @@ export default function TecturalCRM() {
       >
         <div style={{ maxWidth: 1400, margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <p
-              style={{
-                fontSize: 11,
-                letterSpacing: '0.2em',
-                color: '#86efac',
-                margin: 0,
-                fontWeight: 700,
-              }}
-            >
+            <p style={{ fontSize: 11, letterSpacing: '0.2em', color: '#86efac', margin: 0, fontWeight: 700 }}>
               TECTURAL CRM · V1 · LIVE BUILD
             </p>
             <a
@@ -328,8 +402,8 @@ export default function TecturalCRM() {
               lineHeight: 1.5,
             }}
           >
-            Every job, every stage, every dollar. Roofing and solar live in separate tabs.
-            Take a new lead in three taps. Move cards as the job moves.
+            Every job, every stage, every dollar. Roofing and solar in separate tabs.
+            Contracts drafted by tier. Customers get a private link to their own project page.
           </p>
         </div>
       </header>
@@ -390,7 +464,7 @@ export default function TecturalCRM() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(7, minmax(240px, 1fr))',
+            gridTemplateColumns: `repeat(${STATUS_ORDER.length}, minmax(220px, 1fr))`,
             gap: 12,
             overflowX: 'auto',
             paddingBottom: 16,
@@ -414,9 +488,9 @@ export default function TecturalCRM() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
                   <h3
                     style={{
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: 800,
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                       textTransform: 'uppercase',
                       color: meta.chip,
                       margin: 0,
@@ -436,6 +510,7 @@ export default function TecturalCRM() {
                       onClick={() => setEdit({ mode: 'edit', job })}
                       onMoveLeft={() => moveJob(job.id, -1)}
                       onMoveRight={() => moveJob(job.id, 1)}
+                      onShare={() => setEdit({ mode: 'share', job })}
                       canMoveLeft={STATUS_ORDER.indexOf(job.status) > 0}
                       canMoveRight={STATUS_ORDER.indexOf(job.status) < STATUS_ORDER.length - 1}
                     />
@@ -470,10 +545,11 @@ export default function TecturalCRM() {
           <ul style={{ fontSize: 16, color: 'rgba(255,255,255,0.85)', lineHeight: 1.7, margin: 0, paddingLeft: 20 }}>
             <li>Auto-sync across your laptop, phone, and the office tablet</li>
             <li>New leads from your website form land here as a card automatically</li>
-            <li>Auto-generated contracts by job tier (basic, medium, complex) the moment you move a card to Signed</li>
+            <li>The Generate Proposal tool emits a real PDF tied to state and federal terms by tier</li>
+            <li>Contract auto-fills with customer signature line, ready to send through the email assistant</li>
             <li>Mark Installed and the invoice fires to the customer without you typing it</li>
             <li>QuickBooks sync, so paid jobs close themselves</li>
-            <li>Job photos and crew checklists attached to each card</li>
+            <li>Customer portal lives at tecturalconstruction.com slash address, with photos and message history</li>
           </ul>
         </div>
       </section>
@@ -505,12 +581,39 @@ export default function TecturalCRM() {
           onSave={saveJob}
           onDelete={deleteJob}
           onClose={() => setEdit({ mode: 'closed' })}
+          onOpenProposal={(j) => setEdit({ mode: 'proposal', job: j })}
         />
       )}
       {edit.mode === 'intake' && (
         <IntakeWizard
           onSave={(job) => saveJob(job, true)}
           onClose={() => setEdit({ mode: 'closed' })}
+        />
+      )}
+      {edit.mode === 'share' && (
+        <ShareModal job={edit.job} onClose={() => setEdit({ mode: 'closed' })} />
+      )}
+      {edit.mode === 'proposal' && (
+        <ProposalModal
+          job={edit.job}
+          onClose={() => setEdit({ mode: 'closed' })}
+          onApply={(tier, material, notesAppend) => {
+            setJobs((prev) =>
+              prev.map((j) =>
+                j.id === edit.job.id
+                  ? {
+                      ...j,
+                      contractTier: tier,
+                      contractMaterial: material,
+                      notes: j.notes ? `${j.notes}\n\n${notesAppend}` : notesAppend,
+                      status: j.status === 'lead' ? 'estimated' : j.status,
+                      updatedAt: 'just now',
+                    }
+                  : j
+              )
+            );
+            setEdit({ mode: 'closed' });
+          }}
         />
       )}
     </main>
@@ -582,14 +685,7 @@ function ServiceTabs({
             }}
           >
             {tab.label}
-            <span
-              style={{
-                marginLeft: 8,
-                fontSize: 12,
-                fontWeight: 700,
-                opacity: 0.85,
-              }}
-            >
+            <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 700, opacity: 0.85 }}>
               {tab.count}
             </span>
           </button>
@@ -604,6 +700,7 @@ function JobCard({
   onClick,
   onMoveLeft,
   onMoveRight,
+  onShare,
   canMoveLeft,
   canMoveRight,
 }: {
@@ -611,11 +708,13 @@ function JobCard({
   onClick: () => void;
   onMoveLeft: () => void;
   onMoveRight: () => void;
+  onShare: () => void;
   canMoveLeft: boolean;
   canMoveRight: boolean;
 }) {
   const service = SERVICE_META[job.serviceType];
   const source = SOURCE_META[job.leadSource];
+  const tier = job.contractTier ? TIER_META[job.contractTier] : null;
   return (
     <div
       style={{
@@ -629,13 +728,7 @@ function JobCard({
     >
       <button
         onClick={onClick}
-        style={{
-          all: 'unset',
-          cursor: 'pointer',
-          display: 'block',
-          width: '100%',
-          marginBottom: 8,
-        }}
+        style={{ all: 'unset', cursor: 'pointer', display: 'block', width: '100%', marginBottom: 8 }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 4 }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', margin: 0, lineHeight: 1.25 }}>
@@ -663,6 +756,27 @@ function JobCard({
           <span style={{ fontSize: 15, fontWeight: 800, color: '#15803d' }}>{formatMoney(job.amount)}</span>
           <span style={{ fontSize: 10, color: '#94a3b8' }}>{source.label} · {job.updatedAt}</span>
         </div>
+        {tier && (
+          <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span
+              style={{
+                background: tier.bg,
+                color: tier.fg,
+                fontSize: 10,
+                fontWeight: 800,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '2px 6px',
+                borderRadius: 999,
+              }}
+            >
+              {tier.label} contract
+            </span>
+            {job.contractMaterial && (
+              <span style={{ fontSize: 11, color: '#64748b' }}>{job.contractMaterial}</span>
+            )}
+          </div>
+        )}
       </button>
       <div style={{ display: 'flex', gap: 6, borderTop: '1px solid rgba(15,23,42,0.06)', paddingTop: 8 }}>
         <button
@@ -682,6 +796,24 @@ function JobCard({
           }}
         >
           ←
+        </button>
+        <button
+          onClick={onShare}
+          style={{
+            flex: 1.2,
+            background: '#eef2ff',
+            border: 'none',
+            padding: '6px 0',
+            borderRadius: 6,
+            fontSize: 11,
+            cursor: 'pointer',
+            color: '#4338ca',
+            fontWeight: 800,
+            fontFamily: 'inherit',
+            letterSpacing: '0.04em',
+          }}
+        >
+          SHARE
         </button>
         <button
           onClick={onMoveRight}
@@ -751,51 +883,13 @@ function IntakeWizard({
   }
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(15,23,42,0.55)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: 20,
-        zIndex: 50,
-        overflowY: 'auto',
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#fff',
-          borderRadius: 16,
-          width: '100%',
-          maxWidth: 560,
-          padding: 28,
-          marginTop: '5vh',
-          boxShadow: '0 20px 60px rgba(15,23,42,0.3)',
-        }}
-      >
+    <Backdrop onClose={onClose}>
+      <ModalShell maxWidth={560}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 11, letterSpacing: '0.18em', color: '#15803d', margin: 0, fontWeight: 700 }}>
             NEW LEAD · STEP {step} OF 3
           </p>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              fontSize: 24,
-              cursor: 'pointer',
-              color: '#94a3b8',
-              padding: 4,
-              lineHeight: 1,
-              fontFamily: 'inherit',
-            }}
-          >
-            ×
-          </button>
+          <CloseX onClick={onClose} />
         </div>
 
         <div style={{ display: 'flex', gap: 6, marginBottom: 24 }}>
@@ -814,64 +908,30 @@ function IntakeWizard({
 
         {step === 1 && (
           <>
-            <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px', color: '#0f172a', lineHeight: 1.2 }}>
-              Where did this lead come from?
-            </h2>
-            <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 20px' }}>
-              Pick the source. The rest of the intake adapts to it.
-            </p>
+            <h2 style={titleStyle}>Where did this lead come from?</h2>
+            <p style={subTextStyle}>Pick the source. The rest of the intake adapts to it.</p>
             <div style={{ display: 'grid', gap: 10 }}>
-              <SourceButton
-                label="Phone call"
-                hint="They called you. You are writing it down right now."
-                onClick={() => pickSource('phone')}
-              />
-              <SourceButton
-                label="Website"
-                hint="They filled out the contact form or estimator."
-                onClick={() => pickSource('website')}
-              />
-              <SourceButton
-                label="Referral"
-                hint="Someone you know sent them your way."
-                onClick={() => pickSource('referral')}
-              />
+              <SourceButton label="Phone call" hint="They called you. You are writing it down right now." onClick={() => pickSource('phone')} />
+              <SourceButton label="Website" hint="They filled out the contact form or estimator." onClick={() => pickSource('website')} />
+              <SourceButton label="Referral" hint="Someone you know sent them your way." onClick={() => pickSource('referral')} />
             </div>
           </>
         )}
 
         {step === 2 && leadSource && (
           <>
-            <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px', color: '#0f172a', lineHeight: 1.2 }}>
-              Who is it and what do they need?
-            </h2>
-            <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 20px' }}>
+            <h2 style={titleStyle}>Who is it and what do they need?</h2>
+            <p style={subTextStyle}>
               Source: <strong style={{ color: '#0f172a' }}>{SOURCE_META[leadSource].label}</strong>. Capture what they told you. You can fill in the rest later.
             </p>
             <Field label="Customer name">
-              <input
-                value={customer}
-                onChange={(e) => setCustomer(e.target.value)}
-                placeholder="e.g. Maria Santos"
-                style={inputStyle}
-                autoFocus
-              />
+              <input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="e.g. Maria Santos" style={inputStyle} autoFocus />
             </Field>
             <Field label="Address">
-              <input
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="e.g. 88 Hillcrest Ave, Danbury"
-                style={inputStyle}
-              />
+              <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g. 88 Hillcrest Ave, Danbury" style={inputStyle} />
             </Field>
             <Field label="What they need (short)">
-              <input
-                value={jobType}
-                onChange={(e) => setJobType(e.target.value)}
-                placeholder="e.g. Leak above kitchen, wants estimate"
-                style={inputStyle}
-              />
+              <input value={jobType} onChange={(e) => setJobType(e.target.value)} placeholder="e.g. Leak above kitchen, wants estimate" style={inputStyle} />
             </Field>
             <Field label="Rough ballpark (USD, optional)">
               <input
@@ -892,47 +952,27 @@ function IntakeWizard({
               />
             </Field>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginTop: 20 }}>
-              <button onClick={() => setStep(1)} style={ghostBtn}>
-                ← Back
-              </button>
-              <button onClick={continueToService} style={primaryBtn}>
-                Next: pick service type →
-              </button>
+              <button onClick={() => setStep(1)} style={ghostBtn}>← Back</button>
+              <button onClick={continueToService} style={primaryBtn}>Next: pick service type →</button>
             </div>
           </>
         )}
 
         {step === 3 && leadSource && (
           <>
-            <h2 style={{ fontSize: 24, fontWeight: 800, margin: '0 0 8px', color: '#0f172a', lineHeight: 1.2 }}>
-              Roofing or solar?
-            </h2>
-            <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 20px' }}>
-              This routes the job into the right pipeline. Each side has its own contract template and crew flow.
-            </p>
+            <h2 style={titleStyle}>Roofing or solar?</h2>
+            <p style={subTextStyle}>This routes the job into the right pipeline. Each side has its own contract templates and crew flow.</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <ServiceButton
-                serviceType="roofing"
-                title="Roofing"
-                hint="Reroof, repair, slate, metal, EPDM."
-                onClick={() => finish('roofing')}
-              />
-              <ServiceButton
-                serviceType="solar"
-                title="Solar"
-                hint="Panels, batteries, Tesla, carport, commercial."
-                onClick={() => finish('solar')}
-              />
+              <ServiceButton serviceType="roofing" title="Roofing" hint="Reroof, repair, slate, metal, EPDM." onClick={() => finish('roofing')} />
+              <ServiceButton serviceType="solar" title="Solar" hint="Panels, batteries, Tesla, carport, commercial." onClick={() => finish('solar')} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 20 }}>
-              <button onClick={() => setStep(2)} style={ghostBtn}>
-                ← Back
-              </button>
+              <button onClick={() => setStep(2)} style={ghostBtn}>← Back</button>
             </div>
           </>
         )}
-      </div>
-    </div>
+      </ModalShell>
+    </Backdrop>
   );
 }
 
@@ -1013,11 +1053,13 @@ function EditModal({
   onSave,
   onDelete,
   onClose,
+  onOpenProposal,
 }: {
   job: Job;
   onSave: (j: Job, isNew: boolean) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
+  onOpenProposal: (j: Job) => void;
 }) {
   const [customer, setCustomer] = useState(job.customer);
   const [address, setAddress] = useState(job.address);
@@ -1027,6 +1069,10 @@ function EditModal({
   const [notes, setNotes] = useState(job.notes);
   const [serviceType, setServiceType] = useState<ServiceType>(job.serviceType);
   const [leadSource, setLeadSource] = useState<LeadSource>(job.leadSource);
+  const [contractTier, setContractTier] = useState<ContractTier | ''>(job.contractTier ?? '');
+  const [contractMaterial, setContractMaterial] = useState<string>(job.contractMaterial ?? '');
+
+  const materials = materialsForService(serviceType);
 
   function handleSave() {
     if (!customer.trim()) {
@@ -1045,86 +1091,41 @@ function EditModal({
         updatedAt: job.updatedAt,
         serviceType,
         leadSource,
+        contractTier: contractTier || undefined,
+        contractMaterial: contractMaterial || undefined,
       },
       false
     );
   }
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(15,23,42,0.55)',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: 20,
-        zIndex: 50,
-        overflowY: 'auto',
-      }}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          background: '#fff',
-          borderRadius: 16,
-          width: '100%',
-          maxWidth: 520,
-          padding: 28,
-          marginTop: '5vh',
-          boxShadow: '0 20px 60px rgba(15,23,42,0.3)',
-        }}
-      >
+    <Backdrop onClose={onClose}>
+      <ModalShell maxWidth={560}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0, color: '#0f172a' }}>Edit job</h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              fontSize: 24,
-              cursor: 'pointer',
-              color: '#94a3b8',
-              padding: 4,
-              lineHeight: 1,
-              fontFamily: 'inherit',
-            }}
-          >
-            ×
-          </button>
+          <CloseX onClick={onClose} />
         </div>
 
         <Field label="Customer">
-          <input
-            value={customer}
-            onChange={(e) => setCustomer(e.target.value)}
-            placeholder="e.g. Robert Chen"
-            style={inputStyle}
-          />
+          <input value={customer} onChange={(e) => setCustomer(e.target.value)} placeholder="e.g. Robert Chen" style={inputStyle} />
         </Field>
         <Field label="Address">
-          <input
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="e.g. 142 Oak Ridge Rd, Newtown"
-            style={inputStyle}
-          />
+          <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="e.g. 142 Oak Ridge Rd, Newtown" style={inputStyle} />
         </Field>
         <Field label="Job type">
-          <input
-            value={jobType}
-            onChange={(e) => setJobType(e.target.value)}
-            placeholder="e.g. Asphalt reroof"
-            style={inputStyle}
-          />
+          <input value={jobType} onChange={(e) => setJobType(e.target.value)} placeholder="e.g. Asphalt reroof" style={inputStyle} />
         </Field>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <Field label="Service">
             <select
               value={serviceType}
-              onChange={(e) => setServiceType(e.target.value as ServiceType)}
+              onChange={(e) => {
+                const next = e.target.value as ServiceType;
+                setServiceType(next);
+                if (contractMaterial && !materialsForService(next).includes(contractMaterial)) {
+                  setContractMaterial('');
+                }
+              }}
               style={{ ...inputStyle, background: '#fff' }}
             >
               <option value="roofing">Roofing</option>
@@ -1147,11 +1148,79 @@ function EditModal({
           <input
             type="number"
             value={amount || ''}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            onChange={(e) => {
+              const n = Number(e.target.value);
+              setAmount(n);
+              if (!contractTier) setContractTier(suggestTier(n));
+            }}
             placeholder="14200"
             style={inputStyle}
           />
         </Field>
+
+        <div
+          style={{
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 14,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
+            <p style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.06em', color: '#475569', margin: 0, textTransform: 'uppercase' }}>
+              Contract
+            </p>
+            <button
+              onClick={() => onOpenProposal({
+                ...job,
+                customer, address, jobType, amount: Number(amount) || 0, status, notes, serviceType, leadSource,
+                contractTier: contractTier || undefined, contractMaterial: contractMaterial || undefined,
+              })}
+              style={{
+                background: '#0f172a',
+                color: '#fff',
+                border: 'none',
+                padding: '8px 14px',
+                borderRadius: 8,
+                fontWeight: 700,
+                fontSize: 12,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                letterSpacing: '0.04em',
+              }}
+            >
+              GENERATE PROPOSAL
+            </button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <Field label="Contract tier">
+              <select
+                value={contractTier}
+                onChange={(e) => setContractTier(e.target.value as ContractTier | '')}
+                style={{ ...inputStyle, background: '#fff' }}
+              >
+                <option value="">Pick tier</option>
+                <option value="basic">Basic ($5K - $20K)</option>
+                <option value="medium">Medium ($20K - $100K)</option>
+                <option value="complex">Complex ($100K+)</option>
+              </select>
+            </Field>
+            <Field label="Material / template">
+              <select
+                value={contractMaterial}
+                onChange={(e) => setContractMaterial(e.target.value)}
+                style={{ ...inputStyle, background: '#fff' }}
+              >
+                <option value="">Pick material</option>
+                {materials.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
+        </div>
+
         <Field label="Status">
           <select
             value={status}
@@ -1195,16 +1264,326 @@ function EditModal({
             Delete
           </button>
           <div style={{ display: 'flex', gap: 10, marginLeft: 'auto' }}>
-            <button onClick={onClose} style={ghostBtn}>
-              Cancel
-            </button>
-            <button onClick={handleSave} style={primaryBtn}>
-              Save
-            </button>
+            <button onClick={onClose} style={ghostBtn}>Cancel</button>
+            <button onClick={handleSave} style={primaryBtn}>Save</button>
           </div>
         </div>
+      </ModalShell>
+    </Backdrop>
+  );
+}
+
+function ShareModal({ job, onClose }: { job: Job; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState('https://www.nextgenerationlearners.com');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') setOrigin(window.location.origin);
+  }, []);
+
+  const url = `${origin}/tectural-construction/customer/${job.id}`;
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      window.prompt('Copy this link', url);
+    }
+  }
+
+  return (
+    <Backdrop onClose={onClose}>
+      <ModalShell maxWidth={520}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <p style={{ fontSize: 11, letterSpacing: '0.18em', color: '#4338ca', margin: 0, fontWeight: 700 }}>
+            CUSTOMER LINK
+          </p>
+          <CloseX onClick={onClose} />
+        </div>
+        <h2 style={titleStyle}>Send {job.customer} their own project page</h2>
+        <p style={subTextStyle}>
+          One link, scoped to this job. Customer sees the timeline, contract status, photos, and messages from the install. Nothing else.
+        </p>
+
+        <div
+          style={{
+            background: '#0f172a',
+            color: '#a5b4fc',
+            padding: 14,
+            borderRadius: 10,
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 13,
+            wordBreak: 'break-all',
+            marginBottom: 14,
+          }}
+        >
+          {url}
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <button onClick={copy} style={{ ...primaryBtn, background: copied ? '#15803d' : '#4338ca' }}>
+            {copied ? 'Copied ✓' : 'Copy link'}
+          </button>
+          <a
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            style={{ ...ghostBtn, display: 'inline-block', textDecoration: 'none', textAlign: 'center' }}
+          >
+            Preview as customer →
+          </a>
+        </div>
+
+        <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 16, lineHeight: 1.5 }}>
+          V1 reads from this browser. V2 will sync the customer view to the cloud so any device that opens the link sees live status.
+        </p>
+      </ModalShell>
+    </Backdrop>
+  );
+}
+
+function ProposalModal({
+  job,
+  onClose,
+  onApply,
+}: {
+  job: Job;
+  onClose: () => void;
+  onApply: (tier: ContractTier, material: string, notesAppend: string) => void;
+}) {
+  const isRoofing = job.serviceType === 'roofing';
+  const [pitch, setPitch] = useState('6/12');
+  const [layers, setLayers] = useState('1');
+  const [material, setMaterial] = useState<string>(job.contractMaterial ?? (isRoofing ? 'Architectural shingle' : 'Panel array (residential)'));
+  const [squares, setSquares] = useState<string>(isRoofing ? '24' : '');
+  const [panels, setPanels] = useState<string>(!isRoofing ? '18' : '');
+  const [generated, setGenerated] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
+  const tier = useMemo<ContractTier>(() => suggestTier(job.amount || 0), [job.amount]);
+
+  function run() {
+    setGenerating(true);
+    setTimeout(() => {
+      setGenerating(false);
+      setGenerated(true);
+    }, 900);
+  }
+
+  function apply() {
+    const summary = isRoofing
+      ? `Proposal generated: ${material}, ${pitch} pitch, ${layers} layer, ${squares || '?'} squares. Tier ${TIER_META[tier].label}.`
+      : `Proposal generated: ${material}, ${panels || '?'} panels. Tier ${TIER_META[tier].label}.`;
+    onApply(tier, material, summary);
+  }
+
+  return (
+    <Backdrop onClose={onClose}>
+      <ModalShell maxWidth={620}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <p style={{ fontSize: 11, letterSpacing: '0.18em', color: '#0f172a', margin: 0, fontWeight: 700 }}>
+            GENERATE PROPOSAL · {job.serviceType.toUpperCase()}
+          </p>
+          <CloseX onClick={onClose} />
+        </div>
+        <h2 style={titleStyle}>{job.customer}</h2>
+        <p style={subTextStyle}>
+          Drop in the key inputs. Jarvis picks the right contract tier from the dollar amount, pulls the matching template, and pre-fills the breakdown.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 8 }}>
+          <Field label="Material">
+            <select value={material} onChange={(e) => setMaterial(e.target.value)} style={{ ...inputStyle, background: '#fff' }}>
+              {materialsForService(job.serviceType).map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </Field>
+          {isRoofing ? (
+            <Field label="Pitch">
+              <input value={pitch} onChange={(e) => setPitch(e.target.value)} placeholder="e.g. 6/12" style={inputStyle} />
+            </Field>
+          ) : (
+            <Field label="Panel count">
+              <input value={panels} onChange={(e) => setPanels(e.target.value)} placeholder="e.g. 18" style={inputStyle} />
+            </Field>
+          )}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 8 }}>
+          {isRoofing ? (
+            <>
+              <Field label="Existing layers">
+                <input value={layers} onChange={(e) => setLayers(e.target.value)} placeholder="1 or 2" style={inputStyle} />
+              </Field>
+              <Field label="Roof squares (approx)">
+                <input value={squares} onChange={(e) => setSquares(e.target.value)} placeholder="e.g. 24" style={inputStyle} />
+              </Field>
+            </>
+          ) : (
+            <Field label="Including battery">
+              <select style={{ ...inputStyle, background: '#fff' }} defaultValue="no">
+                <option value="no">No</option>
+                <option value="yes">Yes, Powerwall</option>
+              </select>
+            </Field>
+          )}
+        </div>
+
+        <div
+          style={{
+            background: '#f8fafc',
+            border: '1px dashed #cbd5e1',
+            borderRadius: 12,
+            padding: 16,
+            marginTop: 8,
+          }}
+        >
+          <p style={{ fontSize: 11, letterSpacing: '0.12em', color: '#94a3b8', margin: '0 0 6px', fontWeight: 700, textTransform: 'uppercase' }}>
+            Suggested tier from job amount
+          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <p style={{ fontSize: 20, fontWeight: 800, margin: 0, color: TIER_META[tier].fg }}>
+              {TIER_META[tier].label} contract
+            </p>
+            <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+              {TIER_META[tier].pages} · covers {TIER_META[tier].range}
+            </p>
+          </div>
+        </div>
+
+        {!generated && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 22 }}>
+            <button onClick={onClose} style={ghostBtn}>Cancel</button>
+            <button onClick={run} disabled={generating} style={{ ...primaryBtn, background: generating ? '#94a3b8' : '#0f172a' }}>
+              {generating ? 'Generating...' : 'Generate proposal →'}
+            </button>
+          </div>
+        )}
+
+        {generated && (
+          <>
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 12,
+                padding: 18,
+                marginTop: 16,
+                boxShadow: '0 1px 3px rgba(15,23,42,0.04)',
+              }}
+            >
+              <p style={{ fontSize: 11, letterSpacing: '0.12em', color: '#15803d', margin: '0 0 8px', fontWeight: 700, textTransform: 'uppercase' }}>
+                Proposal preview · Tectural Construction
+              </p>
+              <p style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '0 0 4px' }}>{job.customer}</p>
+              <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 14px' }}>{job.address}</p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 14, color: '#0f172a' }}>
+                {isRoofing ? (
+                  <>
+                    <ProposalLine label={`${material}, ${squares || '?'} squares`} value={formatMoney(Math.round((job.amount || 0) * 0.62))} />
+                    <ProposalLine label={`Tear-off (${layers} layer)`} value={formatMoney(Math.round((job.amount || 0) * 0.12))} />
+                    <ProposalLine label="Underlayment + flashing" value={formatMoney(Math.round((job.amount || 0) * 0.08))} />
+                    <ProposalLine label="Labor + crew" value={formatMoney(Math.round((job.amount || 0) * 0.16))} />
+                    <ProposalLine label="Disposal + permits" value={formatMoney(Math.round((job.amount || 0) * 0.02))} />
+                  </>
+                ) : (
+                  <>
+                    <ProposalLine label={`${material}, ${panels || '?'} panels`} value={formatMoney(Math.round((job.amount || 0) * 0.55))} />
+                    <ProposalLine label="Inverter + monitoring" value={formatMoney(Math.round((job.amount || 0) * 0.15))} />
+                    <ProposalLine label="Mounting + racking" value={formatMoney(Math.round((job.amount || 0) * 0.08))} />
+                    <ProposalLine label="Labor + crew" value={formatMoney(Math.round((job.amount || 0) * 0.18))} />
+                    <ProposalLine label="Permits + interconnection" value={formatMoney(Math.round((job.amount || 0) * 0.04))} />
+                  </>
+                )}
+              </ul>
+              <div style={{ borderTop: '1px solid #e2e8f0', marginTop: 12, paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
+                <strong style={{ fontSize: 15, color: '#0f172a' }}>Total</strong>
+                <strong style={{ fontSize: 15, color: '#15803d' }}>{formatMoney(job.amount || 0)}</strong>
+              </div>
+              <p style={{ fontSize: 12, color: '#64748b', margin: '14px 0 0', lineHeight: 1.5 }}>
+                {TIER_META[tier].label} contract template attached. State and federal terms baked in. Customer signature line ready.
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 22 }}>
+              <button onClick={() => setGenerated(false)} style={ghostBtn}>Adjust inputs</button>
+              <button onClick={apply} style={primaryBtn}>Attach to job + advance to Estimated</button>
+            </div>
+          </>
+        )}
+      </ModalShell>
+    </Backdrop>
+  );
+}
+
+function ProposalLine({ label, value }: { label: string; value: string }) {
+  return (
+    <li style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px dashed #e2e8f0' }}>
+      <span style={{ color: '#475569' }}>{label}</span>
+      <span style={{ fontWeight: 700 }}>{value}</span>
+    </li>
+  );
+}
+
+function Backdrop({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(15,23,42,0.55)',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: 20,
+        zIndex: 50,
+        overflowY: 'auto',
+      }}
+    >
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+        {children}
       </div>
     </div>
+  );
+}
+
+function ModalShell({ children, maxWidth = 520 }: { children: React.ReactNode; maxWidth?: number }) {
+  return (
+    <div
+      style={{
+        background: '#fff',
+        borderRadius: 16,
+        width: '100%',
+        maxWidth,
+        padding: 28,
+        marginTop: '5vh',
+        boxShadow: '0 20px 60px rgba(15,23,42,0.3)',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function CloseX({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        fontSize: 24,
+        cursor: 'pointer',
+        color: '#94a3b8',
+        padding: 4,
+        lineHeight: 1,
+        fontFamily: 'inherit',
+      }}
+    >
+      ×
+    </button>
   );
 }
 
@@ -1253,4 +1632,19 @@ const ghostBtn: React.CSSProperties = {
   fontSize: 14,
   cursor: 'pointer',
   fontFamily: 'inherit',
+};
+
+const titleStyle: React.CSSProperties = {
+  fontSize: 24,
+  fontWeight: 800,
+  margin: '0 0 8px',
+  color: '#0f172a',
+  lineHeight: 1.2,
+};
+
+const subTextStyle: React.CSSProperties = {
+  fontSize: 14,
+  color: '#64748b',
+  margin: '0 0 20px',
+  lineHeight: 1.5,
 };
