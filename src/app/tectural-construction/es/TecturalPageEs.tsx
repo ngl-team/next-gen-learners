@@ -338,7 +338,7 @@ export default function TecturalPageEs() {
               lineHeight: 1.5,
               color: 'rgba(255,255,255,0.85)',
               maxWidth: 760,
-              margin: 0,
+              margin: '0 0 28px',
             }}
           >
             Cuatro herramientas, conectadas a cómo Tectural ya trabaja. Correo,
@@ -346,6 +346,23 @@ export default function TecturalPageEs() {
             cada una. Cero suscripciones para siempre. Antes de fin de verano, todo
             el sistema está en casa.
           </p>
+          <a
+            href="/tectural-construction/crm"
+            style={{
+              display: 'inline-block',
+              background: '#fff',
+              color: '#15803d',
+              padding: '14px 22px',
+              borderRadius: 10,
+              textDecoration: 'none',
+              fontWeight: 800,
+              fontSize: 15,
+              letterSpacing: '0.01em',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+            }}
+          >
+            Vea el CRM funcionando ahora →
+          </a>
         </div>
       </header>
 

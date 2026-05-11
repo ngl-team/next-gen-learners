@@ -338,13 +338,30 @@ export default function TecturalPage() {
               lineHeight: 1.5,
               color: 'rgba(255,255,255,0.85)',
               maxWidth: 760,
-              margin: 0,
+              margin: '0 0 28px',
             }}
           >
             Four tools, mapped to how Tectural already works. Email, estimates, job
             pipeline, custom site. You own every one. No subscriptions to rent
             forever. End of summer, the whole stack is in-house.
           </p>
+          <a
+            href="/tectural-construction/crm"
+            style={{
+              display: 'inline-block',
+              background: '#fff',
+              color: '#15803d',
+              padding: '14px 22px',
+              borderRadius: 10,
+              textDecoration: 'none',
+              fontWeight: 800,
+              fontSize: 15,
+              letterSpacing: '0.01em',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+            }}
+          >
+            See the CRM working now →
+          </a>
         </div>
       </header>
 
