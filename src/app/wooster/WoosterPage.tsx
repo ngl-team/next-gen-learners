@@ -5,9 +5,7 @@ const MARCH_ASKS = [
   { id: 'M2', title: 'Frictionless for teachers', detail: 'No overwhelming PD load. Integration where teachers already work.' },
   { id: 'M3', title: 'External partner for design AND implementation', detail: 'Not just a consultant. A builder who ships.' },
   { id: 'M4', title: 'Pilot programs at grades 5, 8, 10, 12', detail: 'Specific grade-level proof points.' },
-  { id: 'M5', title: 'Data from what we have already seen', detail: 'Outstanding offer to share Woodstock PD + Roche + Library learnings.' },
-  { id: 'M6', title: 'Pay-per-school pricing', detail: 'Wooster owns the framework. No per-user vendor lock.' },
-  { id: 'M7', title: 'Brewster intro to Michelle Gosh', detail: 'Downstream district unlocked once Wooster ships.' },
+  { id: 'M5', title: 'Pay-per-school pricing', detail: 'Wooster owns the framework. No per-user vendor lock.' },
 ];
 
 const TIER1 = [
@@ -17,7 +15,7 @@ const TIER1 = [
     description:
       "Trained on the Head's public corpus (Summer 2025 alumni letter, NAIS essays, HB-07277 testimony). Drafts board memos, donor cultivation, stewardship letters in his literary register.",
     impact: '6 to 8 hours per week back',
-    ship: 'Live demo at 2pm. Shipped by mid-June 2026.',
+    ship: 'Shipped by mid-June 2026',
   },
   {
     code: 'P2',
@@ -111,8 +109,7 @@ const TIMELINE_MMD = `flowchart LR
     M2["M2. Frictionless for teachers"]
     M3["M3. Design AND implement"]
     M4["M4. Pilots at 5/8/10/12"]
-    M6["M6. Pay-per-school"]
-    M7["M7. Brewster intro"]
+    M5["M5. Pay-per-school"]
   end
   subgraph T1["TIER 1: BYRNES CABINET (May to Jun 2026)"]
     direction TB
@@ -136,10 +133,9 @@ const TIMELINE_MMD = `flowchart LR
   M2 ==> W1
   M3 ==> W1
   M4 --> W2
-  M6 -.-> W1
-  M6 -.-> W2
-  M6 -.-> W4
-  M7 -.-> W1
+  M5 -.-> W1
+  M5 -.-> W2
+  M5 -.-> W4
   P1 ==> STG
   P3 --> STG
   W1 ==> STG
@@ -149,7 +145,7 @@ const TIMELINE_MMD = `flowchart LR
   classDef tier1 fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef tier2 fill:#dcfce7,stroke:#166534,color:#000
   classDef stage fill:#fecaca,stroke:#991b1b,color:#000
-  class M1,M2,M3,M4,M6,M7 march
+  class M1,M2,M3,M4,M5 march
   class P1,P2,P3 tier1
   class W1,W2,W4 tier2
   class STG stage`;
@@ -394,8 +390,7 @@ export default function WoosterPage() {
           The brief, in your own words.
         </h2>
         <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          The framework brief from our conversation. Six asks, one outstanding offer of data, and one downstream
-          introduction. Everything below is built around these.
+          The framework brief from our conversation. Everything below is built around these.
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
           {MARCH_ASKS.map((a) => (
