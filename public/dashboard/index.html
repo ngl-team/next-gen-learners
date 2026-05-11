@@ -372,8 +372,9 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <div style="font-size:1.4rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlExpenses">$0</div>
       </div>
       <div class="card" style="padding:16px;text-align:center">
-        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net</div>
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net P&L</div>
         <div style="font-size:1.4rem;font-weight:800;margin-top:4px" id="pnlNet">$0</div>
+        <div style="font-size:0.6rem;color:var(--text-3);margin-top:4px">paper profit — before founder reimbursements</div>
       </div>
     </div>
 
@@ -397,13 +398,18 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </div>
     </div>
 
-    <!-- Cash in Bank -->
+    <!-- Cash in Bank + Free Cash -->
     <div style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:18px 0 8px 4px">Cash on Hand</div>
-    <div style="display:grid;grid-template-columns:1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="card" id="finCashCard" style="padding:16px;text-align:center;cursor:help">
-        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Cash in Bank (gross revenue − Stripe fees)</div>
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Cash in Bank</div>
         <div style="font-size:1.6rem;font-weight:800;color:var(--green);margin-top:4px" id="finCash">$0</div>
-        <div style="font-size:0.62rem;color:var(--text-3);margin-top:4px">hover for per-account split</div>
+        <div style="font-size:0.62rem;color:var(--text-3);margin-top:4px">gross revenue − Stripe fees · hover for split</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Free Cash</div>
+        <div style="font-size:1.6rem;font-weight:800;margin-top:4px" id="finFreeCash">$0</div>
+        <div style="font-size:0.62rem;color:var(--text-3);margin-top:4px" id="finFreeCashDetail">after paying back founders</div>
       </div>
     </div>
 
@@ -1649,7 +1655,55 @@ function attachCashHover(cardId, byAccount, total){
 
 // Reimbursement: render per-person owed totals, pending lists, paid-back archive
 const WALTER_OFFSET = 48.25; // Ryan's net from Walter that reduces what NGL owes him
-function buildReimbursement(allEntries){
+let _reimbSelected = { Brayan:new Set(), Ryan:new Set() };
+function toggleReimbSelect(person, id, on){
+  if(on)_reimbSelected[person].add(id); else _reimbSelected[person].delete(id);
+  updateReimbSelectionFooter(person);
+}
+function selectAllReimb(person, all){
+  _reimbSelected[person].clear();
+  if(all){ all.forEach(e=>_reimbSelected[person].add(e.id)); }
+  // re-render checkboxes
+  document.querySelectorAll(`input[data-reimb-person="${person}"]`).forEach(cb=>{cb.checked=all?true:false});
+  updateReimbSelectionFooter(person);
+}
+function updateReimbSelectionFooter(person){
+  const sel=_reimbSelected[person];
+  const list=window._reimbPending&&window._reimbPending[person]||[];
+  const selected=list.filter(e=>sel.has(e.id));
+  const total=selected.reduce((a,b)=>a+Number(b.amount),0);
+  const fmt=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const footerId=`reimb${person}SelFooter`;
+  const el=document.getElementById(footerId);
+  if(!el)return;
+  if(selected.length===0){
+    el.style.display='none';
+    return;
+  }
+  el.style.display='flex';
+  el.innerHTML=`<div style="flex:1;font-size:0.72rem"><strong>${selected.length}</strong> selected · <strong style="color:var(--red)">${fmt(total)}</strong> to send ${person}</div>
+    <button class="btn primary" onclick="markSelectedReimbursed('${person}')" style="font-size:0.65rem;padding:5px 12px">Mark all paid</button>`;
+}
+async function markSelectedReimbursed(person){
+  const ids=Array.from(_reimbSelected[person]);
+  if(!ids.length)return;
+  if(!confirm(`Mark ${ids.length} transaction${ids.length===1?'':'s'} as paid back to ${person}?`))return;
+  const all=await fetch(`${API_BASE}/api/pnl?from=2020-01-01&to=${new Date().toISOString().split('T')[0]}`).then(r=>r.json());
+  const today=new Date().toISOString().split('T')[0];
+  for(const id of ids){
+    const e=all.find(x=>x.id===id);
+    if(!e)continue;
+    await fetch(`${API_BASE}/api/pnl/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      date:e.date,type:e.type,category:e.category,description:e.description,amount:e.amount,
+      person:e.person,account:e.account,payment_method:e.payment_method,
+      reimbursable:1,reimbursed_at:today,_actor:getCurrentUser(),
+    })});
+  }
+  _reimbSelected[person].clear();
+  loadPnl();
+}
+
+function buildReimbursement(allEntries, totalCash){
   const pending={Brayan:[],Ryan:[]};
   const paid={Brayan:[],Ryan:[]};
   for(const e of allEntries){
@@ -1672,19 +1726,50 @@ function buildReimbursement(allEntries){
   document.getElementById('reimbRyanDetail').innerHTML=`${pending.Ryan.length} pending · gross ${fmt(ryanOwedRaw)} − ${fmt(WALTER_OFFSET)} Walter offset`;
   document.getElementById('reimbTotal').textContent=fmt(total);
 
+  // Free Cash: cash in bank minus what's actually owed to founders
+  const freeCash=Number(totalCash||0)-total;
+  const freeEl=document.getElementById('finFreeCash');
+  if(freeEl){
+    freeEl.textContent=(freeCash>=0?'$':'-$')+fmt(Math.abs(freeCash)).slice(1);
+    freeEl.style.color=freeCash>=0?'var(--green)':'var(--red)';
+    document.getElementById('finFreeCashDetail').textContent=`${fmt(Number(totalCash||0))} cash − ${fmt(total)} owed to founders`;
+  }
+
+  // Stash pending lists for footer math
+  window._reimbPending={Brayan:pending.Brayan, Ryan:pending.Ryan};
+  // Drop selections that no longer exist (e.g. just marked paid)
+  ['Brayan','Ryan'].forEach(p=>{
+    const ids=new Set(pending[p].map(e=>e.id));
+    _reimbSelected[p].forEach(id=>{if(!ids.has(id))_reimbSelected[p].delete(id)});
+  });
+
   function renderList(list, targetId, person){
     list.sort((a,b)=>a.date.localeCompare(b.date));
-    document.getElementById(targetId).innerHTML=list.length?list.map(e=>`
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.72rem">
+    const footerId=`reimb${person}SelFooter`;
+    const allSelected = list.length>0 && list.every(e=>_reimbSelected[person].has(e.id));
+    const head=list.length?`<div style="display:flex;align-items:center;gap:8px;padding:4px 0 8px;font-size:0.62rem;color:var(--text-3);border-bottom:1px solid var(--border);margin-bottom:4px">
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer">
+        <input type="checkbox" ${allSelected?'checked':''} onchange="selectAllReimb('${person}', this.checked ? window._reimbPending.${person} : null)" />
+        Select all
+      </label>
+      <span style="margin-left:auto">${list.length} pending · ${fmt(sumAmt(list))}</span>
+    </div>`:'';
+    const body=list.length?list.map(e=>{
+      const checked=_reimbSelected[person].has(e.id)?'checked':'';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.72rem">
+        <input type="checkbox" data-reimb-person="${person}" ${checked} onchange="toggleReimbSelect('${person}',${e.id},this.checked)" />
         <div style="width:80px;color:var(--text-3);font-size:0.66rem">${e.date}</div>
         <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e.description||e.category)}">
           ${esc(e.description||e.category)}
           <span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">${esc(e.category)}</span>
         </div>
         <div style="width:70px;text-align:right;font-weight:700;color:var(--red)">$${Number(e.amount).toFixed(2)}</div>
-        <button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="markReimbursed(${e.id})">Mark paid</button>
-      </div>
-    `).join(''):`<div class="empty" style="font-size:0.7rem">${person} has no pending reimbursements.</div>`;
+        <button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="markReimbursed(${e.id})">Paid</button>
+      </div>`;
+    }).join(''):`<div class="empty" style="font-size:0.7rem">${person} has no pending reimbursements.</div>`;
+    const footer=`<div id="${footerId}" style="display:none;align-items:center;gap:8px;padding:8px;margin-top:8px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)"></div>`;
+    document.getElementById(targetId).innerHTML=head+body+footer;
+    updateReimbSelectionFooter(person);
   }
   renderList(pending.Brayan,'reimbBrayanPending','Brayan');
   renderList(pending.Ryan,'reimbRyanPending','Ryan');
