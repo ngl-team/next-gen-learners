@@ -12,7 +12,7 @@ type Status =
   | 'invoiced'
   | 'paid';
 
-type ServiceType = 'roofing' | 'solar';
+type ServiceType = 'roofing' | 'solar' | 'painting' | 'construction';
 type LeadSource = 'phone' | 'website' | 'referral';
 type ContractTier = 'basic' | 'medium' | 'complex';
 
@@ -42,7 +42,7 @@ const CUSTOMER_STAGES: { status: Status; label: string; hint: string }[] = [
   { status: 'paid', label: 'Paid in full', hint: 'Thank you. Your warranty is active.' },
 ];
 
-const STORAGE_KEY = 'tectural_crm_v3';
+const STORAGE_KEY = 'tectural_crm_v4';
 
 const FALLBACK_JOBS: Job[] = [
   {
@@ -191,6 +191,58 @@ const FALLBACK_JOBS: Job[] = [
     contractTier: 'basic',
     contractMaterial: 'Battery + storage',
   },
+  {
+    id: 'j12',
+    customer: 'The Petrov Family',
+    address: '78 Ridge Rd, Ridgefield',
+    jobType: 'Whole-home interior repaint',
+    amount: 11200,
+    status: 'estimated',
+    notes: '',
+    updatedAt: '1d ago',
+    serviceType: 'painting',
+    leadSource: 'referral',
+  },
+  {
+    id: 'j13',
+    customer: 'Caraballo Properties',
+    address: '12 Sugar Hollow Rd, Danbury',
+    jobType: 'Two-story addition + kitchen remodel',
+    amount: 168000,
+    status: 'signed',
+    notes: '',
+    updatedAt: '3d ago',
+    serviceType: 'construction',
+    leadSource: 'phone',
+    contractTier: 'complex',
+    contractMaterial: 'Addition / build-out',
+  },
+  {
+    id: 'j14',
+    customer: 'Linda Reyes',
+    address: '305 Mill Plain Rd, Danbury',
+    jobType: 'Exterior repaint + deck stain',
+    amount: 6400,
+    status: 'lead',
+    notes: '',
+    updatedAt: '4h ago',
+    serviceType: 'painting',
+    leadSource: 'phone',
+  },
+  {
+    id: 'j15',
+    customer: 'Holloway Renovation',
+    address: '44 South St, New Milford',
+    jobType: 'Master bath gut + framing',
+    amount: 38500,
+    status: 'scheduled',
+    notes: '',
+    updatedAt: '2d ago',
+    serviceType: 'construction',
+    leadSource: 'website',
+    contractTier: 'medium',
+    contractMaterial: 'Bathroom remodel',
+  },
 ];
 
 function formatMoney(n: number) {
@@ -256,7 +308,19 @@ export default function CustomerPortal({ id }: { id: string }) {
 
   const currentIdx = CUSTOMER_STAGES.findIndex((s) => s.status === job.status);
   const current = CUSTOMER_STAGES[currentIdx];
-  const accent = job.serviceType === 'solar' ? '#f59e0b' : '#3b82f6';
+  const ACCENT_BY_SERVICE: Record<ServiceType, string> = {
+    roofing: '#3b82f6',
+    solar: '#f59e0b',
+    painting: '#7c3aed',
+    construction: '#dc2626',
+  };
+  const SERVICE_LABEL: Record<ServiceType, string> = {
+    roofing: 'Roofing work',
+    solar: 'Solar install',
+    painting: 'Painting project',
+    construction: 'Construction project',
+  };
+  const accent = ACCENT_BY_SERVICE[job.serviceType];
 
   return (
     <main
@@ -290,7 +354,7 @@ export default function CustomerPortal({ id }: { id: string }) {
             Your project at {job.address}
           </h1>
           <p style={{ fontSize: 'clamp(15px, 1.5vw, 17px)', color: 'rgba(226,232,240,0.7)', margin: 0 }}>
-            {job.jobType} · {job.serviceType === 'solar' ? 'Solar install' : 'Roofing work'}
+            {job.jobType} · {SERVICE_LABEL[job.serviceType]}
           </p>
         </div>
       </header>

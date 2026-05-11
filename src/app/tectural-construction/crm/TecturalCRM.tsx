@@ -12,7 +12,7 @@ type Status =
   | 'invoiced'
   | 'paid';
 
-type ServiceType = 'roofing' | 'solar';
+type ServiceType = 'roofing' | 'solar' | 'painting' | 'construction';
 type LeadSource = 'phone' | 'website' | 'referral';
 type ServiceFilter = 'all' | ServiceType;
 type ContractTier = 'basic' | 'medium' | 'complex';
@@ -57,6 +57,8 @@ const STATUS_META: Record<Status, { label: string; bg: string; border: string; c
 const SERVICE_META: Record<ServiceType, { label: string; bg: string; fg: string; accent: string }> = {
   roofing: { label: 'Roofing', bg: '#dbeafe', fg: '#1d4ed8', accent: '#1d4ed8' },
   solar: { label: 'Solar', bg: '#fef3c7', fg: '#b45309', accent: '#f59e0b' },
+  painting: { label: 'Painting', bg: '#ede9fe', fg: '#6d28d9', accent: '#7c3aed' },
+  construction: { label: 'Construction', bg: '#fee2e2', fg: '#b91c1c', accent: '#dc2626' },
 };
 
 const SOURCE_META: Record<LeadSource, { label: string }> = {
@@ -73,9 +75,16 @@ const TIER_META: Record<ContractTier, { label: string; range: string; pages: str
 
 const ROOFING_MATERIALS = ['Asphalt shingle', 'Architectural shingle', 'Metal standing seam', 'EPDM rubber', 'TPO membrane', 'Slate', 'Cedar shake'];
 const SOLAR_MATERIALS = ['Panel array (residential)', 'Tesla Solar Roof', 'Battery + storage', 'Commercial solar array', 'Solar carport'];
+const PAINTING_MATERIALS = ['Interior repaint', 'Exterior repaint', 'Cabinets + millwork', 'Trim and accent', 'Pressure wash + paint', 'Commercial repaint'];
+const CONSTRUCTION_MATERIALS = ['Kitchen remodel', 'Bathroom remodel', 'Addition / build-out', 'Deck and patio', 'Garage build', 'Full gut renovation', 'Framing + sheathing'];
 
 function materialsForService(service: ServiceType): string[] {
-  return service === 'roofing' ? ROOFING_MATERIALS : SOLAR_MATERIALS;
+  switch (service) {
+    case 'roofing': return ROOFING_MATERIALS;
+    case 'solar': return SOLAR_MATERIALS;
+    case 'painting': return PAINTING_MATERIALS;
+    case 'construction': return CONSTRUCTION_MATERIALS;
+  }
 }
 
 function suggestTier(amount: number): ContractTier {
@@ -231,9 +240,61 @@ const SEED_JOBS: Job[] = [
     contractTier: 'basic',
     contractMaterial: 'Battery + storage',
   },
+  {
+    id: 'j12',
+    customer: 'The Petrov Family',
+    address: '78 Ridge Rd, Ridgefield',
+    jobType: 'Whole-home interior repaint',
+    amount: 11200,
+    status: 'estimated',
+    notes: 'Wants Benjamin Moore Aura, three coats on the trim. Move-in date June 1.',
+    updatedAt: '1d ago',
+    serviceType: 'painting',
+    leadSource: 'referral',
+  },
+  {
+    id: 'j13',
+    customer: 'Caraballo Properties',
+    address: '12 Sugar Hollow Rd, Danbury',
+    jobType: 'Two-story addition + kitchen remodel',
+    amount: 168000,
+    status: 'signed',
+    notes: 'Complex contract signed last week. Permits filed Monday. Framing starts late May.',
+    updatedAt: '3d ago',
+    serviceType: 'construction',
+    leadSource: 'phone',
+    contractTier: 'complex',
+    contractMaterial: 'Addition / build-out',
+  },
+  {
+    id: 'j14',
+    customer: 'Linda Reyes',
+    address: '305 Mill Plain Rd, Danbury',
+    jobType: 'Exterior repaint + deck stain',
+    amount: 6400,
+    status: 'lead',
+    notes: 'Called Saturday after seeing the Henderson job from the road. Wants a Monday walk-through.',
+    updatedAt: '4h ago',
+    serviceType: 'painting',
+    leadSource: 'phone',
+  },
+  {
+    id: 'j15',
+    customer: 'Holloway Renovation',
+    address: '44 South St, New Milford',
+    jobType: 'Master bath gut + framing',
+    amount: 38500,
+    status: 'scheduled',
+    notes: 'Medium contract signed. Demo crew on for May 22. Tile selection meeting Thursday.',
+    updatedAt: '2d ago',
+    serviceType: 'construction',
+    leadSource: 'website',
+    contractTier: 'medium',
+    contractMaterial: 'Bathroom remodel',
+  },
 ];
 
-const STORAGE_KEY = 'tectural_crm_v3';
+const STORAGE_KEY = 'tectural_crm_v4';
 
 function loadJobs(): Job[] {
   if (typeof window === 'undefined') return SEED_JOBS;
@@ -295,10 +356,8 @@ export default function TecturalCRM() {
   const totals = useMemo(() => {
     const pipeline = visible.filter((j) => j.status !== 'paid').reduce((sum, j) => sum + j.amount, 0);
     const paid = visible.filter((j) => j.status === 'paid').reduce((sum, j) => sum + j.amount, 0);
-    const roofing = jobs.filter((j) => j.serviceType === 'roofing').length;
-    const solar = jobs.filter((j) => j.serviceType === 'solar').length;
-    return { pipeline, paid, roofing, solar };
-  }, [jobs, visible]);
+    return { pipeline, paid, count: visible.length };
+  }, [visible]);
 
   const byStatus = useMemo(() => {
     const m: Record<Status, Job[]> = {
@@ -419,8 +478,7 @@ export default function TecturalCRM() {
         >
           <StatCard label="Active pipeline" value={formatMoney(totals.pipeline)} accent="#15803d" />
           <StatCard label="Paid this view" value={formatMoney(totals.paid)} accent="#064e3b" />
-          <StatCard label="Roofing jobs" value={String(totals.roofing)} accent={SERVICE_META.roofing.accent} />
-          <StatCard label="Solar jobs" value={String(totals.solar)} accent={SERVICE_META.solar.accent} />
+          <StatCard label="Jobs in view" value={String(totals.count)} accent="#1e293b" />
         </div>
 
         <ServiceTabs filter={filter} setFilter={setFilter} jobs={jobs} />
@@ -652,17 +710,21 @@ function ServiceTabs({
     { key: 'all', label: 'All jobs', count: jobs.length, accent: '#0f172a' },
     { key: 'roofing', label: 'Roofing', count: jobs.filter((j) => j.serviceType === 'roofing').length, accent: SERVICE_META.roofing.accent },
     { key: 'solar', label: 'Solar', count: jobs.filter((j) => j.serviceType === 'solar').length, accent: SERVICE_META.solar.accent },
+    { key: 'painting', label: 'Painting', count: jobs.filter((j) => j.serviceType === 'painting').length, accent: SERVICE_META.painting.accent },
+    { key: 'construction', label: 'Construction', count: jobs.filter((j) => j.serviceType === 'construction').length, accent: SERVICE_META.construction.accent },
   ];
   return (
     <div
       style={{
         display: 'inline-flex',
+        flexWrap: 'wrap',
         background: '#fff',
         border: '1px solid rgba(15,23,42,0.08)',
         borderRadius: 999,
         padding: 4,
         marginBottom: 20,
         boxShadow: '0 1px 2px rgba(15,23,42,0.04)',
+        gap: 2,
       }}
     >
       {tabs.map((tab) => {
@@ -960,11 +1022,13 @@ function IntakeWizard({
 
         {step === 3 && leadSource && (
           <>
-            <h2 style={titleStyle}>Roofing or solar?</h2>
-            <p style={subTextStyle}>This routes the job into the right pipeline. Each side has its own contract templates and crew flow.</p>
+            <h2 style={titleStyle}>Which service is this?</h2>
+            <p style={subTextStyle}>This routes the job into the right pipeline. Each one has its own contract templates and crew flow.</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <ServiceButton serviceType="roofing" title="Roofing" hint="Reroof, repair, slate, metal, EPDM." onClick={() => finish('roofing')} />
               <ServiceButton serviceType="solar" title="Solar" hint="Panels, batteries, Tesla, carport, commercial." onClick={() => finish('solar')} />
+              <ServiceButton serviceType="painting" title="Painting" hint="Interior, exterior, cabinets, commercial repaint." onClick={() => finish('painting')} />
+              <ServiceButton serviceType="construction" title="Construction" hint="Remodels, additions, framing, full builds." onClick={() => finish('construction')} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: 20 }}>
               <button onClick={() => setStep(2)} style={ghostBtn}>← Back</button>
@@ -1130,6 +1194,8 @@ function EditModal({
             >
               <option value="roofing">Roofing</option>
               <option value="solar">Solar</option>
+              <option value="painting">Painting</option>
+              <option value="construction">Construction</option>
             </select>
           </Field>
           <Field label="Lead source">
@@ -1344,6 +1410,80 @@ function ShareModal({ job, onClose }: { job: Job; onClose: () => void }) {
   );
 }
 
+type ProposalFieldConfig = { key: 'a' | 'b' | 'c'; label: string; placeholder: string; defaultValue: string };
+
+const PROPOSAL_FIELDS: Record<ServiceType, ProposalFieldConfig[]> = {
+  roofing: [
+    { key: 'a', label: 'Pitch', placeholder: 'e.g. 6/12', defaultValue: '6/12' },
+    { key: 'b', label: 'Existing layers', placeholder: '1 or 2', defaultValue: '1' },
+    { key: 'c', label: 'Roof squares (approx)', placeholder: 'e.g. 24', defaultValue: '24' },
+  ],
+  solar: [
+    { key: 'a', label: 'Panel count', placeholder: 'e.g. 18', defaultValue: '18' },
+    { key: 'b', label: 'Battery storage', placeholder: 'none / Powerwall', defaultValue: 'none' },
+  ],
+  painting: [
+    { key: 'a', label: 'Square footage', placeholder: 'e.g. 2400', defaultValue: '2400' },
+    { key: 'b', label: 'Coats', placeholder: '1, 2, or 3', defaultValue: '2' },
+    { key: 'c', label: 'Surface type', placeholder: 'e.g. Drywall + trim', defaultValue: 'Drywall + trim' },
+  ],
+  construction: [
+    { key: 'a', label: 'Build square footage', placeholder: 'e.g. 850', defaultValue: '850' },
+    { key: 'b', label: 'Stories', placeholder: '1 or 2', defaultValue: '2' },
+    { key: 'c', label: 'Permit status', placeholder: 'e.g. Filed', defaultValue: 'Ready to file' },
+  ],
+};
+
+const DEFAULT_MATERIAL: Record<ServiceType, string> = {
+  roofing: 'Architectural shingle',
+  solar: 'Panel array (residential)',
+  painting: 'Interior repaint',
+  construction: 'Addition / build-out',
+};
+
+function buildBreakdown(
+  service: ServiceType,
+  amount: number,
+  material: string,
+  values: Record<'a' | 'b' | 'c', string>
+): { label: string; value: number }[] {
+  const pct = (p: number) => Math.round(amount * p);
+  switch (service) {
+    case 'roofing':
+      return [
+        { label: `${material}, ${values.c || '?'} squares`, value: pct(0.62) },
+        { label: `Tear-off (${values.b || '?'} layer)`, value: pct(0.12) },
+        { label: 'Underlayment + flashing', value: pct(0.08) },
+        { label: 'Labor + crew', value: pct(0.16) },
+        { label: 'Disposal + permits', value: pct(0.02) },
+      ];
+    case 'solar':
+      return [
+        { label: `${material}, ${values.a || '?'} panels`, value: pct(0.55) },
+        { label: 'Inverter + monitoring', value: pct(0.15) },
+        { label: 'Mounting + racking', value: pct(0.08) },
+        { label: 'Labor + crew', value: pct(0.18) },
+        { label: 'Permits + interconnection', value: pct(0.04) },
+      ];
+    case 'painting':
+      return [
+        { label: `${material}, ${values.a || '?'} sqft`, value: pct(0.10) },
+        { label: 'Prep + masking + repair', value: pct(0.15) },
+        { label: `Paint + supplies (${values.b || '?'} coats)`, value: pct(0.25) },
+        { label: 'Labor + crew', value: pct(0.47) },
+        { label: 'Cleanup + touch-up', value: pct(0.03) },
+      ];
+    case 'construction':
+      return [
+        { label: `${material}, ${values.a || '?'} sqft`, value: pct(0.05) },
+        { label: 'Materials + lumber', value: pct(0.38) },
+        { label: 'Subs (electrical, plumbing, HVAC)', value: pct(0.25) },
+        { label: 'Labor + framing crew', value: pct(0.28) },
+        { label: 'Permits + disposal', value: pct(0.04) },
+      ];
+  }
+}
+
 function ProposalModal({
   job,
   onClose,
@@ -1353,16 +1493,23 @@ function ProposalModal({
   onClose: () => void;
   onApply: (tier: ContractTier, material: string, notesAppend: string) => void;
 }) {
-  const isRoofing = job.serviceType === 'roofing';
-  const [pitch, setPitch] = useState('6/12');
-  const [layers, setLayers] = useState('1');
-  const [material, setMaterial] = useState<string>(job.contractMaterial ?? (isRoofing ? 'Architectural shingle' : 'Panel array (residential)'));
-  const [squares, setSquares] = useState<string>(isRoofing ? '24' : '');
-  const [panels, setPanels] = useState<string>(!isRoofing ? '18' : '');
+  const fields = PROPOSAL_FIELDS[job.serviceType];
+  const initialValues = useMemo(() => {
+    const v: Record<'a' | 'b' | 'c', string> = { a: '', b: '', c: '' };
+    fields.forEach((f) => { v[f.key] = f.defaultValue; });
+    return v;
+  }, [fields]);
+
+  const [values, setValues] = useState<Record<'a' | 'b' | 'c', string>>(initialValues);
+  const [material, setMaterial] = useState<string>(job.contractMaterial ?? DEFAULT_MATERIAL[job.serviceType]);
   const [generated, setGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
 
   const tier = useMemo<ContractTier>(() => suggestTier(job.amount || 0), [job.amount]);
+
+  function setField(key: 'a' | 'b' | 'c', val: string) {
+    setValues((prev) => ({ ...prev, [key]: val }));
+  }
 
   function run() {
     setGenerating(true);
@@ -1373,18 +1520,19 @@ function ProposalModal({
   }
 
   function apply() {
-    const summary = isRoofing
-      ? `Proposal generated: ${material}, ${pitch} pitch, ${layers} layer, ${squares || '?'} squares. Tier ${TIER_META[tier].label}.`
-      : `Proposal generated: ${material}, ${panels || '?'} panels. Tier ${TIER_META[tier].label}.`;
+    const inputBits = fields.map((f) => `${f.label}: ${values[f.key] || '?'}`).join(', ');
+    const summary = `Proposal generated for ${SERVICE_META[job.serviceType].label}. ${material}. ${inputBits}. Tier ${TIER_META[tier].label}.`;
     onApply(tier, material, summary);
   }
+
+  const breakdown = buildBreakdown(job.serviceType, job.amount || 0, material, values);
 
   return (
     <Backdrop onClose={onClose}>
       <ModalShell maxWidth={620}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <p style={{ fontSize: 11, letterSpacing: '0.18em', color: '#0f172a', margin: 0, fontWeight: 700 }}>
-            GENERATE PROPOSAL · {job.serviceType.toUpperCase()}
+            GENERATE PROPOSAL · {SERVICE_META[job.serviceType].label.toUpperCase()}
           </p>
           <CloseX onClick={onClose} />
         </div>
@@ -1394,42 +1542,48 @@ function ProposalModal({
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 8 }}>
-          <Field label="Material">
+          <Field label="Material / scope">
             <select value={material} onChange={(e) => setMaterial(e.target.value)} style={{ ...inputStyle, background: '#fff' }}>
               {materialsForService(job.serviceType).map((m) => (
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>
           </Field>
-          {isRoofing ? (
-            <Field label="Pitch">
-              <input value={pitch} onChange={(e) => setPitch(e.target.value)} placeholder="e.g. 6/12" style={inputStyle} />
-            </Field>
-          ) : (
-            <Field label="Panel count">
-              <input value={panels} onChange={(e) => setPanels(e.target.value)} placeholder="e.g. 18" style={inputStyle} />
-            </Field>
-          )}
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 8 }}>
-          {isRoofing ? (
-            <>
-              <Field label="Existing layers">
-                <input value={layers} onChange={(e) => setLayers(e.target.value)} placeholder="1 or 2" style={inputStyle} />
-              </Field>
-              <Field label="Roof squares (approx)">
-                <input value={squares} onChange={(e) => setSquares(e.target.value)} placeholder="e.g. 24" style={inputStyle} />
-              </Field>
-            </>
-          ) : (
-            <Field label="Including battery">
-              <select style={{ ...inputStyle, background: '#fff' }} defaultValue="no">
-                <option value="no">No</option>
-                <option value="yes">Yes, Powerwall</option>
-              </select>
+          {fields[0] && (
+            <Field label={fields[0].label}>
+              <input
+                value={values[fields[0].key]}
+                onChange={(e) => setField(fields[0].key, e.target.value)}
+                placeholder={fields[0].placeholder}
+                style={inputStyle}
+              />
             </Field>
           )}
         </div>
+        {(fields[1] || fields[2]) && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 8 }}>
+            {fields[1] && (
+              <Field label={fields[1].label}>
+                <input
+                  value={values[fields[1].key]}
+                  onChange={(e) => setField(fields[1].key, e.target.value)}
+                  placeholder={fields[1].placeholder}
+                  style={inputStyle}
+                />
+              </Field>
+            )}
+            {fields[2] && (
+              <Field label={fields[2].label}>
+                <input
+                  value={values[fields[2].key]}
+                  onChange={(e) => setField(fields[2].key, e.target.value)}
+                  placeholder={fields[2].placeholder}
+                  style={inputStyle}
+                />
+              </Field>
+            )}
+          </div>
+        )}
 
         <div
           style={{
@@ -1480,23 +1634,9 @@ function ProposalModal({
               <p style={{ fontSize: 18, fontWeight: 800, color: '#0f172a', margin: '0 0 4px' }}>{job.customer}</p>
               <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 14px' }}>{job.address}</p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 14, color: '#0f172a' }}>
-                {isRoofing ? (
-                  <>
-                    <ProposalLine label={`${material}, ${squares || '?'} squares`} value={formatMoney(Math.round((job.amount || 0) * 0.62))} />
-                    <ProposalLine label={`Tear-off (${layers} layer)`} value={formatMoney(Math.round((job.amount || 0) * 0.12))} />
-                    <ProposalLine label="Underlayment + flashing" value={formatMoney(Math.round((job.amount || 0) * 0.08))} />
-                    <ProposalLine label="Labor + crew" value={formatMoney(Math.round((job.amount || 0) * 0.16))} />
-                    <ProposalLine label="Disposal + permits" value={formatMoney(Math.round((job.amount || 0) * 0.02))} />
-                  </>
-                ) : (
-                  <>
-                    <ProposalLine label={`${material}, ${panels || '?'} panels`} value={formatMoney(Math.round((job.amount || 0) * 0.55))} />
-                    <ProposalLine label="Inverter + monitoring" value={formatMoney(Math.round((job.amount || 0) * 0.15))} />
-                    <ProposalLine label="Mounting + racking" value={formatMoney(Math.round((job.amount || 0) * 0.08))} />
-                    <ProposalLine label="Labor + crew" value={formatMoney(Math.round((job.amount || 0) * 0.18))} />
-                    <ProposalLine label="Permits + interconnection" value={formatMoney(Math.round((job.amount || 0) * 0.04))} />
-                  </>
-                )}
+                {breakdown.map((line) => (
+                  <ProposalLine key={line.label} label={line.label} value={formatMoney(line.value)} />
+                ))}
               </ul>
               <div style={{ borderTop: '1px solid #e2e8f0', marginTop: 12, paddingTop: 12, display: 'flex', justifyContent: 'space-between' }}>
                 <strong style={{ fontSize: 15, color: '#0f172a' }}>Total</strong>
