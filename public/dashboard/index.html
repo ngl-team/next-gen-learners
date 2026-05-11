@@ -426,11 +426,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     </div>
   </div>
 
-  <!-- P&L VIEW -->
+  <!-- P&L / FINANCE VIEW -->
   <div class="view" id="view-pnl">
     <div class="card" style="padding:14px 20px">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">Next Generation Learners P&L</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">NGL Finance</div>
         <div style="display:flex;gap:6px;align-items:center">
           <select id="pnlPeriod" onchange="loadPnl()" style="font-size:0.72rem;padding:5px 8px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-family:inherit">
             <option value="all">All Time</option>
@@ -438,12 +438,15 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
             <option value="quarter">This Quarter</option>
             <option value="year">This Year</option>
           </select>
-          <button class="btn primary" onclick="openPnlAdd()" style="padding:6px 14px">+ Add Entry</button>
+          <button class="btn" onclick="openSubAdd()" style="padding:6px 12px">+ Subscription</button>
+          <button class="btn primary" onclick="openPnlAdd()" style="padding:6px 14px">+ Entry</button>
         </div>
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+    <!-- Actual P&L (logged) -->
+    <div style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:18px 0 8px 4px">Logged P&L</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
       <div class="card" style="padding:16px;text-align:center">
         <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Revenue</div>
         <div style="font-size:1.4rem;font-weight:800;color:var(--green);margin-top:4px" id="pnlRevenue">$0</div>
@@ -453,17 +456,51 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <div style="font-size:1.4rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlExpenses">$0</div>
       </div>
       <div class="card" style="padding:16px;text-align:center">
-        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net P&L</div>
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net</div>
         <div style="font-size:1.4rem;font-weight:800;margin-top:4px" id="pnlNet">$0</div>
       </div>
     </div>
 
+    <!-- Recurring (MRR / Burn) -->
+    <div style="font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:18px 0 8px 4px">Recurring (Active Subscriptions)</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">MRR</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--green);margin-top:4px" id="finMrr">$0</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Monthly Burn</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--red);margin-top:4px" id="finBurn">$0</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Net MRR</div>
+        <div style="font-size:1.4rem;font-weight:800;margin-top:4px" id="finNetMrr">$0</div>
+      </div>
+    </div>
+
+    <!-- Upcoming payments -->
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div class="card-title">Upcoming Payments (next 60 days)</div>
+      <div id="finUpcoming" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Active subscriptions list -->
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="card-title" style="margin:0">Subscriptions</div>
+        <button class="btn" onclick="openSubAdd()" style="font-size:0.62rem;padding:4px 10px">+ Add</button>
+      </div>
+      <div id="finSubs" style="margin-top:6px"></div>
+    </div>
+
+    <!-- Monthly trend -->
     <div class="card" style="margin-top:12px;padding:20px">
       <div class="card-title">Monthly Trend</div>
       <div id="pnlChart" style="height:200px;display:flex;align-items:flex-end;gap:2px;margin-top:12px"></div>
       <div id="pnlChartLabels" style="display:flex;gap:2px;margin-top:4px"></div>
     </div>
 
+    <!-- Category breakdowns -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
       <div class="card" style="padding:16px">
         <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--green);margin-bottom:10px;font-weight:700">Revenue Breakdown</div>
@@ -472,6 +509,18 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div class="card" style="padding:16px">
         <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:10px;font-weight:700">Expense Breakdown</div>
         <div id="pnlExpenseBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- Account / method breakdowns -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+      <div class="card" style="padding:16px">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;font-weight:700">By Account</div>
+        <div id="pnlAccountBreakdown"></div>
+      </div>
+      <div class="card" style="padding:16px">
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;font-weight:700">By Payment Method</div>
+        <div id="pnlMethodBreakdown"></div>
       </div>
     </div>
 
@@ -668,9 +717,100 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </select>
     </div>
     <div class="field"><label>Description</label><input type="text" id="pnlDesc" placeholder="e.g. Woodstock PD session" /></div>
-    <div class="field"><label>Person</label><input type="text" id="pnlPerson" placeholder="e.g. Brayan, Ryan" /></div>
+    <div class="field"><label>Person</label>
+      <select id="pnlPerson">
+        <option value="">(unassigned)</option>
+        <option value="Brayan">Brayan</option>
+        <option value="Ryan">Ryan</option>
+        <option value="NGL">NGL (business)</option>
+      </select>
+    </div>
+    <div class="field"><label>Account (whose bank/card)</label>
+      <input type="text" id="pnlAccount" placeholder="e.g. Brayan Chase, Ryan Amex, NGL business" list="accountOpts" />
+      <datalist id="accountOpts">
+        <option value="Brayan personal">
+        <option value="Ryan personal">
+        <option value="NGL business">
+        <option value="Brayan Chase">
+        <option value="Brayan Amex">
+        <option value="Ryan Chase">
+        <option value="Ryan Amex">
+      </datalist>
+    </div>
+    <div class="field"><label>Payment Method</label>
+      <select id="pnlMethod">
+        <option value="">--</option>
+        <option value="card">Card</option>
+        <option value="cash">Cash</option>
+        <option value="zelle">Zelle</option>
+        <option value="venmo">Venmo</option>
+        <option value="ach">ACH / Transfer</option>
+        <option value="check">Check</option>
+        <option value="stripe">Stripe</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
     <div class="field"><label>Amount ($)</label><input type="number" id="pnlAmount" step="0.01" min="0" placeholder="0.00" /></div>
     <button class="btn primary" onclick="savePnlEntry()" style="width:100%;margin-top:12px">Save</button>
+  </div>
+</div>
+
+<!-- Subscription Modal -->
+<div class="modal-overlay" id="subModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSubModal()">&times;</button>
+    <div class="modal-title" id="subModalTitle">Add Subscription</div>
+    <input type="hidden" id="subEditId" />
+    <div class="field"><label>Type</label>
+      <select id="subType">
+        <option value="expense">Expense (you pay)</option>
+        <option value="revenue">Revenue (client pays you)</option>
+      </select>
+    </div>
+    <div class="field"><label>Category</label>
+      <select id="subCategory">
+        <option value="Software / SaaS">Software / SaaS</option>
+        <option value="Hosting / Infra">Hosting / Infra</option>
+        <option value="Client Revenue">Client Revenue</option>
+        <option value="Workshop Revenue">Workshop Revenue</option>
+        <option value="Product Revenue">Product Revenue</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Contractor">Contractor</option>
+        <option value="Other Revenue">Other Revenue</option>
+        <option value="Other Expense">Other Expense</option>
+      </select>
+    </div>
+    <div class="field"><label>Description</label><input type="text" id="subDesc" placeholder="e.g. Anthropic Claude Max" /></div>
+    <div class="field"><label>Person</label>
+      <select id="subPerson">
+        <option value="">(unassigned)</option>
+        <option value="Brayan">Brayan</option>
+        <option value="Ryan">Ryan</option>
+        <option value="NGL">NGL (business)</option>
+      </select>
+    </div>
+    <div class="field"><label>Account (whose bank/card)</label>
+      <input type="text" id="subAccount" placeholder="e.g. Brayan Chase, Ryan Amex, NGL business" list="accountOpts" />
+    </div>
+    <div class="field"><label>Payment Method</label>
+      <select id="subMethod">
+        <option value="">--</option>
+        <option value="card">Card</option>
+        <option value="cash">Cash</option>
+        <option value="zelle">Zelle</option>
+        <option value="venmo">Venmo</option>
+        <option value="ach">ACH / Transfer</option>
+        <option value="check">Check</option>
+        <option value="stripe">Stripe</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field"><label>Monthly Amount ($)</label><input type="number" id="subAmount" step="0.01" min="0" placeholder="0.00" /></div>
+    <div class="field"><label>Bills on day of month (1-31)</label><input type="number" id="subDay" min="1" max="31" value="1" /></div>
+    <div class="field"><label>Start Date</label><input type="date" id="subStart" /></div>
+    <div class="field"><label>End Date (optional)</label><input type="date" id="subEnd" /></div>
+    <div class="field"><label><input type="checkbox" id="subActive" checked /> Active</label></div>
+    <button class="btn primary" onclick="saveSubscription()" style="width:100%;margin-top:12px">Save</button>
   </div>
 </div>
 
@@ -1238,11 +1378,67 @@ function getPnlDateRange(){
 async function loadPnl(){
   const{from,to}=getPnlDateRange();
   try{
-    const[entries,summary,monthly]=await Promise.all([
+    const[entries,summary,monthly,subs]=await Promise.all([
       fetch(`${API_BASE}/api/pnl?from=${from}&to=${to}`).then(r=>r.json()),
       fetch(`${API_BASE}/api/pnl/summary?from=${from}&to=${to}`).then(r=>r.json()),
       fetch(`${API_BASE}/api/pnl/monthly`).then(r=>r.json()),
+      fetch(`${API_BASE}/api/subscriptions`).then(r=>r.json()),
     ]);
+
+    // MRR / Burn
+    const activeSubs=(subs||[]).filter(s=>s.active==1);
+    let mrr=0,burn=0;
+    activeSubs.forEach(s=>{ if(s.type==='revenue') mrr+=Number(s.amount); else burn+=Number(s.amount); });
+    const netMrr=mrr-burn;
+    document.getElementById('finMrr').textContent='$'+mrr.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('finBurn').textContent='$'+burn.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const nmEl=document.getElementById('finNetMrr');
+    nmEl.textContent=(netMrr>=0?'+$':'-$')+Math.abs(netMrr).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    nmEl.style.color=netMrr>=0?'var(--green)':'var(--red)';
+
+    // Upcoming payments (next 60 days)
+    const upcoming=[];
+    activeSubs.forEach(s=>{
+      nextBillingDates(s,60).forEach(d=>upcoming.push({date:d,sub:s}));
+    });
+    upcoming.sort((a,b)=>a.date-b.date);
+    document.getElementById('finUpcoming').innerHTML=upcoming.length?upcoming.map(u=>{
+      const ds=u.date.toISOString().split('T')[0];
+      const s=u.sub;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
+        <div style="width:90px;color:var(--text-3);font-size:0.7rem">${ds}</div>
+        <div style="width:14px;font-size:0.9rem">${s.type==='revenue'?'↑':'↓'}</div>
+        <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          ${esc(s.description||s.category)}
+          ${s.person?`<span style="color:var(--primary);font-size:0.6rem;margin-left:4px">${esc(s.person)}</span>`:''}
+          ${s.account?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">${esc(s.account)}</span>`:''}
+          ${s.payment_method?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">[${esc(s.payment_method)}]</span>`:''}
+        </div>
+        <div style="width:90px;text-align:right;font-weight:700;color:${s.type==='revenue'?'var(--green)':'var(--red)'}">
+          ${s.type==='revenue'?'+':'-'}$${Number(s.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
+        </div>
+      </div>`;
+    }).join(''):'<div class="empty">No upcoming payments in the next 60 days.</div>';
+
+    // Subscription list
+    document.getElementById('finSubs').innerHTML=(subs&&subs.length)?subs.map(s=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.78rem;opacity:${s.active==1?1:0.5}">
+        <div style="width:14px;font-size:0.9rem">${s.type==='revenue'?'↑':'↓'}</div>
+        <div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          ${esc(s.description||s.category)}
+          <span style="color:var(--text-3);font-size:0.65rem;margin-left:4px">day ${s.day_of_month||1} · ${esc(s.category)}</span>
+          ${s.person?`<span style="color:var(--primary);font-size:0.6rem;margin-left:4px">${esc(s.person)}</span>`:''}
+          ${s.account?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">${esc(s.account)}</span>`:''}
+          ${s.payment_method?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">[${esc(s.payment_method)}]</span>`:''}
+          ${s.active==1?'':'<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">(inactive)</span>'}
+        </div>
+        <div style="width:90px;text-align:right;font-weight:700;color:${s.type==='revenue'?'var(--green)':'var(--red)'}">
+          ${s.type==='revenue'?'+':'-'}$${Number(s.amount).toLocaleString('en-US',{minimumFractionDigits:2})}/mo
+        </div>
+        <button class="btn" style="font-size:0.6rem;padding:3px 6px" onclick="editSub(${s.id})">Edit</button>
+        <button class="btn danger" style="font-size:0.6rem;padding:3px 6px" onclick="deleteSub(${s.id})">x</button>
+      </div>
+    `).join(''):'<div class="empty">No subscriptions tracked. Click "+ Add" to start.</div>';
 
     let totalRev=0,totalExp=0;
     summary.forEach(s=>{if(s.type==='revenue')totalRev+=s.total;else totalExp+=s.total});
@@ -1285,6 +1481,26 @@ async function loadPnl(){
       `<div style="flex:1;font-size:0.55rem;color:var(--text-3);text-align:center;min-width:0;overflow:hidden">${k.slice(5)}-${k.slice(2,4)}</div>`
     ).join('');
 
+    // Account + Method breakdowns (computed client-side from entries)
+    const acctMap={},methMap={};
+    entries.forEach(e=>{
+      const sign=e.type==='revenue'?1:-1;
+      const a=(e.account||'(unassigned)').trim()||'(unassigned)';
+      const mthd=(e.payment_method||'(unassigned)').trim()||'(unassigned)';
+      acctMap[a]=(acctMap[a]||0)+sign*Number(e.amount);
+      methMap[mthd]=(methMap[mthd]||0)+sign*Number(e.amount);
+    });
+    function renderNetBars(map,target){
+      const rows=Object.entries(map).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]));
+      const max=Math.max(...rows.map(r=>Math.abs(r[1])),1);
+      target.innerHTML=rows.length?rows.map(([k,v])=>`
+        <div class="bar-row"><div class="bar-label">${esc(k)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(Math.abs(v)/max*100).toFixed(0)}%;background:${v>=0?'var(--green)':'var(--red)'}"></div></div>
+        <div style="width:80px;font-size:0.72rem;color:var(--text-2);text-align:right">${v>=0?'+':'-'}$${Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`).join(''):'<div class="empty">No data</div>';
+    }
+    renderNetBars(acctMap,document.getElementById('pnlAccountBreakdown'));
+    renderNetBars(methMap,document.getElementById('pnlMethodBreakdown'));
+
     document.getElementById('pnlEntries').innerHTML=entries.length?entries.map(e=>`
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
         <div style="width:80px;color:var(--text-3);font-size:0.7rem">${e.date}</div>
@@ -1293,6 +1509,8 @@ async function loadPnl(){
           ${esc(e.description||e.category)}
           <span style="color:var(--text-3);font-size:0.65rem;margin-left:4px">${esc(e.category)}</span>
           ${e.person?`<span style="color:var(--primary);font-size:0.6rem;margin-left:4px">${esc(e.person)}</span>`:''}
+          ${e.account?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">${esc(e.account)}</span>`:''}
+          ${e.payment_method?`<span style="color:var(--text-3);font-size:0.6rem;margin-left:4px">[${esc(e.payment_method)}]</span>`:''}
         </div>
         <div style="width:90px;text-align:right;font-weight:700;color:${e.type==='revenue'?'var(--green)':'var(--red)'}">
           ${e.type==='revenue'?'+':'-'}$${Math.abs(e.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
@@ -1313,6 +1531,8 @@ function openPnlAdd(){
   document.getElementById('pnlCategory').value='Software / SaaS';
   document.getElementById('pnlDesc').value='';
   document.getElementById('pnlPerson').value='';
+  document.getElementById('pnlAccount').value='';
+  document.getElementById('pnlMethod').value='';
   document.getElementById('pnlAmount').value='';
   document.getElementById('pnlModal').classList.add('show');
 }
@@ -1326,6 +1546,8 @@ async function savePnlEntry(){
     category:document.getElementById('pnlCategory').value,
     description:document.getElementById('pnlDesc').value,
     person:document.getElementById('pnlPerson').value,
+    account:document.getElementById('pnlAccount').value,
+    payment_method:document.getElementById('pnlMethod').value,
     amount:document.getElementById('pnlAmount').value,
   };
   if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
@@ -1351,6 +1573,8 @@ async function editPnl(id){
   document.getElementById('pnlCategory').value=e.category;
   document.getElementById('pnlDesc').value=e.description;
   document.getElementById('pnlPerson').value=e.person||'';
+  document.getElementById('pnlAccount').value=e.account||'';
+  document.getElementById('pnlMethod').value=e.payment_method||'';
   document.getElementById('pnlAmount').value=e.amount;
   document.getElementById('pnlModal').classList.add('show');
 }
@@ -1358,6 +1582,96 @@ async function editPnl(id){
 async function deletePnl(id){
   await fetch(`${API_BASE}/api/pnl/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
   loadPnl();
+}
+
+// ── Subscriptions ───────────────────────────────────────────────────
+function openSubAdd(){
+  document.getElementById('subEditId').value='';
+  document.getElementById('subModalTitle').textContent='Add Subscription';
+  document.getElementById('subType').value='expense';
+  document.getElementById('subCategory').value='Software / SaaS';
+  document.getElementById('subDesc').value='';
+  document.getElementById('subPerson').value='';
+  document.getElementById('subAccount').value='';
+  document.getElementById('subMethod').value='';
+  document.getElementById('subAmount').value='';
+  document.getElementById('subDay').value='1';
+  document.getElementById('subStart').value=new Date().toISOString().split('T')[0];
+  document.getElementById('subEnd').value='';
+  document.getElementById('subActive').checked=true;
+  document.getElementById('subModal').classList.add('show');
+}
+function closeSubModal(){document.getElementById('subModal').classList.remove('show')}
+
+async function saveSubscription(){
+  const editId=document.getElementById('subEditId').value;
+  const data={
+    type:document.getElementById('subType').value,
+    category:document.getElementById('subCategory').value,
+    description:document.getElementById('subDesc').value,
+    person:document.getElementById('subPerson').value,
+    account:document.getElementById('subAccount').value,
+    payment_method:document.getElementById('subMethod').value,
+    amount:document.getElementById('subAmount').value,
+    day_of_month:document.getElementById('subDay').value,
+    start_date:document.getElementById('subStart').value,
+    end_date:document.getElementById('subEnd').value||null,
+    active:document.getElementById('subActive').checked?1:0,
+  };
+  if(!data.start_date||!data.amount){showAlert('pnlAlert','Start date and amount required.','err');return}
+  try{
+    data._actor=getCurrentUser();
+    if(editId){
+      await fetch(`${API_BASE}/api/subscriptions/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }else{
+      await fetch(`${API_BASE}/api/subscriptions`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }
+    closeSubModal();loadPnl();
+  }catch(e){showAlert('pnlAlert',e.message,'err')}
+}
+
+async function editSub(id){
+  const subs=await fetch(`${API_BASE}/api/subscriptions`).then(r=>r.json());
+  const s=subs.find(x=>x.id===id);
+  if(!s)return;
+  document.getElementById('subEditId').value=id;
+  document.getElementById('subModalTitle').textContent='Edit Subscription';
+  document.getElementById('subType').value=s.type;
+  document.getElementById('subCategory').value=s.category;
+  document.getElementById('subDesc').value=s.description||'';
+  document.getElementById('subPerson').value=s.person||'';
+  document.getElementById('subAccount').value=s.account||'';
+  document.getElementById('subMethod').value=s.payment_method||'';
+  document.getElementById('subAmount').value=s.amount;
+  document.getElementById('subDay').value=s.day_of_month||1;
+  document.getElementById('subStart').value=s.start_date;
+  document.getElementById('subEnd').value=s.end_date||'';
+  document.getElementById('subActive').checked=s.active==1;
+  document.getElementById('subModal').classList.add('show');
+}
+
+async function deleteSub(id){
+  if(!confirm('Delete this subscription? Past logged entries are kept.'))return;
+  await fetch(`${API_BASE}/api/subscriptions/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
+  loadPnl();
+}
+
+// Compute next N billing dates for a subscription within [today, today+days]
+function nextBillingDates(sub, days){
+  const out=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const horizon=new Date(today);horizon.setDate(horizon.getDate()+days);
+  const start=new Date(sub.start_date);
+  const end=sub.end_date?new Date(sub.end_date):null;
+  // Iterate months from current month back/forward
+  let y=today.getFullYear(),m=today.getMonth();
+  for(let i=0;i<6;i++){
+    const day=Math.min(sub.day_of_month||1, new Date(y,m+1,0).getDate());
+    const d=new Date(y,m,day);
+    if(d>=today && d<=horizon && d>=start && (!end||d<=end)) out.push(d);
+    m++;if(m>11){m=0;y++}
+  }
+  return out;
 }
 
 // ── Email Search ────────────────────────────────────────────────────────────

@@ -6,8 +6,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   const { id } = await params;
   const data = await req.json();
-  const { date, type, category, description, amount, person } = data;
-  await updatePnlEntry(parseInt(id), { date, type, category, description: description || '', amount: parseFloat(amount), person: person || '' });
+  const { date, type, category, description, amount, person, account, payment_method } = data;
+  await updatePnlEntry(parseInt(id), { date, type, category, description: description || '', amount: parseFloat(amount), person: person || '', account: account || '', payment_method: payment_method || '' });
   await logActivity({ person: data._actor || person || 'unknown', action: 'updated', resource_type: 'pnl_entry', resource_name: `${type} — ${category}`, details: `$${amount}` });
   return NextResponse.json({ success: true });
 }

@@ -146,6 +146,27 @@ export async function initDb() {
   try { await db.execute("ALTER TABLE contacts ADD COLUMN pipeline TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN auto_followup INTEGER DEFAULT 1"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN shelved INTEGER DEFAULT 0"); } catch {}
+  // Finance migrations
+  try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN account TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN payment_method TEXT DEFAULT ''"); } catch {}
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS recurring_subscriptions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      type TEXT NOT NULL,
+      category TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      person TEXT DEFAULT '',
+      account TEXT DEFAULT '',
+      payment_method TEXT DEFAULT '',
+      amount REAL NOT NULL,
+      day_of_month INTEGER DEFAULT 1,
+      start_date TEXT NOT NULL,
+      end_date TEXT DEFAULT NULL,
+      active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS brain_dumps (
@@ -301,20 +322,62 @@ export async function getPnlMonthly() {
   return r.rows;
 }
 
-export async function insertPnlEntry(data: { date: string; type: string; category: string; description: string; amount: number; person: string }) {
+export async function insertPnlEntry(data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string }) {
   await initDb();
-  const r = await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person) VALUES (?,?,?,?,?,?)', args: [data.date, data.type, data.category, data.description, data.amount, data.person] });
+  const r = await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person,account,payment_method) VALUES (?,?,?,?,?,?,?,?)', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || ''] });
   return r.lastInsertRowid;
 }
 
-export async function updatePnlEntry(id: number, data: { date: string; type: string; category: string; description: string; amount: number; person: string }) {
+export async function updatePnlEntry(id: number, data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string }) {
   await initDb();
-  await db.execute({ sql: 'UPDATE pnl_entries SET date=?, type=?, category=?, description=?, amount=?, person=? WHERE id=?', args: [data.date, data.type, data.category, data.description, data.amount, data.person, id] });
+  await db.execute({ sql: 'UPDATE pnl_entries SET date=?, type=?, category=?, description=?, amount=?, person=?, account=?, payment_method=? WHERE id=?', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || '', id] });
 }
 
 export async function deletePnlEntry(id: number) {
   await initDb();
   await db.execute({ sql: 'DELETE FROM pnl_entries WHERE id = ?', args: [id] });
+}
+
+// ── Recurring Subscriptions ─────────────────────────────────────────
+type SubscriptionInput = {
+  type: string;
+  category: string;
+  description: string;
+  person: string;
+  account: string;
+  payment_method: string;
+  amount: number;
+  day_of_month: number;
+  start_date: string;
+  end_date: string | null;
+  active: number;
+};
+
+export async function getSubscriptions() {
+  await initDb();
+  return (await db.execute('SELECT * FROM recurring_subscriptions ORDER BY active DESC, type, amount DESC')).rows;
+}
+
+export async function insertSubscription(data: SubscriptionInput) {
+  await initDb();
+  const r = await db.execute({
+    sql: 'INSERT INTO recurring_subscriptions (type,category,description,person,account,payment_method,amount,day_of_month,start_date,end_date,active) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+    args: [data.type, data.category, data.description, data.person, data.account, data.payment_method, data.amount, data.day_of_month, data.start_date, data.end_date, data.active],
+  });
+  return r.lastInsertRowid;
+}
+
+export async function updateSubscription(id: number, data: SubscriptionInput) {
+  await initDb();
+  await db.execute({
+    sql: 'UPDATE recurring_subscriptions SET type=?, category=?, description=?, person=?, account=?, payment_method=?, amount=?, day_of_month=?, start_date=?, end_date=?, active=? WHERE id=?',
+    args: [data.type, data.category, data.description, data.person, data.account, data.payment_method, data.amount, data.day_of_month, data.start_date, data.end_date, data.active, id],
+  });
+}
+
+export async function deleteSubscription(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM recurring_subscriptions WHERE id = ?', args: [id] });
 }
 
 // ── Metrics ──────────────────────────────────────────────────────────
@@ -404,11 +467,11 @@ export async function upsertOAuthToken(data: { provider: string; access_token: s
   }
 }
 
-export async function bulkInsertPnlEntries(entries: { date: string; type: string; category: string; description: string; amount: number; person: string }[]) {
+export async function bulkInsertPnlEntries(entries: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string }[]) {
   await initDb();
   let count = 0;
   for (const e of entries) {
-    await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person) VALUES (?,?,?,?,?,?)', args: [e.date, e.type, e.category, e.description, e.amount, e.person] });
+    await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person,account,payment_method) VALUES (?,?,?,?,?,?,?,?)', args: [e.date, e.type, e.category, e.description, e.amount, e.person, e.account || '', e.payment_method || ''] });
     count++;
   }
   return count;

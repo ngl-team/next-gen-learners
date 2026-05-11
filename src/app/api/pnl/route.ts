@@ -11,9 +11,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  const { date, type, category, description, amount, person, _actor } = await req.json();
+  const { date, type, category, description, amount, person, account, payment_method, _actor } = await req.json();
   if (!date || !type || !category || !amount) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-  const id = await insertPnlEntry({ date, type, category, description: description || '', amount: parseFloat(amount), person: person || '' });
+  const id = await insertPnlEntry({ date, type, category, description: description || '', amount: parseFloat(amount), person: person || '', account: account || '', payment_method: payment_method || '' });
   await logActivity({ person: _actor || person || 'unknown', action: 'added', resource_type: 'pnl_entry', resource_name: `${type} — ${category}`, details: `$${amount} ${description || ''}`.trim() });
   return NextResponse.json({ id });
 }
