@@ -356,23 +356,42 @@ export default function TecturalPage() {
             pipeline, custom site. You own every one. No subscriptions to rent
             forever. End of summer, the whole stack is in-house.
           </p>
-          <a
-            href="/tectural-construction/crm"
-            style={{
-              display: 'inline-block',
-              background: '#fff',
-              color: '#15803d',
-              padding: '14px 22px',
-              borderRadius: 10,
-              textDecoration: 'none',
-              fontWeight: 800,
-              fontSize: 15,
-              letterSpacing: '0.01em',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-            }}
-          >
-            See the CRM working now →
-          </a>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+            <a
+              href="/tectural-construction/crm"
+              style={{
+                display: 'inline-block',
+                background: '#fff',
+                color: '#15803d',
+                padding: '14px 22px',
+                borderRadius: 10,
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: 15,
+                letterSpacing: '0.01em',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+              }}
+            >
+              See the CRM working now →
+            </a>
+            <a
+              href="/tectural-construction/estimator"
+              style={{
+                display: 'inline-block',
+                background: 'transparent',
+                color: '#fff',
+                padding: '14px 22px',
+                borderRadius: 10,
+                textDecoration: 'none',
+                fontWeight: 800,
+                fontSize: 15,
+                letterSpacing: '0.01em',
+                border: '1px solid rgba(255,255,255,0.4)',
+              }}
+            >
+              Try the AI Estimator →
+            </a>
+          </div>
         </div>
       </header>
 
