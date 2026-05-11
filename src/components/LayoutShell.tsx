@@ -1,8 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import Navbar from './Navbar';
-
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isGame = pathname.startsWith('/games');
@@ -17,7 +15,6 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {!hide && <Navbar />}
       <div className="relative z-[1]">
         {children}
       </div>
