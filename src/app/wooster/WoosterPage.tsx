@@ -102,11 +102,6 @@ const RECEIPTS = [
       'Live AI literacy programming with families and students across two Connecticut library systems. Operating now.',
     source: 'Ridgefield + Danbury Library partnerships, Jan to May 2026',
   },
-  {
-    quote:
-      'Backed by Gary Sheng (Applied AI Society, Forbes 30 Under 30) and Chauncey St. John (Hallow). Independent reinforcement of the operating model.',
-    source: 'NGL advisors, May 2026',
-  },
 ];
 
 const TIMELINE_MMD = `flowchart LR
@@ -164,7 +159,7 @@ const ARCH_MMD = `flowchart TB
     direction LR
     D1["Voice Corpus<br/>alumni letters<br/>NAIS essays<br/>HB-07277 testimony"]
     D2["Blackbaud onCampus<br/>LMS + SIS"]
-    D3["Productivity Stack<br/>M365 or Google<br/>(scope at meeting)"]
+    D3["Google Workspace<br/>tenant-owned"]
     D4["SSS by NAIS<br/>Financial Aid data"]
     D5["Finalsite + Alumni DB<br/>3,000+ records"]
   end
@@ -370,7 +365,7 @@ export default function WoosterPage() {
               { k: 'Audience', v: 'Matt Byrnes, Head of School' },
               { k: 'Institution', v: 'Wooster School, Danbury CT' },
               { k: 'Anchor', v: 'March 8, 2027 Speaker Series' },
-              { k: 'Builder', v: 'Brayan Tenesaca, NGL' },
+              { k: 'Stack', v: 'Google Workspace · Blackbaud onCampus' },
             ].map((m) => (
               <div key={m.k}>
                 <div className="ws-eyebrow" style={{ marginBottom: 6 }}>
@@ -581,8 +576,9 @@ export default function WoosterPage() {
           Wooster-owned data.
         </h2>
         <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 32px' }}>
-          Data sources on top. Two Cabinets in the middle. Outcomes at the bottom. M365-versus-Google is the one
-          scoping question to resolve at our meeting; everything else assumes Wooster owns the data and the framework.
+          Data sources on top. Two Cabinets in the middle. Outcomes at the bottom. Everything assumes Wooster owns the
+          data and the framework. Google Workspace as the tenant. Blackbaud onCampus as the system of record. The
+          Head&apos;s public writing as the voice corpus.
         </p>
         <Mermaid chart={ARCH_MMD} idPrefix="arch" />
       </section>
@@ -675,99 +671,49 @@ export default function WoosterPage() {
 
       <hr className="ws-rule" />
 
-      {/* REACH */}
-      <section className="ws-section" id="reach">
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 32,
-            alignItems: 'start',
-          }}
-        >
-          <div>
-            <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
-              What we lock today
-            </div>
-            <h2
-              className="ws-display"
-              style={{
-                fontSize: 'clamp(1.8rem, 3.6vw, 2.6rem)',
-                lineHeight: 1.05,
-                margin: '0 0 16px',
-                color: 'var(--ws-ink)',
-              }}
-            >
-              Three weeks from a handshake to{' '}
-              <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
-                your first agent in your inbox.
-              </span>
-            </h2>
-            <p style={{ fontSize: '1rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 520, margin: '0 0 28px' }}>
-              At our meeting today we lock Tier 1 dates, Tier 2 summer scoping with Pannone and Bazemore, the M365
-              versus Google answer, and pay-per-school pricing. Brewster intro stays on the downstream list.
-            </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="mailto:brayan@nextgenerationlearners.com?subject=Wooster%20Cabinet%20-%20next%20steps" className="ws-btn-primary">
-                Reach Brayan
-              </a>
-              <a href="#march" className="ws-btn-ghost">
-                Back to the brief
-              </a>
-            </div>
+      {/* CLOSING — HIS OWN WORDS */}
+      <section className="ws-section" id="closing">
+        <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'left' }}>
+          <div className="ws-eyebrow" style={{ marginBottom: 28 }}>
+            From your alumni letter, Summer 2025
           </div>
-          <div
+          <blockquote
+            className="ws-display-italic"
             style={{
-              background: '#FFFFFF',
-              border: '1px solid var(--ws-line)',
-              borderRadius: 18,
-              padding: 32,
+              fontSize: 'clamp(2rem, 4.6vw, 3.4rem)',
+              lineHeight: 1.15,
+              margin: '0 0 24px',
+              color: 'var(--ws-navy-deep)',
+              borderLeft: '3px solid var(--ws-burgundy)',
+              paddingLeft: 28,
             }}
           >
-            <div className="ws-eyebrow" style={{ marginBottom: 18 }}>
-              Today&apos;s asks
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                'Greenlight Tier 1 starting the week of May 18',
-                'Lock pay-per-school pricing for both tiers',
-                'Confirm M365 versus Google for SSO + drafting',
-                'June scoping call with Pannone and Bazemore',
-                'How you will measure whether this worked',
-                'Brewster intro (Michelle Gosh) after Tier 1 ships',
-              ].map((ask, i) => (
-                <li
-                  key={ask}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '28px 1fr',
-                    gap: 12,
-                    paddingBottom: 12,
-                    borderBottom: i < 5 ? '1px solid var(--ws-line)' : 'none',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 6,
-                      background: 'var(--ws-navy-tint)',
-                      color: 'var(--ws-navy-deep)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontFamily: "'Fraunces', serif",
-                      fontWeight: 600,
-                      fontSize: '0.82rem',
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <div style={{ fontSize: '0.96rem', color: 'var(--ws-ink)', lineHeight: 1.55 }}>{ask}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
+            &ldquo;Plant your feet back on the good earth.&rdquo;
+          </blockquote>
+          <p
+            style={{
+              fontSize: '0.86rem',
+              color: 'var(--ws-ink-faint)',
+              letterSpacing: '0.04em',
+              margin: '0 0 48px',
+              paddingLeft: 28,
+            }}
+          >
+            — Matt Byrnes
+          </p>
+          <p
+            style={{
+              fontSize: '1.12rem',
+              lineHeight: 1.75,
+              color: 'var(--ws-ink-soft)',
+              margin: 0,
+              maxWidth: 720,
+            }}
+          >
+            This architecture stands on the ground Wooster already stands on. Google Workspace. Blackbaud onCampus.
+            Your alumni database. Your own voice. Nothing imported, nothing leased, nothing that can leave when a
+            vendor pivots. The next 100 years begin from the same earth that built the first.
+          </p>
         </div>
       </section>
 
@@ -775,81 +721,19 @@ export default function WoosterPage() {
       <footer
         style={{
           background: 'var(--ws-ink)',
-          color: 'rgba(250,248,243,0.7)',
-          paddingTop: 56,
-          paddingBottom: 32,
+          color: 'rgba(250,248,243,0.65)',
+          padding: '40px 28px',
+          textAlign: 'center',
         }}
       >
-        <div style={{ maxWidth: 1140, margin: '0 auto', padding: '0 28px' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: 32,
-              marginBottom: 40,
-              alignItems: 'start',
-            }}
-          >
-            <div>
-              <div
-                className="ws-display"
-                style={{ fontSize: '1.5rem', color: 'var(--ws-paper)', letterSpacing: '-0.02em', marginBottom: 12 }}
-              >
-                Wooster Cabinet
-              </div>
-              <p style={{ fontSize: '0.88rem', lineHeight: 1.7, margin: 0, maxWidth: 320 }}>
-                A six-agent AI architecture proposed for Wooster School in its centennial year. Confidential draft for
-                Matt Byrnes.
-              </p>
-            </div>
-            <div>
-              <div className="ws-eyebrow" style={{ color: 'rgba(250,248,243,0.45)', marginBottom: 14 }}>
-                Built by
-              </div>
-              <p style={{ fontSize: '0.94rem', color: 'rgba(250,248,243,0.9)', lineHeight: 1.6, margin: '0 0 6px' }}>
-                Brayan Tenesaca
-              </p>
-              <p style={{ fontSize: '0.84rem', lineHeight: 1.7, margin: '0 0 12px' }}>
-                Founder, Next Generation Learners
-              </p>
-              <a
-                href="mailto:brayan@nextgenerationlearners.com"
-                style={{ fontSize: '0.84rem', color: 'rgba(250,248,243,0.9)', textDecoration: 'underline' }}
-              >
-                brayan@nextgenerationlearners.com
-              </a>
-            </div>
-            <div>
-              <div className="ws-eyebrow" style={{ color: 'rgba(250,248,243,0.45)', marginBottom: 14 }}>
-                Sources
-              </div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.84rem' }}>
-                <li>Public Wooster centennial page (March 8, 2027 speaker series)</li>
-                <li>Matt Byrnes Summer 2025 alumni letter</li>
-                <li>HB-07277 testimony, April 2025</li>
-                <li>NAIS Independent School Magazine, 2018-2023</li>
-                <li>Wooster IRS Form 990, FYE June 2025</li>
-              </ul>
-            </div>
-          </div>
-          <div
-            style={{
-              paddingTop: 22,
-              borderTop: '1px solid rgba(255,255,255,0.08)',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 14,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              fontSize: '0.76rem',
-              color: 'rgba(250,248,243,0.45)',
-            }}
-          >
-            <p style={{ margin: 0 }}>
-              Draft prepared for the May 11, 2026 meeting. Not an offer. All commitments require written scope.
-            </p>
-            <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Next Generation Learners</p>
-          </div>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+          <p style={{ fontSize: '0.82rem', lineHeight: 1.7, margin: '0 0 10px', color: 'rgba(250,248,243,0.78)' }}>
+            Drawn for Matt Byrnes on May 11, 2026.
+          </p>
+          <p style={{ fontSize: '0.78rem', lineHeight: 1.7, margin: 0, color: 'rgba(250,248,243,0.55)' }}>
+            Sources: public Wooster centennial page, Summer 2025 alumni letter, HB-07277 testimony, NAIS Independent
+            School Magazine 2018-2023, Wooster IRS Form 990 FYE June 2025.
+          </p>
         </div>
       </footer>
     </div>
