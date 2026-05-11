@@ -1726,13 +1726,15 @@ function buildReimbursement(allEntries, totalCash){
   document.getElementById('reimbRyanDetail').innerHTML=`${pending.Ryan.length} pending · gross ${fmt(ryanOwedRaw)} − ${fmt(WALTER_OFFSET)} Walter offset`;
   document.getElementById('reimbTotal').textContent=fmt(total);
 
-  // Free Cash: cash in bank minus what's actually owed to founders
-  const freeCash=Number(totalCash||0)-total;
+  // Free Cash: cash in bank minus money already paid out to founders
+  // (Walter offset = $48.25 Ryan already has in his Stripe = treated as already paid)
+  const paidOut = sumAmt(paid.Brayan) + sumAmt(paid.Ryan) + WALTER_OFFSET;
+  const freeCash = Number(totalCash||0) - paidOut;
   const freeEl=document.getElementById('finFreeCash');
   if(freeEl){
     freeEl.textContent=(freeCash>=0?'$':'-$')+fmt(Math.abs(freeCash)).slice(1);
     freeEl.style.color=freeCash>=0?'var(--green)':'var(--red)';
-    document.getElementById('finFreeCashDetail').textContent=`${fmt(Number(totalCash||0))} cash − ${fmt(total)} owed to founders`;
+    document.getElementById('finFreeCashDetail').textContent=`${fmt(Number(totalCash||0))} cash − ${fmt(paidOut)} paid to founders (still owed ${fmt(total)})`;
   }
 
   // Stash pending lists for footer math
