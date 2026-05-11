@@ -1,31 +1,31 @@
 import Mermaid from './Mermaid';
 
 const MASTER_MMD = `flowchart TD
-  subgraph FD["FRONT DOOR"]
+  subgraph FD["LA PUERTA DE ENTRADA"]
     direction LR
-    WEB["Custom site<br/>he edits himself"]
-    PHONE["Phone +<br/>referrals"]
+    WEB["Sitio web<br/>que usted edita"]
+    PHONE["Teléfono +<br/>referencias"]
   end
-  subgraph LEAD["LEAD CAPTURE"]
+  subgraph LEAD["CAPTURA DE CLIENTES"]
     direction LR
-    FORM["Web form"]
-    EST["In-house AI estimator<br/>kills Instant Roofer"]
+    FORM["Formulario web"]
+    EST["Estimador IA interno<br/>elimina Instant Roofer"]
   end
-  subgraph BRAIN["JARVIS - brain on your laptop"]
+  subgraph BRAIN["JARVIS - el cerebro en su laptop"]
     direction TB
-    EMAIL["Email assistant<br/>SPRINT 1 - start here"]
-    VOICE["Voice profile +<br/>people files"]
+    EMAIL["Asistente de correo<br/>SPRINT 1 - aquí empezamos"]
+    VOICE["Perfil de voz +<br/>contactos"]
   end
-  subgraph OPS["OPERATIONS DASHBOARD"]
+  subgraph OPS["PANEL DE OPERACIONES"]
     direction LR
-    CRM["Job pipeline<br/>estimate to install to invoice"]
-    INV["Auto-invoice<br/>on completion"]
+    CRM["Pipeline de trabajos<br/>estimado a instalación a factura"]
+    INV["Factura automática<br/>al completar"]
   end
-  subgraph OUT["OUTCOMES"]
+  subgraph OUT["RESULTADOS"]
     direction LR
-    OWN["He owns<br/>every tool"]
-    KILL["Subscriptions<br/>retired"]
-    TIME["Hours back<br/>every week"]
+    OWN["Usted es dueño<br/>de cada herramienta"]
+    KILL["Suscripciones<br/>eliminadas"]
+    TIME["Horas de vuelta<br/>cada semana"]
   end
   WEB --> FORM
   PHONE --> EMAIL
@@ -51,12 +51,12 @@ const MASTER_MMD = `flowchart TD
   class OWN,KILL,TIME outcome`;
 
 const EMAIL_MMD = `flowchart LR
-  A["New email arrives"] --> B["Jarvis on laptop"]
-  B --> C["Reads voice profile<br/>+ past replies"]
-  C --> D["Drafts reply<br/>in your voice"]
-  D --> E["He edits 10 sec<br/>and sends"]
-  B --> F["Triage:<br/>lead / vendor / customer / crew"]
-  F --> G["Routes to<br/>right folder"]
+  A["Llega un correo nuevo"] --> B["Jarvis en la laptop"]
+  B --> C["Lee su perfil de voz<br/>+ respuestas anteriores"]
+  C --> D["Redacta la respuesta<br/>en su voz"]
+  D --> E["Usted edita 10 seg<br/>y envía"]
+  B --> F["Clasificación:<br/>cliente / proveedor / equipo"]
+  F --> G["Va a la<br/>carpeta correcta"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
@@ -65,12 +65,12 @@ const EMAIL_MMD = `flowchart LR
   class E,G out`;
 
 const ESTIMATOR_MMD = `flowchart LR
-  A["Address typed in<br/>web form or by crew"] --> B["Aerial measurement API"]
-  B --> C["Roof area + pitch"]
-  C --> D["Tectural pricing rules"]
-  E["Material costs<br/>wood / metal / EPDM / copper"] --> D
-  D --> F["Branded PDF estimate"]
-  F --> G["Sent to lead<br/>+ saved to job file"]
+  A["Dirección ingresada<br/>en web o por el equipo"] --> B["API de medición aérea"]
+  B --> C["Área del techo + inclinación"]
+  C --> D["Sus reglas de precios"]
+  E["Costos de material<br/>madera / metal / EPDM / cobre"] --> D
+  D --> F["Estimado PDF<br/>con su marca"]
+  F --> G["Enviado al cliente<br/>+ guardado al expediente"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
@@ -79,13 +79,13 @@ const ESTIMATOR_MMD = `flowchart LR
   class F,G out`;
 
 const CRM_MMD = `flowchart TD
-  A["Lead source<br/>phone / web / referral"] --> B["Job record created"]
-  B --> C["Estimate generated<br/>from Sprint 2 tool"]
-  C --> D["Contract signed"]
-  D --> E["Schedule +<br/>crew assigned"]
-  E --> F["Install photos<br/>+ checklist"]
-  F --> G["Auto-invoice fires"]
-  G --> H["Payment in<br/>QuickBooks sync"]
+  A["Fuente del cliente<br/>teléfono / web / referencia"] --> B["Trabajo creado"]
+  B --> C["Estimado generado<br/>con la herramienta del Sprint 2"]
+  C --> D["Contrato firmado"]
+  D --> E["Horario asignado<br/>+ equipo programado"]
+  E --> F["Fotos de instalación<br/>+ lista de verificación"]
+  F --> G["Factura se envía<br/>automáticamente"]
+  G --> H["Pago entra<br/>y sincroniza con QuickBooks"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
@@ -94,12 +94,12 @@ const CRM_MMD = `flowchart TD
   class H out`;
 
 const SITE_MMD = `flowchart LR
-  A["You edit<br/>content"] --> B["Simple visual editor"]
-  B --> C["Auto-deploy"]
+  A["Usted edita<br/>el contenido"] --> B["Editor visual simple"]
+  B --> C["Se publica<br/>automáticamente"]
   C --> D["tecturalconstruction.com"]
-  E["Estimator from<br/>Sprint 2"] --> D
-  D --> F["Contact form"]
-  F --> G["Routes to<br/>email assistant"]
+  E["Estimador del<br/>Sprint 2"] --> D
+  D --> F["Formulario de contacto"]
+  F --> G["Va directo al<br/>asistente de correo"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
@@ -124,59 +124,59 @@ type Sprint = {
 const SPRINTS: Sprint[] = [
   {
     num: '01',
-    title: 'Email assistant',
-    badge: 'WE START HERE',
+    title: 'Asistente de correo',
+    badge: 'AQUÍ EMPEZAMOS',
     badgeColor: 'green',
-    problem: '"I am two days behind on email."',
+    problem: '"Estoy dos días atrasado en el correo."',
     plain:
-      "Every morning Jarvis has already read the new emails. Leads, vendors, customers, and crew updates sit in their own bucket. For the replies that need drafting, Jarvis writes them in your voice from past emails. You read, tweak, send. Twenty minutes instead of two hours.",
-    math: 'Five hours a week back. Twenty plus hours a month. At roofer-owner time value, that pays the build back inside the first month.',
-    kills: 'The two-day email backlog. The lost leads sitting unread.',
-    ship: 'Two weeks. Same pattern already shipped for a CT superintendent.',
+      'Cada mañana Jarvis ya leyó los correos nuevos. Clientes, proveedores y el equipo quedan en su propia carpeta. Para las respuestas que necesitan redacción, Jarvis las escribe en su voz, aprendida de los correos anteriores. Usted lee, ajusta, y envía. Veinte minutos en vez de dos horas.',
+    math: 'Cinco horas a la semana de vuelta. Más de veinte horas al mes. Al valor de su tiempo como dueño, el sprint se paga solo en el primer mes.',
+    kills: 'El atraso de dos días en el correo. Los clientes que se pierden por no contestar a tiempo.',
+    ship: 'Dos semanas. El mismo patrón ya entregado a un superintendente en Connecticut.',
     chart: EMAIL_MMD,
-    idPrefix: 'email',
+    idPrefix: 'email-es',
   },
   {
     num: '02',
-    title: 'In-house AI estimator',
-    badge: 'PHASE 2',
+    title: 'Estimador IA interno',
+    badge: 'FASE 2',
     badgeColor: 'gray',
-    problem: '"I like Instant Roofer. I do not like the subscription."',
+    problem: '"Me gusta Instant Roofer. No me gusta la suscripción."',
     plain:
-      "A lead types an address. The tool pulls roof measurements from aerial data, runs them through your pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. You own the math, the layout, the data. No subscription forever.",
-    math: 'Kills $250 a month direct. Three thousand a year. Thirty thousand over ten years on a one-time build.',
-    kills: 'Instant Roofer at $250 a month.',
-    ship: 'Four to six weeks. Needs aerial measurement API integration and pricing rules captured.',
+      'Un cliente escribe una dirección. La herramienta saca la medida del techo de los datos aéreos, la pasa por las reglas de precios de Tectural (madera, metal, EPDM, cobre, Tesla Solar) y produce un estimado PDF con su marca. Usted es dueño de la fórmula, del formato, y de los datos. Cero suscripción para siempre.',
+    math: 'Elimina $250 al mes directo. Tres mil al año. Treinta mil en diez años con una construcción de una sola vez.',
+    kills: 'Instant Roofer a $250 al mes.',
+    ship: 'Cuatro a seis semanas. Necesita conexión con la API de medición aérea y sus reglas de precios documentadas.',
     chart: ESTIMATOR_MMD,
-    idPrefix: 'estimator',
+    idPrefix: 'estimator-es',
   },
   {
     num: '03',
-    title: 'Job pipeline + invoicing',
-    badge: 'PHASE 3',
+    title: 'Panel de trabajos + facturas',
+    badge: 'FASE 3',
     badgeColor: 'gray',
-    problem: '"I want a CRM in the spirit of JobNimbus, with invoicing wired in."',
+    problem: '"Quiero un CRM como JobNimbus, con las facturas conectadas."',
     plain:
-      'One dashboard you open every morning. Every job is a row. Which jobs are in estimate, signed, scheduled, today on the truck, ready to invoice. Click a job and see the photos, the contract, the payment status. Invoicing fires automatically when a job is marked complete.',
-    math: 'A JobNimbus equivalent runs $400 to $800 a month at your crew size. Kill that and reclaim around four hours a week of paperwork on top. Real number is closer to $1,500 a month back.',
-    kills: 'JobNimbus-style subscriptions. The paper trail across email, text, and the estimator.',
-    ship: 'Six to eight weeks. Integrates Sprint 1 and Sprint 2 into one view.',
+      'Un solo panel que usted abre cada mañana. Cada trabajo es una fila. Cuáles están en estimado, firmados, agendados, en la camioneta hoy, listos para facturar. Hace clic en un trabajo y ve las fotos, el contrato, el estado del pago. La factura se envía sola cuando el trabajo se marca como completado.',
+    math: 'Un CRM como JobNimbus cuesta entre $400 y $800 al mes a su tamaño de equipo. Si lo elimina, son cuatro horas a la semana de papeleo de vuelta. El número real está cerca de $1,500 al mes recuperados.',
+    kills: 'Las suscripciones tipo JobNimbus. El rastro de papel entre correo, mensajes, y el estimador.',
+    ship: 'Seis a ocho semanas. Junta el Sprint 1 y el Sprint 2 en una sola pantalla.',
     chart: CRM_MMD,
-    idPrefix: 'crm',
+    idPrefix: 'crm-es',
   },
   {
     num: '04',
-    title: 'Custom site you edit yourself',
-    badge: 'PHASE 4',
+    title: 'Sitio web que usted edita',
+    badge: 'FASE 4',
     badgeColor: 'gray',
-    problem: '"No one builds it the way I want it."',
+    problem: '"Nadie lo construye como yo lo quiero."',
     plain:
-      'A clean site, built once, edited by you through a simple editor. The Sprint 2 estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant. No more waiting on a contractor to change a headline.',
-    math: 'Kills the offshore web contractor recurring spend. Lead capture front door starts converting visitors instead of sitting still.',
-    kills: 'The offshore web contractor recurring fee. The mismatch between your taste and what gets shipped.',
-    ship: 'Three to four weeks once Sprint 2 exists.',
+      'Un sitio limpio, hecho una vez, editado por usted con un editor sencillo. El estimador del Sprint 2 vive en la página principal y captura clientes apenas entran. El formulario de contacto va directo al asistente de correo. Ya no hay que esperar a un contratista para cambiar un título.',
+    math: 'Elimina el gasto recurrente con el contratista de sitios web. La puerta de entrada empieza a convertir visitantes en vez de quedarse quieta.',
+    kills: 'El pago recurrente al contratista de sitios web. La diferencia entre lo que usted quiere y lo que recibe.',
+    ship: 'Tres a cuatro semanas, una vez que exista el Sprint 2.',
     chart: SITE_MMD,
-    idPrefix: 'site',
+    idPrefix: 'site-es',
   },
 ];
 
@@ -240,21 +240,21 @@ function SprintCard({ s }: { s: Sprint }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
         <div>
           <p style={{ fontSize: 12, letterSpacing: '0.12em', color: '#94a3b8', margin: '0 0 6px', fontWeight: 700 }}>
-            HOW IT WORKS
+            CÓMO FUNCIONA
           </p>
           <p style={{ fontSize: 15, color: '#1e293b', lineHeight: 1.55, margin: 0 }}>{s.plain}</p>
         </div>
         <div>
           <p style={{ fontSize: 12, letterSpacing: '0.12em', color: '#94a3b8', margin: '0 0 6px', fontWeight: 700 }}>
-            WHAT IT IS WORTH
+            CUÁNTO VALE
           </p>
           <p style={{ fontSize: 15, color: '#1e293b', lineHeight: 1.55, margin: '0 0 16px' }}>{s.math}</p>
           <p style={{ fontSize: 12, letterSpacing: '0.12em', color: '#94a3b8', margin: '0 0 6px', fontWeight: 700 }}>
-            WHAT IT KILLS
+            QUÉ ELIMINA
           </p>
           <p style={{ fontSize: 15, color: '#1e293b', lineHeight: 1.55, margin: '0 0 16px' }}>{s.kills}</p>
           <p style={{ fontSize: 12, letterSpacing: '0.12em', color: '#94a3b8', margin: '0 0 6px', fontWeight: 700 }}>
-            TIMELINE
+            TIEMPO DE ENTREGA
           </p>
           <p style={{ fontSize: 15, color: '#1e293b', lineHeight: 1.55, margin: 0 }}>{s.ship}</p>
         </div>
@@ -263,7 +263,7 @@ function SprintCard({ s }: { s: Sprint }) {
   );
 }
 
-export default function TecturalPage() {
+export default function TecturalPageEs() {
   return (
     <main
       style={{
@@ -285,7 +285,7 @@ export default function TecturalPage() {
         }}
       >
         <a
-          href="/tectural-construction/es"
+          href="/tectural-construction"
           style={{
             fontSize: 13,
             color: '#475569',
@@ -296,7 +296,7 @@ export default function TecturalPage() {
             fontWeight: 600,
           }}
         >
-          ES · Español
+          EN · English
         </a>
       </div>
 
@@ -317,7 +317,7 @@ export default function TecturalPage() {
               fontWeight: 700,
             }}
           >
-            TECTURAL CONSTRUCTION · AI BUILD MAP · MAY 2026
+            TECTURAL CONSTRUCTION · MAPA DE IA · MAYO 2026
           </p>
           <h1
             style={{
@@ -328,9 +328,9 @@ export default function TecturalPage() {
               letterSpacing: '-0.02em',
             }}
           >
-            The all-in-one system,
+            El sistema todo-en-uno,
             <br />
-            built in-house.
+            hecho en casa.
           </h1>
           <p
             style={{
@@ -341,9 +341,10 @@ export default function TecturalPage() {
               margin: 0,
             }}
           >
-            Four tools, mapped to how Tectural already works. Email, estimates, job
-            pipeline, custom site. You own every one. No subscriptions to rent
-            forever. End of summer, the whole stack is in-house.
+            Cuatro herramientas, conectadas a cómo Tectural ya trabaja. Correo,
+            estimados, panel de trabajos, sitio personalizado. Usted es el dueño de
+            cada una. Cero suscripciones para siempre. Antes de fin de verano, todo
+            el sistema está en casa.
           </p>
         </div>
       </header>
@@ -364,7 +365,7 @@ export default function TecturalPage() {
             fontWeight: 700,
           }}
         >
-          THE WHOLE PICTURE
+          EL CUADRO COMPLETO
         </p>
         <h2
           style={{
@@ -374,7 +375,7 @@ export default function TecturalPage() {
             letterSpacing: '-0.01em',
           }}
         >
-          How the four tools fit together
+          Cómo se conectan las cuatro herramientas
         </h2>
         <p
           style={{
@@ -385,10 +386,11 @@ export default function TecturalPage() {
             margin: '0 0 32px',
           }}
         >
-          The green node is where we start. The yellow row is what you get out the
-          other side. Everything in the middle is built once, owned forever.
+          El nodo verde es donde empezamos. La fila amarilla es lo que usted recibe
+          al final. Todo lo del medio se construye una vez y se queda con usted
+          para siempre.
         </p>
-        <Mermaid chart={MASTER_MMD} idPrefix="tectural-master" />
+        <Mermaid chart={MASTER_MMD} idPrefix="tectural-master-es" />
       </section>
 
       <section
@@ -407,7 +409,7 @@ export default function TecturalPage() {
             fontWeight: 700,
           }}
         >
-          THE FOUR SPRINTS
+          LOS CUATRO SPRINTS
         </p>
         <h2
           style={{
@@ -417,7 +419,7 @@ export default function TecturalPage() {
             letterSpacing: '-0.01em',
           }}
         >
-          One ships first. The rest follow.
+          Uno se entrega primero. Los demás siguen.
         </h2>
         {SPRINTS.map((s) => (
           <SprintCard key={s.num} s={s} />
@@ -441,7 +443,7 @@ export default function TecturalPage() {
               fontWeight: 700,
             }}
           >
-            RADICAL TRANSPARENCY
+            TRANSPARENCIA TOTAL
           </p>
           <h2
             style={{
@@ -451,7 +453,7 @@ export default function TecturalPage() {
               margin: '0 0 20px',
             }}
           >
-            If you take this map and build it yourself, that is fine.
+            Si toma este mapa y lo construye usted mismo, está bien.
           </h2>
           <p
             style={{
@@ -461,8 +463,8 @@ export default function TecturalPage() {
               margin: '0 0 12px',
             }}
           >
-            Hand this to your IT guy. Hire someone else. You have a way forward
-            either way. That is the point of the page.
+            Déselo a su persona de IT. Contrate a alguien más. Tiene un camino para
+            adelante de cualquier forma. Ese es el punto de esta página.
           </p>
           <p
             style={{
@@ -472,9 +474,9 @@ export default function TecturalPage() {
               margin: 0,
             }}
           >
-            The reason you would pay me to do it is speed. Email assistant in your
-            laptop in two weeks. The whole system by end of summer. You own every
-            piece on the way out.
+            La razón por la que me pagaría a mí para hacerlo es la velocidad.
+            Asistente de correo en su laptop en dos semanas. El sistema completo
+            antes de fin de verano. Usted es el dueño de cada pieza cuando salga.
           </p>
         </div>
       </section>
@@ -488,7 +490,7 @@ export default function TecturalPage() {
         }}
       >
         <p style={{ fontSize: 14, color: '#475569', margin: '0 0 8px' }}>
-          Built for Tectural. May 2026.
+          Hecho para Tectural. Mayo 2026.
         </p>
         <p style={{ fontSize: 14, color: '#475569', margin: 0 }}>
           <a
