@@ -55,6 +55,10 @@ export default function TecturalEstimator() {
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
   const [box, setBox] = useState<Box>({ x: 0, y: 0, w: 0, h: 0 });
 
+  const handleSize = useCallback((w: number, h: number) => {
+    setContainerSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
+  }, []);
+
   const pricePerSqFt =
     material === 'architectural'
       ? PRICING.baseShinglePerSqFt
@@ -288,7 +292,7 @@ export default function TecturalEstimator() {
                 geo={geo}
                 box={box}
                 setBox={setBox}
-                onSize={(w, h) => setContainerSize({ w, h })}
+                onSize={handleSize}
               />
               <p style={{ fontSize: 12, color: '#94a3b8', margin: '10px 4px 0', lineHeight: 1.5 }}>
                 Drag the green box over your roof. Drag the corners to resize it to match the roof outline.
