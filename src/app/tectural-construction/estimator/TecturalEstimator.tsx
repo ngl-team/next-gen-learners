@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 const PRICING = {
   baseShinglePerSqFt: 5.5,
@@ -12,6 +12,8 @@ const PRICING = {
   rangeSpread: 0.12,
 };
 
+const TILE_Z = 19;
+
 type Material = 'architectural' | 'designer' | 'metal';
 type Pitch = 'low' | 'medium' | 'steep';
 
@@ -21,24 +23,19 @@ type GeoResult = {
   display_name: string;
 };
 
+type Box = { x: number; y: number; w: number; h: number };
 type Stage = 'idle' | 'scanning' | 'results' | 'leadForm' | 'confirmed';
 
-function lng2tile(lng: number, z: number) {
-  return Math.floor(((lng + 180) / 360) * Math.pow(2, z));
+function lng2tileFloat(lng: number, z: number) {
+  return ((lng + 180) / 360) * Math.pow(2, z);
 }
-function lat2tile(lat: number, z: number) {
+function lat2tileFloat(lat: number, z: number) {
   const rad = (lat * Math.PI) / 180;
-  return Math.floor(((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * Math.pow(2, z));
+  return ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * Math.pow(2, z);
 }
 
-function seededArea(address: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < address.length; i++) {
-    h ^= address.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  const norm = (h >>> 0) / 0xffffffff;
-  return Math.round(1800 + norm * 1600);
+function mppNative(lat: number, z: number) {
+  return (156543.03392 * Math.cos((lat * Math.PI) / 180)) / Math.pow(2, z);
 }
 
 function fmtMoney(n: number) {
@@ -49,15 +46,14 @@ export default function TecturalEstimator() {
   const [address, setAddress] = useState('');
   const [stage, setStage] = useState<Stage>('idle');
   const [geo, setGeo] = useState<GeoResult | null>(null);
-  const [areaSqFt, setAreaSqFt] = useState(0);
-  const [revealedArea, setRevealedArea] = useState(0);
   const [material, setMaterial] = useState<Material>('architectural');
   const [pitch, setPitch] = useState<Pitch>('medium');
   const [tearOff, setTearOff] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
   const [lead, setLead] = useState({ name: '', email: '', phone: '' });
-  const scanTimer = useRef<number | null>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+  const [box, setBox] = useState<Box>({ x: 0, y: 0, w: 0, h: 0 });
 
   const pricePerSqFt =
     material === 'architectural'
@@ -66,22 +62,36 @@ export default function TecturalEstimator() {
         ? PRICING.designerPerSqFt
         : PRICING.metalPerSqFt;
 
+  const mppDisplayed = useMemo(() => {
+    if (!geo || !containerSize.w) return 0;
+    return (mppNative(geo.lat, TILE_Z) * 3 * 256) / containerSize.w;
+  }, [geo, containerSize.w]);
+
+  const footprintSqFt = useMemo(() => {
+    if (!mppDisplayed || box.w <= 0 || box.h <= 0) return 0;
+    const wM = box.w * mppDisplayed;
+    const hM = box.h * mppDisplayed;
+    return wM * hM * 10.7639;
+  }, [box, mppDisplayed]);
+
+  const roofSqFt = Math.round(footprintSqFt * PRICING.pitchMultiplier[pitch]);
+
   const { low, high } = useMemo(() => {
-    if (!areaSqFt) return { low: 0, high: 0 };
-    const tearOffCost = tearOff ? areaSqFt * PRICING.tearOffPerSqFt : 0;
-    const subtotal = areaSqFt * pricePerSqFt * PRICING.pitchMultiplier[pitch] + tearOffCost;
+    if (!roofSqFt) return { low: 0, high: 0 };
+    const tearOffCost = tearOff ? roofSqFt * PRICING.tearOffPerSqFt : 0;
+    const subtotal = roofSqFt * pricePerSqFt + tearOffCost;
     const final = Math.max(subtotal, PRICING.minimumJob);
     const spread = final * PRICING.rangeSpread;
     return {
       low: Math.round((final - spread) / 100) * 100,
       high: Math.round((final + spread) / 100) * 100,
     };
-  }, [areaSqFt, pricePerSqFt, pitch, tearOff]);
+  }, [roofSqFt, pricePerSqFt, tearOff]);
 
   useEffect(() => {
     if (stage !== 'scanning') return;
     const start = performance.now();
-    const duration = 2400;
+    const duration = 2200;
     let raf = 0;
     const tick = (now: number) => {
       const p = Math.min(1, (now - start) / duration);
@@ -94,19 +104,16 @@ export default function TecturalEstimator() {
   }, [stage]);
 
   useEffect(() => {
-    if (stage !== 'results') return;
-    const start = performance.now();
-    const duration = 1200;
-    let raf = 0;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setRevealedArea(Math.round(areaSqFt * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [stage, areaSqFt]);
+    if (!geo || !containerSize.w || !mppDisplayed) return;
+    const defaultMeters = 15.5;
+    const defaultPx = defaultMeters / mppDisplayed;
+    setBox({
+      x: containerSize.w / 2 - defaultPx / 2,
+      y: containerSize.h / 2 - defaultPx / 2,
+      w: defaultPx,
+      h: defaultPx,
+    });
+  }, [geo, containerSize.w, containerSize.h, mppDisplayed]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -126,7 +133,6 @@ export default function TecturalEstimator() {
       }
       const result = data[0];
       setGeo({ lat: parseFloat(result.lat), lon: parseFloat(result.lon), display_name: result.display_name });
-      setAreaSqFt(seededArea(result.display_name));
     } catch {
       setError('Network error reaching the satellite service. Try again.');
       setStage('idle');
@@ -136,11 +142,10 @@ export default function TecturalEstimator() {
   function reset() {
     setStage('idle');
     setGeo(null);
-    setAreaSqFt(0);
-    setRevealedArea(0);
     setAddress('');
     setLead({ name: '', email: '', phone: '' });
     setError(null);
+    setBox({ x: 0, y: 0, w: 0, h: 0 });
   }
 
   function submitLead(e: React.FormEvent) {
@@ -151,7 +156,8 @@ export default function TecturalEstimator() {
       console.log('[Tectural lead]', {
         ...lead,
         address: geo?.display_name,
-        areaSqFt,
+        footprintSqFt: Math.round(footprintSqFt),
+        roofSqFt,
         material,
         pitch,
         tearOff,
@@ -209,8 +215,8 @@ export default function TecturalEstimator() {
               Get your roof estimate in 30 seconds.
             </h1>
             <p style={{ fontSize: 18, color: '#cbd5e1', lineHeight: 1.55, margin: '0 0 32px' }}>
-              Enter your address. We pull satellite imagery, measure your roof, and show you a price
-              range built from Tectural&apos;s real pricing. No salesman.
+              Enter your address. We pull satellite imagery. You drag the green box over your roof and
+              see a price range built from Tectural&apos;s real pricing. No salesman.
             </p>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -278,13 +284,24 @@ export default function TecturalEstimator() {
         {(stage === 'results' || stage === 'leadForm') && geo && (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 32 }}>
             <div>
-              <SatelliteView geo={geo} />
+              <SatelliteView
+                geo={geo}
+                box={box}
+                setBox={setBox}
+                onSize={(w, h) => setContainerSize({ w, h })}
+              />
+              <p style={{ fontSize: 12, color: '#94a3b8', margin: '10px 4px 0', lineHeight: 1.5 }}>
+                Drag the green box over your roof. Drag the corners to resize it to match the roof outline.
+              </p>
               <div style={{ marginTop: 16, padding: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)' }}>
                 <div style={{ fontSize: 11, letterSpacing: '0.12em', color: '#94a3b8', fontWeight: 700, marginBottom: 6 }}>MEASURED ROOF AREA</div>
                 <div style={{ fontSize: 36, fontWeight: 800, color: '#86efac', letterSpacing: '-0.02em' }}>
-                  {revealedArea.toLocaleString()} <span style={{ fontSize: 18, color: '#cbd5e1', fontWeight: 600 }}>sq ft</span>
+                  {roofSqFt.toLocaleString()} <span style={{ fontSize: 18, color: '#cbd5e1', fontWeight: 600 }}>sq ft</span>
                 </div>
-                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>{geo.display_name}</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>
+                  Footprint {Math.round(footprintSqFt).toLocaleString()} sq ft × {PRICING.pitchMultiplier[pitch].toFixed(2)} pitch factor
+                </div>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{geo.display_name}</div>
               </div>
             </div>
 
@@ -465,8 +482,8 @@ function ScanView({ address, progress }: { address: string; progress: number }) 
   const steps = [
     { at: 0.0, label: 'Locating property' },
     { at: 0.25, label: 'Pulling satellite imagery' },
-    { at: 0.55, label: 'Detecting roof edges' },
-    { at: 0.8, label: 'Calculating square footage' },
+    { at: 0.55, label: 'Centering on your address' },
+    { at: 0.8, label: 'Ready to measure' },
   ];
   return (
     <div style={{ maxWidth: 560, margin: '40px auto', textAlign: 'center' }}>
@@ -481,7 +498,7 @@ function ScanView({ address, progress }: { address: string; progress: number }) 
           animation: 'spin 1s linear infinite',
         }}
       />
-      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>Measuring your roof</h2>
+      <h2 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>Loading your property</h2>
       <p style={{ fontSize: 14, color: '#94a3b8', margin: '0 0 32px' }}>{address}</p>
       <div style={{ height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden', marginBottom: 24 }}>
         <div style={{ height: '100%', width: `${pct}%`, background: '#15803d', transition: 'width 80ms linear' }} />
@@ -509,18 +526,120 @@ function ScanView({ address, progress }: { address: string; progress: number }) 
   );
 }
 
-function SatelliteView({ geo }: { geo: GeoResult }) {
-  const z = 19;
-  const tiles: { x: number; y: number; dx: number; dy: number }[] = [];
-  const cx = lng2tile(geo.lon, z);
-  const cy = lat2tile(geo.lat, z);
-  for (let dx = -1; dx <= 1; dx++) {
-    for (let dy = -1; dy <= 1; dy++) {
-      tiles.push({ x: cx + dx, y: cy + dy, dx, dy });
+function SatelliteView({
+  geo,
+  box,
+  setBox,
+  onSize,
+}: {
+  geo: GeoResult;
+  box: Box;
+  setBox: (b: Box) => void;
+  onSize: (w: number, h: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ kind: 'move' | 'nw' | 'ne' | 'sw' | 'se'; start: Box; sx: number; sy: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      onSize(r.width, r.height);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onSize]);
+
+  const xFloat = lng2tileFloat(geo.lon, TILE_Z);
+  const yFloat = lat2tileFloat(geo.lat, TILE_Z);
+  const cx = Math.floor(xFloat);
+  const cy = Math.floor(yFloat);
+  const fracX = xFloat - cx;
+  const fracY = yFloat - cy;
+
+  const tiles: { x: number; y: number }[] = [];
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      tiles.push({ x: cx + dx, y: cy + dy });
     }
   }
+
+  const translateX = -(0.5 + fracX) * (100 / 3);
+  const translateY = -(0.5 + fracY) * (100 / 3);
+
+  const startDrag = useCallback(
+    (kind: 'move' | 'nw' | 'ne' | 'sw' | 'se') => (e: React.PointerEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      (e.target as Element).setPointerCapture(e.pointerId);
+      dragRef.current = { kind, start: { ...box }, sx: e.clientX, sy: e.clientY };
+    },
+    [box],
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      const d = dragRef.current;
+      if (!d || !ref.current) return;
+      const dx = e.clientX - d.sx;
+      const dy = e.clientY - d.sy;
+      const W = ref.current.clientWidth;
+      const H = ref.current.clientHeight;
+      let nb: Box = { ...d.start };
+      const MIN = 24;
+      if (d.kind === 'move') {
+        nb.x = Math.max(0, Math.min(W - d.start.w, d.start.x + dx));
+        nb.y = Math.max(0, Math.min(H - d.start.h, d.start.y + dy));
+      } else if (d.kind === 'se') {
+        nb.w = Math.max(MIN, Math.min(W - d.start.x, d.start.w + dx));
+        nb.h = Math.max(MIN, Math.min(H - d.start.y, d.start.h + dy));
+      } else if (d.kind === 'sw') {
+        const newW = Math.max(MIN, d.start.w - dx);
+        nb.x = d.start.x + (d.start.w - newW);
+        nb.w = newW;
+        nb.h = Math.max(MIN, Math.min(H - d.start.y, d.start.h + dy));
+      } else if (d.kind === 'ne') {
+        const newH = Math.max(MIN, d.start.h - dy);
+        nb.y = d.start.y + (d.start.h - newH);
+        nb.h = newH;
+        nb.w = Math.max(MIN, Math.min(W - d.start.x, d.start.w + dx));
+      } else if (d.kind === 'nw') {
+        const newW = Math.max(MIN, d.start.w - dx);
+        const newH = Math.max(MIN, d.start.h - dy);
+        nb.x = d.start.x + (d.start.w - newW);
+        nb.y = d.start.y + (d.start.h - newH);
+        nb.w = newW;
+        nb.h = newH;
+      }
+      setBox(nb);
+    },
+    [setBox],
+  );
+
+  const onPointerUp = useCallback(() => {
+    dragRef.current = null;
+  }, []);
+
+  const handleStyle: React.CSSProperties = {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    background: '#86efac',
+    border: '2px solid #0f172a',
+    borderRadius: 4,
+    boxShadow: '0 2px 6px rgba(0,0,0,0.4)',
+    touchAction: 'none',
+  };
+
   return (
     <div
+      ref={ref}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
       style={{
         position: 'relative',
         width: '100%',
@@ -529,37 +648,62 @@ function SatelliteView({ geo }: { geo: GeoResult }) {
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.08)',
+        touchAction: 'none',
+        userSelect: 'none',
       }}
     >
-      <div style={{ position: 'absolute', inset: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(3, 1fr)' }}>
+      <div
+        style={{
+          position: 'absolute',
+          width: '300%',
+          height: '300%',
+          left: 0,
+          top: 0,
+          transform: `translate(${translateX}%, ${translateY}%)`,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateRows: 'repeat(3, 1fr)',
+        }}
+      >
         {tiles.map((t) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={`${t.x}-${t.y}`}
-            src={`https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/${z}/${t.y}/${t.x}`}
+            src={`https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/${TILE_Z}/${t.y}/${t.x}`}
             alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            draggable={false}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
           />
         ))}
       </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          width: 60,
-          height: 60,
-          transform: 'translate(-50%, -50%)',
-          border: '2px solid #86efac',
-          borderRadius: 8,
-          boxShadow: '0 0 0 9999px rgba(15, 23, 42, 0.55)',
-          animation: 'pulse 2s ease-in-out infinite',
-        }}
-      />
-      <div style={{ position: 'absolute', bottom: 12, right: 12, fontSize: 10, color: '#cbd5e1', background: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: 4 }}>
+
+      {box.w > 0 && (
+        <div
+          onPointerDown={startDrag('move')}
+          style={{
+            position: 'absolute',
+            left: box.x,
+            top: box.y,
+            width: box.w,
+            height: box.h,
+            border: '2px solid #86efac',
+            borderRadius: 6,
+            background: 'rgba(134,239,172,0.12)',
+            cursor: 'move',
+            touchAction: 'none',
+            boxShadow: '0 0 0 9999px rgba(15,23,42,0.45)',
+          }}
+        >
+          <div onPointerDown={startDrag('nw')} style={{ ...handleStyle, left: -10, top: -10, cursor: 'nwse-resize' }} />
+          <div onPointerDown={startDrag('ne')} style={{ ...handleStyle, right: -10, top: -10, cursor: 'nesw-resize' }} />
+          <div onPointerDown={startDrag('sw')} style={{ ...handleStyle, left: -10, bottom: -10, cursor: 'nesw-resize' }} />
+          <div onPointerDown={startDrag('se')} style={{ ...handleStyle, right: -10, bottom: -10, cursor: 'nwse-resize' }} />
+        </div>
+      )}
+
+      <div style={{ position: 'absolute', bottom: 12, right: 12, fontSize: 10, color: '#cbd5e1', background: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: 4, pointerEvents: 'none' }}>
         Imagery: Esri World Imagery
       </div>
-      <style>{`@keyframes pulse { 0%,100% { box-shadow: 0 0 0 9999px rgba(15,23,42,0.55), 0 0 0 0 rgba(134,239,172,0.5); } 50% { box-shadow: 0 0 0 9999px rgba(15,23,42,0.55), 0 0 0 12px rgba(134,239,172,0); } }`}</style>
     </div>
   );
 }
