@@ -44,12 +44,12 @@ export default function Mermaid({ chart, idPrefix }: { chart: string; idPrefix: 
         flowchart: {
           htmlLabels: true,
           curve: 'basis',
-          useMaxWidth: false,
-          nodeSpacing: 70,
-          rankSpacing: 100,
-          diagramPadding: 32,
-          padding: 24,
-          subGraphTitleMargin: { top: 12, bottom: 16 },
+          useMaxWidth: true,
+          nodeSpacing: 60,
+          rankSpacing: 90,
+          diagramPadding: 24,
+          padding: 20,
+          subGraphTitleMargin: { top: 10, bottom: 14 },
         },
       });
       const id = `${idPrefix}-${Math.random().toString(36).slice(2, 8)}`;
@@ -77,7 +77,7 @@ export default function Mermaid({ chart, idPrefix }: { chart: string; idPrefix: 
         background: '#FFFFFF',
         border: '1px solid rgba(15,23,42,0.10)',
         borderRadius: 16,
-        padding: 40,
+        padding: 32,
         overflowX: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}

@@ -1,8 +1,27 @@
 import Mermaid from './Mermaid';
 
+const GLOSSARY = [
+  {
+    term: 'Agent',
+    def: 'A small AI program that does one specific job. It reads inputs, follows instructions, and returns a draft. The human stays in charge.',
+  },
+  {
+    term: 'Cabinet',
+    def: 'A set of agents built for one person or one institution. Six agents total in this framework.',
+  },
+  {
+    term: 'Framework',
+    def: 'The full plan: architecture, agents, build steps, and measurement. Documented so any qualified builder could pick it up and execute it.',
+  },
+  {
+    term: 'Prompt library',
+    def: 'The instructions that tell each agent how to behave. Stored as plain text. Wooster owns them and can edit anytime.',
+  },
+];
+
 const MARCH_ASKS = [
   { id: 'M1', title: 'Required AI integration grades 5 to 12', detail: 'Move beyond optional. Required across the upper grades.' },
-  { id: 'M2', title: 'Frictionless for teachers', detail: 'No overwhelming PD load. Integration where teachers already work.' },
+  { id: 'M2', title: 'Frictionless for teachers', detail: 'No overwhelming PD load. AI lives where teachers already work.' },
   { id: 'M3', title: 'External partner for design AND implementation', detail: 'Not just a consultant. A builder who ships.' },
   { id: 'M4', title: 'Pilot programs at grades 5, 8, 10, 12', detail: 'Specific grade-level proof points.' },
   { id: 'M5', title: 'Pay-per-school pricing', detail: 'Wooster owns the framework. No per-user vendor lock.' },
@@ -11,94 +30,161 @@ const MARCH_ASKS = [
 const TIER1 = [
   {
     code: 'P1',
-    title: 'Voice Cabinet: Board, Donor, Stewardship',
-    description:
-      "Trained on the Head's public corpus (Summer 2025 alumni letter, NAIS essays, HB-07277 testimony). Drafts board memos, donor cultivation, stewardship letters in his literary register.",
-    impact: '6 to 8 hours per week back',
-    ship: 'Shipped by mid-June 2026',
+    title: 'Memo writer in your voice',
+    plain: 'Drafts board memos, donor letters, and stewardship notes that sound like you.',
+    reads: 'Your past alumni letters, NAIS essays, and public testimony.',
+    does: 'Turns a few bullet points into a full first-draft letter in your voice.',
+    youDo: 'Edit the draft. Send.',
+    timeBack: '6 to 8 hours per week',
+    ready: 'Mid-June 2026',
   },
   {
     code: 'P2',
-    title: 'Parent and Crisis Comms Co-Pilot',
-    description:
-      'Pulls student and family context. First-pass draft in his voice. Tone-check against the toxic-achievement-culture frame: no shame language, partnership framing throughout.',
-    impact: '5 hours per week back',
-    ship: 'Shipped by mid-June 2026',
+    title: 'Parent and crisis email co-pilot',
+    plain: 'Drafts high-stakes parent and crisis emails in a warm, partnership-first tone.',
+    reads: "The thread you are answering, relevant student context, and Wooster's stated policies.",
+    does: 'Drafts the response in your voice. Flags any sentence that sounds like blame or shame.',
+    youDo: 'Read. Adjust. Send.',
+    timeBack: '5 hours per week',
+    ready: 'Mid-June 2026',
   },
   {
     code: 'P3',
-    title: 'Fairchester + NAIS Briefing Agent',
-    description:
-      'Daily 5-bullet morning brief: NAIS, CAIS, EdWeek, CT CGA, peer-school news, AI-in-edu research. Monthly memo he repurposes for the Fairchester Heads Association.',
-    impact: '4 to 5 hours per week back. Region-wide AI thought leadership.',
-    ship: 'Shipped by mid-June 2026',
+    title: 'Daily briefing agent',
+    plain: 'Reads the field every morning and gives you a 5-bullet summary.',
+    reads: 'NAIS, CAIS, EdWeek, CT state legislature filings, peer-school news, AI-in-education research.',
+    does: 'Produces a daily 5-bullet brief and a monthly memo you can share with the Fairchester Heads.',
+    youDo: 'Read it with coffee.',
+    timeBack: '4 to 5 hours per week',
+    ready: 'Mid-June 2026',
   },
 ];
 
 const TIER2 = [
   {
     code: 'W1',
-    title: 'Faculty Prompt Library tied to the Deep Learning Initiative',
-    description:
-      'Wooster-owned prompts (no platform lock) for Socratic tutorial prep, research scaffolding, writing-feedback rubrics, Oxford-style question generation. Keyed to existing course maps.',
-    impact: '~200 faculty hours per week reclaimed. Executes the September required-integration rollout.',
-    ship: 'Faculty trained by September 2026',
+    title: 'Faculty prompt library tied to the Deep Learning Initiative',
+    plain: 'Ready-to-use AI prompts faculty can paste into the tools they already use, mapped to Wooster course frameworks.',
+    reads: 'Existing course maps, assignment templates, and the DLI structure.',
+    does: 'Gives each teacher vetted prompts for tutorial-style class prep, research scaffolding, and writing feedback. Wooster owns every prompt.',
+    youDo: 'Train faculty in a 90-minute session. Update prompts each term.',
+    timeBack: 'Roughly 200 faculty hours per week reclaimed across the school.',
+    ready: 'Faculty trained by September 2026',
   },
   {
     code: 'W2',
-    title: 'Bridge Program Documentation and Accommodation Agent',
-    description:
-      'Ingests teacher notes plus Blackbaud onCampus assignments. Drafts weekly per-student progress narratives. Flags drift on executive-function targets. Produces a parent-ready letter.',
-    impact:
-      '10 to 15 hours per week reclaimed across Bridge faculty. Defends the $70,120 premium tuition with weekly evidence of progress.',
-    ship: 'Live by September 2026',
+    title: 'Bridge Program documentation agent',
+    plain: 'Drafts weekly progress narratives for each Bridge student and produces the parent-ready letter.',
+    reads: "Teacher notes from the week, assignments and grades in Blackbaud onCampus, each student's accommodation plan.",
+    does: 'Writes a per-student weekly summary. Flags executive-function or attention drift. Produces the parent letter.',
+    youDo: 'Review. Adjust. Send to parents.',
+    timeBack: '10 to 15 hours per week across Bridge faculty',
+    ready: 'Live by September 2026',
   },
   {
     code: 'W4',
-    title: 'Centennial Advancement Agent',
-    description:
-      '3,000+ alumni segmented by class, geography, prior giving. Per-alum personalized centennial outreach. Auto-generated donor briefings for the Head before every coffee. Compounds P1.',
-    impact: 'Direct lift to Generals Fund and the centennial campaign.',
-    ship: 'Ramps September 2026 to March 2027',
+    title: 'Centennial advancement agent',
+    plain: 'Personalizes alumni outreach for the centennial year and briefs the Head before every donor coffee.',
+    reads: "The alumni database, past giving history, each alum's Wooster touchpoints.",
+    does: 'Writes per-alum centennial outreach in your voice. Generates a one-page donor brief before every meeting.',
+    youDo: 'Approve outreach. Read briefs.',
+    timeBack: 'Direct lift to Generals Fund and centennial campaign performance.',
+    ready: 'Ramps September 2026 to March 2027',
+  },
+];
+
+const PHASE1_TIMELINE = [
+  { label: 'Week 1', do: 'Collect voice corpus. Set up Google Workspace access. Build P1 first draft.' },
+  { label: 'Week 2', do: 'Test P1 on two real board memos. Build P2 and P3 in parallel.' },
+  { label: 'Week 3', do: 'Polish all three. Hand them over to the Head for daily use.' },
+];
+
+const PHASE2_TIMELINE = [
+  { label: 'June 2026', do: 'Scoping with Pannone and Bazemore. Confirm course maps, Bridge format, and alumni database access.' },
+  { label: 'July 2026', do: 'Build W1 prompt library. Build W2 documentation agent.' },
+  { label: 'August 2026', do: 'Build W4. Train faculty leads on W1.' },
+  { label: 'September 2026', do: 'Faculty rollout of W1. W2 goes live for the Bridge cohort.' },
+  { label: 'Oct 2026 to Feb 2027', do: 'W4 ramps with the centennial calendar. Iterate on all six agents based on real use.' },
+];
+
+const MEASUREMENTS = [
+  {
+    name: 'Time given back to the Head',
+    how: 'Track hours per week spent on memos, parent comms, and briefings before and after Phase 1.',
+    target: '15 or more hours per week reclaimed.',
+  },
+  {
+    name: 'Faculty adoption of W1',
+    how: 'Survey faculty in October 2026. Count weekly active users of the prompt library.',
+    target: '60 percent or more of grades 5 to 12 faculty.',
+  },
+  {
+    name: 'Bridge parent experience',
+    how: 'Compare parent satisfaction scores before and after W2 goes live.',
+    target: 'Measurable lift in clarity and timeliness scores.',
+  },
+  {
+    name: 'Centennial fund participation',
+    how: 'Track alumni giving participation rate across the centennial year.',
+    target: 'Higher than the last three years average.',
+  },
+  {
+    name: 'Speaker series readiness',
+    how: 'By February 1, 2027 the Head has a stage-ready story with real metrics from all six agents.',
+    target: 'Ready for the March 8, 2027 speaker series.',
+  },
+];
+
+const HANDOFF = [
+  {
+    item: 'A Wooster-controlled Google Workspace admin role',
+    why: 'To build agents inside the tenant Wooster already owns.',
+  },
+  {
+    item: "Read access to the Head's public writing",
+    why: 'To build the voice for P1, P2, and W4.',
+  },
+  {
+    item: 'Read access to Blackbaud onCampus',
+    why: 'For W1 (course maps) and W2 (assignments and accommodations).',
+  },
+  {
+    item: 'Read access to the alumni database',
+    why: 'For W4 segmentation and per-alum personalization.',
+  },
+  {
+    item: 'A 90-minute scoping call with the Head, Pannone, and Bazemore',
+    why: 'To confirm voice, faculty rollout, and Bridge format.',
+  },
+  {
+    item: 'Permission to update the prompt library each term',
+    why: 'Prompts compound. Configurations rot. Wooster keeps the source.',
+  },
+  {
+    item: 'A weekly 30-minute review during the first eight weeks',
+    why: 'To catch drift early.',
   },
 ];
 
 const PRINCIPLES = [
-  {
-    name: 'Simplicity',
-    mapping: 'Prompt library. No platform lock. Plain-English diagrams. Six boxes on one page.',
-  },
-  {
-    name: 'Hard work',
-    mapping: 'Weekly milestones. Builder in the building. No outsourced offshore dev. Same cadence as the Roche pilot.',
-  },
-  {
-    name: 'Intellectual excellence',
-    mapping:
-      'Deep Learning Initiative is the prompt shape. Oxford-tutorial register preserved. Socratic prep and writing feedback at the core.',
-  },
-  {
-    name: 'Service to others',
-    mapping:
-      'AI frees teachers to be present with students. No grade-optimization, no productivity-maxing kids. The opposite of toxic-achievement-culture tools.',
-  },
+  { name: 'Simplicity', mapping: 'Prompt library. No platform lock. Plain English. Six agents on one page.' },
+  { name: 'Hard work', mapping: 'Weekly milestones. A builder in the building. No offshore handoff.' },
+  { name: 'Intellectual excellence', mapping: 'Deep Learning Initiative shapes every prompt. Tutorial register preserved.' },
+  { name: 'Service to others', mapping: 'AI frees teachers to be present with students. No grade-optimization, no productivity-maxing kids.' },
 ];
 
 const RECEIPTS = [
   {
-    quote:
-      "Roche signed pilot. April 2026. $2,500 plus $1,500 monthly retainer. Summer Cabinet shipping in three weeks. Same architecture proposed here, adapted to Wooster's tenant.",
+    quote: 'Roche signed pilot, April 2026. Same architecture, adapted for a Connecticut public superintendent.',
     source: 'Active superintendent, Connecticut public district',
   },
   {
-    quote:
-      'Fifty educators across three days. Every teacher left with something to implement Monday morning. Demonstrated the practitioner-not-theorist stance the framework needs.',
+    quote: 'Fifty educators, three days. Every teacher left with something to use Monday morning.',
     source: 'Woodstock PD keynote, April 3, 2026',
   },
   {
-    quote:
-      'Live AI literacy programming with families and students across two Connecticut library systems. Operating now.',
-    source: 'Ridgefield + Danbury Library partnerships, Jan to May 2026',
+    quote: 'AI literacy programming live with families and students across two Connecticut library systems.',
+    source: 'Ridgefield and Danbury Library partnerships, Jan to May 2026',
   },
 ];
 
@@ -111,20 +197,20 @@ const TIMELINE_MMD = `flowchart LR
     M4["M4. Pilots at 5/8/10/12"]
     M5["M5. Pay-per-school"]
   end
-  subgraph T1["TIER 1: BYRNES CABINET (May to Jun 2026)"]
+  subgraph T1["PHASE 1: AGENTS FOR YOUR DESK (May to Jun 2026)"]
     direction TB
-    P1["P1. Voice Cabinet<br/>Board + Donor memos"]
-    P2["P2. Parent + Crisis Comms"]
-    P3["P3. Fairchester + NAIS Brief"]
+    P1["P1. Memo writer<br/>in your voice"]
+    P2["P2. Parent + crisis<br/>email co-pilot"]
+    P3["P3. Daily briefing agent"]
   end
-  subgraph T2["TIER 2: WOOSTER CABINET (Jun to Aug 2026)"]
+  subgraph T2["PHASE 2: AGENTS FOR THE SCHOOL (Jun to Aug 2026)"]
     direction TB
-    W1["W1. Faculty DLI Prompt Library"]
-    W2["W2. Bridge Documentation"]
-    W4["W4. Centennial Advancement"]
+    W1["W1. DLI prompt library"]
+    W2["W2. Bridge documentation"]
+    W4["W4. Centennial advancement"]
   end
-  subgraph S["MARCH 8, 2027<br/>SPEAKER SERIES PART 4<br/>AI AT WOOSTER"]
-    STG["Byrnes on stage<br/>centennial story"]
+  subgraph S["MARCH 8, 2027<br/>AI AT WOOSTER<br/>Speaker Series Part 4"]
+    STG["The story you tell on stage"]
   end
   M3 ==> P1
   M3 ==> P2
@@ -154,28 +240,28 @@ const ARCH_MMD = `flowchart TB
   subgraph DATA["WOOSTER DATA SOURCES"]
     direction LR
     D1["Voice Corpus<br/>alumni letters<br/>NAIS essays<br/>HB-07277 testimony"]
-    D2["Blackbaud onCampus<br/>LMS + SIS"]
+    D2["Blackbaud onCampus<br/>grades + assignments"]
     D3["Google Workspace<br/>tenant-owned"]
-    D4["SSS by NAIS<br/>Financial Aid data"]
-    D5["Finalsite + Alumni DB<br/>3,000+ records"]
+    D4["SSS by NAIS<br/>Financial Aid"]
+    D5["Alumni Database<br/>3,000+ records"]
   end
-  subgraph CAB["BYRNES CABINET (Tier 1, 3 weeks)"]
+  subgraph CAB["PHASE 1 AGENTS (3 weeks)"]
     direction LR
-    P1A["P1. Voice Memo Agent"]
-    P2A["P2. Comms Co-Pilot"]
-    P3A["P3. Briefing Agent"]
+    P1A["P1. Memo writer"]
+    P2A["P2. Email co-pilot"]
+    P3A["P3. Daily briefing"]
   end
-  subgraph WCAB["WOOSTER CABINET (Tier 2, summer)"]
+  subgraph WCAB["PHASE 2 AGENTS (summer)"]
     direction LR
-    W1A["W1. DLI Prompt Library"]
-    W2A["W2. Bridge Documentation"]
-    W4A["W4. Advancement Agent"]
+    W1A["W1. DLI prompts"]
+    W2A["W2. Bridge docs"]
+    W4A["W4. Advancement"]
   end
   subgraph OUT["OUTCOMES"]
     direction LR
-    O1["18 to 22 hrs/wk<br/>back to Byrnes"]
-    O2["~200 faculty hrs/wk<br/>reclaimed"]
-    O3["Defensible<br/>premium tuition"]
+    O1["15+ hrs/wk<br/>back to the Head"]
+    O2["200+ faculty hrs/wk<br/>reclaimed"]
+    O3["Bridge premium<br/>defended weekly"]
     O4["March 8, 2027<br/>stage story"]
   end
   D1 --> P1A
@@ -205,6 +291,52 @@ const ARCH_MMD = `flowchart TB
   class P1A,P2A,P3A tier1
   class W1A,W2A,W4A tier2
   class O1,O2,O3,O4 outcome`;
+
+type AgentCard = (typeof TIER1)[number];
+
+function AgentCard({ a, accent }: { a: AgentCard; accent: 'blue' | 'green' }) {
+  const codeStyle =
+    accent === 'green'
+      ? { background: 'rgba(22,101,52,0.10)', color: '#166534' }
+      : { background: 'var(--ws-navy-tint)', color: 'var(--ws-navy-deep)' };
+  return (
+    <div className="ws-card" style={{ height: '100%' }}>
+      <span className="ws-code" style={codeStyle}>
+        {a.code}
+      </span>
+      <div
+        className="ws-display"
+        style={{ fontSize: '1.32rem', color: 'var(--ws-ink)', margin: '16px 0 10px', letterSpacing: '-0.02em', lineHeight: 1.25 }}
+      >
+        {a.title}
+      </div>
+      <p style={{ fontSize: '0.98rem', color: 'var(--ws-ink-soft)', lineHeight: 1.65, margin: '0 0 22px' }}>{a.plain}</p>
+
+      <div className="ws-field">
+        <div className="ws-field-label">What it reads</div>
+        <div className="ws-field-value">{a.reads}</div>
+      </div>
+      <div className="ws-field">
+        <div className="ws-field-label">What it does</div>
+        <div className="ws-field-value">{a.does}</div>
+      </div>
+      <div className="ws-field">
+        <div className="ws-field-label">What you do</div>
+        <div className="ws-field-value">{a.youDo}</div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--ws-line)' }}>
+        <div>
+          <div className="ws-field-label">Time back</div>
+          <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink)', fontWeight: 500 }}>{a.timeBack}</div>
+        </div>
+        <div>
+          <div className="ws-field-label">Ready</div>
+          <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink)', fontWeight: 500 }}>{a.ready}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function WoosterPage() {
   return (
@@ -244,6 +376,8 @@ export default function WoosterPage() {
         .ws-eyebrow { font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 500; color: var(--ws-ink-faint); }
         .ws-section { max-width: 1180px; margin: 0 auto; padding: 112px 32px; }
         .ws-section-tight { max-width: 1180px; margin: 0 auto; padding: 72px 32px; }
+        .ws-section-wide { max-width: 1600px; margin: 0 auto; padding: 112px 32px; }
+        .ws-diagram-wrap { width: 100%; margin-top: 40px; }
         .ws-rule { display: block; height: 1px; background: var(--ws-line); border: 0; }
         .ws-card {
           background: #FFFFFF; border: 1px solid var(--ws-line); border-radius: 18px; padding: 36px;
@@ -255,27 +389,23 @@ export default function WoosterPage() {
           background: var(--ws-navy-tint); color: var(--ws-navy-deep);
           border-radius: 999px; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.06em; font-family: 'Fraunces', serif;
         }
-        .ws-btn-primary {
-          display: inline-flex; align-items: center; gap: 12px; padding: 16px 28px;
-          background: var(--ws-ink); color: var(--ws-paper); border-radius: 999px;
-          font-size: 0.92rem; font-weight: 500; letter-spacing: 0.01em; text-decoration: none;
-          transition: background 220ms ease, transform 220ms ease;
+        .ws-field { padding: 12px 0; border-bottom: 1px dashed var(--ws-line); }
+        .ws-field:last-of-type { border-bottom: none; }
+        .ws-field-label {
+          font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 500;
+          color: var(--ws-ink-faint); margin-bottom: 4px;
         }
-        .ws-btn-primary:hover { background: var(--ws-navy-deep); transform: translateY(-1px); }
-        .ws-btn-ghost {
-          display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px;
-          background: transparent; color: var(--ws-ink); border: 1px solid var(--ws-line-strong);
-          border-radius: 999px; font-size: 0.92rem; font-weight: 500; text-decoration: none;
-          transition: background 220ms ease, border-color 220ms ease;
-        }
-        .ws-btn-ghost:hover { background: var(--ws-cream); border-color: var(--ws-ink); }
+        .ws-field-value { font-size: 0.94rem; color: 'var(--ws-ink)'; line-height: 1.55; }
         .ws-link { color: var(--ws-ink); text-decoration: underline; text-decoration-color: rgba(15,23,42,0.25); text-underline-offset: 3px; }
         .ws-link:hover { color: var(--ws-navy-deep); text-decoration-color: var(--ws-navy-deep); }
+        .ws-h2 { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(2rem, 4.2vw, 3rem); line-height: 1.05; letter-spacing: -0.03em; color: var(--ws-ink); margin: 0 0 16px; }
+        .ws-lead { font-size: 1.04rem; line-height: 1.7; color: var(--ws-ink-soft); max-width: 720px; margin: 0 0 16px; }
+        .ws-lead-tight { font-size: 1rem; line-height: 1.7; color: var(--ws-ink-soft); max-width: 720px; margin: 0 0 8px; }
         @media (max-width: 880px) {
           .ws-section { padding: 72px 22px !important; }
           .ws-section-tight { padding: 48px 22px !important; }
+          .ws-section-wide { padding: 72px 22px !important; }
           .ws-card { padding: 28px !important; }
-          .ws-hero-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
         }
       `}</style>
 
@@ -301,7 +431,7 @@ export default function WoosterPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 10,
-              marginBottom: 28,
+              marginBottom: 32,
               padding: '8px 16px',
               border: '1px solid var(--ws-line)',
               borderRadius: 999,
@@ -310,63 +440,43 @@ export default function WoosterPage() {
           >
             <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--ws-burgundy)' }} />
             <span className="ws-eyebrow" style={{ color: 'var(--ws-ink)' }}>
-              Built for May 11, 2026 · Confidential to Matt Byrnes
+              Framework draft for Matt Byrnes · May 11, 2026
             </span>
           </div>
           <h1
             className="ws-display"
-            style={{
-              fontSize: 'clamp(2.6rem, 6.4vw, 5.4rem)',
-              lineHeight: 1.02,
-              margin: 0,
-              color: 'var(--ws-ink)',
-              maxWidth: 980,
-            }}
+            style={{ fontSize: 'clamp(2.6rem, 6.4vw, 5.4rem)', lineHeight: 1.02, margin: 0, color: 'var(--ws-ink)', maxWidth: 980 }}
           >
             The architecture for Wooster&apos;s{' '}
             <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
               next 100 years.
             </span>
           </h1>
-          <p
-            style={{
-              fontSize: 'clamp(1.05rem, 1.6vw, 1.28rem)',
-              lineHeight: 1.55,
-              color: 'var(--ws-ink-soft)',
-              margin: '24px 0 0',
-              maxWidth: 760,
-            }}
-          >
-            A six-agent Cabinet answering the framework brief from March 17, 2026. Tier 1 ships in three weeks. Tier 2
-            ships across summer. Everything backward-planned to the March 8, 2027 Centennial Speaker Series.
+          <p style={{ fontSize: 'clamp(1.1rem, 1.6vw, 1.32rem)', lineHeight: 1.55, color: 'var(--ws-ink-soft)', margin: '28px 0 0', maxWidth: 760 }}>
+            Six AI agents answering the brief from March 17, 2026.
           </p>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 36 }}>
-            <a href="#tier1" className="ws-btn-primary">
-              See the Cabinet
-            </a>
-            <a href="#timeline" className="ws-btn-ghost">
-              The centennial timeline
-            </a>
-          </div>
+          <p style={{ fontSize: 'clamp(1.05rem, 1.5vw, 1.18rem)', lineHeight: 1.6, color: 'var(--ws-ink-soft)', margin: '12px 0 0', maxWidth: 760 }}>
+            Three agents for the Head&apos;s desk in three weeks. Three for the school across summer. Anchored at the
+            March 8, 2027 Centennial Speaker Series.
+          </p>
           <div
-            className="ws-hero-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: 24,
-              marginTop: 56,
-              paddingTop: 32,
+              gap: 28,
+              marginTop: 72,
+              paddingTop: 36,
               borderTop: '1px solid var(--ws-line)',
             }}
           >
             {[
-              { k: 'Audience', v: 'Matt Byrnes, Head of School' },
+              { k: 'For', v: 'Matt Byrnes, Head of School' },
               { k: 'Institution', v: 'Wooster School, Danbury CT' },
-              { k: 'Anchor', v: 'March 8, 2027 Speaker Series' },
               { k: 'Stack', v: 'Google Workspace · Blackbaud onCampus' },
+              { k: 'Public anchor', v: 'March 8, 2027 Speaker Series' },
             ].map((m) => (
               <div key={m.k}>
-                <div className="ws-eyebrow" style={{ marginBottom: 6 }}>
+                <div className="ws-eyebrow" style={{ marginBottom: 8 }}>
                   {m.k}
                 </div>
                 <div style={{ fontSize: '0.96rem', color: 'var(--ws-ink)', fontWeight: 500 }}>{m.v}</div>
@@ -378,37 +488,57 @@ export default function WoosterPage() {
 
       <hr className="ws-rule" />
 
-      {/* MARCH 17 PROMISE */}
+      {/* WHAT THIS IS */}
+      <section className="ws-section" id="what-this-is">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          What this is
+        </div>
+        <h2 className="ws-h2">
+          A complete framework.{' '}
+          <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
+            Plain English.
+          </span>
+        </h2>
+        <p className="ws-lead">This document is the whole plan, written so any qualified builder could execute it.</p>
+        <p className="ws-lead-tight">Four terms appear throughout. They are defined below.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 40 }}>
+          {GLOSSARY.map((g) => (
+            <div key={g.term} className="ws-card">
+              <div
+                className="ws-display"
+                style={{ fontSize: '1.42rem', color: 'var(--ws-burgundy)', margin: '0 0 12px', letterSpacing: '-0.02em', fontStyle: 'italic', fontWeight: 300 }}
+              >
+                {g.term}.
+              </div>
+              <p style={{ fontSize: '0.96rem', color: 'var(--ws-ink-soft)', lineHeight: 1.65, margin: 0 }}>{g.def}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className="ws-rule" />
+
+      {/* MARCH 17 BRIEF */}
       <section className="ws-section" id="march">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
           March 17, 2026 · what you said in your office
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
-          The brief, in your own words.
-        </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          The framework brief from our conversation. Everything below is built around these.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+        <h2 className="ws-h2">The brief, in your own words.</h2>
+        <p className="ws-lead">Five asks from our conversation.</p>
+        <p className="ws-lead-tight">Everything below is built around them.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginTop: 40 }}>
           {MARCH_ASKS.map((a) => (
             <div key={a.id} className="ws-card">
               <span className="ws-code">{a.id}</span>
               <div
                 className="ws-display"
-                style={{
-                  fontSize: '1.18rem',
-                  color: 'var(--ws-ink)',
-                  margin: '14px 0 8px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.25,
-                }}
+                style={{ fontSize: '1.2rem', color: 'var(--ws-ink)', margin: '14px 0 10px', letterSpacing: '-0.02em', lineHeight: 1.25 }}
               >
                 {a.title}
               </div>
-              <p style={{ fontSize: '0.92rem', color: 'var(--ws-ink-soft)', lineHeight: 1.6, margin: 0 }}>{a.detail}</p>
+              <p style={{ fontSize: '0.94rem', color: 'var(--ws-ink-soft)', lineHeight: 1.6, margin: 0 }}>{a.detail}</p>
             </div>
           ))}
         </div>
@@ -416,141 +546,68 @@ export default function WoosterPage() {
 
       <hr className="ws-rule" />
 
-      {/* TIMELINE MERMAID */}
-      <section className="ws-section" id="timeline">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
+      {/* MAPPING MERMAID */}
+      <section className="ws-section-wide" id="mapping">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
           The mapping
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
+        <h2 className="ws-h2">
           March 17 asks, mapped to{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
             March 8, 2027.
           </span>
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 32px' }}>
-          Heavy arrows are direct answers to your asks. Dotted arrows are honored constraints or proof of execution.
-          Every track converges on the Centennial Speaker Series stage.
-        </p>
-        <Mermaid chart={TIMELINE_MMD} idPrefix="timeline" />
+        <p className="ws-lead">Heavy arrows are direct answers to the brief.</p>
+        <p className="ws-lead-tight">Every track converges on the Centennial Speaker Series stage.</p>
+        <div className="ws-diagram-wrap">
+          <Mermaid chart={TIMELINE_MMD} idPrefix="timeline" />
+        </div>
       </section>
 
       <hr className="ws-rule" />
 
-      {/* TIER 1 */}
-      <section className="ws-section" id="tier1">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
-          Tier 1 · the Byrnes Cabinet · 3-week sprint
+      {/* PHASE 1 */}
+      <section className="ws-section" id="phase-1">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          Phase 1 · agents for the Head&apos;s desk · 3 weeks
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
-          Your personal operating layer.{' '}
+        <h2 className="ws-h2">
+          Three agents.{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
-            Built first.
-          </span>
+            For you.
+          </span>{' '}
+          Three weeks.
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          You are the pilot user. You feel the architecture daily before any teacher touches it. Three agents, three
-          weeks, demoable today on your public voice corpus. Total leverage if all three ship: 18 to 22 hours per week
-          back to your office.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
-          {TIER1.map((t) => (
-            <div key={t.code} className="ws-card" style={{ height: '100%' }}>
-              <span className="ws-code">{t.code}</span>
-              <div
-                className="ws-display"
-                style={{
-                  fontSize: '1.3rem',
-                  color: 'var(--ws-ink)',
-                  margin: '14px 0 10px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.25,
-                }}
-              >
-                {t.title}
-              </div>
-              <p style={{ fontSize: '0.96rem', color: 'var(--ws-ink-soft)', lineHeight: 1.65, margin: '0 0 18px' }}>
-                {t.description}
-              </p>
-              <div style={{ paddingTop: 14, borderTop: '1px solid var(--ws-line)' }}>
-                <div className="ws-eyebrow" style={{ fontSize: '0.62rem', marginBottom: 6 }}>
-                  Impact
-                </div>
-                <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink)', marginBottom: 12, fontWeight: 500 }}>
-                  {t.impact}
-                </div>
-                <div className="ws-eyebrow" style={{ fontSize: '0.62rem', marginBottom: 6 }}>
-                  Ship
-                </div>
-                <div style={{ fontSize: '0.88rem', color: 'var(--ws-ink-soft)' }}>{t.ship}</div>
-              </div>
-            </div>
+        <p className="ws-lead">You are the pilot user.</p>
+        <p className="ws-lead-tight">You feel the architecture daily before any teacher touches it. Roughly 15 hours per week back to your office.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28, marginTop: 40 }}>
+          {TIER1.map((a) => (
+            <AgentCard key={a.code} a={a} accent="blue" />
           ))}
         </div>
       </section>
 
       <hr className="ws-rule" />
 
-      {/* TIER 2 */}
-      <section className="ws-section" id="tier2">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
-          Tier 2 · the Wooster Cabinet · summer build
+      {/* PHASE 2 */}
+      <section className="ws-section" id="phase-2">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          Phase 2 · agents for the school · summer build
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
-          The school&apos;s operating layer.{' '}
+        <h2 className="ws-h2">
+          Three more agents.{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
-            Faculty trained by September.
-          </span>
+            For Wooster.
+          </span>{' '}
+          Faculty trained by September.
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          Three institutional agents scoped together in June with Pannone, Bazemore, and the Head&apos;s office. Built
-          July through August. Live for the September required-integration rollout. Pay-per-school per your March ask.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
-          {TIER2.map((t) => (
-            <div key={t.code} className="ws-card" style={{ height: '100%' }}>
-              <span
-                className="ws-code"
-                style={{ background: 'rgba(22,101,52,0.10)', color: '#166534' }}
-              >
-                {t.code}
-              </span>
-              <div
-                className="ws-display"
-                style={{
-                  fontSize: '1.3rem',
-                  color: 'var(--ws-ink)',
-                  margin: '14px 0 10px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1.25,
-                }}
-              >
-                {t.title}
-              </div>
-              <p style={{ fontSize: '0.96rem', color: 'var(--ws-ink-soft)', lineHeight: 1.65, margin: '0 0 18px' }}>
-                {t.description}
-              </p>
-              <div style={{ paddingTop: 14, borderTop: '1px solid var(--ws-line)' }}>
-                <div className="ws-eyebrow" style={{ fontSize: '0.62rem', marginBottom: 6 }}>
-                  Impact
-                </div>
-                <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink)', marginBottom: 12, fontWeight: 500 }}>
-                  {t.impact}
-                </div>
-                <div className="ws-eyebrow" style={{ fontSize: '0.62rem', marginBottom: 6 }}>
-                  Ship
-                </div>
-                <div style={{ fontSize: '0.88rem', color: 'var(--ws-ink-soft)' }}>{t.ship}</div>
-              </div>
-            </div>
+        <p className="ws-lead">Scoped in June with Pannone and Bazemore.</p>
+        <p className="ws-lead-tight">Built July through August. Live for the September required-integration rollout.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28, marginTop: 40 }}>
+          {TIER2.map((a) => (
+            <AgentCard key={a.code} a={a} accent="green" />
           ))}
         </div>
       </section>
@@ -558,62 +615,199 @@ export default function WoosterPage() {
       <hr className="ws-rule" />
 
       {/* ARCHITECTURE */}
-      <section className="ws-section" id="architecture">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
+      <section className="ws-section-wide" id="architecture">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
           The architecture
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
+        <h2 className="ws-h2">
           One system.{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
             Six agents.
           </span>{' '}
           Wooster-owned data.
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 32px' }}>
-          Data sources on top. Two Cabinets in the middle. Outcomes at the bottom. Everything assumes Wooster owns the
-          data and the framework. Google Workspace as the tenant. Blackbaud onCampus as the system of record. The
-          Head&apos;s public writing as the voice corpus.
-        </p>
-        <Mermaid chart={ARCH_MMD} idPrefix="arch" />
+        <p className="ws-lead">Data sources on top. Two agent sets in the middle. Outcomes at the bottom.</p>
+        <p className="ws-lead-tight">Google Workspace as the tenant. Blackbaud onCampus as the system of record.</p>
+        <div className="ws-diagram-wrap">
+          <Mermaid chart={ARCH_MMD} idPrefix="arch" />
+        </div>
+      </section>
+
+      <hr className="ws-rule" />
+
+      {/* BUILD TIMELINE */}
+      <section className="ws-section" id="build">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          Build timeline
+        </div>
+        <h2 className="ws-h2">
+          What happens.{' '}
+          <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
+            When.
+          </span>
+        </h2>
+        <p className="ws-lead">Phase 1 is three weeks. Phase 2 is three months.</p>
+        <p className="ws-lead-tight">After September, the system iterates on real use until March 8, 2027.</p>
+
+        <div style={{ marginTop: 48 }}>
+          <div className="ws-eyebrow" style={{ marginBottom: 18, color: 'var(--ws-navy-deep)' }}>
+            Phase 1 · 3 weeks
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+            {PHASE1_TIMELINE.map((t) => (
+              <div key={t.label} className="ws-card">
+                <div
+                  className="ws-display"
+                  style={{ fontSize: '1.5rem', color: 'var(--ws-navy-deep)', margin: '0 0 14px', letterSpacing: '-0.02em' }}
+                >
+                  {t.label}
+                </div>
+                <p style={{ fontSize: '0.96rem', color: 'var(--ws-ink-soft)', lineHeight: 1.65, margin: 0 }}>{t.do}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: 56 }}>
+          <div className="ws-eyebrow" style={{ marginBottom: 18, color: '#166534' }}>
+            Phase 2 · summer + fall + winter
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {PHASE2_TIMELINE.map((t, i) => (
+              <div
+                key={t.label}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '220px 1fr',
+                  gap: 24,
+                  padding: '24px 0',
+                  borderTop: i === 0 ? '1px solid var(--ws-line-strong)' : '1px solid var(--ws-line)',
+                  borderBottom: i === PHASE2_TIMELINE.length - 1 ? '1px solid var(--ws-line-strong)' : 'none',
+                  alignItems: 'start',
+                }}
+              >
+                <div
+                  className="ws-display"
+                  style={{ fontSize: '1.32rem', color: '#166534', letterSpacing: '-0.02em' }}
+                >
+                  {t.label}
+                </div>
+                <div style={{ fontSize: '0.98rem', color: 'var(--ws-ink)', lineHeight: 1.65 }}>{t.do}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <hr className="ws-rule" />
+
+      {/* MEASUREMENT */}
+      <section className="ws-section" id="measurement">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          How to know it is working
+        </div>
+        <h2 className="ws-h2">
+          Five measurements.{' '}
+          <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
+            Honest ones.
+          </span>
+        </h2>
+        <p className="ws-lead">Each measurement is something the school can already track.</p>
+        <p className="ws-lead-tight">No new dashboards required.</p>
+
+        <div style={{ marginTop: 40 }}>
+          {MEASUREMENTS.map((m, i) => (
+            <div
+              key={m.name}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '280px 1fr 1fr',
+                gap: 28,
+                padding: '28px 0',
+                borderTop: i === 0 ? '1px solid var(--ws-line-strong)' : '1px solid var(--ws-line)',
+                borderBottom: i === MEASUREMENTS.length - 1 ? '1px solid var(--ws-line-strong)' : 'none',
+                alignItems: 'start',
+              }}
+            >
+              <div
+                className="ws-display"
+                style={{ fontSize: '1.22rem', color: 'var(--ws-ink)', letterSpacing: '-0.02em', lineHeight: 1.25 }}
+              >
+                {m.name}
+              </div>
+              <div>
+                <div className="ws-field-label">How</div>
+                <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink-soft)', lineHeight: 1.6, marginTop: 4 }}>{m.how}</div>
+              </div>
+              <div>
+                <div className="ws-field-label">Target</div>
+                <div style={{ fontSize: '0.94rem', color: 'var(--ws-ink)', lineHeight: 1.6, marginTop: 4, fontWeight: 500 }}>{m.target}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className="ws-rule" />
+
+      {/* HANDOFF */}
+      <section className="ws-section" id="handoff">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
+          What a builder needs
+        </div>
+        <h2 className="ws-h2">
+          A complete handoff list.{' '}
+          <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
+            So this framework is portable.
+          </span>
+        </h2>
+        <p className="ws-lead">If Wooster wants to give this to another builder, here is the checklist.</p>
+        <p className="ws-lead-tight">Nothing on it is unusual. All of it is already inside Wooster.</p>
+
+        <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+          {HANDOFF.map((h, i) => (
+            <div key={h.item} className="ws-card">
+              <div
+                className="ws-display"
+                style={{ fontSize: '0.82rem', color: 'var(--ws-burgundy)', margin: '0 0 12px', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500 }}
+              >
+                #{String(i + 1).padStart(2, '0')}
+              </div>
+              <div
+                className="ws-display"
+                style={{ fontSize: '1.18rem', color: 'var(--ws-ink)', margin: '0 0 12px', letterSpacing: '-0.02em', lineHeight: 1.3 }}
+              >
+                {h.item}
+              </div>
+              <p style={{ fontSize: '0.92rem', color: 'var(--ws-ink-soft)', lineHeight: 1.6, margin: 0 }}>{h.why}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <hr className="ws-rule" />
 
       {/* PRINCIPLES */}
-      <section className="ws-section">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
+      <section className="ws-section" id="principles">
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
           The four centennial principles
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
+        <h2 className="ws-h2">
           1926 to{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-burgundy)' }}>
             2026.
           </span>{' '}
           Same principles. New medium.
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          The four enduring principles Wooster has carried since 1926 are the same four design constraints on this
-          framework. The architecture is engineered to reflect them.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+        <p className="ws-lead">The four principles Wooster has carried since 1926 are the four design constraints on this framework.</p>
+        <p className="ws-lead-tight">The architecture reflects each one.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 40 }}>
           {PRINCIPLES.map((p) => (
             <div key={p.name} className="ws-card">
               <div
                 className="ws-display"
-                style={{
-                  fontSize: '1.42rem',
-                  color: 'var(--ws-burgundy)',
-                  margin: '0 0 12px',
-                  letterSpacing: '-0.02em',
-                  fontStyle: 'italic',
-                  fontWeight: 300,
-                }}
+                style={{ fontSize: '1.42rem', color: 'var(--ws-burgundy)', margin: '0 0 12px', letterSpacing: '-0.02em', fontStyle: 'italic', fontWeight: 300 }}
               >
                 {p.name}.
               </div>
@@ -627,34 +821,24 @@ export default function WoosterPage() {
 
       {/* RECEIPTS */}
       <section className="ws-section" id="receipts">
-        <div className="ws-eyebrow" style={{ marginBottom: 16 }}>
+        <div className="ws-eyebrow" style={{ marginBottom: 20 }}>
           What is already shipping
         </div>
-        <h2
-          className="ws-display"
-          style={{ fontSize: 'clamp(2rem, 4.2vw, 3rem)', lineHeight: 1.05, margin: '0 0 16px', color: 'var(--ws-ink)' }}
-        >
+        <h2 className="ws-h2">
           Not theory.{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
             Receipts.
           </span>
         </h2>
-        <p style={{ fontSize: '1.04rem', lineHeight: 1.7, color: 'var(--ws-ink-soft)', maxWidth: 760, margin: '0 0 40px' }}>
-          The data from what we&apos;ve already seen, per the offer made in March. Practitioner evidence from the field
-          since our March 17 conversation.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 28 }}>
+        <p className="ws-lead">The data from what we have already seen, per the offer made in March.</p>
+        <p className="ws-lead-tight">Practitioner evidence from the field since our March 17 conversation.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 28, marginTop: 40 }}>
           {RECEIPTS.map((r) => (
             <div key={r.source} className="ws-card">
               <div
                 className="ws-display"
-                style={{
-                  fontSize: '1.06rem',
-                  color: 'var(--ws-ink)',
-                  lineHeight: 1.5,
-                  margin: '0 0 18px',
-                  letterSpacing: '-0.01em',
-                }}
+                style={{ fontSize: '1.08rem', color: 'var(--ws-ink)', lineHeight: 1.5, margin: '0 0 18px', letterSpacing: '-0.01em' }}
               >
                 {r.quote}
               </div>
@@ -668,7 +852,7 @@ export default function WoosterPage() {
 
       <hr className="ws-rule" />
 
-      {/* CLOSING — HIS OWN WORDS */}
+      {/* CLOSING */}
       <section className="ws-section" id="closing">
         <div style={{ maxWidth: 880, margin: '0 auto', textAlign: 'left' }}>
           <div className="ws-eyebrow" style={{ marginBottom: 28 }}>
@@ -687,29 +871,20 @@ export default function WoosterPage() {
           >
             &ldquo;Plant your feet back on the good earth.&rdquo;
           </blockquote>
-          <p
-            style={{
-              fontSize: '0.86rem',
-              color: 'var(--ws-ink-faint)',
-              letterSpacing: '0.04em',
-              margin: '0 0 48px',
-              paddingLeft: 28,
-            }}
-          >
+          <p style={{ fontSize: '0.86rem', color: 'var(--ws-ink-faint)', letterSpacing: '0.04em', margin: '0 0 48px', paddingLeft: 28 }}>
             — Matt Byrnes
           </p>
-          <p
-            style={{
-              fontSize: '1.12rem',
-              lineHeight: 1.75,
-              color: 'var(--ws-ink-soft)',
-              margin: 0,
-              maxWidth: 720,
-            }}
-          >
-            This architecture stands on the ground Wooster already stands on. Google Workspace. Blackbaud onCampus.
-            Your alumni database. Your own voice. Nothing imported, nothing leased, nothing that can leave when a
-            vendor pivots. The next 100 years begin from the same earth that built the first.
+          <p style={{ fontSize: '1.12rem', lineHeight: 1.75, color: 'var(--ws-ink-soft)', margin: '0 0 14px', maxWidth: 720 }}>
+            This architecture stands on the ground Wooster already stands on.
+          </p>
+          <p style={{ fontSize: '1.12rem', lineHeight: 1.75, color: 'var(--ws-ink-soft)', margin: '0 0 14px', maxWidth: 720 }}>
+            Google Workspace. Blackbaud onCampus. Your alumni database. Your own voice.
+          </p>
+          <p style={{ fontSize: '1.12rem', lineHeight: 1.75, color: 'var(--ws-ink-soft)', margin: '0 0 14px', maxWidth: 720 }}>
+            Nothing imported. Nothing leased. Nothing that can leave when a vendor pivots.
+          </p>
+          <p style={{ fontSize: '1.12rem', lineHeight: 1.75, color: 'var(--ws-ink-soft)', margin: 0, maxWidth: 720 }}>
+            The next 100 years begin from the same earth that built the first.
           </p>
         </div>
       </section>
