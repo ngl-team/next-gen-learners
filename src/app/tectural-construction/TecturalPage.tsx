@@ -1,20 +1,33 @@
 import Mermaid from './Mermaid';
 
 const MASTER_MMD = `flowchart TD
-  subgraph LEADS["LEADS COME IN"]
+  subgraph LEADS["WHERE LEADS COME FROM"]
     direction LR
     L1["Phone call"]
     L2["Email inquiry"]
-    L3["Web form"]
+    L3["Website visitor"]
     L4["Referral"]
   end
-  subgraph TOOLS["YOUR FOUR TOOLS - all on your laptop"]
+  L3 --> SITE
+  SITE --> EST
+  L2 --> EMAIL
+  subgraph TOOLS["YOUR FOUR TOOLS"]
     direction TB
-    EMAIL["Email Assistant<br/>Sprint 2"]
     SITE["Custom Site<br/>Sprint 4"]
+    EST["AI Estimator widget<br/>Sprint 3<br/>(replaces Instant Roofer)"]
+    EMAIL["Email Assistant<br/>Sprint 2"]
     CRM["CRM Job Pipeline<br/>SPRINT 1 - START HERE"]
-    EST["AI Estimator<br/>Sprint 3"]
   end
+  EST --> EMAIL
+  EST --> CRM
+  EMAIL --> CRM
+  L1 --> CRM
+  L4 --> CRM
+  CRM --> OWN
+  CRM --> KILL
+  CRM --> INV
+  CRM --> TIME
+  EMAIL --> TIME
   subgraph OUT["WHAT YOU GET"]
     direction LR
     OWN["You own<br/>every tool"]
@@ -22,26 +35,12 @@ const MASTER_MMD = `flowchart TD
     INV["Auto-invoice<br/>on completion"]
     TIME["Hours back<br/>every week"]
   end
-  L1 --> CRM
-  L1 --> EMAIL
-  L2 --> EMAIL
-  L3 --> SITE
-  L4 --> CRM
-  EMAIL --> CRM
-  SITE --> CRM
-  CRM --> EST
-  EST --> CRM
-  CRM --> INV
-  CRM --> OWN
-  CRM --> KILL
-  CRM --> TIME
-  EMAIL --> TIME
   classDef lead fill:#e0e7ff,stroke:#3730a3,color:#000
   classDef tool fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef spine fill:#22c55e,stroke:#15803d,color:#fff
   classDef outcome fill:#fef3c7,stroke:#92400e,color:#000
   class L1,L2,L3,L4 lead
-  class EMAIL,SITE,EST tool
+  class SITE,EST,EMAIL tool
   class CRM spine
   class OWN,KILL,INV,TIME outcome`;
 
@@ -60,17 +59,17 @@ const EMAIL_MMD = `flowchart LR
   class E,G out`;
 
 const ESTIMATOR_MMD = `flowchart LR
-  A["Address typed in<br/>web form or by crew"] --> B["Aerial measurement API"]
+  A["Visitor on your site<br/>enters their address"] --> B["Aerial measurement API"]
   B --> C["Roof area + pitch"]
-  C --> D["Tectural pricing rules"]
-  E["Material costs<br/>wood / metal / EPDM / copper"] --> D
-  D --> F["Branded PDF estimate"]
-  F --> G["Sent to lead<br/>+ saved to job file"]
+  D["Your pricing rules"] --> E
+  C --> E["Instant estimate<br/>shown on screen"]
+  E --> F["Visitor leaves<br/>contact info"]
+  F --> G["Lead lands in<br/>your CRM"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
-  class A,E in
-  class B,C,D ai
+  class A,D in
+  class B,C,E ai
   class F,G out`;
 
 const CRM_MMD = `flowchart TD
@@ -92,15 +91,16 @@ const SITE_MMD = `flowchart LR
   A["You edit<br/>content"] --> B["Simple visual editor"]
   B --> C["Auto-deploy"]
   C --> D["tecturalconstruction.com"]
-  E["Estimator from<br/>Sprint 3"] --> D
+  D --> E["AI Estimator widget<br/>(Sprint 3) lives here"]
   D --> F["Contact form"]
-  F --> G["Routes to<br/>email assistant"]
+  E --> G["Lead lands in CRM"]
+  F --> H["Routes to email assistant"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
-  class A,F in
+  class A in
   class B,C,E ai
-  class D,G out`;
+  class D,F,G,H out`;
 
 type Sprint = {
   num: string;
@@ -147,15 +147,15 @@ const SPRINTS: Sprint[] = [
   },
   {
     num: '03',
-    title: 'In-house AI Estimator',
+    title: 'In-house AI Estimator widget',
     badge: 'SPRINT 3',
     badgeColor: 'gray',
     problem: '"I like Instant Roofer. I do not like the subscription."',
     plain:
-      'A lead types an address. The tool pulls roof measurements from aerial data, runs them through your pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. The estimate attaches to the CRM job automatically. You own the math, the layout, the data.',
-    math: 'Kills $250 a month direct. Three thousand a year. Thirty thousand over ten years on a one-time build.',
-    kills: 'Instant Roofer at $250 a month.',
-    ship: 'Four to six weeks. Needs aerial measurement API integration and pricing rules captured.',
+      'A widget that lives on your website. A homeowner visits, types in their address, and sees an instant estimate built from your own pricing. They leave their contact info to get the full breakdown. The lead lands in your CRM as a new job with the estimate already attached. This is what Instant Roofer does today, except you own it.',
+    math: 'Kills $250 a month direct. Three thousand a year. Thirty thousand over ten years on a one-time build. The bigger upside is every website visitor who plays with it becomes a qualified lead instead of bouncing.',
+    kills: 'Instant Roofer at $250 a month. Cold website visitors who never identified themselves.',
+    ship: 'Four to six weeks. Needs aerial measurement API integration, your pricing rules captured, and a clean widget embed.',
     chart: ESTIMATOR_MMD,
     idPrefix: 'estimator',
   },
@@ -166,7 +166,7 @@ const SPRINTS: Sprint[] = [
     badgeColor: 'gray',
     problem: '"No one builds it the way I want it."',
     plain:
-      'A clean site, built once, edited by you through a simple editor. The AI estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant, which lands the lead in the CRM. No more waiting on a contractor to change a headline.',
+      'A clean site, built once, edited by you through a simple editor. The AI estimator widget (Sprint 3) lives on the homepage and turns visitors into qualified leads at the curb. Contact form routes straight to the email assistant, which lands the lead in the CRM. No more waiting on a contractor to change a headline.',
     math: 'Kills the offshore web contractor recurring spend. Lead capture front door starts converting visitors instead of sitting still.',
     kills: 'The offshore web contractor recurring fee. The mismatch between your taste and what gets shipped.',
     ship: 'Three to four weeks once the estimator exists.',

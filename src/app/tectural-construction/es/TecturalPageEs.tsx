@@ -1,20 +1,33 @@
 import Mermaid from './Mermaid';
 
 const MASTER_MMD = `flowchart TD
-  subgraph LEADS["LOS CLIENTES LLEGAN POR"]
+  subgraph LEADS["DE DÓNDE VIENEN LOS CLIENTES"]
     direction LR
     L1["Llamada"]
     L2["Correo entrante"]
-    L3["Formulario web"]
+    L3["Visitante de la web"]
     L4["Referencia"]
   end
-  subgraph TOOLS["SUS CUATRO HERRAMIENTAS - todas en su laptop"]
+  L3 --> SITE
+  SITE --> EST
+  L2 --> EMAIL
+  subgraph TOOLS["SUS CUATRO HERRAMIENTAS"]
     direction TB
-    EMAIL["Asistente de Correo<br/>Sprint 2"]
     SITE["Sitio Personalizado<br/>Sprint 4"]
+    EST["Estimador IA en la web<br/>Sprint 3<br/>(reemplaza Instant Roofer)"]
+    EMAIL["Asistente de Correo<br/>Sprint 2"]
     CRM["CRM Panel de Trabajos<br/>SPRINT 1 - AQUÍ EMPEZAMOS"]
-    EST["Estimador IA<br/>Sprint 3"]
   end
+  EST --> EMAIL
+  EST --> CRM
+  EMAIL --> CRM
+  L1 --> CRM
+  L4 --> CRM
+  CRM --> OWN
+  CRM --> KILL
+  CRM --> INV
+  CRM --> TIME
+  EMAIL --> TIME
   subgraph OUT["LO QUE USTED RECIBE"]
     direction LR
     OWN["Usted es dueño<br/>de cada herramienta"]
@@ -22,26 +35,12 @@ const MASTER_MMD = `flowchart TD
     INV["Factura automática<br/>al completar"]
     TIME["Horas de vuelta<br/>cada semana"]
   end
-  L1 --> CRM
-  L1 --> EMAIL
-  L2 --> EMAIL
-  L3 --> SITE
-  L4 --> CRM
-  EMAIL --> CRM
-  SITE --> CRM
-  CRM --> EST
-  EST --> CRM
-  CRM --> INV
-  CRM --> OWN
-  CRM --> KILL
-  CRM --> TIME
-  EMAIL --> TIME
   classDef lead fill:#e0e7ff,stroke:#3730a3,color:#000
   classDef tool fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef spine fill:#22c55e,stroke:#15803d,color:#fff
   classDef outcome fill:#fef3c7,stroke:#92400e,color:#000
   class L1,L2,L3,L4 lead
-  class EMAIL,SITE,EST tool
+  class SITE,EST,EMAIL tool
   class CRM spine
   class OWN,KILL,INV,TIME outcome`;
 
@@ -60,17 +59,17 @@ const EMAIL_MMD = `flowchart LR
   class E,G out`;
 
 const ESTIMATOR_MMD = `flowchart LR
-  A["Dirección ingresada<br/>en web o por el equipo"] --> B["API de medición aérea"]
+  A["Visitante en su web<br/>ingresa su dirección"] --> B["API de medición aérea"]
   B --> C["Área del techo + inclinación"]
-  C --> D["Sus reglas de precios"]
-  E["Costos de material<br/>madera / metal / EPDM / cobre"] --> D
-  D --> F["Estimado PDF<br/>con su marca"]
-  F --> G["Enviado al cliente<br/>+ guardado al expediente"]
+  D["Sus reglas de precios"] --> E
+  C --> E["Estimado instantáneo<br/>en pantalla"]
+  E --> F["Visitante deja<br/>sus datos"]
+  F --> G["Cliente entra al CRM"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
-  class A,E in
-  class B,C,D ai
+  class A,D in
+  class B,C,E ai
   class F,G out`;
 
 const CRM_MMD = `flowchart TD
@@ -92,15 +91,16 @@ const SITE_MMD = `flowchart LR
   A["Usted edita<br/>el contenido"] --> B["Editor visual simple"]
   B --> C["Se publica<br/>automáticamente"]
   C --> D["tecturalconstruction.com"]
-  E["Estimador del<br/>Sprint 3"] --> D
+  D --> E["Estimador IA (Sprint 3)<br/>vive aquí"]
   D --> F["Formulario de contacto"]
-  F --> G["Va directo al<br/>asistente de correo"]
+  E --> G["Cliente entra al CRM"]
+  F --> H["Va al asistente de correo"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
-  class A,F in
+  class A in
   class B,C,E ai
-  class D,G out`;
+  class D,F,G,H out`;
 
 type Sprint = {
   num: string;
@@ -147,15 +147,15 @@ const SPRINTS: Sprint[] = [
   },
   {
     num: '03',
-    title: 'Estimador IA Interno',
+    title: 'Estimador IA en su Web',
     badge: 'SPRINT 3',
     badgeColor: 'gray',
     problem: '"Me gusta Instant Roofer. No me gusta la suscripción."',
     plain:
-      'Un cliente escribe una dirección. La herramienta saca la medida del techo de los datos aéreos, la pasa por las reglas de precios de Tectural (madera, metal, EPDM, cobre, Tesla Solar) y produce un estimado PDF con su marca. El estimado se adjunta automáticamente al trabajo en el CRM. Usted es dueño de la fórmula, del formato, y de los datos.',
-    math: 'Elimina $250 al mes directo. Tres mil al año. Treinta mil en diez años con una construcción de una sola vez.',
-    kills: 'Instant Roofer a $250 al mes.',
-    ship: 'Cuatro a seis semanas. Necesita conexión con la API de medición aérea y sus reglas de precios documentadas.',
+      'Una herramienta que vive en su sitio web. Un cliente entra, escribe su dirección, y ve un estimado instantáneo hecho con sus propios precios. Deja sus datos para recibir el desglose completo. El cliente entra al CRM como un trabajo nuevo, con el estimado ya adjunto. Es lo que hace Instant Roofer hoy, pero usted es el dueño.',
+    math: 'Elimina $250 al mes directo. Tres mil al año. Treinta mil en diez años con una construcción de una sola vez. La ganancia mayor es que cada visitante de su web se convierte en un cliente identificado en vez de irse sin dejar rastro.',
+    kills: 'Instant Roofer a $250 al mes. Los visitantes que entran a su web y se van sin dejar nombre.',
+    ship: 'Cuatro a seis semanas. Necesita conexión con la API de medición aérea, sus reglas de precios documentadas, y una herramienta limpia que se incrusta en la web.',
     chart: ESTIMATOR_MMD,
     idPrefix: 'estimator-es',
   },
@@ -166,7 +166,7 @@ const SPRINTS: Sprint[] = [
     badgeColor: 'gray',
     problem: '"Nadie lo construye como yo lo quiero."',
     plain:
-      'Un sitio limpio, hecho una vez, editado por usted con un editor sencillo. El estimador IA vive en la página principal y captura clientes apenas entran. El formulario de contacto va directo al asistente de correo, que pone el cliente en el CRM. Ya no hay que esperar a un contratista para cambiar un título.',
+      'Un sitio limpio, hecho una vez, editado por usted con un editor sencillo. El Estimador IA (Sprint 3) vive en la página principal y convierte a los visitantes en clientes identificados apenas entran. El formulario de contacto va directo al asistente de correo, que pone el cliente en el CRM. Ya no hay que esperar a un contratista para cambiar un título.',
     math: 'Elimina el gasto recurrente con el contratista de sitios web. La puerta de entrada empieza a convertir visitantes en vez de quedarse quieta.',
     kills: 'El pago recurrente al contratista de sitios web. La diferencia entre lo que usted quiere y lo que recibe.',
     ship: 'Tres a cuatro semanas, una vez que exista el estimador.',
