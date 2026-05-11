@@ -1,54 +1,49 @@
 import Mermaid from './Mermaid';
 
 const MASTER_MMD = `flowchart TD
-  subgraph FD["FRONT DOOR"]
+  subgraph LEADS["LEADS COME IN"]
     direction LR
-    WEB["Custom site<br/>he edits himself"]
-    PHONE["Phone +<br/>referrals"]
+    L1["Phone call"]
+    L2["Email inquiry"]
+    L3["Web form"]
+    L4["Referral"]
   end
-  subgraph LEAD["LEAD CAPTURE"]
-    direction LR
-    FORM["Web form"]
-    EST["In-house AI estimator<br/>kills Instant Roofer"]
-  end
-  subgraph BRAIN["JARVIS - brain on your laptop"]
+  subgraph TOOLS["YOUR FOUR TOOLS - all on your laptop"]
     direction TB
-    EMAIL["Email assistant<br/>SPRINT 1 - start here"]
-    VOICE["Voice profile +<br/>people files"]
+    EMAIL["Email Assistant<br/>Sprint 2"]
+    SITE["Custom Site<br/>Sprint 4"]
+    CRM["CRM Job Pipeline<br/>SPRINT 1 - START HERE"]
+    EST["AI Estimator<br/>Sprint 3"]
   end
-  subgraph OPS["OPERATIONS DASHBOARD"]
+  subgraph OUT["WHAT YOU GET"]
     direction LR
-    CRM["Job pipeline<br/>estimate to install to invoice"]
-    INV["Auto-invoice<br/>on completion"]
-  end
-  subgraph OUT["OUTCOMES"]
-    direction LR
-    OWN["He owns<br/>every tool"]
+    OWN["You own<br/>every tool"]
     KILL["Subscriptions<br/>retired"]
+    INV["Auto-invoice<br/>on completion"]
     TIME["Hours back<br/>every week"]
   end
-  WEB --> FORM
-  PHONE --> EMAIL
-  FORM --> EST
-  EST --> CRM
+  L1 --> CRM
+  L1 --> EMAIL
+  L2 --> EMAIL
+  L3 --> SITE
+  L4 --> CRM
   EMAIL --> CRM
-  EMAIL --> VOICE
+  SITE --> CRM
+  CRM --> EST
+  EST --> CRM
   CRM --> INV
-  INV --> OWN
+  CRM --> OWN
   CRM --> KILL
+  CRM --> TIME
   EMAIL --> TIME
-  classDef front fill:#e0e7ff,stroke:#3730a3,color:#000
-  classDef lead fill:#dbeafe,stroke:#1e3a8a,color:#000
-  classDef brain fill:#22c55e,stroke:#15803d,color:#fff
-  classDef brain2 fill:#dcfce7,stroke:#15803d,color:#000
-  classDef ops fill:#fde68a,stroke:#92400e,color:#000
+  classDef lead fill:#e0e7ff,stroke:#3730a3,color:#000
+  classDef tool fill:#dbeafe,stroke:#1e3a8a,color:#000
+  classDef spine fill:#22c55e,stroke:#15803d,color:#fff
   classDef outcome fill:#fef3c7,stroke:#92400e,color:#000
-  class WEB,PHONE front
-  class FORM,EST lead
-  class EMAIL brain
-  class VOICE brain2
-  class CRM,INV ops
-  class OWN,KILL,TIME outcome`;
+  class L1,L2,L3,L4 lead
+  class EMAIL,SITE,EST tool
+  class CRM spine
+  class OWN,KILL,INV,TIME outcome`;
 
 const EMAIL_MMD = `flowchart LR
   A["New email arrives"] --> B["Jarvis on laptop"]
@@ -80,7 +75,7 @@ const ESTIMATOR_MMD = `flowchart LR
 
 const CRM_MMD = `flowchart TD
   A["Lead source<br/>phone / web / referral"] --> B["Job record created"]
-  B --> C["Estimate generated<br/>from Sprint 2 tool"]
+  B --> C["Estimate generated<br/>from AI Estimator"]
   C --> D["Contract signed"]
   D --> E["Schedule +<br/>crew assigned"]
   E --> F["Install photos<br/>+ checklist"]
@@ -97,7 +92,7 @@ const SITE_MMD = `flowchart LR
   A["You edit<br/>content"] --> B["Simple visual editor"]
   B --> C["Auto-deploy"]
   C --> D["tecturalconstruction.com"]
-  E["Estimator from<br/>Sprint 2"] --> D
+  E["Estimator from<br/>Sprint 3"] --> D
   D --> F["Contact form"]
   F --> G["Routes to<br/>email assistant"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
@@ -124,26 +119,40 @@ type Sprint = {
 const SPRINTS: Sprint[] = [
   {
     num: '01',
-    title: 'Email assistant',
+    title: 'CRM Job Pipeline',
     badge: 'WE START HERE',
     badgeColor: 'green',
+    problem: '"I want a CRM in the spirit of JobNimbus, with invoicing wired in."',
+    plain:
+      'One dashboard you open every morning. Every job is a row. Lead, estimated, signed, scheduled, installed, invoiced, paid. Click any job to see the photos, the contract, the payment status. Invoicing fires automatically when a job is marked complete. A working V1 is already live - try it before we sit down.',
+    math: 'A JobNimbus equivalent runs $400 to $800 a month at your crew size. Kill that and reclaim around four hours a week of paperwork. Real number is closer to $2,000 a month back.',
+    kills: 'JobNimbus-style subscriptions. The paper trail across email, text, and the estimator.',
+    ship: 'One week for V1 ship. Foundation that every other sprint connects to.',
+    chart: CRM_MMD,
+    idPrefix: 'crm',
+  },
+  {
+    num: '02',
+    title: 'Email Assistant',
+    badge: 'SPRINT 2',
+    badgeColor: 'gray',
     problem: '"I am two days behind on email."',
     plain:
-      "Every morning Jarvis has already read the new emails. Leads, vendors, customers, and crew updates sit in their own bucket. For the replies that need drafting, Jarvis writes them in your voice from past emails. You read, tweak, send. Twenty minutes instead of two hours.",
+      'Every morning Jarvis has already read the new emails. Leads, vendors, customers, and crew updates sit in their own bucket. For the replies that need drafting, Jarvis writes them in your voice from past emails. You read, tweak, send. New leads flow straight into the CRM as cards. Twenty minutes instead of two hours.',
     math: 'Five hours a week back. Twenty plus hours a month. At roofer-owner time value, that pays the build back inside the first month.',
     kills: 'The two-day email backlog. The lost leads sitting unread.',
-    ship: 'Two weeks. Same pattern already shipped for a CT superintendent.',
+    ship: 'Two weeks once CRM is live. Same pattern already shipped for a CT superintendent.',
     chart: EMAIL_MMD,
     idPrefix: 'email',
   },
   {
-    num: '02',
-    title: 'In-house AI estimator',
-    badge: 'PHASE 2',
+    num: '03',
+    title: 'In-house AI Estimator',
+    badge: 'SPRINT 3',
     badgeColor: 'gray',
     problem: '"I like Instant Roofer. I do not like the subscription."',
     plain:
-      "A lead types an address. The tool pulls roof measurements from aerial data, runs them through your pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. You own the math, the layout, the data. No subscription forever.",
+      'A lead types an address. The tool pulls roof measurements from aerial data, runs them through your pricing for wood, metal, EPDM, copper, and Tesla Solar, and produces a branded PDF estimate. The estimate attaches to the CRM job automatically. You own the math, the layout, the data.',
     math: 'Kills $250 a month direct. Three thousand a year. Thirty thousand over ten years on a one-time build.',
     kills: 'Instant Roofer at $250 a month.',
     ship: 'Four to six weeks. Needs aerial measurement API integration and pricing rules captured.',
@@ -151,30 +160,16 @@ const SPRINTS: Sprint[] = [
     idPrefix: 'estimator',
   },
   {
-    num: '03',
-    title: 'Job pipeline + invoicing',
-    badge: 'PHASE 3',
-    badgeColor: 'gray',
-    problem: '"I want a CRM in the spirit of JobNimbus, with invoicing wired in."',
-    plain:
-      'One dashboard you open every morning. Every job is a row. Which jobs are in estimate, signed, scheduled, today on the truck, ready to invoice. Click a job and see the photos, the contract, the payment status. Invoicing fires automatically when a job is marked complete.',
-    math: 'A JobNimbus equivalent runs $400 to $800 a month at your crew size. Kill that and reclaim around four hours a week of paperwork on top. Real number is closer to $1,500 a month back.',
-    kills: 'JobNimbus-style subscriptions. The paper trail across email, text, and the estimator.',
-    ship: 'Six to eight weeks. Integrates Sprint 1 and Sprint 2 into one view.',
-    chart: CRM_MMD,
-    idPrefix: 'crm',
-  },
-  {
     num: '04',
-    title: 'Custom site you edit yourself',
-    badge: 'PHASE 4',
+    title: 'Custom Site You Edit Yourself',
+    badge: 'SPRINT 4',
     badgeColor: 'gray',
     problem: '"No one builds it the way I want it."',
     plain:
-      'A clean site, built once, edited by you through a simple editor. The Sprint 2 estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant. No more waiting on a contractor to change a headline.',
+      'A clean site, built once, edited by you through a simple editor. The AI estimator lives on the homepage and captures leads at the curb. Contact form routes straight to the email assistant, which lands the lead in the CRM. No more waiting on a contractor to change a headline.',
     math: 'Kills the offshore web contractor recurring spend. Lead capture front door starts converting visitors instead of sitting still.',
     kills: 'The offshore web contractor recurring fee. The mismatch between your taste and what gets shipped.',
-    ship: 'Three to four weeks once Sprint 2 exists.',
+    ship: 'Three to four weeks once the estimator exists.',
     chart: SITE_MMD,
     idPrefix: 'site',
   },

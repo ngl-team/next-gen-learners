@@ -1,54 +1,49 @@
 import Mermaid from './Mermaid';
 
 const MASTER_MMD = `flowchart TD
-  subgraph FD["LA PUERTA DE ENTRADA"]
+  subgraph LEADS["LOS CLIENTES LLEGAN POR"]
     direction LR
-    WEB["Sitio web<br/>que usted edita"]
-    PHONE["Teléfono +<br/>referencias"]
+    L1["Llamada"]
+    L2["Correo entrante"]
+    L3["Formulario web"]
+    L4["Referencia"]
   end
-  subgraph LEAD["CAPTURA DE CLIENTES"]
-    direction LR
-    FORM["Formulario web"]
-    EST["Estimador IA interno<br/>elimina Instant Roofer"]
-  end
-  subgraph BRAIN["JARVIS - el cerebro en su laptop"]
+  subgraph TOOLS["SUS CUATRO HERRAMIENTAS - todas en su laptop"]
     direction TB
-    EMAIL["Asistente de correo<br/>SPRINT 1 - aquí empezamos"]
-    VOICE["Perfil de voz +<br/>contactos"]
+    EMAIL["Asistente de Correo<br/>Sprint 2"]
+    SITE["Sitio Personalizado<br/>Sprint 4"]
+    CRM["CRM Panel de Trabajos<br/>SPRINT 1 - AQUÍ EMPEZAMOS"]
+    EST["Estimador IA<br/>Sprint 3"]
   end
-  subgraph OPS["PANEL DE OPERACIONES"]
-    direction LR
-    CRM["Pipeline de trabajos<br/>estimado a instalación a factura"]
-    INV["Factura automática<br/>al completar"]
-  end
-  subgraph OUT["RESULTADOS"]
+  subgraph OUT["LO QUE USTED RECIBE"]
     direction LR
     OWN["Usted es dueño<br/>de cada herramienta"]
     KILL["Suscripciones<br/>eliminadas"]
+    INV["Factura automática<br/>al completar"]
     TIME["Horas de vuelta<br/>cada semana"]
   end
-  WEB --> FORM
-  PHONE --> EMAIL
-  FORM --> EST
-  EST --> CRM
+  L1 --> CRM
+  L1 --> EMAIL
+  L2 --> EMAIL
+  L3 --> SITE
+  L4 --> CRM
   EMAIL --> CRM
-  EMAIL --> VOICE
+  SITE --> CRM
+  CRM --> EST
+  EST --> CRM
   CRM --> INV
-  INV --> OWN
+  CRM --> OWN
   CRM --> KILL
+  CRM --> TIME
   EMAIL --> TIME
-  classDef front fill:#e0e7ff,stroke:#3730a3,color:#000
-  classDef lead fill:#dbeafe,stroke:#1e3a8a,color:#000
-  classDef brain fill:#22c55e,stroke:#15803d,color:#fff
-  classDef brain2 fill:#dcfce7,stroke:#15803d,color:#000
-  classDef ops fill:#fde68a,stroke:#92400e,color:#000
+  classDef lead fill:#e0e7ff,stroke:#3730a3,color:#000
+  classDef tool fill:#dbeafe,stroke:#1e3a8a,color:#000
+  classDef spine fill:#22c55e,stroke:#15803d,color:#fff
   classDef outcome fill:#fef3c7,stroke:#92400e,color:#000
-  class WEB,PHONE front
-  class FORM,EST lead
-  class EMAIL brain
-  class VOICE brain2
-  class CRM,INV ops
-  class OWN,KILL,TIME outcome`;
+  class L1,L2,L3,L4 lead
+  class EMAIL,SITE,EST tool
+  class CRM spine
+  class OWN,KILL,INV,TIME outcome`;
 
 const EMAIL_MMD = `flowchart LR
   A["Llega un correo nuevo"] --> B["Jarvis en la laptop"]
@@ -80,7 +75,7 @@ const ESTIMATOR_MMD = `flowchart LR
 
 const CRM_MMD = `flowchart TD
   A["Fuente del cliente<br/>teléfono / web / referencia"] --> B["Trabajo creado"]
-  B --> C["Estimado generado<br/>con la herramienta del Sprint 2"]
+  B --> C["Estimado generado<br/>con el Estimador IA"]
   C --> D["Contrato firmado"]
   D --> E["Horario asignado<br/>+ equipo programado"]
   E --> F["Fotos de instalación<br/>+ lista de verificación"]
@@ -97,7 +92,7 @@ const SITE_MMD = `flowchart LR
   A["Usted edita<br/>el contenido"] --> B["Editor visual simple"]
   B --> C["Se publica<br/>automáticamente"]
   C --> D["tecturalconstruction.com"]
-  E["Estimador del<br/>Sprint 2"] --> D
+  E["Estimador del<br/>Sprint 3"] --> D
   D --> F["Formulario de contacto"]
   F --> G["Va directo al<br/>asistente de correo"]
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
@@ -124,26 +119,40 @@ type Sprint = {
 const SPRINTS: Sprint[] = [
   {
     num: '01',
-    title: 'Asistente de correo',
+    title: 'CRM Panel de Trabajos',
     badge: 'AQUÍ EMPEZAMOS',
     badgeColor: 'green',
+    problem: '"Quiero un CRM como JobNimbus, con las facturas conectadas."',
+    plain:
+      'Un solo panel que usted abre cada mañana. Cada trabajo es una fila. Cliente, estimado, firmado, agendado, instalado, facturado, pagado. Hace clic en un trabajo y ve las fotos, el contrato, el estado del pago. La factura se envía sola cuando el trabajo se marca completado. Ya hay una V1 funcionando - pruébela antes de la reunión.',
+    math: 'Un CRM como JobNimbus cuesta entre $400 y $800 al mes a su tamaño de equipo. Si lo elimina, son cuatro horas a la semana de papeleo de vuelta. El número real está cerca de $2,000 al mes recuperados.',
+    kills: 'Las suscripciones tipo JobNimbus. El rastro de papel entre correo, mensajes, y el estimador.',
+    ship: 'Una semana para V1. La base donde se conectan los otros sprints.',
+    chart: CRM_MMD,
+    idPrefix: 'crm-es',
+  },
+  {
+    num: '02',
+    title: 'Asistente de Correo',
+    badge: 'SPRINT 2',
+    badgeColor: 'gray',
     problem: '"Estoy dos días atrasado en el correo."',
     plain:
-      'Cada mañana Jarvis ya leyó los correos nuevos. Clientes, proveedores y el equipo quedan en su propia carpeta. Para las respuestas que necesitan redacción, Jarvis las escribe en su voz, aprendida de los correos anteriores. Usted lee, ajusta, y envía. Veinte minutos en vez de dos horas.',
+      'Cada mañana Jarvis ya leyó los correos nuevos. Clientes, proveedores y el equipo quedan en su propia carpeta. Para las respuestas que necesitan redacción, Jarvis las escribe en su voz, aprendida de los correos anteriores. Usted lee, ajusta, y envía. Los clientes nuevos entran al CRM como tarjetas automáticamente. Veinte minutos en vez de dos horas.',
     math: 'Cinco horas a la semana de vuelta. Más de veinte horas al mes. Al valor de su tiempo como dueño, el sprint se paga solo en el primer mes.',
     kills: 'El atraso de dos días en el correo. Los clientes que se pierden por no contestar a tiempo.',
-    ship: 'Dos semanas. El mismo patrón ya entregado a un superintendente en Connecticut.',
+    ship: 'Dos semanas después del CRM. El mismo patrón ya entregado a un superintendente en Connecticut.',
     chart: EMAIL_MMD,
     idPrefix: 'email-es',
   },
   {
-    num: '02',
-    title: 'Estimador IA interno',
-    badge: 'FASE 2',
+    num: '03',
+    title: 'Estimador IA Interno',
+    badge: 'SPRINT 3',
     badgeColor: 'gray',
     problem: '"Me gusta Instant Roofer. No me gusta la suscripción."',
     plain:
-      'Un cliente escribe una dirección. La herramienta saca la medida del techo de los datos aéreos, la pasa por las reglas de precios de Tectural (madera, metal, EPDM, cobre, Tesla Solar) y produce un estimado PDF con su marca. Usted es dueño de la fórmula, del formato, y de los datos. Cero suscripción para siempre.',
+      'Un cliente escribe una dirección. La herramienta saca la medida del techo de los datos aéreos, la pasa por las reglas de precios de Tectural (madera, metal, EPDM, cobre, Tesla Solar) y produce un estimado PDF con su marca. El estimado se adjunta automáticamente al trabajo en el CRM. Usted es dueño de la fórmula, del formato, y de los datos.',
     math: 'Elimina $250 al mes directo. Tres mil al año. Treinta mil en diez años con una construcción de una sola vez.',
     kills: 'Instant Roofer a $250 al mes.',
     ship: 'Cuatro a seis semanas. Necesita conexión con la API de medición aérea y sus reglas de precios documentadas.',
@@ -151,30 +160,16 @@ const SPRINTS: Sprint[] = [
     idPrefix: 'estimator-es',
   },
   {
-    num: '03',
-    title: 'Panel de trabajos + facturas',
-    badge: 'FASE 3',
-    badgeColor: 'gray',
-    problem: '"Quiero un CRM como JobNimbus, con las facturas conectadas."',
-    plain:
-      'Un solo panel que usted abre cada mañana. Cada trabajo es una fila. Cuáles están en estimado, firmados, agendados, en la camioneta hoy, listos para facturar. Hace clic en un trabajo y ve las fotos, el contrato, el estado del pago. La factura se envía sola cuando el trabajo se marca como completado.',
-    math: 'Un CRM como JobNimbus cuesta entre $400 y $800 al mes a su tamaño de equipo. Si lo elimina, son cuatro horas a la semana de papeleo de vuelta. El número real está cerca de $1,500 al mes recuperados.',
-    kills: 'Las suscripciones tipo JobNimbus. El rastro de papel entre correo, mensajes, y el estimador.',
-    ship: 'Seis a ocho semanas. Junta el Sprint 1 y el Sprint 2 en una sola pantalla.',
-    chart: CRM_MMD,
-    idPrefix: 'crm-es',
-  },
-  {
     num: '04',
-    title: 'Sitio web que usted edita',
-    badge: 'FASE 4',
+    title: 'Sitio Web Que Usted Edita',
+    badge: 'SPRINT 4',
     badgeColor: 'gray',
     problem: '"Nadie lo construye como yo lo quiero."',
     plain:
-      'Un sitio limpio, hecho una vez, editado por usted con un editor sencillo. El estimador del Sprint 2 vive en la página principal y captura clientes apenas entran. El formulario de contacto va directo al asistente de correo. Ya no hay que esperar a un contratista para cambiar un título.',
+      'Un sitio limpio, hecho una vez, editado por usted con un editor sencillo. El estimador IA vive en la página principal y captura clientes apenas entran. El formulario de contacto va directo al asistente de correo, que pone el cliente en el CRM. Ya no hay que esperar a un contratista para cambiar un título.',
     math: 'Elimina el gasto recurrente con el contratista de sitios web. La puerta de entrada empieza a convertir visitantes en vez de quedarse quieta.',
     kills: 'El pago recurrente al contratista de sitios web. La diferencia entre lo que usted quiere y lo que recibe.',
-    ship: 'Tres a cuatro semanas, una vez que exista el Sprint 2.',
+    ship: 'Tres a cuatro semanas, una vez que exista el estimador.',
     chart: SITE_MMD,
     idPrefix: 'site-es',
   },
