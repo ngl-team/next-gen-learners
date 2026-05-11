@@ -338,6 +338,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="display:flex;gap:4px">
             <button class="tab active" id="fintab-overview-btn" onclick="switchFinTab('overview')" style="padding:4px 12px;font-size:0.65rem">Overview</button>
             <button class="tab" id="fintab-entries-btn" onclick="switchFinTab('entries')" style="padding:4px 12px;font-size:0.65rem">Entries</button>
+            <button class="tab" id="fintab-breakdowns-btn" onclick="switchFinTab('breakdowns')" style="padding:4px 12px;font-size:0.65rem">Breakdowns</button>
             <button class="tab" id="fintab-upcoming-btn" onclick="switchFinTab('upcoming')" style="padding:4px 12px;font-size:0.65rem">Upcoming</button>
             <button class="tab" id="fintab-subscriptions-btn" onclick="switchFinTab('subscriptions')" style="padding:4px 12px;font-size:0.65rem">Subscriptions</button>
             <button class="tab" id="fintab-reconciliation-btn" onclick="switchFinTab('reconciliation')" style="padding:4px 12px;font-size:0.65rem">Reconciliation <span id="fintabReconBadge" style="display:none;background:var(--red);color:#fff;border-radius:8px;padding:1px 6px;margin-left:4px;font-size:0.55rem"></span></button>
@@ -365,7 +366,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
         <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Revenue</div>
         <div style="font-size:1.4rem;font-weight:800;color:var(--green);margin-top:4px" id="pnlRevenue">$0</div>
       </div>
-      <div class="card" style="padding:16px;text-align:center">
+      <div class="card" id="pnlExpensesCard" style="padding:16px;text-align:center;cursor:help">
         <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Expenses</div>
         <div style="font-size:1.4rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlExpenses">$0</div>
       </div>
@@ -398,6 +399,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div id="pnlChart" style="height:200px;display:flex;align-items:flex-end;gap:2px;margin-top:12px"></div>
       <div id="pnlChartLabels" style="display:flex;gap:2px;margin-top:4px"></div>
     </div>
+
+    </div><!-- /fintab-overview -->
+
+    <!-- ── BREAKDOWNS TAB ── -->
+    <div id="fintab-breakdowns" style="display:none">
 
     <!-- Category breakdowns -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
@@ -443,7 +449,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       </div>
     </div>
 
-    </div><!-- /fintab-overview -->
+    </div><!-- /fintab-breakdowns -->
 
     <!-- ── ENTRIES TAB ── -->
     <div id="fintab-entries" style="display:none">
@@ -1164,6 +1170,8 @@ async function loadPnl(){
       <div class="bar-track"><div class="bar-fill" style="width:${(s.total/maxExp*100).toFixed(0)}%;background:var(--red)"></div></div>
       <div style="width:60px;font-size:0.72rem;color:var(--text-2);text-align:right">$${s.total.toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`).join(''):'<div class="empty">No expenses yet</div>';
 
+    attachExpenseCardHover(expCats, totalExp);
+
     const months={};
     monthly.forEach(m=>{if(!months[m.month])months[m.month]={rev:0,exp:0};if(m.type==='revenue')months[m.month].rev=m.total;else months[m.month].exp=m.total});
     const mKeys=Object.keys(months).sort();
@@ -1380,6 +1388,50 @@ async function deleteSub(id){
   if(!confirm('Delete this subscription? Past logged entries are kept.'))return;
   await fetch(`${API_BASE}/api/subscriptions/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
   loadPnl();
+}
+
+// Hover tooltip on the Expenses (Logged P&L) card: full category breakdown
+function attachExpenseCardHover(expCats, totalExp){
+  let tip=document.getElementById('trendTip');
+  if(!tip){
+    tip=document.createElement('div');
+    tip.id='trendTip';
+    tip.style.cssText='position:fixed;pointer-events:none;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.72rem;color:var(--text);box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:9999;display:none;font-family:inherit;min-width:220px';
+    document.body.appendChild(tip);
+  }
+  const card=document.getElementById('pnlExpensesCard');
+  if(!card)return;
+  // Replace prior listeners by cloning
+  const newCard=card.cloneNode(true);
+  card.parentNode.replaceChild(newCard,card);
+  const fmt=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  newCard.addEventListener('mouseenter',()=>{
+    if(!expCats||!expCats.length){
+      tip.innerHTML='<div style="color:var(--text-3)">No expenses logged for this period.</div>';
+    } else {
+      const sorted=[...expCats].sort((a,b)=>b.total-a.total);
+      const max=Math.max(...sorted.map(s=>s.total),1);
+      tip.innerHTML=`<div style="font-weight:700;margin-bottom:6px;color:var(--red)">Expense Breakdown</div>`+
+        sorted.map(s=>`
+          <div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:0.68rem">
+            <div style="flex:1;min-width:90px">${esc(s.category)}</div>
+            <div style="flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${(s.total/max*100).toFixed(0)}%;background:var(--red)"></div>
+            </div>
+            <div style="min-width:62px;text-align:right;color:var(--text-2)">${fmt(s.total)}</div>
+          </div>`).join('')+
+        `<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:4px;font-weight:700;display:flex;justify-content:space-between"><span>Total</span><span style="color:var(--red)">${fmt(totalExp)}</span></div>`;
+    }
+    tip.style.display='block';
+  });
+  newCard.addEventListener('mousemove',e=>{
+    const w=tip.offsetWidth, h=tip.offsetHeight;
+    let x=e.clientX+12, y=e.clientY+12;
+    if(x+w>window.innerWidth-8)x=e.clientX-w-12;
+    if(y+h>window.innerHeight-8)y=e.clientY-h-12;
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  });
+  newCard.addEventListener('mouseleave',()=>{tip.style.display='none'});
 }
 
 // Hover tooltip for monthly trend bars
@@ -1877,7 +1929,7 @@ let _relFilter='all';
 let _finTab='overview';
 function switchFinTab(t){
   _finTab=t;
-  ['overview','entries','upcoming','subscriptions','reconciliation'].forEach(name=>{
+  ['overview','entries','breakdowns','upcoming','subscriptions','reconciliation'].forEach(name=>{
     const btn=document.getElementById('fintab-'+name+'-btn');
     const panel=document.getElementById('fintab-'+name);
     if(btn)btn.classList.toggle('active',name===t);
