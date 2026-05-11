@@ -39,9 +39,18 @@ export default function Mermaid({ chart, idPrefix }: { chart: string; idPrefix: 
         securityLevel: 'loose',
         themeVariables: {
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",
-          fontSize: '14px',
+          fontSize: '16px',
         },
-        flowchart: { htmlLabels: true, curve: 'basis', useMaxWidth: true },
+        flowchart: {
+          htmlLabels: true,
+          curve: 'basis',
+          useMaxWidth: false,
+          nodeSpacing: 70,
+          rankSpacing: 100,
+          diagramPadding: 32,
+          padding: 24,
+          subGraphTitleMargin: { top: 12, bottom: 16 },
+        },
       });
       const id = `${idPrefix}-${Math.random().toString(36).slice(2, 8)}`;
       try {
@@ -68,8 +77,9 @@ export default function Mermaid({ chart, idPrefix }: { chart: string; idPrefix: 
         background: '#FFFFFF',
         border: '1px solid rgba(15,23,42,0.10)',
         borderRadius: 16,
-        padding: 28,
+        padding: 40,
         overflowX: 'auto',
+        WebkitOverflowScrolling: 'touch',
       }}
     />
   );

@@ -246,11 +246,11 @@ export default function WoosterPage() {
         .ws-display { font-family: 'Fraunces', 'Times New Roman', serif; font-weight: 400; letter-spacing: -0.03em; }
         .ws-display-italic { font-family: 'Fraunces', 'Times New Roman', serif; font-style: italic; font-weight: 300; letter-spacing: -0.025em; }
         .ws-eyebrow { font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 500; color: var(--ws-ink-faint); }
-        .ws-section { max-width: 1140px; margin: 0 auto; padding: 80px 28px; }
-        .ws-section-tight { max-width: 1140px; margin: 0 auto; padding: 48px 28px; }
+        .ws-section { max-width: 1180px; margin: 0 auto; padding: 112px 32px; }
+        .ws-section-tight { max-width: 1180px; margin: 0 auto; padding: 72px 32px; }
         .ws-rule { display: block; height: 1px; background: var(--ws-line); border: 0; }
         .ws-card {
-          background: #FFFFFF; border: 1px solid var(--ws-line); border-radius: 16px; padding: 28px;
+          background: #FFFFFF; border: 1px solid var(--ws-line); border-radius: 18px; padding: 36px;
           transition: border-color 240ms ease, box-shadow 240ms ease, transform 240ms ease;
         }
         .ws-card:hover { border-color: var(--ws-line-strong); box-shadow: 0 20px 36px -22px rgba(15,23,42,0.18); transform: translateY(-2px); }
@@ -276,8 +276,10 @@ export default function WoosterPage() {
         .ws-link { color: var(--ws-ink); text-decoration: underline; text-decoration-color: rgba(15,23,42,0.25); text-underline-offset: 3px; }
         .ws-link:hover { color: var(--ws-navy-deep); text-decoration-color: var(--ws-navy-deep); }
         @media (max-width: 880px) {
-          .ws-section { padding: 56px 22px !important; }
-          .ws-hero-grid { grid-template-columns: 1fr !important; }
+          .ws-section { padding: 72px 22px !important; }
+          .ws-section-tight { padding: 48px 22px !important; }
+          .ws-card { padding: 28px !important; }
+          .ws-hero-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
         }
       `}</style>
 
@@ -297,7 +299,7 @@ export default function WoosterPage() {
             pointerEvents: 'none',
           }}
         />
-        <div style={{ position: 'relative', maxWidth: 1180, margin: '0 auto', padding: '112px 28px 64px' }}>
+        <div style={{ position: 'relative', maxWidth: 1180, margin: '0 auto', padding: '140px 32px 96px' }}>
           <div
             style={{
               display: 'inline-flex',
@@ -395,7 +397,7 @@ export default function WoosterPage() {
           The framework brief from our conversation. Six asks, one outstanding offer of data, and one downstream
           introduction. Everything below is built around these.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
           {MARCH_ASKS.map((a) => (
             <div key={a.id} className="ws-card">
               <span className="ws-code">{a.id}</span>
@@ -461,7 +463,7 @@ export default function WoosterPage() {
           weeks, demoable today on your public voice corpus. Total leverage if all three ship: 18 to 22 hours per week
           back to your office.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
           {TIER1.map((t) => (
             <div key={t.code} className="ws-card" style={{ height: '100%' }}>
               <span className="ws-code">{t.code}</span>
@@ -517,7 +519,7 @@ export default function WoosterPage() {
           Three institutional agents scoped together in June with Pannone, Bazemore, and the Head&apos;s office. Built
           July through August. Live for the September required-integration rollout. Pay-per-school per your March ask.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 28 }}>
           {TIER2.map((t) => (
             <div key={t.code} className="ws-card" style={{ height: '100%' }}>
               <span
@@ -604,7 +606,7 @@ export default function WoosterPage() {
           The four enduring principles Wooster has carried since 1926 are the same four design constraints on this
           framework. The architecture is engineered to reflect them.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
           {PRINCIPLES.map((p) => (
             <div key={p.name} className="ws-card">
               <div
@@ -646,7 +648,7 @@ export default function WoosterPage() {
           The data from what we&apos;ve already seen, per the offer made in March. Practitioner evidence from the field
           since our March 17 conversation.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 28 }}>
           {RECEIPTS.map((r) => (
             <div key={r.source} className="ws-card">
               <div
