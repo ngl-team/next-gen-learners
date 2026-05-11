@@ -396,6 +396,20 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div id="finSubs" style="margin-top:6px"></div>
     </div>
 
+    <!-- Reconciliation -->
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="card-title" style="margin:0">Reconciliation</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="reconSummary" style="font-size:0.66rem;color:var(--text-3)"></span>
+          <button class="btn" onclick="loadPnl()" style="font-size:0.62rem;padding:4px 10px">Re-check</button>
+          <button class="btn primary" onclick="autoFixAll()" id="reconFixBtn" style="font-size:0.62rem;padding:4px 10px;display:none">Fix All</button>
+        </div>
+      </div>
+      <div style="font-size:0.6rem;color:var(--text-3);margin-bottom:8px">Checks each active subscription has correct past entries (date + amount). Upcoming Payments are derived from subscriptions, so they always match.</div>
+      <div id="reconList" style="margin-top:8px"></div>
+    </div>
+
     <!-- Monthly trend -->
     <div class="card" style="margin-top:12px;padding:20px">
       <div class="card-title">Monthly Trend</div>
@@ -1092,6 +1106,13 @@ async function loadPnl(){
       </div>
     `).join(''):'<div class="empty">No subscriptions tracked. Click "+ Add" to start.</div>';
 
+    // Reconciliation: subscriptions vs logged entries (best done over ALL entries, not period-filtered)
+    let allEntries=entries;
+    if(getPnlDateRange().from!=='2020-01-01'){
+      allEntries=await fetch(`${API_BASE}/api/pnl?from=2020-01-01&to=${new Date().toISOString().split('T')[0]}`).then(r=>r.json());
+    }
+    buildReconciliation(subs,allEntries);
+
     let totalRev=0,totalExp=0;
     summary.forEach(s=>{if(s.type==='revenue')totalRev+=s.total;else totalExp+=s.total});
     const net=totalRev-totalExp;
@@ -1366,6 +1387,200 @@ function attachTrendHover(){
     });
     el.addEventListener('mouseleave',()=>{tip.style.display='none'});
   });
+}
+
+// All expected billing dates for a subscription from start_date through today
+function expectedPastDates(sub){
+  const out=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const start=new Date(sub.start_date);
+  const end=sub.end_date?new Date(sub.end_date):today;
+  let y=start.getFullYear(),m=start.getMonth();
+  for(let i=0;i<240;i++){ // hard cap 20yrs
+    const lastDay=new Date(y,m+1,0).getDate();
+    const day=Math.min(sub.day_of_month||1,lastDay);
+    const d=new Date(y,m,day);
+    if(d>today) break;
+    if(d>=start && d<=end) out.push(d);
+    m++;if(m>11){m=0;y++}
+  }
+  return out;
+}
+
+function fmtDate(d){return d.toISOString().split('T')[0]}
+
+// Pending auto-fix actions accumulated during reconciliation
+let _reconFixes=[];
+
+function buildReconciliation(subs, entries){
+  _reconFixes=[];
+  const today=new Date();today.setHours(0,0,0,0);
+  const rows=[];
+  let totalIssues=0;
+  const activeSubs=(subs||[]).filter(s=>s.active==1);
+  // Track which entries got matched (to detect orphans below)
+  const matchedEntryIds=new Set();
+
+  for(const sub of activeSubs){
+    const expected=expectedPastDates(sub);
+    const candidates=entries.filter(e=>e.description===sub.description && e.type===sub.type);
+    const checks=[];
+    for(const ed of expected){
+      const edStr=fmtDate(ed);
+      // exact-date match preferred, then ±3 day fuzzy
+      let match=candidates.find(c=>c.date===edStr && !matchedEntryIds.has(c.id));
+      if(!match){
+        match=candidates.find(c=>{
+          if(matchedEntryIds.has(c.id))return false;
+          const diff=Math.abs((new Date(c.date)-ed)/(1000*60*60*24));
+          return diff<=3;
+        });
+      }
+      if(!match){
+        checks.push({status:'missing',expected:edStr,expectedAmount:sub.amount});
+        _reconFixes.push({kind:'log',sub,date:edStr});
+        totalIssues++;
+      } else {
+        matchedEntryIds.add(match.id);
+        const amtOk=Math.abs(Number(match.amount)-Number(sub.amount))<0.005;
+        const dateOk=match.date===edStr;
+        if(amtOk && dateOk){
+          checks.push({status:'ok',expected:edStr,entry:match});
+        } else {
+          checks.push({status:'mismatch',expected:edStr,expectedAmount:sub.amount,entry:match,amtOk,dateOk});
+          _reconFixes.push({kind:'fix',sub,date:edStr,entry:match});
+          totalIssues++;
+        }
+      }
+    }
+    // Orphan candidates: entries with this description that didn't match any expected date
+    const orphans=candidates.filter(c=>!matchedEntryIds.has(c.id));
+    for(const o of orphans){
+      checks.push({status:'orphan',entry:o});
+      totalIssues++;
+    }
+    rows.push({sub,checks});
+  }
+
+  // Render
+  const summaryEl=document.getElementById('reconSummary');
+  const fixBtn=document.getElementById('reconFixBtn');
+  if(totalIssues===0){
+    summaryEl.textContent='All clean';
+    summaryEl.style.color='var(--green)';
+    fixBtn.style.display='none';
+  } else {
+    summaryEl.textContent=totalIssues+' issue'+(totalIssues===1?'':'s');
+    summaryEl.style.color='var(--red)';
+    const autoFixable=_reconFixes.length;
+    fixBtn.style.display=autoFixable?'inline-block':'none';
+    fixBtn.textContent='Fix All ('+autoFixable+')';
+  }
+
+  document.getElementById('reconList').innerHTML=rows.length?rows.map(r=>{
+    const s=r.sub;
+    const issues=r.checks.filter(c=>c.status!=='ok').length;
+    const head=`<div style="display:flex;align-items:center;gap:10px;font-size:0.78rem;font-weight:700;padding:8px 0;border-top:1px solid var(--border)">
+      <div style="width:14px">${s.type==='revenue'?'↑':'↓'}</div>
+      <div style="flex:1">${esc(s.description||s.category)} <span style="color:var(--text-3);font-size:0.62rem;font-weight:500">day ${s.day_of_month||1} · $${Number(s.amount).toFixed(2)}/mo</span></div>
+      <div style="font-size:0.66rem;color:${issues?'var(--red)':'var(--green)'};font-weight:700">${issues?issues+' issue'+(issues===1?'':'s'):'✓ clean'}</div>
+    </div>`;
+    const body=r.checks.map(c=>{
+      if(c.status==='ok'){
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 22px;font-size:0.7rem;color:var(--text-3)">
+          <span style="color:var(--green)">✓</span>
+          <span>${c.expected}</span>
+          <span>matched · $${Number(c.entry.amount).toFixed(2)}</span>
+        </div>`;
+      }
+      if(c.status==='missing'){
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 22px;font-size:0.7rem;color:var(--red)">
+          <span>⚠</span>
+          <span>${c.expected}</span>
+          <span style="color:var(--text-2)">missing — expected $${Number(c.expectedAmount).toFixed(2)}</span>
+          <button class="btn" style="font-size:0.6rem;padding:2px 8px;margin-left:auto" onclick='reconLogMissing(${JSON.stringify(s).replace(/'/g,"&apos;")},${JSON.stringify(c.expected).replace(/'/g,"&apos;")})'>Log it</button>
+        </div>`;
+      }
+      if(c.status==='mismatch'){
+        const issues=[];
+        if(!c.amtOk)issues.push(`amount $${Number(c.entry.amount).toFixed(2)} → should be $${Number(c.expectedAmount).toFixed(2)}`);
+        if(!c.dateOk)issues.push(`date ${c.entry.date} → should be ${c.expected}`);
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 22px;font-size:0.7rem;color:var(--red)">
+          <span>⚠</span>
+          <span>${c.expected}</span>
+          <span style="color:var(--text-2)">${issues.join(' · ')}</span>
+          <button class="btn" style="font-size:0.6rem;padding:2px 8px;margin-left:auto" onclick='reconFixMismatch(${c.entry.id},${JSON.stringify(s).replace(/'/g,"&apos;")},${JSON.stringify(c.expected).replace(/'/g,"&apos;")})'>Fix</button>
+        </div>`;
+      }
+      if(c.status==='orphan'){
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0 4px 22px;font-size:0.7rem;color:var(--red)">
+          <span>⚠</span>
+          <span>${c.entry.date}</span>
+          <span style="color:var(--text-2)">unexpected entry · $${Number(c.entry.amount).toFixed(2)} — no matching billing cycle</span>
+          <button class="btn" style="font-size:0.6rem;padding:2px 8px;margin-left:auto" onclick="editPnl(${c.entry.id})">Edit</button>
+        </div>`;
+      }
+      return '';
+    }).join('');
+    return head+body;
+  }).join(''):'<div class="empty" style="font-size:0.72rem">No active subscriptions to reconcile.</div>';
+}
+
+async function reconLogMissing(sub, date){
+  const body={
+    date,
+    type:sub.type,
+    category:sub.category,
+    description:sub.description,
+    amount:sub.amount,
+    person:sub.person||'',
+    account:sub.account||'',
+    payment_method:sub.payment_method||'',
+    _actor:getCurrentUser(),
+  };
+  await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  loadPnl();
+}
+
+async function reconFixMismatch(entryId, sub, expectedDate){
+  const body={
+    date:expectedDate,
+    type:sub.type,
+    category:sub.category,
+    description:sub.description,
+    amount:sub.amount,
+    person:sub.person||'',
+    account:sub.account||'',
+    payment_method:sub.payment_method||'',
+    _actor:getCurrentUser(),
+  };
+  await fetch(`${API_BASE}/api/pnl/${entryId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  loadPnl();
+}
+
+async function autoFixAll(){
+  if(!_reconFixes.length){return}
+  if(!confirm(`Apply ${_reconFixes.length} fix${_reconFixes.length===1?'':'es'}? This will log missing entries and correct amount/date mismatches.`))return;
+  for(const f of _reconFixes){
+    const sub=f.sub;
+    const body={
+      date:f.date,
+      type:sub.type,
+      category:sub.category,
+      description:sub.description,
+      amount:sub.amount,
+      person:sub.person||'',
+      account:sub.account||'',
+      payment_method:sub.payment_method||'',
+      _actor:getCurrentUser(),
+    };
+    if(f.kind==='log'){
+      await fetch(`${API_BASE}/api/pnl`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    } else if(f.kind==='fix'){
+      await fetch(`${API_BASE}/api/pnl/${f.entry.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    }
+  }
+  loadPnl();
 }
 
 // Compute next N billing dates for a subscription within [today, today+days]
