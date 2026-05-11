@@ -149,6 +149,8 @@ export async function initDb() {
   // Finance migrations
   try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN account TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN payment_method TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN reimbursable INTEGER DEFAULT 0"); } catch {}
+  try { await db.execute("ALTER TABLE pnl_entries ADD COLUMN reimbursed_at TEXT DEFAULT NULL"); } catch {}
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS recurring_subscriptions (
@@ -322,15 +324,15 @@ export async function getPnlMonthly() {
   return r.rows;
 }
 
-export async function insertPnlEntry(data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string }) {
+export async function insertPnlEntry(data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string; reimbursable?: number; reimbursed_at?: string | null }) {
   await initDb();
-  const r = await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person,account,payment_method) VALUES (?,?,?,?,?,?,?,?)', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || ''] });
+  const r = await db.execute({ sql: 'INSERT INTO pnl_entries (date,type,category,description,amount,person,account,payment_method,reimbursable,reimbursed_at) VALUES (?,?,?,?,?,?,?,?,?,?)', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || '', data.reimbursable ? 1 : 0, data.reimbursed_at || null] });
   return r.lastInsertRowid;
 }
 
-export async function updatePnlEntry(id: number, data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string }) {
+export async function updatePnlEntry(id: number, data: { date: string; type: string; category: string; description: string; amount: number; person: string; account?: string; payment_method?: string; reimbursable?: number; reimbursed_at?: string | null }) {
   await initDb();
-  await db.execute({ sql: 'UPDATE pnl_entries SET date=?, type=?, category=?, description=?, amount=?, person=?, account=?, payment_method=? WHERE id=?', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || '', id] });
+  await db.execute({ sql: 'UPDATE pnl_entries SET date=?, type=?, category=?, description=?, amount=?, person=?, account=?, payment_method=?, reimbursable=?, reimbursed_at=? WHERE id=?', args: [data.date, data.type, data.category, data.description, data.amount, data.person, data.account || '', data.payment_method || '', data.reimbursable ? 1 : 0, data.reimbursed_at || null, id] });
 }
 
 export async function deletePnlEntry(id: number) {
