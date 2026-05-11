@@ -101,6 +101,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
     <button class="tab" onclick="switchTab('notes')">Notes</button>
     <button class="tab" onclick="switchTab('deals')">Deals</button>
+    <button class="tab" onclick="switchTab('todos')">Todos</button>
   </div>
   <select id="currentUser" onchange="setCurrentUser(this.value)" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer">
     <option value="ryan">Ryan</option>
@@ -854,6 +855,59 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   <div id="dealsBoard" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;overflow-x:auto;min-height:400px"></div>
 </div>
 
+<!-- TO DO -->
+<div class="view" id="view-todos">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div>
+      <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:2px">To Do</h2>
+      <div style="font-size:.68rem;color:var(--text-3)">Shared list for Brayan and Ryan. Synced with Command Center.</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn primary" id="todosFilterAll" onclick="filterTodos('all')" style="font-size:.65rem">All</button>
+      <button class="btn" id="todosFilterBrayan" onclick="filterTodos('brayan')" style="font-size:.65rem">Brayan</button>
+      <button class="btn" id="todosFilterRyan" onclick="filterTodos('ryan')" style="font-size:.65rem">Ryan</button>
+      <button class="btn" id="todosFilterEither" onclick="filterTodos('either')" style="font-size:.65rem">Either</button>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px 16px;margin-bottom:16px">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input id="todoTitle" placeholder="What needs to happen?" onkeydown="if(event.key==='Enter')addTodo()" style="flex:1;min-width:240px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.78rem" />
+      <select id="todoOwner" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem">
+        <option value="either">Either</option>
+        <option value="brayan">Brayan</option>
+        <option value="ryan">Ryan</option>
+      </select>
+      <button class="btn primary" onclick="addTodo()" style="font-size:.7rem;padding:8px 16px">+ Add</button>
+    </div>
+    <input id="todoNotes" placeholder="Notes (optional)" style="width:100%;margin-top:8px;padding:7px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem" />
+  </div>
+
+  <div id="todosCounts" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px"></div>
+  <div id="todosList"></div>
+</div>
+
+<style>
+.todo-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;transition:all .15s}
+.todo-row:hover{border-color:var(--border-2);background:var(--surface-2)}
+.todo-row.done{opacity:.55}
+.todo-row.done .todo-title-text{text-decoration:line-through;color:var(--text-3)}
+.todo-check{width:18px;height:18px;border:1.5px solid var(--border-2);border-radius:5px;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);transition:all .15s}
+.todo-check:hover{border-color:var(--primary)}
+.todo-check.checked{background:var(--primary);border-color:var(--primary)}
+.todo-check.checked::after{content:"✓";color:#fff;font-size:.78rem;font-weight:700}
+.todo-body{flex:1;min-width:0}
+.todo-title-text{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.4;word-break:break-word}
+.todo-notes{font-size:.7rem;color:var(--text-3);margin-top:4px;line-height:1.4;word-break:break-word}
+.todo-meta{display:flex;gap:10px;align-items:center;margin-top:6px;font-size:.6rem;color:var(--text-3);letter-spacing:.04em}
+.todo-owner-pill{padding:2px 8px;border-radius:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.55rem}
+.todo-owner-pill.brayan{background:rgba(16,185,129,.12);color:#10B981}
+.todo-owner-pill.ryan{background:rgba(79,70,229,.12);color:#6366F1}
+.todo-owner-pill.either{background:rgba(148,163,184,.15);color:#94A3B8}
+.todo-delete{background:transparent;border:none;color:var(--text-3);font-size:1rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:all .15s;flex-shrink:0}
+.todo-delete:hover{background:rgba(220,38,38,.1);color:#dc2626}
+</style>
+
 <!-- Deal modal -->
 <div class="modal-overlay" id="dealModal">
   <div class="modal" style="max-width:480px">
@@ -969,11 +1023,12 @@ function switchTab(t){
   if(t==='research')loadResearch();
   if(t==='notes')loadNotes();
   if(t==='deals')loadDeals();
+  if(t==='todos')loadTodos();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','dashboard','research','audit','notes','scanner','deals'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','dashboard','research','audit','notes','scanner','deals','todos'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -3091,6 +3146,114 @@ function restoreArchivedDeals(){
   if(!confirm(`Restore ${n} archived deal${n>1?'s':''}? They will reappear on next load.`))return;
   saveArchivedDealIds([]);
   loadDeals();
+}
+
+// ── TO DO ───────────────────────────────────────────────────────────────────
+let _todos=[];
+let _todosFilter='all';
+
+async function loadTodos(){
+  try{
+    const r=await fetch('/api/todos');
+    const d=await r.json();
+    if(d.error){document.getElementById('todosList').innerHTML='<div style="padding:18px;text-align:center;color:var(--text-3);font-size:.75rem">'+esc(d.error)+'</div>';return}
+    _todos=d.todos||[];
+    renderTodoCounts(d.counts||{});
+    renderTodos();
+  }catch(e){console.error(e)}
+}
+
+function renderTodoCounts(c){
+  const open=(c.brayan||0)+(c.ryan||0)+(c.either||0);
+  const cells=[
+    {label:'Open',value:open,color:'var(--primary)'},
+    {label:'Brayan',value:c.brayan||0,color:'#10B981'},
+    {label:'Ryan',value:c.ryan||0,color:'#6366F1'},
+    {label:'Either',value:c.either||0,color:'#94A3B8'},
+  ];
+  document.getElementById('todosCounts').innerHTML=cells.map(x=>`
+    <div class="card" style="padding:12px;text-align:center;margin:0">
+      <div style="font-size:1.2rem;font-weight:800;color:${x.color}">${x.value}</div>
+      <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">${x.label}</div>
+    </div>`).join('');
+}
+
+function filterTodos(f){
+  _todosFilter=f;
+  ['All','Brayan','Ryan','Either'].forEach(name=>{
+    const btn=document.getElementById('todosFilter'+name);
+    if(btn)btn.classList.toggle('primary',name.toLowerCase()===f);
+  });
+  renderTodos();
+}
+
+function renderTodos(){
+  const list=document.getElementById('todosList');
+  let rows=_todos.slice();
+  if(_todosFilter!=='all')rows=rows.filter(t=>t.owner===_todosFilter);
+  rows.sort((a,b)=>{
+    if(a.status!==b.status)return a.status==='done'?1:-1;
+    return (b.id||0)-(a.id||0);
+  });
+  if(!rows.length){
+    list.innerHTML='<div style="padding:32px;text-align:center;color:var(--text-3);font-size:.75rem;border:1px dashed var(--border);border-radius:10px">Nothing here yet. Add the first todo above.</div>';
+    return;
+  }
+  list.innerHTML=rows.map(t=>{
+    const owner=t.owner||'either';
+    const done=t.status==='done';
+    return `
+      <div class="todo-row ${done?'done':''}" data-id="${t.id}">
+        <div class="todo-check ${done?'checked':''}" onclick="toggleTodo(${t.id}, '${done?'open':'done'}')"></div>
+        <div class="todo-body">
+          <div class="todo-title-text">${esc(t.title||'')}</div>
+          ${t.notes?`<div class="todo-notes">${esc(t.notes)}</div>`:''}
+          <div class="todo-meta">
+            <span class="todo-owner-pill ${owner}">${owner}</span>
+            ${t.created_by?`<span>added by ${esc(t.created_by)}</span>`:''}
+          </div>
+        </div>
+        <button class="todo-delete" onclick="deleteTodo(${t.id})" title="Delete">&times;</button>
+      </div>`;
+  }).join('');
+}
+
+async function addTodo(){
+  const titleEl=document.getElementById('todoTitle');
+  const notesEl=document.getElementById('todoNotes');
+  const ownerEl=document.getElementById('todoOwner');
+  const title=titleEl.value.trim();
+  if(!title)return;
+  try{
+    const r=await fetch('/api/todos',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({title,notes:notesEl.value.trim(),owner:ownerEl.value,created_by:getCurrentUser()}),
+    });
+    const d=await r.json();
+    if(d.error){alert(d.error);return}
+    titleEl.value='';notesEl.value='';
+    loadTodos();
+  }catch(e){console.error(e)}
+}
+
+async function toggleTodo(id,nextStatus){
+  try{
+    await fetch('/api/todos/'+id,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({status:nextStatus}),
+    });
+    loadTodos();
+  }catch(e){console.error(e)}
+}
+
+async function deleteTodo(id){
+  if(!confirm('Delete this todo?'))return;
+  try{
+    await fetch('/api/todos/'+id,{method:'DELETE'});
+    loadTodos();
+  }catch(e){console.error(e)}
 }
 </script>
 </body>
