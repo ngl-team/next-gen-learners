@@ -73,19 +73,35 @@ const ESTIMATOR_MMD = `flowchart LR
   class F,G out`;
 
 const CRM_MMD = `flowchart TD
-  A["Lead source<br/>phone / web / referral"] --> B["Job record created"]
-  B --> C["Estimate generated<br/>from AI Estimator"]
-  C --> D["Contract signed"]
-  D --> E["Schedule +<br/>crew assigned"]
-  E --> F["Install photos<br/>+ checklist"]
-  F --> G["Auto-invoice fires"]
-  G --> H["Payment in<br/>QuickBooks sync"]
+  A["Lead source<br/>phone / web / referral"] --> Q{"Service type"}
+  subgraph ROOF ["Roofing tab"]
+    direction TB
+    R1["Roofing job created"] --> R2["Estimate generated<br/>from AI Estimator"]
+    R2 --> R3["Contract signed"]
+    R3 --> R4["Schedule +<br/>crew assigned"]
+    R4 --> R5["Install photos<br/>+ checklist"]
+    R5 --> R6["Auto-invoice fires"]
+  end
+  subgraph SOLAR ["Solar tab"]
+    direction TB
+    S1["Solar job created"] --> S2["Estimate generated<br/>from AI Estimator"]
+    S2 --> S3["Contract signed"]
+    S3 --> S4["Schedule +<br/>crew assigned"]
+    S4 --> S5["Install photos<br/>+ checklist"]
+    S5 --> S6["Auto-invoice fires"]
+  end
+  Q -->|Roofing| R1
+  Q -->|Solar| S1
+  R6 --> H["Payment in<br/>QuickBooks sync"]
+  S6 --> H
   classDef in fill:#dbeafe,stroke:#1e3a8a,color:#000
   classDef ai fill:#22c55e,stroke:#15803d,color:#fff
   classDef out fill:#fef3c7,stroke:#92400e,color:#000
-  class A,D,F in
-  class B,C,E,G ai
-  class H out`;
+  classDef branch fill:#fde68a,stroke:#92400e,color:#000
+  class A,R3,R5,S3,S5 in
+  class R1,R2,R4,R6,S1,S2,S4,S6 ai
+  class H out
+  class Q branch`;
 
 const SITE_MMD = `flowchart LR
   A["You edit<br/>content"] --> B["Simple visual editor"]
