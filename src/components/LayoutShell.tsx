@@ -11,7 +11,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const isDh = pathname.startsWith('/danburyhackerspace');
   const isNelson = pathname.startsWith('/nelson');
   const isUsb = pathname.startsWith('/usb');
-  const hide = isGame || isSuperintendent || isTransfer || isDh || isNelson || isUsb;
+  const isWooster = pathname.startsWith('/wooster');
+  const hide = isGame || isSuperintendent || isTransfer || isDh || isNelson || isUsb || isWooster;
 
   return (
     <>
