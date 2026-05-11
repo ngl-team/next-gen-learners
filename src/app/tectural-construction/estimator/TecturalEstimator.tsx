@@ -26,6 +26,12 @@ type GeoResult = {
 type Box = { x: number; y: number; w: number; h: number };
 type Stage = 'idle' | 'scanning' | 'results' | 'leadForm' | 'confirmed';
 
+type Suggestion = {
+  display: string;
+  lat: number;
+  lon: number;
+};
+
 function lng2tileFloat(lng: number, z: number) {
   return ((lng + 180) / 360) * Math.pow(2, z);
 }
@@ -54,10 +60,93 @@ export default function TecturalEstimator() {
   const [lead, setLead] = useState({ name: '', email: '', phone: '' });
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
   const [box, setBox] = useState<Box>({ x: 0, y: 0, w: 0, h: 0 });
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlight, setHighlight] = useState(-1);
+  const pickedAddressRef = useRef<string | null>(null);
+  const pickedGeoRef = useRef<GeoResult | null>(null);
 
   const handleSize = useCallback((w: number, h: number) => {
     setContainerSize((prev) => (prev.w === w && prev.h === h ? prev : { w, h }));
   }, []);
+
+  useEffect(() => {
+    if (stage !== 'idle') return;
+    if (address.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    if (pickedAddressRef.current === address) return;
+    const t = window.setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({
+          q: address,
+          limit: '5',
+          lang: 'en',
+          lat: '41.4',
+          lon: '-73.3',
+        });
+        const r = await fetch(`https://photon.komoot.io/api/?${params.toString()}`);
+        const data = await r.json();
+        type PhotonFeature = {
+          geometry: { coordinates: [number, number] };
+          properties: {
+            name?: string;
+            housenumber?: string;
+            street?: string;
+            city?: string;
+            county?: string;
+            state?: string;
+            postcode?: string;
+            country?: string;
+          };
+        };
+        const items: Suggestion[] = ((data.features as PhotonFeature[]) || []).map((f) => {
+          const p = f.properties;
+          const line1 =
+            p.housenumber && p.street
+              ? `${p.housenumber} ${p.street}`
+              : p.street || p.name || '';
+          const parts = [line1, p.city || p.county, p.state, p.postcode].filter(Boolean);
+          return {
+            display: parts.join(', '),
+            lat: f.geometry.coordinates[1],
+            lon: f.geometry.coordinates[0],
+          };
+        });
+        setSuggestions(items);
+        setShowSuggestions(true);
+        setHighlight(-1);
+      } catch {
+        setSuggestions([]);
+      }
+    }, 220);
+    return () => window.clearTimeout(t);
+  }, [address, stage]);
+
+  function pickSuggestion(s: Suggestion) {
+    pickedAddressRef.current = s.display;
+    pickedGeoRef.current = { lat: s.lat, lon: s.lon, display_name: s.display };
+    setAddress(s.display);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
+
+  function onAddressKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlight((h) => (h + 1) % suggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlight((h) => (h - 1 + suggestions.length) % suggestions.length);
+    } else if (e.key === 'Enter' && highlight >= 0) {
+      e.preventDefault();
+      pickSuggestion(suggestions[highlight]);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  }
 
   const pricePerSqFt =
     material === 'architectural'
@@ -123,8 +212,14 @@ export default function TecturalEstimator() {
     e.preventDefault();
     if (!address.trim()) return;
     setError(null);
+    setShowSuggestions(false);
     setStage('scanning');
     setScanProgress(0);
+
+    if (pickedGeoRef.current && pickedAddressRef.current === address) {
+      setGeo(pickedGeoRef.current);
+      return;
+    }
 
     try {
       const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`;
@@ -150,6 +245,10 @@ export default function TecturalEstimator() {
     setLead({ name: '', email: '', phone: '' });
     setError(null);
     setBox({ x: 0, y: 0, w: 0, h: 0 });
+    setSuggestions([]);
+    setShowSuggestions(false);
+    pickedAddressRef.current = null;
+    pickedGeoRef.current = null;
   }
 
   function submitLead(e: React.FormEvent) {
@@ -224,25 +323,94 @@ export default function TecturalEstimator() {
             </p>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <input
-                type="text"
-                placeholder="123 Main St, Danbury, CT"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-                style={{
-                  width: '100%',
-                  padding: '18px 20px',
-                  fontSize: 17,
-                  borderRadius: 12,
-                  border: '1px solid rgba(255,255,255,0.16)',
-                  background: 'rgba(255,255,255,0.04)',
-                  color: '#fff',
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  boxSizing: 'border-box',
-                }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  placeholder="Start typing your address..."
+                  value={address}
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                    if (pickedAddressRef.current !== e.target.value) {
+                      pickedAddressRef.current = null;
+                      pickedGeoRef.current = null;
+                    }
+                  }}
+                  onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                  onBlur={() => window.setTimeout(() => setShowSuggestions(false), 150)}
+                  onKeyDown={onAddressKeyDown}
+                  autoComplete="off"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '18px 20px',
+                    fontSize: 17,
+                    borderRadius: 12,
+                    border: '1px solid rgba(255,255,255,0.16)',
+                    background: 'rgba(255,255,255,0.04)',
+                    color: '#fff',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <ul
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 6px)',
+                      left: 0,
+                      right: 0,
+                      margin: 0,
+                      padding: 6,
+                      listStyle: 'none',
+                      background: '#1e293b',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: 12,
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.45)',
+                      zIndex: 10,
+                      maxHeight: 320,
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {suggestions.map((s, i) => {
+                      const active = i === highlight;
+                      return (
+                        <li key={`${s.lat}-${s.lon}-${i}`}>
+                          <button
+                            type="button"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              pickSuggestion(s);
+                            }}
+                            onMouseEnter={() => setHighlight(i)}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 12,
+                              width: '100%',
+                              textAlign: 'left',
+                              padding: '12px 14px',
+                              borderRadius: 8,
+                              border: 'none',
+                              background: active ? 'rgba(21,128,61,0.22)' : 'transparent',
+                              color: '#f1f5f9',
+                              cursor: 'pointer',
+                              fontFamily: 'inherit',
+                              fontSize: 14,
+                              lineHeight: 1.35,
+                            }}
+                          >
+                            <span style={{ color: '#86efac', fontSize: 16, lineHeight: 1 }} aria-hidden>
+                              ◉
+                            </span>
+                            <span>{s.display}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
               <button
                 type="submit"
                 style={{
