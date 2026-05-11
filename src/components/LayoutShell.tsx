@@ -8,12 +8,10 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const isGame = pathname.startsWith('/games');
   const isSuperintendent = pathname.startsWith('/superintendent');
   const isTransfer = pathname.startsWith('/transfer');
-  const isNst = pathname.startsWith('/NST') || pathname.startsWith('/nst');
   const isDh = pathname.startsWith('/danburyhackerspace');
   const isNelson = pathname.startsWith('/nelson');
   const isUsb = pathname.startsWith('/usb');
-  const isAqm = pathname.startsWith('/aqm');
-  const hide = isGame || isSuperintendent || isTransfer || isNst || isDh || isNelson || isUsb || isAqm;
+  const hide = isGame || isSuperintendent || isTransfer || isDh || isNelson || isUsb;
 
   return (
     <>
