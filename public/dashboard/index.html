@@ -98,11 +98,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 <div class="topbar">
   <div class="topbar-title" onclick="switchTab('dashboard')">NGL</div>
   <div class="tabs">
-    <button class="tab" onclick="switchTab('crm')">CRM</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
-    <button class="tab" onclick="switchTab('research')">Research</button>
-    <button class="tab" onclick="switchTab('audit')">Audit</button>
-    <button class="tab" onclick="switchTab('scanner')">Business Scanner</button>
     <button class="tab" onclick="switchTab('notes')">Notes</button>
     <button class="tab" onclick="switchTab('deals')">Deals</button>
   </div>
@@ -438,6 +434,26 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div class="card" style="padding:16px">
         <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:10px;font-weight:700">By Payment Method</div>
         <div id="pnlMethodBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- Brayan vs Ryan expense split (excludes Stripe Fees) -->
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin:0">Expenses by Person</div>
+        <div style="font-size:0.6rem;color:var(--text-3)">excludes Stripe Fees</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="padding:12px;background:var(--surface-2);border-radius:10px">
+          <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Brayan</div>
+          <div style="font-size:1.2rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlBrayanTotal">$0</div>
+          <div id="pnlBrayanBreakdown" style="margin-top:8px"></div>
+        </div>
+        <div style="padding:12px;background:var(--surface-2);border-radius:10px">
+          <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);font-weight:600">Ryan</div>
+          <div style="font-size:1.2rem;font-weight:800;color:var(--red);margin-top:4px" id="pnlRyanTotal">$0</div>
+          <div id="pnlRyanBreakdown" style="margin-top:8px"></div>
+        </div>
       </div>
     </div>
 
@@ -1117,11 +1133,13 @@ async function loadPnl(){
 
     document.getElementById('pnlChart').innerHTML=mKeys.length?mKeys.map(k=>{
       const m=months[k];
-      return`<div style="flex:1;display:flex;gap:1px;align-items:flex-end;min-width:0">
-        <div style="flex:1;height:${(m.rev/maxBar*180).toFixed(0)}px;background:var(--green);border-radius:4px 4px 0 0;min-height:2px" title="Revenue: $${m.rev.toFixed(2)}"></div>
-        <div style="flex:1;height:${(m.exp/maxBar*180).toFixed(0)}px;background:var(--red);border-radius:4px 4px 0 0;min-height:2px" title="Expenses: $${m.exp.toFixed(2)}"></div>
+      const net=m.rev-m.exp;
+      return`<div class="trend-bar-group" data-month="${k}" data-rev="${m.rev.toFixed(2)}" data-exp="${m.exp.toFixed(2)}" data-net="${net.toFixed(2)}" style="flex:1;display:flex;gap:1px;align-items:flex-end;min-width:0;cursor:pointer">
+        <div style="flex:1;height:${(m.rev/maxBar*180).toFixed(0)}px;background:var(--green);border-radius:4px 4px 0 0;min-height:2px"></div>
+        <div style="flex:1;height:${(m.exp/maxBar*180).toFixed(0)}px;background:var(--red);border-radius:4px 4px 0 0;min-height:2px"></div>
       </div>`;
     }).join(''):'<div class="empty" style="width:100%;text-align:center">No data yet</div>';
+    attachTrendHover();
 
     document.getElementById('pnlChartLabels').innerHTML=mKeys.map(k=>
       `<div style="flex:1;font-size:0.55rem;color:var(--text-3);text-align:center;min-width:0;overflow:hidden">${k.slice(5)}-${k.slice(2,4)}</div>`
@@ -1146,6 +1164,30 @@ async function loadPnl(){
     }
     renderNetBars(acctMap,document.getElementById('pnlAccountBreakdown'));
     renderNetBars(methMap,document.getElementById('pnlMethodBreakdown'));
+
+    // Brayan vs Ryan expense split (excludes Stripe Fees)
+    const personSplit={Brayan:{total:0,byCat:{}},Ryan:{total:0,byCat:{}}};
+    entries.forEach(e=>{
+      if(e.type!=='expense')return;
+      if((e.category||'').toLowerCase()==='stripe fees')return;
+      const p=(e.person||'').trim();
+      if(p!=='Brayan'&&p!=='Ryan')return;
+      const amt=Number(e.amount);
+      personSplit[p].total+=amt;
+      const cat=e.category||'Uncategorized';
+      personSplit[p].byCat[cat]=(personSplit[p].byCat[cat]||0)+amt;
+    });
+    function renderPersonBreakdown(person,totalEl,breakdownEl){
+      document.getElementById(totalEl).textContent='$'+person.total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+      const rows=Object.entries(person.byCat).sort((a,b)=>b[1]-a[1]);
+      const max=Math.max(...rows.map(r=>r[1]),1);
+      document.getElementById(breakdownEl).innerHTML=rows.length?rows.map(([k,v])=>`
+        <div class="bar-row"><div class="bar-label" style="font-size:0.68rem">${esc(k)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(0)}%;background:var(--red)"></div></div>
+        <div style="width:70px;font-size:0.68rem;color:var(--text-2);text-align:right">$${v.toLocaleString('en-US',{minimumFractionDigits:2})}</div></div>`).join(''):'<div class="empty" style="font-size:0.7rem">No expenses</div>';
+    }
+    renderPersonBreakdown(personSplit.Brayan,'pnlBrayanTotal','pnlBrayanBreakdown');
+    renderPersonBreakdown(personSplit.Ryan,'pnlRyanTotal','pnlRyanBreakdown');
 
     document.getElementById('pnlEntries').innerHTML=entries.length?entries.map(e=>`
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.78rem">
@@ -1300,6 +1342,40 @@ async function deleteSub(id){
   if(!confirm('Delete this subscription? Past logged entries are kept.'))return;
   await fetch(`${API_BASE}/api/subscriptions/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
   loadPnl();
+}
+
+// Hover tooltip for monthly trend bars
+function attachTrendHover(){
+  let tip=document.getElementById('trendTip');
+  if(!tip){
+    tip=document.createElement('div');
+    tip.id='trendTip';
+    tip.style.cssText='position:fixed;pointer-events:none;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.72rem;color:var(--text);box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:9999;display:none;font-family:inherit';
+    document.body.appendChild(tip);
+  }
+  const fmt=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const monthLabel=k=>{
+    const [y,m]=k.split('-');
+    return new Date(+y,+m-1,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  };
+  document.querySelectorAll('.trend-bar-group').forEach(el=>{
+    el.addEventListener('mouseenter',e=>{
+      const rev=el.dataset.rev,exp=el.dataset.exp,net=Number(el.dataset.net);
+      tip.innerHTML=`<div style="font-weight:700;margin-bottom:4px">${monthLabel(el.dataset.month)}</div>
+        <div style="color:var(--green)">Revenue: ${fmt(rev)}</div>
+        <div style="color:var(--red)">Expenses: ${fmt(exp)}</div>
+        <div style="color:${net>=0?'var(--green)':'var(--red)'};border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:700">Net: ${net>=0?'+':'-'}${fmt(Math.abs(net))}</div>`;
+      tip.style.display='block';
+    });
+    el.addEventListener('mousemove',e=>{
+      const w=tip.offsetWidth, h=tip.offsetHeight;
+      let x=e.clientX+12, y=e.clientY+12;
+      if(x+w>window.innerWidth-8)x=e.clientX-w-12;
+      if(y+h>window.innerHeight-8)y=e.clientY-h-12;
+      tip.style.left=x+'px';tip.style.top=y+'px';
+    });
+    el.addEventListener('mouseleave',()=>{tip.style.display='none'});
+  });
 }
 
 // Compute next N billing dates for a subscription within [today, today+days]
