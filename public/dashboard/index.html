@@ -1412,6 +1412,10 @@ function fmtDate(d){return d.toISOString().split('T')[0]}
 // Pending auto-fix actions accumulated during reconciliation
 let _reconFixes=[];
 
+function normalizeDesc(s){
+  return (s||'').toLowerCase().replace(/\s*\([^)]*\)/g,'').replace(/\s+/g,' ').trim();
+}
+
 function buildReconciliation(subs, entries){
   _reconFixes=[];
   const today=new Date();today.setHours(0,0,0,0);
@@ -1423,7 +1427,13 @@ function buildReconciliation(subs, entries){
 
   for(const sub of activeSubs){
     const expected=expectedPastDates(sub);
-    const candidates=entries.filter(e=>e.description===sub.description && e.type===sub.type);
+    const subKey=normalizeDesc(sub.description);
+    const candidates=entries.filter(e=>{
+      if(e.type!==sub.type)return false;
+      if(sub.person && e.person && e.person!==sub.person)return false;
+      // exact match wins; else normalized match
+      return e.description===sub.description || normalizeDesc(e.description)===subKey;
+    });
     const checks=[];
     for(const ed of expected){
       const edStr=fmtDate(ed);
