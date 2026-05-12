@@ -842,7 +842,7 @@ export default function CoachPage() {
           </div>
           <ArchitectureDiagram />
           <p style={{ marginTop: 14, fontSize: ".82rem", color: "#475569", lineHeight: 1.6 }}>
-            Your district controls every layer. No vendor has standing access. This is the same backbone we built for Dr. Roche.
+            Your district controls every layer. No vendor has standing access. This is the same backbone we built for Superintendent Roach.
           </p>
           <ul style={{ marginTop: 12, paddingLeft: 18, color: "#475569", fontSize: ".82rem", lineHeight: 1.7 }}>
             <li>Audio and video are captured by the teacher&apos;s browser and never uploaded.</li>
