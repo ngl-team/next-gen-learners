@@ -8,24 +8,46 @@ export default function PingForm({ phone }: Props) {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [note, setNote] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const canSend = name.trim().length > 0 && contact.trim().length > 0;
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSend) return;
+  function buildMessage() {
     const lines = [
       `Hi Brayan, I'm ${name.trim()}.`,
       `Contact: ${contact.trim()}`,
     ];
     if (note.trim()) lines.push(`Note: ${note.trim()}`);
-    const text = encodeURIComponent(lines.join('\n'));
+    return lines.join('\n');
+  }
+
+  function handleWhatsApp(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSend) return;
+    const text = encodeURIComponent(buildMessage());
     const url = `https://api.whatsapp.com/send?phone=${phone}&text=${text}`;
     window.open(url, '_blank', 'noopener,noreferrer');
   }
 
+  function handleSms() {
+    if (!canSend) return;
+    const text = encodeURIComponent(buildMessage());
+    window.location.href = `sms:+${phone}?&body=${text}`;
+  }
+
+  async function handleCopy() {
+    if (!canSend) return;
+    try {
+      await navigator.clipboard.writeText(buildMessage());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'block' }}>
+    <form onSubmit={handleWhatsApp} style={{ display: 'block' }}>
       <style>{`
         .bp-field {
           width: 100%;
@@ -68,6 +90,29 @@ export default function PingForm({ phone }: Props) {
         }
         .bp-btn-send:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 30px -10px rgba(28,25,23,0.30); }
         .bp-btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .bp-btn-alt {
+          display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+          padding: 15px 26px; border-radius: 999px;
+          background: transparent; color: var(--ink); border: 1px solid var(--line-strong);
+          font-size: 0.95rem; font-weight: 500;
+          cursor: pointer;
+          font-family: inherit;
+          transition: background 220ms ease, border-color 220ms ease, opacity 220ms ease;
+          width: 100%;
+        }
+        .bp-btn-alt:hover:not(:disabled) { background: var(--paper); border-color: var(--ink); }
+        .bp-btn-alt:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .bp-btn-copy {
+          background: none; border: 0; padding: 0;
+          font-family: inherit; font-size: 0.86rem;
+          color: var(--ink-soft); cursor: pointer;
+          text-decoration: underline; text-underline-offset: 3px;
+          transition: color 200ms ease;
+        }
+        .bp-btn-copy:hover:not(:disabled) { color: var(--ink); }
+        .bp-btn-copy:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: none; }
       `}</style>
 
       <div className="bp-field-row">
@@ -110,17 +155,27 @@ export default function PingForm({ phone }: Props) {
         />
       </div>
 
-      <button type="submit" className="bp-btn-send" disabled={!canSend}>
-        Send via WhatsApp
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <button type="submit" className="bp-btn-send" disabled={!canSend}>
+          Send via WhatsApp
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
 
-      <p style={{ fontSize: '0.78rem', color: 'var(--ink-faint)', margin: '14px 0 0', lineHeight: 1.5 }}>
-        This opens WhatsApp with your info pre-filled. You still have to hit
-        send.
-      </p>
+        <button type="button" className="bp-btn-alt" disabled={!canSend} onClick={handleSms}>
+          Send via SMS
+        </button>
+      </div>
+
+      <div style={{ marginTop: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <p style={{ fontSize: '0.78rem', color: 'var(--ink-faint)', margin: 0, lineHeight: 1.5 }}>
+          You still have to hit send in your app.
+        </p>
+        <button type="button" className="bp-btn-copy" disabled={!canSend} onClick={handleCopy}>
+          {copied ? 'Copied' : 'Copy message'}
+        </button>
+      </div>
     </form>
   );
 }
