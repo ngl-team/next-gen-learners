@@ -651,7 +651,8 @@ export default function CoachPage() {
      ═══════════════════════════════════════════ */
   return (
     <div style={{ minHeight: "100vh", background: "#FAFBFF", color: "#1E1B4B", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      <div style={{ maxWidth: 980, margin: "0 auto", padding: "32px 20px 80px" }}>
+      <div style={{ maxWidth: 1320, margin: "0 auto", padding: "32px 20px 80px", display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
 
         {/* ── Header + Beacon ── */}
         <header style={{ marginBottom: 28 }}>
@@ -993,6 +994,11 @@ export default function CoachPage() {
             <li>Nothing is retained for training. There is no shared library, no evaluation pipeline.</li>
           </ul>
         </section>
+        </div>
+
+        <aside style={{ width: 300, position: "sticky", top: 24, flexShrink: 0 }}>
+          <RequirementsChecklist />
+        </aside>
       </div>
 
       <PrivacyGate
@@ -1009,6 +1015,87 @@ export default function CoachPage() {
 /* ═══════════════════════════════════════════
    SUB-COMPONENTS
    ═══════════════════════════════════════════ */
+function RequirementsChecklist() {
+  const sections: { title: string; source: string; items: string[] }[] = [
+    {
+      title: "Casimiro's vision",
+      source: "Gina, May 8 3:15 PM",
+      items: [
+        "Record a lesson and get capacity-building feedback",
+        "Tone of voice",
+        "Movement",
+        "Intonation",
+        "Number and type of questions",
+        "Record again and apply the feedback",
+      ],
+    },
+    {
+      title: "Teacher autonomy",
+      source: "Gina, May 8 2:38 PM",
+      items: [
+        "Total teacher autonomy",
+        "Never used for evaluation",
+        "A tool in the teacher's toolbox",
+      ],
+    },
+    {
+      title: "Student privacy",
+      source: "Gina, May 8 3:15 PM",
+      items: [
+        "Audio and video stay on the laptop",
+        "Voice and motion analysis run locally",
+        "Teacher decides what crosses",
+        "Nothing retained for training",
+        "Student names never collected",
+        "District controls every layer",
+      ],
+    },
+  ];
+
+  return (
+    <div style={{
+      background: "white",
+      border: "1px solid #E2E8F0",
+      borderRadius: 16,
+      padding: 20,
+      boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+    }}>
+      <div style={{ fontSize: ".62rem", fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase", color: "#4F46E5", marginBottom: 4 }}>
+        Your checklist
+      </div>
+      <div style={{ fontSize: ".75rem", color: "#64748B", marginBottom: 16, lineHeight: 1.45 }}>
+        Every line from your May 8 emails, mapped to what is in this demo.
+      </div>
+      {sections.map((section, i) => (
+        <div key={i} style={{ marginBottom: i === sections.length - 1 ? 0 : 16 }}>
+          <div style={{ fontSize: ".66rem", fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "#1E1B4B", marginBottom: 2 }}>
+            {section.title}
+          </div>
+          <div style={{ fontSize: ".62rem", color: "#94A3B8", marginBottom: 8 }}>{section.source}</div>
+          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {section.items.map((item, j) => (
+              <li key={j} style={{ display: "flex", gap: 8, marginBottom: 6, alignItems: "flex-start" }}>
+                <CheckIcon />
+                <span style={{ fontSize: ".78rem", color: "#1E1B4B", lineHeight: 1.4 }}>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <span style={{ flexShrink: 0, width: 16, height: 16, marginTop: 2, borderRadius: 999, background: "#10B981", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <svg width="9" height="9" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M2 6 L5 9 L10 3" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  );
+}
+
 function FeedbackCard({ title, card }: { title: string; card: CoachCard }) {
   return (
     <div style={subtleCardStyle}>
