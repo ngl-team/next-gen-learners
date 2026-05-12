@@ -2,7 +2,7 @@ const WHATSAPP_NUMBER = '12034604183';
 const WHATSAPP_DISPLAY = '+1 (203) 460-4183';
 
 export default function BrayanPage() {
-  const waLink = `https://wa.me/${WHATSAPP_NUMBER}`;
+  const waLink = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}`;
   const telLink = `tel:+${WHATSAPP_NUMBER}`;
 
   return (
