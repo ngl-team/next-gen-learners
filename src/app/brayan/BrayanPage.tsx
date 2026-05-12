@@ -142,9 +142,9 @@ export default function BrayanPage() {
               maxWidth: 480,
             }}
           >
-            Builder. Babson &rsquo;28. I make small AI tools for schools, small
-            businesses, and friends. If you want to talk, the number below is
-            the fastest way.
+            Builder. Babson 2029. I make &ldquo;small&rdquo; AI tools for
+            schools, small businesses, and friends. If you want to talk, the
+            number below is the fastest way. :)
           </p>
 
           <div
