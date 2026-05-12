@@ -1,4 +1,5 @@
 import Mermaid from './Mermaid';
+import MappingTabs from './MappingTabs';
 
 const GLOSSARY = [
   {
@@ -188,53 +189,58 @@ const RECEIPTS = [
   },
 ];
 
-const TIMELINE_MMD = `flowchart LR
-  subgraph M["MARCH 17, 2026 ASKS"]
-    direction TB
-    M1["M1. Required AI grades 5 to 12"]
-    M2["M2. Frictionless for teachers"]
-    M3["M3. Design AND implement"]
-    M4["M4. Pilots at 5/8/10/12"]
-    M5["M5. Pay-per-school"]
-  end
-  subgraph T1["PHASE 1: AGENTS FOR YOUR DESK (May to Jun 2026)"]
-    direction TB
-    P1["P1. Memo writer<br/>in your voice"]
-    P2["P2. Parent + crisis<br/>email co-pilot"]
-    P3["P3. Daily briefing agent"]
-  end
-  subgraph T2["PHASE 2: AGENTS FOR THE SCHOOL (Jun to Aug 2026)"]
-    direction TB
-    W1["W1. DLI prompt library"]
-    W2["W2. Bridge documentation"]
-    W4["W4. Centennial advancement"]
-  end
-  subgraph S["MARCH 8, 2027<br/>AI AT WOOSTER<br/>Speaker Series Part 4"]
-    STG["The story you tell on stage"]
-  end
-  M3 ==> P1
-  M3 ==> P2
-  M3 -.-> P3
-  M1 ==> W1
-  M2 ==> W1
-  M3 ==> W1
-  M4 --> W2
-  M5 -.-> W1
-  M5 -.-> W2
-  M5 -.-> W4
-  P1 ==> STG
-  P3 --> STG
-  W1 ==> STG
-  W2 --> STG
-  W4 ==> STG
-  classDef march fill:#fde68a,stroke:#92400e,color:#000
-  classDef tier1 fill:#dbeafe,stroke:#1e3a8a,color:#000
-  classDef tier2 fill:#dcfce7,stroke:#166534,color:#000
-  classDef stage fill:#fecaca,stroke:#991b1b,color:#000
-  class M1,M2,M3,M4,M5 march
-  class P1,P2,P3 tier1
-  class W1,W2,W4 tier2
-  class STG stage`;
+const ARCH_LEGEND = [
+  {
+    swatch: '#e0e7ff',
+    swatchBorder: '#3730a3',
+    label: 'Wooster data sources (purple)',
+    blurb: 'What each agent reads. All of it already lives inside Wooster.',
+    items: [
+      { code: 'D1', def: 'Voice corpus. The Head\'s past public writing: alumni letters, NAIS essays, HB-07277 testimony.' },
+      { code: 'D2', def: 'Blackbaud onCampus. Wooster\'s LMS and SIS — where grades, assignments, and accommodations live.' },
+      { code: 'D3', def: 'Google Workspace. The tenant Wooster already owns. Agents are built inside it. Nothing leaves the tenant.' },
+      { code: 'D4', def: 'SSS by NAIS. Wooster\'s financial aid system. Powers Variable Tuition Program insights for advancement.' },
+      { code: 'D5', def: 'Alumni database. 3,000+ records used by W4 for centennial-year personalized outreach.' },
+    ],
+  },
+  {
+    swatch: '#dbeafe',
+    swatchBorder: '#1e3a8a',
+    label: 'Phase 1 agents (blue)',
+    blurb: 'Three agents on the Head\'s desk in three weeks.',
+    items: [
+      { code: 'P1', def: 'Memo writer in your voice. Reads your voice corpus and Google Workspace. Returns first-draft memos and stewardship letters.' },
+      { code: 'P2', def: 'Parent + crisis email co-pilot. Reads the thread, relevant student context, and stated policies. Drafts a warm, partnership-first reply.' },
+      { code: 'P3', def: 'Daily briefing agent. Reads NAIS, CAIS, EdWeek, CT legislature, peer schools. Returns five bullets each morning.' },
+    ],
+  },
+  {
+    swatch: '#dcfce7',
+    swatchBorder: '#166534',
+    label: 'Phase 2 agents (green)',
+    blurb: 'Three agents for Wooster, built across the summer and live by September.',
+    items: [
+      {
+        code: 'W1',
+        def: 'DLI prompt library. Reads course maps and DLI structure. Gives each teacher vetted prompts for tutorial-style class prep, research scaffolding, and writing feedback.',
+      },
+      { code: 'W2', def: 'Bridge documentation. Reads teacher notes and Blackbaud. Writes the weekly per-student progress narrative and parent letter.' },
+      { code: 'W4', def: 'Centennial advancement. Reads the alumni database and financial aid system. Personalizes outreach and briefs the Head before donor coffees.' },
+    ],
+  },
+  {
+    swatch: '#fef3c7',
+    swatchBorder: '#92400e',
+    label: 'Outcomes (yellow)',
+    blurb: 'What the school can measure inside the existing systems. No new dashboards.',
+    items: [
+      { code: 'O1', def: '15+ hours per week back to the Head. Memo, email, and briefing time collapsed.' },
+      { code: 'O2', def: '200+ faculty hours per week reclaimed across the school once W1 is in steady use.' },
+      { code: 'O3', def: 'Bridge premium defended weekly. Consistent, on-time parent communication for every Bridge family.' },
+      { code: 'O4', def: 'March 8, 2027 stage story. Real metrics, real artifacts, real faculty voices — not slideware.' },
+    ],
+  },
+];
 
 const ARCH_MMD = `flowchart TB
   subgraph DATA["WOOSTER DATA SOURCES"]
@@ -552,15 +558,16 @@ export default function WoosterPage() {
           The mapping
         </div>
         <h2 className="ws-h2">
-          March 17 asks, mapped to{' '}
+          Two views.{' '}
           <span className="ws-display-italic" style={{ color: 'var(--ws-navy-deep)' }}>
-            March 8, 2027.
+            Same architecture.
           </span>
         </h2>
-        <p className="ws-lead">Heavy arrows are direct answers to the brief.</p>
-        <p className="ws-lead-tight">Every track converges on the Centennial Speaker Series stage.</p>
-        <div className="ws-diagram-wrap">
-          <Mermaid chart={TIMELINE_MMD} idPrefix="timeline" />
+        <p className="ws-lead">Mapping 1 answers the March 17 brief by March 8, 2027.</p>
+        <p className="ws-lead-tight">Mapping 2 places that year inside the three-year arc through 2029.</p>
+
+        <div style={{ marginTop: 40 }}>
+          <MappingTabs />
         </div>
       </section>
 
@@ -630,6 +637,70 @@ export default function WoosterPage() {
         <p className="ws-lead-tight">Google Workspace as the tenant. Blackbaud onCampus as the system of record.</p>
         <div className="ws-diagram-wrap">
           <Mermaid chart={ARCH_MMD} idPrefix="arch" />
+        </div>
+
+        <div style={{ marginTop: 40 }}>
+          <div className="ws-eyebrow" style={{ marginBottom: 18 }}>
+            How to read this diagram
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+            {ARCH_LEGEND.map((g) => (
+              <div key={g.label} className="ws-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      display: 'inline-block',
+                      width: 14,
+                      height: 14,
+                      background: g.swatch,
+                      border: `1.5px solid ${g.swatchBorder}`,
+                      borderRadius: 4,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <div
+                    className="ws-display"
+                    style={{
+                      fontSize: '1.12rem',
+                      color: 'var(--ws-ink)',
+                      letterSpacing: '-0.02em',
+                      lineHeight: 1.25,
+                    }}
+                  >
+                    {g.label}
+                  </div>
+                </div>
+                <p style={{ fontSize: '0.92rem', color: 'var(--ws-ink-soft)', lineHeight: 1.6, margin: '0 0 16px' }}>
+                  {g.blurb}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {g.items.map((it) => (
+                    <div key={it.code} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                      <span
+                        style={{
+                          fontFamily: "'Fraunces', serif",
+                          fontWeight: 600,
+                          fontSize: '0.78rem',
+                          letterSpacing: '0.06em',
+                          color: 'var(--ws-navy-deep)',
+                          background: 'var(--ws-navy-tint)',
+                          padding: '3px 8px',
+                          borderRadius: 999,
+                          flexShrink: 0,
+                          minWidth: 42,
+                          textAlign: 'center',
+                        }}
+                      >
+                        {it.code}
+                      </span>
+                      <span style={{ fontSize: '0.92rem', color: 'var(--ws-ink-soft)', lineHeight: 1.55 }}>{it.def}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
