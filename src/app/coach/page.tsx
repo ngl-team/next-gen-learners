@@ -155,6 +155,7 @@ export default function CoachPage() {
   const volumeSamplesRef = useRef<number[]>([]);
   const motionSamplesRef = useRef<number[]>([]);
   const finalTranscriptRef = useRef<string>("");
+  const interimTranscriptRef = useRef<string>("");
 
   /* Motion tracking */
   const motionCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -237,6 +238,7 @@ export default function CoachPage() {
     setTranscript("");
     setInterimTranscript("");
     finalTranscriptRef.current = "";
+    interimTranscriptRef.current = "";
     pitchSamplesRef.current = [];
     volumeSamplesRef.current = [];
     motionSamplesRef.current = [];
@@ -349,6 +351,8 @@ export default function CoachPage() {
         rec.interimResults = true;
         rec.lang = "en-US";
         rec.onresult = (e) => {
+          /* After stopRecording promotes interim to final, ignore any late onresult */
+          if (stopRequestedRef.current) return;
           let interim = "";
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const res = e.results[i];
@@ -359,6 +363,7 @@ export default function CoachPage() {
               interim += piece;
             }
           }
+          interimTranscriptRef.current = interim;
           setTranscript(finalTranscriptRef.current);
           setInterimTranscript(interim);
         };
@@ -379,6 +384,13 @@ export default function CoachPage() {
         rec.onend = () => {
           /* If the teacher requested stop, do not restart */
           if (stopRequestedRef.current) return;
+          /* Promote any pending interim into the final transcript before restarting */
+          if (interimTranscriptRef.current.trim()) {
+            finalTranscriptRef.current += interimTranscriptRef.current + " ";
+            interimTranscriptRef.current = "";
+            setTranscript(finalTranscriptRef.current);
+            setInterimTranscript("");
+          }
           /* If we are still recording, restart to keep listening */
           if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
             try { rec.start(); } catch { /* noop */ }
@@ -408,6 +420,15 @@ export default function CoachPage() {
      ───────────────────────────────────────── */
   const stopRecording = useCallback(() => {
     stopRequestedRef.current = true;
+    /* Promote any pending interim text into the final transcript.
+       Chrome holds long uninterrupted speech as interim and discards it on stop
+       if we do not commit it ourselves. */
+    if (interimTranscriptRef.current.trim()) {
+      finalTranscriptRef.current += interimTranscriptRef.current + " ";
+      interimTranscriptRef.current = "";
+      setTranscript(finalTranscriptRef.current);
+      setInterimTranscript("");
+    }
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       try { mediaRecorderRef.current.stop(); } catch { /* noop */ }
     }
@@ -600,6 +621,7 @@ export default function CoachPage() {
     setElapsed(0);
     setError(null);
     finalTranscriptRef.current = "";
+    interimTranscriptRef.current = "";
     pitchSamplesRef.current = [];
     volumeSamplesRef.current = [];
     recordedChunksRef.current = [];
