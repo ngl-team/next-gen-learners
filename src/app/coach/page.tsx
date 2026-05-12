@@ -43,6 +43,14 @@ interface CoachReport {
   questions: QuestionsCard;
 }
 
+interface TeacherContext {
+  gradeLevel: string;
+  subject: string;
+  lessonFocus: string;
+  lessonPlanText: string;
+  lessonPlanPdf: { name: string; data: string; sizeKb: number } | null;
+}
+
 interface Take {
   transcript: string;
   metrics: AudioMetrics;
@@ -115,6 +123,15 @@ export default function CoachPage() {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [speechSupported, setSpeechSupported] = useState(true);
+
+  /* Teacher context (set once per session, applied to every take) */
+  const [teacherContext, setTeacherContext] = useState<TeacherContext>({
+    gradeLevel: "",
+    subject: "",
+    lessonFocus: "",
+    lessonPlanText: "",
+    lessonPlanPdf: null,
+  });
 
   /* Recording state */
   const [elapsed, setElapsed] = useState(0);
@@ -527,6 +544,15 @@ export default function CoachPage() {
           audio_metrics: metrics,
           video_metrics: videoMetrics,
           video_enabled: videoEnabled,
+          teacher_context: {
+            grade_level: teacherContext.gradeLevel || undefined,
+            subject: teacherContext.subject || undefined,
+            lesson_focus: teacherContext.lessonFocus || undefined,
+            lesson_plan_text: teacherContext.lessonPlanText || undefined,
+          },
+          lesson_plan_pdf: teacherContext.lessonPlanPdf
+            ? { name: teacherContext.lessonPlanPdf.name, data: teacherContext.lessonPlanPdf.data }
+            : null,
         }),
       });
       if (!res.ok) {
@@ -555,7 +581,7 @@ export default function CoachPage() {
       setError(msg);
       setStage("stopped");
     }
-  }, [computeMetrics, computeVideoMetrics, currentTakeNumber, transcript, videoEnabled]);
+  }, [computeMetrics, computeVideoMetrics, currentTakeNumber, transcript, videoEnabled, teacherContext]);
 
   /* ─────────────────────────────────────────
      START TAKE 2
@@ -620,6 +646,13 @@ export default function CoachPage() {
     setInterimTranscript("");
     setElapsed(0);
     setError(null);
+    setTeacherContext({
+      gradeLevel: "",
+      subject: "",
+      lessonFocus: "",
+      lessonPlanText: "",
+      lessonPlanPdf: null,
+    });
     finalTranscriptRef.current = "";
     interimTranscriptRef.current = "";
     pitchSamplesRef.current = [];
@@ -655,6 +688,15 @@ export default function CoachPage() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
         <div style={{ fontSize: "1rem", fontWeight: 600, color: "#1E1B4B", marginBottom: 16 }}>hi</div>
+
+        {/* ── Teacher Context ── */}
+        {(stage === "setup" || stage === "recording" || stage === "stopped" || stage === "gated") && (
+          <TeacherContextCard
+            context={teacherContext}
+            onChange={setTeacherContext}
+            locked={stage !== "setup"}
+          />
+        )}
 
         {/* ── Header + Beacon ── */}
         <header style={{ marginBottom: 28 }}>
@@ -1007,6 +1049,7 @@ export default function CoachPage() {
         open={stage === "gated"}
         transcript={transcript}
         videoEnabled={videoEnabled}
+        teacherContext={teacherContext}
         onCancel={() => setStage("stopped")}
         onConfirm={sendForAnalysis}
       />
@@ -1017,6 +1060,235 @@ export default function CoachPage() {
 /* ═══════════════════════════════════════════
    SUB-COMPONENTS
    ═══════════════════════════════════════════ */
+const GRADE_OPTIONS = ["Pre-K", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Mixed / Multi-age"];
+const MAX_PDF_BYTES = 10 * 1024 * 1024;
+
+function hasAnyTeacherContext(c: TeacherContext): boolean {
+  return Boolean(c.gradeLevel || c.subject || c.lessonFocus || c.lessonPlanText || c.lessonPlanPdf);
+}
+
+function TeacherContextCard({
+  context,
+  onChange,
+  locked,
+}: {
+  context: TeacherContext;
+  onChange: (c: TeacherContext) => void;
+  locked: boolean;
+}) {
+  const [expanded, setExpanded] = useState<boolean>(!hasAnyTeacherContext(context));
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [planMode, setPlanMode] = useState<"pdf" | "text">(context.lessonPlanText ? "text" : "pdf");
+
+  const filled = hasAnyTeacherContext(context);
+
+  const handlePdf = (file: File | null) => {
+    setPdfError(null);
+    if (!file) {
+      onChange({ ...context, lessonPlanPdf: null });
+      return;
+    }
+    if (file.type !== "application/pdf") {
+      setPdfError("Only PDF files are accepted.");
+      return;
+    }
+    if (file.size > MAX_PDF_BYTES) {
+      setPdfError("PDF is over 10 MB. Try a smaller file or paste the lesson plan as text.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== "string") return;
+      const base64 = result.split(",")[1] || "";
+      onChange({
+        ...context,
+        lessonPlanPdf: { name: file.name, data: base64, sizeKb: Math.round(file.size / 1024) },
+      });
+    };
+    reader.onerror = () => setPdfError("Could not read that PDF. Try again or paste the plan as text.");
+    reader.readAsDataURL(file);
+  };
+
+  if (!expanded && filled) {
+    return (
+      <section style={{ ...cardStyle, padding: 18 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: ".62rem", fontWeight: 800, letterSpacing: ".14em", textTransform: "uppercase", color: "#4F46E5", marginBottom: 6 }}>
+              Lesson context set
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {context.gradeLevel && <Pill text={`Grade ${context.gradeLevel}`} primary />}
+              {context.subject && <Pill text={context.subject} />}
+              {context.lessonFocus && <Pill text={`Focus: ${context.lessonFocus.slice(0, 60)}${context.lessonFocus.length > 60 ? "..." : ""}`} />}
+              {context.lessonPlanPdf && <Pill text={`PDF: ${context.lessonPlanPdf.name}`} />}
+              {context.lessonPlanText && !context.lessonPlanPdf && <Pill text={`Plan pasted (${context.lessonPlanText.length} chars)`} />}
+            </div>
+            <div style={{ fontSize: ".72rem", color: "#94A3B8", marginTop: 8 }}>
+              Feedback for this session will be tailored to this context.
+            </div>
+          </div>
+          {!locked && (
+            <button onClick={() => setExpanded(true)} style={{ ...secondaryBtn, padding: "6px 12px", fontSize: ".78rem" }}>
+              Edit
+            </button>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section style={cardStyle}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4, flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <div style={{ fontSize: ".68rem", fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", color: "#94A3B8" }}>
+            Step 1
+          </div>
+          <h2 style={{ fontSize: "1.15rem", fontWeight: 700, margin: "4px 0 0" }}>Tell the coach about this lesson</h2>
+        </div>
+        {filled && !locked && (
+          <button onClick={() => setExpanded(false)} style={{ ...secondaryBtn, padding: "6px 12px", fontSize: ".78rem" }}>
+            Collapse
+          </button>
+        )}
+      </div>
+      <p style={{ fontSize: ".82rem", color: "#64748B", margin: "6px 0 18px", lineHeight: 1.55 }}>
+        Optional, but the more you share the more tailored the feedback. A second-grade reading lesson and a fifth-grade math lesson need different coaching.
+      </p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 14 }}>
+        <FieldLabel label="Grade level">
+          <select
+            value={context.gradeLevel}
+            onChange={(e) => onChange({ ...context, gradeLevel: e.target.value })}
+            disabled={locked}
+            style={inputStyle}
+          >
+            <option value="">Select grade</option>
+            {GRADE_OPTIONS.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </FieldLabel>
+        <FieldLabel label="Subject or topic">
+          <input
+            type="text"
+            value={context.subject}
+            onChange={(e) => onChange({ ...context, subject: e.target.value })}
+            placeholder="e.g. Math - place value"
+            disabled={locked}
+            style={inputStyle}
+          />
+        </FieldLabel>
+      </div>
+
+      <FieldLabel label="What is the focus of this lesson?">
+        <textarea
+          value={context.lessonFocus}
+          onChange={(e) => onChange({ ...context, lessonFocus: e.target.value })}
+          placeholder="One or two sentences. What do you want students to walk away with?"
+          disabled={locked}
+          rows={2}
+          style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }}
+        />
+      </FieldLabel>
+
+      <div style={{ marginTop: 14 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, flexWrap: "wrap", gap: 8 }}>
+          <div style={{ fontSize: ".68rem", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#475569" }}>
+            Lesson plan (optional)
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button
+              onClick={() => setPlanMode("pdf")}
+              disabled={locked}
+              style={tabBtn(planMode === "pdf")}
+            >
+              Upload PDF
+            </button>
+            <button
+              onClick={() => setPlanMode("text")}
+              disabled={locked}
+              style={tabBtn(planMode === "text")}
+            >
+              Paste text
+            </button>
+          </div>
+        </div>
+
+        {planMode === "pdf" ? (
+          <div>
+            {context.lessonPlanPdf ? (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 10, gap: 12, flexWrap: "wrap" }}>
+                <div style={{ fontSize: ".85rem", color: "#1E1B4B", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <strong>{context.lessonPlanPdf.name}</strong> <span style={{ color: "#64748B", fontWeight: 500 }}>· {context.lessonPlanPdf.sizeKb} KB</span>
+                </div>
+                {!locked && (
+                  <button onClick={() => handlePdf(null)} style={{ ...secondaryBtn, padding: "6px 12px", fontSize: ".78rem" }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+            ) : (
+              <label style={{
+                display: "block",
+                padding: "20px 16px",
+                background: "#F8FAFC",
+                border: "1px dashed #CBD5E1",
+                borderRadius: 10,
+                textAlign: "center",
+                cursor: locked ? "not-allowed" : "pointer",
+                opacity: locked ? 0.5 : 1,
+              }}>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  disabled={locked}
+                  onChange={(e) => handlePdf(e.target.files?.[0] || null)}
+                  style={{ display: "none" }}
+                />
+                <div style={{ fontSize: ".88rem", fontWeight: 700, color: "#1E1B4B", marginBottom: 4 }}>
+                  Drop or click to upload a lesson plan PDF
+                </div>
+                <div style={{ fontSize: ".74rem", color: "#64748B" }}>
+                  Up to 10 MB. The PDF will cross to the district&apos;s model along with the transcript.
+                </div>
+              </label>
+            )}
+            {pdfError && (
+              <div style={{ marginTop: 8, fontSize: ".78rem", color: "#991B1B" }}>{pdfError}</div>
+            )}
+          </div>
+        ) : (
+          <textarea
+            value={context.lessonPlanText}
+            onChange={(e) => onChange({ ...context, lessonPlanText: e.target.value })}
+            placeholder="Paste the lesson plan here. Objectives, anchor questions, anything you want the coach to know."
+            disabled={locked}
+            rows={6}
+            style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }}
+          />
+        )}
+      </div>
+
+      <div style={{ marginTop: 16, padding: "10px 14px", background: "#F8FAFC", border: "1px dashed #CBD5E1", borderRadius: 10, fontSize: ".74rem", color: "#475569", lineHeight: 1.55 }}>
+        Everything here stays on this laptop until you confirm at the privacy gate. You can skip every field and still record.
+      </div>
+    </section>
+  );
+}
+
+function FieldLabel({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label style={{ display: "block" }}>
+      <div style={{ fontSize: ".68rem", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "#475569", marginBottom: 6 }}>
+        {label}
+      </div>
+      {children}
+    </label>
+  );
+}
+
 function RequirementsChecklist() {
   const sections: { title: string; source: string; items: string[] }[] = [
     {
@@ -1258,12 +1530,14 @@ function PrivacyGate({
   open,
   transcript,
   videoEnabled,
+  teacherContext,
   onCancel,
   onConfirm,
 }: {
   open: boolean;
   transcript: string;
   videoEnabled: boolean;
+  teacherContext: TeacherContext;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -1297,6 +1571,11 @@ function PrivacyGate({
               "Pitch variance, pace, volume range",
               videoEnabled ? "Motion intensity numbers (no frames)" : "No video data this take",
               "Question count and types",
+              ...(teacherContext.gradeLevel || teacherContext.subject || teacherContext.lessonFocus
+                ? ["Grade, subject, and lesson focus you entered"]
+                : []),
+              ...(teacherContext.lessonPlanPdf ? [`Lesson plan PDF (${teacherContext.lessonPlanPdf.name})`] : []),
+              ...(teacherContext.lessonPlanText && !teacherContext.lessonPlanPdf ? ["Lesson plan text you pasted"] : []),
             ]}
           />
           <PrivacyColumn
@@ -1401,6 +1680,18 @@ const secondaryBtn: React.CSSProperties = {
   border: "1px solid #CBD5E1",
   borderRadius: 10,
   cursor: "pointer",
+};
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "10px 12px",
+  fontSize: ".88rem",
+  color: "#1E1B4B",
+  background: "white",
+  border: "1px solid #CBD5E1",
+  borderRadius: 10,
+  outline: "none",
+  boxSizing: "border-box",
 };
 
 function recordButtonStyle(active: boolean): React.CSSProperties {

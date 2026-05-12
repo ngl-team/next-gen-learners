@@ -17,12 +17,21 @@ interface VideoMetrics {
   frame_samples: number;
 }
 
+interface TeacherContext {
+  grade_level?: string;
+  subject?: string;
+  lesson_focus?: string;
+  lesson_plan_text?: string;
+}
+
 interface AnalyzeRequest {
   transcript: string;
   questions: string[];
   audio_metrics: AudioMetrics;
   video_metrics?: VideoMetrics | null;
   video_enabled: boolean;
+  teacher_context?: TeacherContext;
+  lesson_plan_pdf?: { name: string; data: string } | null;
 }
 
 interface CoachCard {
@@ -50,7 +59,7 @@ interface CoachReport {
 }
 
 function buildPrompt(body: AnalyzeRequest): string {
-  const { transcript, questions, audio_metrics, video_metrics, video_enabled } = body;
+  const { transcript, questions, audio_metrics, video_metrics, video_enabled, teacher_context, lesson_plan_pdf } = body;
   const m = audio_metrics;
   const motionLine = video_enabled && video_metrics
     ? `Motion metrics (from local frame differencing on the teacher's laptop, NOT the frames themselves): mean intensity ${video_metrics.motion_avg.toFixed(2)}, intensity stddev ${video_metrics.motion_stddev.toFixed(2)}, ${video_metrics.motion_active_pct.toFixed(1)}% of sampled frames had motion above threshold, across ${video_metrics.frame_samples} frame samples. Higher mean means more overall movement. Higher stddev means more variation (gesture bursts). Active percentage near 100 means almost constant motion; near 0 means mostly still.`
@@ -58,9 +67,30 @@ function buildPrompt(body: AnalyzeRequest): string {
   const movementInstruction = video_enabled
     ? `For the movement card, ground your observation in the motion metrics above. Do not invent body language details you cannot infer from intensity numbers alone (you do not see the frames). You may comment on: overall movement level, variation between gesture bursts and stillness, and whether stillness or motion may serve the teaching moment.`
     : `For movement: return null. The teacher recorded without video.`;
-  return `You are a teaching coach reviewing one recorded lesson delivery. The teacher chose to share only the transcript and numeric metrics with their district's model. You will NEVER see student names; the teacher has confirmed none are in the transcript. Your goal is to help the teacher build capacity, not to evaluate them. This will never be used for evaluation.
 
-If any proper nouns slipped into the transcript, redact them as [student] in any examples you quote back. Do not name students.
+  const ctx = teacher_context || {};
+  const hasAnyContext = Boolean(ctx.grade_level || ctx.subject || ctx.lesson_focus || ctx.lesson_plan_text || lesson_plan_pdf);
+  const contextLines: string[] = [];
+  if (ctx.grade_level) contextLines.push(`- Grade level: ${ctx.grade_level}`);
+  if (ctx.subject) contextLines.push(`- Subject: ${ctx.subject}`);
+  if (ctx.lesson_focus) contextLines.push(`- Lesson focus: ${ctx.lesson_focus}`);
+  if (ctx.lesson_plan_text) contextLines.push(`- Lesson plan (pasted by teacher): """${ctx.lesson_plan_text}"""`);
+  if (lesson_plan_pdf) contextLines.push(`- Lesson plan PDF attached as a document above. Read it to ground your coaching in what the teacher actually planned. Compare what was planned against what came through in the transcript.`);
+
+  const contextBlock = hasAnyContext
+    ? `Teacher context (provided by the teacher for this session):
+${contextLines.join('\n')}
+
+Tailor every observation, pattern, and experiment to this teacher's grade level, subject, and stated lesson focus. Developmentally appropriate language varies by grade. A second-grade reading lesson needs different coaching than a fifth-grade math lesson. Reference the lesson plan where it is relevant to what you observed.
+
+`
+    : `The teacher did not provide grade level, subject, or a lesson plan for this session. Keep coaching general and avoid assumptions about developmental level or content area.
+
+`;
+
+  return `You are a teaching coach reviewing one recorded lesson delivery. The teacher chose to share only the transcript, numeric metrics, and any lesson context they explicitly attached with their district's model. You will NEVER see student names; the teacher has confirmed none are in the transcript. Your goal is to help the teacher build capacity, not to evaluate them. This will never be used for evaluation.
+
+${contextBlock}If any proper nouns slipped into the transcript, redact them as [student] in any examples you quote back. Do not name students.
 
 Transcript: """${transcript}"""
 
@@ -124,10 +154,24 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const promptText = buildPrompt(body);
+    const content: Anthropic.Messages.ContentBlockParam[] = [];
+    if (body.lesson_plan_pdf?.data) {
+      content.push({
+        type: 'document',
+        source: {
+          type: 'base64',
+          media_type: 'application/pdf',
+          data: body.lesson_plan_pdf.data,
+        },
+      });
+    }
+    content.push({ type: 'text', text: promptText });
+
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      messages: [{ role: 'user', content: buildPrompt(body) }],
+      messages: [{ role: 'user', content }],
     });
 
     const raw = message.content[0].type === 'text' ? message.content[0].text : '';
