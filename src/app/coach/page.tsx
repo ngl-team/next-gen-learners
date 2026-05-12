@@ -12,6 +12,13 @@ interface AudioMetrics {
   duration_sec: number;
 }
 
+interface VideoMetrics {
+  motion_avg: number;
+  motion_stddev: number;
+  motion_active_pct: number;
+  frame_samples: number;
+}
+
 interface CoachCard {
   observation: string;
   pattern: string;
@@ -39,6 +46,7 @@ interface CoachReport {
 interface Take {
   transcript: string;
   metrics: AudioMetrics;
+  videoMetrics: VideoMetrics | null;
   questions: string[];
   report: CoachReport;
   videoEnabled: boolean;
@@ -145,7 +153,16 @@ export default function CoachPage() {
   /* Metric accumulators */
   const pitchSamplesRef = useRef<number[]>([]);
   const volumeSamplesRef = useRef<number[]>([]);
+  const motionSamplesRef = useRef<number[]>([]);
   const finalTranscriptRef = useRef<string>("");
+
+  /* Motion tracking */
+  const motionCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const motionTimerRef = useRef<number | null>(null);
+  const prevFrameDataRef = useRef<Uint8ClampedArray | null>(null);
+  const MOTION_W = 80;
+  const MOTION_H = 60;
+  const MOTION_ACTIVE_THRESHOLD = 4;
 
   /* Detect speech recognition support on mount */
   useEffect(() => {
@@ -172,10 +189,15 @@ export default function CoachPage() {
       window.clearInterval(sampleTimerRef.current);
       sampleTimerRef.current = null;
     }
+    if (motionTimerRef.current) {
+      window.clearInterval(motionTimerRef.current);
+      motionTimerRef.current = null;
+    }
     if (elapsedTimerRef.current) {
       window.clearInterval(elapsedTimerRef.current);
       elapsedTimerRef.current = null;
     }
+    prevFrameDataRef.current = null;
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch { /* noop */ }
       recognitionRef.current = null;
@@ -208,6 +230,8 @@ export default function CoachPage() {
     finalTranscriptRef.current = "";
     pitchSamplesRef.current = [];
     volumeSamplesRef.current = [];
+    motionSamplesRef.current = [];
+    prevFrameDataRef.current = null;
     recordedChunksRef.current = [];
     setElapsed(0);
 
@@ -275,6 +299,38 @@ export default function CoachPage() {
         setLiveVolume(rms);
       }, 100);
 
+      /* Local motion tracking via frame differencing (only when video is on) */
+      if (videoEnabled) {
+        const canvas = motionCanvasRef.current ?? document.createElement("canvas");
+        canvas.width = MOTION_W;
+        canvas.height = MOTION_H;
+        motionCanvasRef.current = canvas;
+        const cctx = canvas.getContext("2d", { willReadFrequently: true });
+
+        motionTimerRef.current = window.setInterval(() => {
+          const video = videoRef.current;
+          if (!video || !cctx || video.readyState < 2) return;
+          try {
+            cctx.drawImage(video, 0, 0, MOTION_W, MOTION_H);
+            const frame = cctx.getImageData(0, 0, MOTION_W, MOTION_H).data;
+            const prev = prevFrameDataRef.current;
+            if (prev && prev.length === frame.length) {
+              let diffSum = 0;
+              /* Sample every 4th pixel for speed; skip alpha channel */
+              for (let i = 0; i < frame.length; i += 16) {
+                diffSum += Math.abs(frame[i] - prev[i]);
+                diffSum += Math.abs(frame[i + 1] - prev[i + 1]);
+                diffSum += Math.abs(frame[i + 2] - prev[i + 2]);
+              }
+              const sampled = frame.length / 16;
+              const meanDiff = diffSum / (sampled * 3);
+              motionSamplesRef.current.push(meanDiff);
+            }
+            prevFrameDataRef.current = new Uint8ClampedArray(frame);
+          } catch { /* readback can throw if video not ready; ignore */ }
+        }, 200);
+      }
+
       /* Web Speech transcription */
       const w = window as unknown as { SpeechRecognition?: RecognitionCtor; webkitSpeechRecognition?: RecognitionCtor };
       const Recognition = w.SpeechRecognition || w.webkitSpeechRecognition;
@@ -335,6 +391,10 @@ export default function CoachPage() {
       window.clearInterval(sampleTimerRef.current);
       sampleTimerRef.current = null;
     }
+    if (motionTimerRef.current) {
+      window.clearInterval(motionTimerRef.current);
+      motionTimerRef.current = null;
+    }
     if (elapsedTimerRef.current) {
       window.clearInterval(elapsedTimerRef.current);
       elapsedTimerRef.current = null;
@@ -369,6 +429,26 @@ export default function CoachPage() {
     };
   }, [elapsed]);
 
+  const computeVideoMetrics = useCallback((): VideoMetrics | null => {
+    if (!videoEnabled) return null;
+    const samples = motionSamplesRef.current;
+    if (samples.length === 0) {
+      return { motion_avg: 0, motion_stddev: 0, motion_active_pct: 0, frame_samples: 0 };
+    }
+    const motion_avg = samples.reduce((a, b) => a + b, 0) / samples.length;
+    const motion_stddev = Math.sqrt(
+      samples.reduce((acc, v) => acc + (v - motion_avg) ** 2, 0) / samples.length
+    );
+    const activeCount = samples.filter(v => v > MOTION_ACTIVE_THRESHOLD).length;
+    const motion_active_pct = (activeCount / samples.length) * 100;
+    return {
+      motion_avg,
+      motion_stddev,
+      motion_active_pct,
+      frame_samples: samples.length,
+    };
+  }, [videoEnabled]);
+
   /* ─────────────────────────────────────────
      PRIVACY GATE OPEN
      ───────────────────────────────────────── */
@@ -387,6 +467,7 @@ export default function CoachPage() {
     setStage("analyzing");
     setError(null);
     const metrics = computeMetrics();
+    const videoMetrics = computeVideoMetrics();
     const questions = extractQuestions(transcript);
     try {
       const res = await fetch("/api/coach/analyze", {
@@ -396,6 +477,7 @@ export default function CoachPage() {
           transcript,
           questions,
           audio_metrics: metrics,
+          video_metrics: videoMetrics,
           video_enabled: videoEnabled,
         }),
       });
@@ -407,6 +489,7 @@ export default function CoachPage() {
       const take: Take = {
         transcript,
         metrics,
+        videoMetrics,
         questions,
         report: data.report,
         videoEnabled,
@@ -424,7 +507,7 @@ export default function CoachPage() {
       setError(msg);
       setStage("stopped");
     }
-  }, [computeMetrics, currentTakeNumber, transcript, videoEnabled]);
+  }, [computeMetrics, computeVideoMetrics, currentTakeNumber, transcript, videoEnabled]);
 
   /* ─────────────────────────────────────────
      START TAKE 2
@@ -769,7 +852,7 @@ export default function CoachPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
               <FeedbackCard title="Tone of voice" card={activeTake.report.tone} />
               {activeTake.videoEnabled && activeTake.report.movement ? (
-                <FeedbackCard title="Movement" card={activeTake.report.movement} />
+                <MovementCard card={activeTake.report.movement} metrics={activeTake.videoMetrics} />
               ) : (
                 <div style={subtleCardStyle}>
                   <div style={cardTitleStyle}>Movement</div>
@@ -780,6 +863,10 @@ export default function CoachPage() {
               )}
               <FeedbackCard title="Intonation" card={activeTake.report.intonation} />
               <QuestionsCardView card={activeTake.report.questions} />
+            </div>
+
+            <div style={{ marginTop: 14, padding: "10px 14px", background: "#F8FAFC", border: "1px dashed #CBD5E1", borderRadius: 10, fontSize: ".75rem", color: "#475569", lineHeight: 1.55 }}>
+              <strong style={{ color: "#1E1B4B" }}>v1 note on the Questions card:</strong> this take measures every question asked in the room. v2 will separate teacher voice from student voices using a local Whisper model so we can credit student questions specifically.
             </div>
 
             {/* Actions */}
@@ -876,6 +963,31 @@ function FeedbackCard({ title, card }: { title: string; card: CoachCard }) {
         <CardRow label="Pattern" text={card.pattern} />
         <CardRow label="Try next time" text={card.experiment} highlight />
       </div>
+    </div>
+  );
+}
+
+function MovementCard({ card, metrics }: { card: CoachCard; metrics: VideoMetrics | null }) {
+  return (
+    <div style={subtleCardStyle}>
+      <div style={cardTitleStyle}>Movement</div>
+      {metrics && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8, marginBottom: 4 }}>
+          <Pill text={`${metrics.motion_active_pct.toFixed(0)}% active frames`} primary />
+          <Pill text={`avg intensity ${metrics.motion_avg.toFixed(1)}`} />
+          <Pill text={`${metrics.frame_samples} frames sampled`} />
+        </div>
+      )}
+      <div style={{ marginTop: 10 }}>
+        <CardRow label="Observation" text={card.observation} />
+        <CardRow label="Pattern" text={card.pattern} />
+        <CardRow label="Try next time" text={card.experiment} highlight />
+      </div>
+      {metrics && (
+        <div style={{ marginTop: 8, fontSize: ".7rem", color: "#94A3B8", lineHeight: 1.45 }}>
+          Motion intensity is measured by local frame differencing on your laptop. The numbers above cross to the model. The frames themselves never leave the browser.
+        </div>
+      )}
     </div>
   );
 }
@@ -1039,6 +1151,7 @@ function PrivacyGate({
             items={[
               "Transcript text",
               "Pitch variance, pace, volume range",
+              videoEnabled ? "Motion intensity numbers (no frames)" : "No video data this take",
               "Question count and types",
             ]}
           />

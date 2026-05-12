@@ -10,10 +10,18 @@ interface AudioMetrics {
   duration_sec: number;
 }
 
+interface VideoMetrics {
+  motion_avg: number;
+  motion_stddev: number;
+  motion_active_pct: number;
+  frame_samples: number;
+}
+
 interface AnalyzeRequest {
   transcript: string;
   questions: string[];
   audio_metrics: AudioMetrics;
+  video_metrics?: VideoMetrics | null;
   video_enabled: boolean;
 }
 
@@ -42,9 +50,15 @@ interface CoachReport {
 }
 
 function buildPrompt(body: AnalyzeRequest): string {
-  const { transcript, questions, audio_metrics, video_enabled } = body;
+  const { transcript, questions, audio_metrics, video_metrics, video_enabled } = body;
   const m = audio_metrics;
-  return `You are a teaching coach reviewing one recorded lesson delivery. The teacher chose to share only the transcript and audio metrics with their district's model. You will NEVER see student names; the teacher has confirmed none are in the transcript. Your goal is to help the teacher build capacity, not to evaluate them. This will never be used for evaluation.
+  const motionLine = video_enabled && video_metrics
+    ? `Motion metrics (from local frame differencing on the teacher's laptop, NOT the frames themselves): mean intensity ${video_metrics.motion_avg.toFixed(2)}, intensity stddev ${video_metrics.motion_stddev.toFixed(2)}, ${video_metrics.motion_active_pct.toFixed(1)}% of sampled frames had motion above threshold, across ${video_metrics.frame_samples} frame samples. Higher mean means more overall movement. Higher stddev means more variation (gesture bursts). Active percentage near 100 means almost constant motion; near 0 means mostly still.`
+    : '';
+  const movementInstruction = video_enabled
+    ? `For the movement card, ground your observation in the motion metrics above. Do not invent body language details you cannot infer from intensity numbers alone (you do not see the frames). You may comment on: overall movement level, variation between gesture bursts and stillness, and whether stillness or motion may serve the teaching moment.`
+    : `For movement: return null. The teacher recorded without video.`;
+  return `You are a teaching coach reviewing one recorded lesson delivery. The teacher chose to share only the transcript and numeric metrics with their district's model. You will NEVER see student names; the teacher has confirmed none are in the transcript. Your goal is to help the teacher build capacity, not to evaluate them. This will never be used for evaluation.
 
 If any proper nouns slipped into the transcript, redact them as [student] in any examples you quote back. Do not name students.
 
@@ -52,9 +66,14 @@ Transcript: """${transcript}"""
 
 Audio metrics: pitch average ${m.pitch_avg.toFixed(1)} Hz, pitch standard deviation ${m.pitch_stddev.toFixed(1)}, volume RMS ${m.volume_rms.toFixed(3)}, duration ${m.duration_sec.toFixed(1)} seconds.
 
+${motionLine}
+
 Questions extracted from transcript: ${JSON.stringify(questions)}
+Note: the transcript captures every voice the microphone picked up, primarily the teacher. v1 does not distinguish teacher questions from student questions. Frame your questions feedback as "your questioning practice" rather than as a count of student questions specifically.
 
 Video was ${video_enabled ? 'enabled' : 'disabled'}.
+
+${movementInstruction}
 
 Return JSON only, no prose before or after, this exact shape:
 {
