@@ -654,6 +654,8 @@ export default function CoachPage() {
       <div style={{ maxWidth: 1320, margin: "0 auto", padding: "32px 20px 80px", display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
         <div style={{ flex: 1, minWidth: 0 }}>
 
+        <div style={{ fontSize: "1rem", fontWeight: 600, color: "#1E1B4B", marginBottom: 16 }}>hi</div>
+
         {/* ── Header + Beacon ── */}
         <header style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
