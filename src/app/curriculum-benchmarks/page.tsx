@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'AI for Curriculum Work · National and Regional Benchmarks (May 2026)',
+  title: 'Danbury Curriculum Team',
   description:
     'A pre-meeting brief on what districts inside and outside Connecticut have done with AI on curriculum work in the last 18 months. Wins and cautionary tales both.',
   alternates: { canonical: '/curriculum-benchmarks' },
   openGraph: {
-    title: 'AI for Curriculum Work · National and Regional Benchmarks',
+    title: 'Danbury Curriculum Team',
     description:
       'Pre-meeting brief on K-12 AI for curriculum writing. State pilots, district initiatives, vendor data points, and a Texas cautionary tale.',
     locale: 'en_US',
