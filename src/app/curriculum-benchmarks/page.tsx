@@ -270,15 +270,6 @@ export default function CurriculumBenchmarksPage() {
           </ul>
         </section>
 
-        <section className="mt-16 pt-8 border-t border-[#1E1B4B]/10 text-center">
-          <p className="text-sm text-[#1E1B4B]/60 mb-2">Questions or want to discuss?</p>
-          <a
-            href="mailto:brayan@nextgenerationlearners.com"
-            className="text-base font-semibold text-[#4F46E5] hover:opacity-70 transition"
-          >
-            brayan@nextgenerationlearners.com
-          </a>
-        </section>
       </article>
     </main>
   );
