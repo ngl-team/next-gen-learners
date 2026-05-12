@@ -164,6 +164,9 @@ export default function CoachPage() {
   const MOTION_H = 60;
   const MOTION_ACTIVE_THRESHOLD = 4;
 
+  /* Stop-coordination flag (prevents recognition.onend from restarting after intentional stop) */
+  const stopRequestedRef = useRef(false);
+
   /* Detect speech recognition support on mount */
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -224,6 +227,12 @@ export default function CoachPage() {
      START RECORDING
      ───────────────────────────────────────── */
   const startRecording = useCallback(async () => {
+    /* Guard against double-start: if recording or stream still active, bail */
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") return;
+    if (mediaStreamRef.current) return;
+    /* Defensive: tear down any leftover state from a previous run */
+    stopAllStreams();
+    stopRequestedRef.current = false;
     setError(null);
     setTranscript("");
     setInterimTranscript("");
@@ -353,14 +362,31 @@ export default function CoachPage() {
           setTranscript(finalTranscriptRef.current);
           setInterimTranscript(interim);
         };
-        rec.onerror = () => { /* swallow; transcript may be partial */ };
+        rec.onerror = (e) => {
+          const errEvt = e as { error?: string };
+          const errType = errEvt?.error || "unknown";
+          console.warn("[coach] speech recognition error:", errType);
+          if (errType === "not-allowed" || errType === "service-not-allowed") {
+            setError("Microphone access denied for transcription. Click the lock icon in the address bar and allow microphone, then try again.");
+          } else if (errType === "network") {
+            setError("Speech recognition lost network. Chrome routes Web Speech audio to Google for transcription, so it needs an internet connection. Reconnect and re-record, or switch the demo to audio metrics only.");
+          } else if (errType === "no-speech") {
+            /* benign, will retry on next utterance */
+          } else if (errType === "audio-capture") {
+            setError("Could not capture microphone audio. Check the system mic input and try again.");
+          }
+        };
         rec.onend = () => {
+          /* If the teacher requested stop, do not restart */
+          if (stopRequestedRef.current) return;
           /* If we are still recording, restart to keep listening */
           if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
             try { rec.start(); } catch { /* noop */ }
           }
         };
-        try { rec.start(); } catch { /* noop */ }
+        try { rec.start(); } catch (e) {
+          console.warn("[coach] recognition.start threw:", e);
+        }
         recognitionRef.current = rec;
       }
 
@@ -381,6 +407,7 @@ export default function CoachPage() {
      STOP RECORDING
      ───────────────────────────────────────── */
   const stopRecording = useCallback(() => {
+    stopRequestedRef.current = true;
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       try { mediaRecorderRef.current.stop(); } catch { /* noop */ }
     }
@@ -680,6 +707,12 @@ export default function CoachPage() {
             {!speechSupported && (
               <div style={{ padding: "10px 14px", background: "#FFFBEB", border: "1px solid #FCD34D", borderRadius: 10, marginBottom: 16, fontSize: ".8rem", color: "#92400E" }}>
                 Live transcription requires Chrome or Edge. Recording still works, but the transcript will be empty.
+              </div>
+            )}
+
+            {stage === "setup" && speechSupported && (
+              <div style={{ padding: "10px 14px", background: "#F8FAFC", border: "1px dashed #CBD5E1", borderRadius: 10, marginBottom: 16, fontSize: ".75rem", color: "#475569", lineHeight: 1.55 }}>
+                <strong style={{ color: "#1E1B4B" }}>v1 transcription note:</strong> this take uses Chrome&apos;s built-in dictation, which sends audio to Google&apos;s speech-to-text service to return the transcript text. The audio file itself never leaves the browser, and Google does not retain it for training. v2 will run a local Whisper model on the laptop so no audio leaves the device at all.
               </div>
             )}
 
