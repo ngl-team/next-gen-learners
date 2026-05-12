@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice #NGL-2026-002 | Next Generation Learners LLC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:#fff;color:#1E1B4B;line-height:1.6;-webkit-font-smoothing:antialiased}
+    .invoice{max-width:800px;margin:0 auto;padding:60px 60px 40px}
+
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:48px;padding-bottom:32px;border-bottom:3px solid #4F46E5}
+    .brand{font-size:1.1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#4F46E5}
+    .brand-sub{font-size:.78rem;color:#64748B;margin-top:4px;font-weight:400;letter-spacing:0}
+    .invoice-title{text-align:right}
+    .invoice-title h1{font-size:1.8rem;font-weight:800;color:#1E1B4B;letter-spacing:-.02em}
+    .invoice-num{font-size:.82rem;color:#64748B;margin-top:4px}
+
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:48px}
+    .info-block label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#94A3B8;font-weight:700;display:block;margin-bottom:6px}
+    .info-block p{font-size:.88rem;color:#1E1B4B;line-height:1.6}
+    .info-block p.dim{color:#64748B}
+
+    .table-wrap{margin-bottom:40px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#94A3B8;font-weight:700;padding:12px 0;border-bottom:2px solid #E2E8F0}
+    thead th:last-child{text-align:right}
+    tbody td{padding:16px 0;border-bottom:1px solid #F1F5F9;font-size:.88rem;color:#1E1B4B;vertical-align:top}
+    tbody td:last-child{text-align:right;font-weight:600;white-space:nowrap}
+    tbody td .item-title{font-weight:600;margin-bottom:4px}
+    tbody td .item-desc{font-size:.78rem;color:#64748B;line-height:1.5;max-width:480px}
+
+    .totals{display:flex;justify-content:flex-end;margin-bottom:48px}
+    .totals-box{width:280px}
+    .totals-row{display:flex;justify-content:space-between;padding:10px 0;font-size:.88rem;border-bottom:1px solid #F1F5F9}
+    .totals-row.total{border-bottom:none;border-top:2px solid #1E1B4B;padding-top:14px;margin-top:4px;font-weight:800;font-size:1.1rem}
+    .totals-row .label{color:#64748B}
+    .totals-row.total .label{color:#1E1B4B}
+
+    .payment-schedule{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:24px;margin-bottom:40px}
+    .payment-schedule h3{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#4F46E5;font-weight:700;margin-bottom:16px}
+    .pay-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #E2E8F0;font-size:.85rem}
+    .pay-row:last-child{border-bottom:none}
+    .pay-row .pay-label{color:#64748B}
+    .pay-row .pay-amount{font-weight:700;color:#1E1B4B}
+    .pay-row .pay-due{font-size:.75rem;color:#94A3B8}
+
+    .pay-methods{background:#FFF8EC;border:1px solid #F2D58B;border-radius:12px;padding:20px 24px;margin-bottom:40px}
+    .pay-methods h3{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#B77418;font-weight:700;margin-bottom:12px}
+    .pay-methods ul{list-style:none;padding:0}
+    .pay-methods li{font-size:.85rem;color:#1E1B4B;padding:6px 0}
+    .pay-methods li strong{color:#B77418;font-weight:700;margin-right:6px}
+
+    .notes{margin-bottom:40px}
+    .notes h3{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:#4F46E5;font-weight:700;margin-bottom:12px}
+    .notes p{font-size:.82rem;color:#64748B;line-height:1.7}
+
+    .footer{border-top:1px solid #E2E8F0;padding-top:24px;text-align:center}
+    .footer p{font-size:.75rem;color:#94A3B8;line-height:1.6}
+    .footer a{color:#4F46E5;text-decoration:none}
+
+    @media print{
+      body{background:#fff}
+      .invoice{padding:40px 40px 20px}
+      .payment-schedule,.pay-methods{break-inside:avoid}
+    }
+  </style>
+</head>
+<body>
+
+<div class="invoice">
+
+  <div class="header">
+    <div>
+      <div class="brand">Next Generation Learners LLC</div>
+      <div class="brand-sub">Brayan Tenesaca<br>brayan@nextgenerationlearners.com<br>nextgenerationlearners.com</div>
+    </div>
+    <div class="invoice-title">
+      <h1>Invoice</h1>
+      <div class="invoice-num">#NGL-2026-002 &middot; May 11, 2026</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div>
+      <div class="info-block">
+        <label>Bill To</label>
+        <p>Jamil Pomavilla<br>Tectural Construction<br>Newtown, CT</p>
+      </div>
+    </div>
+    <div>
+      <div class="info-block" style="margin-bottom:20px">
+        <label>Invoice Date</label>
+        <p>May 11, 2026</p>
+      </div>
+      <div class="info-block" style="margin-bottom:20px">
+        <label>Payment Terms</label>
+        <p>50% due upon signing, 50% due upon acceptance</p>
+      </div>
+      <div class="info-block">
+        <label>Invoice Number</label>
+        <p>NGL-2026-002</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="item-title">Custom CRM Build for Tectural Construction</div>
+            <div class="item-desc">In-house Customer Relationship Management system owned by Tectural Construction. Three pipelines (Roofing, Solar, Painting / General Construction). Per-job client profiles with photos, documents, emails, and full job history. Live-link client portal so each customer can access their own job profile. Contract automation with basic / medium / complex tiers. Auto-invoice generation. Address autocomplete on intake. AI summaries on each job. Per-sender email threading inside each client profile. No per-user subscription. Tectural owns the codebase.</div>
+          </td>
+          <td>$2,500.00</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-title">Iterative Build Until Acceptance</div>
+            <div class="item-desc">Brayan continues to refine the CRM at no additional cost until Jamil signs off that the system works the way he wants it to. Scope bounded to the functionality listed above.</div>
+          </td>
+          <td>Included</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="item-title">30-Day Post-Acceptance Support</div>
+            <div class="item-desc">Bug fixes, tuning, and training questions answered within one business day for 30 days after Jamil's written acceptance.</div>
+          </td>
+          <td>Included</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="totals">
+    <div class="totals-box">
+      <div class="totals-row">
+        <span class="label">Subtotal</span>
+        <span>$2,500.00</span>
+      </div>
+      <div class="totals-row">
+        <span class="label">Tax</span>
+        <span>$0.00</span>
+      </div>
+      <div class="totals-row total">
+        <span class="label">Total Due</span>
+        <span>$2,500.00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-schedule">
+    <h3>Payment Schedule</h3>
+    <div class="pay-row">
+      <div>
+        <span class="pay-label">Deposit &middot; 50% due upon signing</span>
+      </div>
+      <div>
+        <span class="pay-amount">$1,250.00</span>
+        <span class="pay-due"> &middot; Due today, May 11, 2026</span>
+      </div>
+    </div>
+    <div class="pay-row">
+      <div>
+        <span class="pay-label">Final &middot; 50% due upon acceptance</span>
+      </div>
+      <div>
+        <span class="pay-amount">$1,250.00</span>
+        <span class="pay-due"> &middot; Due when Jamil signs off</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pay-methods">
+    <h3>How to Pay the Deposit</h3>
+    <ul>
+      <li><strong>Zelle:</strong> brayantenesaca10@gmail.com (no fees, instant)</li>
+      <li><strong>Check:</strong> Payable to Next Generation Learners LLC</li>
+      <li><strong>Stripe:</strong> Card link available on request</li>
+    </ul>
+  </div>
+
+  <div class="notes">
+    <h3>Notes</h3>
+    <p>
+      Vendor: Next Generation Learners LLC. W-9 available on request.<br>
+      All Tectural Construction data stays inside infrastructure Jamil owns. No subscription. No per-user fees. Tectural owns the codebase at handoff.<br>
+      Out-of-scope future builds (in-house AI estimator, custom website rebuild, standalone email assistant) are quoted as separate sprints.
+    </p>
+  </div>
+
+  <div class="footer">
+    <p>
+      Next Generation Learners LLC &middot; <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a> &middot; <a href="https://nextgenerationlearners.com">nextgenerationlearners.com</a>
+    </p>
+    <p style="margin-top:8px">Gracias, tío. Let's build it.</p>
+  </div>
+
+</div>
+
+</body>
+</html>
