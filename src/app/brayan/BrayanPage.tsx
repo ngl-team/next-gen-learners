@@ -1,3 +1,5 @@
+import PingForm from './PingForm';
+
 const WHATSAPP_NUMBER = '12034604183';
 const WHATSAPP_DISPLAY = '+1 (203) 460-4183';
 
@@ -198,6 +200,57 @@ export default function BrayanPage() {
             <a href={telLink} className="bp-btn-ghost">
               Call
             </a>
+          </div>
+
+          <div
+            className="bp-fade-5"
+            style={{
+              marginTop: 56,
+              paddingTop: 40,
+              borderTop: '1px solid var(--line)',
+            }}
+          >
+            <div
+              className="bp-eyebrow"
+              style={{ marginBottom: 14, display: 'inline-flex', alignItems: 'center', gap: 10 }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  background: 'var(--ink)',
+                }}
+              />
+              Ping me
+            </div>
+            <h2
+              className="bp-display"
+              style={{
+                fontSize: 'clamp(1.6rem, 3.4vw, 2.2rem)',
+                lineHeight: 1.1,
+                margin: '0 0 10px',
+                color: 'var(--ink)',
+              }}
+            >
+              Leave your info, I&rsquo;ll reach out.
+            </h2>
+            <p
+              style={{
+                fontSize: '0.98rem',
+                lineHeight: 1.6,
+                color: 'var(--ink-soft)',
+                margin: '0 0 24px',
+                maxWidth: 460,
+              }}
+            >
+              Drop your name and the best way to reach you. Hits my WhatsApp
+              directly.
+            </p>
+
+            <div className="bp-card">
+              <PingForm phone={WHATSAPP_NUMBER} />
+            </div>
           </div>
         </div>
       </main>
