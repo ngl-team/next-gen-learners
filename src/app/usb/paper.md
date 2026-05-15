@@ -136,7 +136,7 @@ This is where the board-level "just ask AI" instinct becomes real. It is also th
 - **Regulatory exposure**: Low when contracted correctly. Vendor must contractually agree not to train on bank data and must offer tenant isolation. This is standard with Microsoft Copilot for M365, OpenAI Enterprise, and Anthropic Enterprise contracts.
 - **Implementation risk**: Low. The bank's IT team can deploy Copilot in 60 days. The risk is human-side: employees pasting customer information into consumer ChatGPT.
 - **Rough first-year ROI**: Bank of Queensland publicly cites 99% / 88% / 75% time savings on internal manuals, marketing copy, and HR drafts respectively after Copilot deployment.[^cornerstone] Cornerstone Advisors' 2026 survey found 49% of US banks and 59% of US credit unions report some generative AI use.
-- **Recommended vendor**: Microsoft 365 Copilot at approximately $21 per user per month,[^copilot-price] given the assumption that USB is already on Microsoft 365. This is the lowest-risk first AI deployment any community bank can make.
+- **Recommended vendor**: Microsoft 365 Copilot Enterprise at $30 per user per month list (annual commit), or Copilot Business at $18 per user per month promo through June 30, 2026, rising to $21 thereafter,[^copilot-price] given the assumption that USB is already on Microsoft 365. This is the lowest-risk first AI deployment any community bank can make.
 
 [^cornerstone]: Cornerstone Advisors via FinXTech, "Copilot Efficiencies Could Translate Into Savings for Financial Institutions." https://finxtech.com/copilot-efficiencies-could-translate-into-savings-for-financial-institutions/
 
@@ -197,7 +197,7 @@ To honor the no-fabrication standard, the following do not exist as of May 2026,
 - An OCC final rule or bulletin titled as AI guidance in 2024 or 2025.
 - A Connecticut Department of Banking AI-specific rule.
 
-The OCC's 2025 statements signal that an AI/MRM RFI is under consideration.[^occ2025] If it issues, it will likely accelerate community-bank examiner expectations.
+The OCC's 2025 public statements indicate active engagement on AI supervision.[^occ2025] If a formal AI/MRM RFI or guidance issues in 2026, it will likely accelerate community-bank examiner expectations.
 
 [^nistairmf]: NIST, "Artificial Intelligence Risk Management Framework (AI RMF 1.0)," NIST AI 100-1, January 26, 2023. https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
 [^nistgenai]: NIST, "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile," NIST AI 600-1, July 2024. https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf
@@ -240,7 +240,7 @@ A note on contacts. Only contact details that were directly confirmed on a bank'
 
 ### 5.1 Bankwell Financial Group (BWFG, New Canaan, CT). The Direct Peer
 
-Bankwell is the closest single comparable in this paper. $3.2B in assets,[^bwfg-size] Connecticut, FDIC-supervised. If USB has one peer to study, this is it.
+Bankwell is the closest single comparable in this paper. $3.4B in assets as of Q1 2026,[^bwfg-size] Connecticut, FDIC-supervised. If USB has one peer to study, this is it.
 
 **What they have built or are building:**
 - Pilot of Cascading AI's Casca product for small-business loan lead prequalification. Bankwell publicly stated leads were "five or six times the quality" of organic.[^abwell]
@@ -266,7 +266,7 @@ Bankwell is the closest single comparable in this paper. $3.2B in assets,[^bwfg-
 
 ### 5.2 Webster Financial / Webster Bank (WBS, Stamford, CT). The Dominant CT Peer
 
-Webster is the largest Connecticut-headquartered bank. Approximately $80B in assets.[^wbs-size] While larger than USB, it sets the regulatory and competitive tone for CT banking.
+Webster is the largest Connecticut-headquartered bank. Approximately $85.6B in assets as of Q1 2026.[^wbs-size] While larger than USB, it sets the regulatory and competitive tone for CT banking.
 
 **What they have built or are building:**
 - Generative-AI proof-of-concepts in: intelligent internal search, syndicated commercial-loan workflow automation, customer-attrition prediction, and financial-statement summarization.[^cioweb]
@@ -283,14 +283,14 @@ Webster is the largest Connecticut-headquartered bank. Approximately $80B in ass
 
 **Contact section:**
 - CEO: John R. Ciulla. LinkedIn: https://www.linkedin.com/in/john-r-ciulla/
-- IR contact: Emlen Harmon, Director of Investor Relations. eharmon@websterbank.com. Phone 212-309-7646.
+- IR contact: Emlen Harmon, Senior Managing Director, Investor Relations. eharmon@websterbank.com. Phone 212-309-7646.
 
 [^cioweb]: CIO.com, "CIOs weigh where to place AI bets and how to de-risk them." https://www.cio.com/article/1313542/cios-weigh-where-to-place-ai-bets-and-how-to-de-risk-them.html
-[^webstercareer]: Webster careers page. https://careers.websteronline.com/managing-director-ai-engineer/job/28772179
+[^webstercareer]: Webster careers page (specific 'Managing Director, AI Engineer' posting since closed). https://careers.websteronline.com
 
 ### 5.3 Eastern Bank / Eastern Bankshares (EBC, Boston, MA). The MA Neighbor
 
-Eastern is a $25.5B Massachusetts bank,[^ebc-size] Boston-headquartered, FDIC-supervised. Recognized as one of community banking's "AI mavericks" by American Banker in 2024.[^ebcav]
+Eastern is a $30.6B Massachusetts bank as of Q1 2026,[^ebc-size] Boston-headquartered, FDIC-supervised. The Q4 2025 close of the Cambridge Trust acquisition contributed to the asset growth. Recognized as one of community banking's "AI mavericks" by American Banker in 2024.[^ebcav]
 
 **What they have built or are building:**
 - November 2025: Expanded existing nCino partnership to add Consumer Banking and Mortgage to the existing Commercial loan-origination platform. Integrating Alloy for fraud and identity decisioning. Zennify is the implementation partner.[^ebcncino]
@@ -317,7 +317,7 @@ Eastern is a $25.5B Massachusetts bank,[^ebc-size] Boston-headquartered, FDIC-su
 
 ### 5.4 Citizens Financial Group (CFG, Providence, RI). The Regional Benchmark
 
-Citizens is approximately $220B in assets,[^cfg-size] the largest Northeast peer in this set. The bank is included not as a size comparable but as the source of the most disciplined public AI strategy commentary at any Northeast bank.
+Citizens is approximately $227.9B in assets as of Q1 2026,[^cfg-size] the largest Northeast peer in this set. The bank is included not as a size comparable but as the source of the most disciplined public AI strategy commentary at any Northeast bank.
 
 **What they have built or are building:**
 - "Reimagining the Bank" is a three-year, $300M AI-driven transformation announced July 2025. 47 initiatives. Target: 50%+ of retail call-center calls handled by non-humans by year-end 2026.[^cfgam]
@@ -345,7 +345,7 @@ Citizens is approximately $220B in assets,[^cfg-size] the largest Northeast peer
 
 ### 5.5 Live Oak Bancshares (LOB, Wilmington, NC). The Cleanest Lending-AI Story
 
-Live Oak is approximately $13B in assets[^lob-size] and is the single bank in this set with the cleanest AI-deploys-into-loan-workflow public story.
+Live Oak is approximately $15.3B in assets as of Q1 2026[^lob-size] and is the single bank in this set with the cleanest AI-deploys-into-loan-workflow public story.
 
 **What they have built or are building:**
 - August 19, 2025: Live Oak Ventures invested in Cascading AI (Casca). Live Oak participated in a $29M round alongside Huntington.[^lobcasca][^lobam]
@@ -368,7 +368,7 @@ Live Oak is approximately $13B in assets[^lob-size] and is the single bank in th
 
 ### 5.6 Customers Bancorp (CUBI, West Reading, PA). The Aspirational and Cautionary Tale
 
-Customers is approximately $22B in assets[^cubi-size] and is the most aggressive AI bet in the Northeast peer set. It is included for instructional contrast: this is what USB is *not* going to do, and the board should understand why.
+Customers is approximately $25.9B in assets as of Q1 2026[^cubi-size] and is the most aggressive AI bet in the Northeast peer set. It is included for instructional contrast: this is what USB is *not* going to do, and the board should understand why.
 
 **What they have built or are building:**
 - April 27, 2026: Multi-year strategic collaboration with OpenAI. OpenAI engineers embedded at the bank to redesign lending, deposits, and payments. Target: commercial loan close from 30-45 days down to approximately 7 days.[^cubibw][^cubiabb][^cubicnbc]
@@ -383,7 +383,7 @@ Customers is approximately $22B in assets[^cubi-size] and is the most aggressive
 
 **Contact section:**
 - CEO: Sam Sidhu. LinkedIn: https://www.linkedin.com/in/ssidhu
-- Press / Communications Director: David Patti. Phone 610-451-9452.
+- Press contact: David Patti, Special Assistant to the Executive Chair. Phone 610-451-9452.
 - Investor relations page: https://www.customersbank.com/investor-relations/about-us/
 
 [^cubibw]: Customers Bank press release. https://www.businesswire.com/news/home/20260427319349/en/Customers-Bank-Announces-Strategic-Collaboration-with-OpenAI-to-Redefine-the-Commercial-Banking-Operating-Model
@@ -405,12 +405,12 @@ Several names were on the original candidate list and were excluded after resear
 [^bbtmerge]: Boston Globe coverage of Berkshire-Brookline merger completion. https://www.bostonglobe.com/2025/09/03/business/berkshire-brookline-bank-beacon-financial/
 [^flicmerge]: ConnectOne Bancorp press release on completed FLIC merger. https://www.globenewswire.com/news-release/2025/06/02/3091713/25238/en/ConnectOne-Bancorp-Inc-Completes-Merger-With-the-First-of-Long-Island-Corporation.html
 [^pnbkam]: American Banker, "Patriot National raises $50 million, parts ways with CEO." https://www.americanbanker.com/news/patriot-national-raises-50-million-parts-ways-with-ceo
-[^bwfg-size]: Bankwell Financial Group investor relations. Asset size as of most recent 10-Q. Verify at https://investor.mybankwell.com
-[^wbs-size]: Webster Financial Corporation investor relations. Asset size as of most recent 10-Q. Verify at https://investors.websterbank.com
-[^ebc-size]: Eastern Bankshares investor relations, as of September 30, 2025. Verify at https://investor.easternbank.com
-[^cfg-size]: Citizens Financial Group investor relations. Verify at https://investor.citizensbank.com
-[^lob-size]: Live Oak Bancshares investor relations. Verify at https://investor.liveoak.bank
-[^cubi-size]: Customers Bancorp investor relations. Verify at https://customersbank.com/investor-relations
+[^bwfg-size]: Bankwell Financial Group, Q1 2026 10-Q, total assets of $3.4B as of March 31, 2026. https://investor.mybankwell.com
+[^wbs-size]: Webster Financial Corporation, Q1 2026 10-Q, total assets of $85.6B as of March 31, 2026. https://investors.websterbank.com
+[^ebc-size]: Eastern Bankshares, Q1 2026 earnings release, April 23, 2026, total assets of $30.6B as of March 31, 2026. https://investor.easternbank.com
+[^cfg-size]: Citizens Financial Group, Q1 2026 10-Q, total assets of $227.9B as of March 31, 2026. https://investor.citizensbank.com
+[^lob-size]: Live Oak Bancshares, Q1 2026 earnings release, April 22, 2026, total assets of $15.3B as of March 31, 2026. https://investor.liveoak.bank
+[^cubi-size]: Customers Bancorp, Q1 2026 earnings release, April 23, 2026, total assets of $25.9B as of March 31, 2026. https://customersbank.com/investor-relations
 
 ---
 
@@ -495,7 +495,7 @@ There are two areas where USB should build, both small and both internal.
 Most categories. The vendor recommendations below are filtered to vendors with named community-bank customers, transparent pricing or analyst-estimated pricing, and a regulatory profile that survives diligence. Detailed vendor profiles are in the briefs received during research; the names and use cases are summarized here.
 
 **Productivity (full-headcount deployment):**
-- Microsoft 365 Copilot. Approximately $21 per user per month with annual commit.[^copilot-price] Standard contract supports no-training commitments and tenant isolation. The lowest-risk first AI deployment.
+- Microsoft 365 Copilot Enterprise. $30 per user per month list (annual commit).[^copilot-price] Microsoft 365 Copilot Business is $18/user/month promo through June 30, 2026, then $21/user/month, but Enterprise is the right tier for a regulated bank. Standard contract supports no-training commitments and tenant isolation. The lowest-risk first AI deployment.
 
 **Email and endpoint defense:**
 - Abnormal Security. Behavioral AI for inbound email. Sits on top of Microsoft 365 or Google Workspace.
@@ -542,7 +542,7 @@ Three vendor-level items the board should be aware of when reviewing third-party
 [^verafin-scale]: Per Nasdaq Verafin's homepage. Verify at https://verafin.com
 [^ncino-scale]: Per nCino's homepage. Verify at https://www.ncino.com
 [^glia-scale]: Per Glia's website. Verify at https://www.glia.com
-[^copilot-price]: Microsoft 365 Copilot list pricing. Verify current price at https://www.microsoft.com/en-us/microsoft-365/business/microsoft-365-copilot-for-business
+[^copilot-price]: Microsoft 365 Copilot list pricing as of May 2026. Enterprise tier $30/user/month annual commit; Business tier $18/user/month promo through June 30, 2026, rising to $21/user/month thereafter. https://www.microsoft.com/en-us/microsoft-365-copilot/pricing-new
 
 ---
 
