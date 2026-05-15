@@ -8,11 +8,11 @@
 
 ## 0. Cover Memo
 
-In an early-May conversation, Frank Rowella mentioned that the USB board has been asked to draft an AI policy and that the discussion keeps returning to three concerns: regulation, client information leakage, and cybersecurity. He did not ask for any research. The decision to assemble this brief was the author's. It is offered in appreciation of the time Frank Rowella and Chelen Reyes have given over the past several years. There is no service offer attached and no NGL pitch inside.
+Frank Rowella and I had a conversation about USB recently. From what he shared, I thought a board-level research brief on AI at a $3B community bank might be useful. It is offered in appreciation of the time Frank and Chelen have given over the past several years.
 
 **The five things the paper says, in order of board relevance:**
 
-1. The megabank AI playbook does not transfer to a $3B community bank. The right reference set is Bankwell ($3.2B, CT), Webster, Eastern, Citizens, Live Oak, and Customers. Their public moves and public mistakes are mapped in Section 5.
+1. The megabank AI playbook does not transfer to a $3B community bank. The right reference set is Bankwell ($3.4B, CT), Webster, Eastern, Citizens, Live Oak, and Customers. Their public moves and public mistakes are mapped in Section 5.
 2. Regulators have not issued an AI rule for community banks. They have made clear that AI is governed by the existing model risk and third-party risk frameworks (SR 11-7, OCC 2023-17, the FFIEC AIO booklet, CFPB Circulars 2022-03 and 2023-03, and the FinCEN 2018 Joint Statement). All cited with verifiable URLs in Section 4.
 3. The instinct that the board should "just ask AI" for the policy is closer to right than wrong. Section 8 contains a working policy template that can be the starting point at the next board meeting.
 4. The single highest-risk AI surface for USB right now is not a model the bank deploys. It is generative-AI-enabled fraud aimed at the bank. Email compromise is the leading vector. FinCEN issued the first formal Deepfake Alert (FIN-2024-Alert004) in November 2024.
@@ -23,7 +23,7 @@ In an early-May conversation, Frank Rowella mentioned that the USB board has bee
 - For board policy work: Sections 2, 4, and 8. The community-bank thesis, the regulatory frame, and the policy template.
 - For executive operating decisions: Sections 3, 5, 6, and 7. The use-case map, peer studies (with a contact section so peer CEOs are reachable), the 12-month roadmap, and the build-versus-buy reality.
 
-**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and a few small private-sector clients. The paper is a research gift. There is no service offer attached. Reachable at brayan@nextgenerationlearners.com.
+**Author bio.** Brayan Tenesaca is an 18-year-old freshman at Babson College and the co-founder of Next Generation Learners (NGL), a sovereign-data AI implementation firm working with Northeast school districts and private-sector clients. The paper is a research gift. Reachable at brayan@nextgenerationlearners.com.
 
 ---
 
