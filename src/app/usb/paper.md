@@ -111,7 +111,7 @@ This is the use case where the board's stated "client information going out" con
 - **Recommended vendors**: Glia (700+ FI customers, fixed pricing), Posh (community-bank-only, MIT spinoff). See Section 7.
 
 [^ftc2021]: FTC, "Standards for Safeguarding Customer Information," final rule, December 9, 2021. https://www.federalregister.gov/documents/2021/12/09/2021-25736/standards-for-safeguarding-customer-information
-[^citizensaicare]: Penny Crosman, "Inside Citizens' plan to reimagine itself with AI," American Banker, July 2025. https://www.americanbanker.com/news/inside-citizens-plan-to-reimagine-itself-with-ai
+[^citizensaicare]: Penny Crosman, "Citizens details how AI is speeding everything up," American Banker, March 27, 2026. https://www.americanbanker.com/news/citizens-details-how-ai-is-speeding-everything-up
 
 ### 3.4 Loan Underwriting Decision Support
 
@@ -136,7 +136,7 @@ This is where the board-level "just ask AI" instinct becomes real. It is also th
 - **Regulatory exposure**: Low when contracted correctly. Vendor must contractually agree not to train on bank data and must offer tenant isolation. This is standard with Microsoft Copilot for M365, OpenAI Enterprise, and Anthropic Enterprise contracts.
 - **Implementation risk**: Low. The bank's IT team can deploy Copilot in 60 days. The risk is human-side: employees pasting customer information into consumer ChatGPT.
 - **Rough first-year ROI**: Bank of Queensland publicly cites 99% / 88% / 75% time savings on internal manuals, marketing copy, and HR drafts respectively after Copilot deployment.[^cornerstone] Cornerstone Advisors' 2026 survey found 49% of US banks and 59% of US credit unions report some generative AI use.
-- **Recommended vendor**: Microsoft 365 Copilot Enterprise at $30 per user per month list (annual commit), or Copilot Business at $18 per user per month promo through June 30, 2026, rising to $21 thereafter,[^copilot-price] given the assumption that USB is already on Microsoft 365. This is the lowest-risk first AI deployment any community bank can make.
+- **Recommended vendor**: Microsoft 365 Copilot Enterprise at $30 per user per month list (annual commit),[^copilot-price] given the assumption that USB is already on Microsoft 365. This is the lowest-risk first AI deployment any community bank can make.
 
 [^cornerstone]: Cornerstone Advisors via FinXTech, "Copilot Efficiencies Could Translate Into Savings for Financial Institutions." https://finxtech.com/copilot-efficiencies-could-translate-into-savings-for-financial-institutions/
 
@@ -320,7 +320,7 @@ Eastern is a $30.6B Massachusetts bank as of Q1 2026,[^ebc-size] Boston-headquar
 Citizens is approximately $227.9B in assets as of Q1 2026,[^cfg-size] the largest Northeast peer in this set. The bank is included not as a size comparable but as the source of the most disciplined public AI strategy commentary at any Northeast bank.
 
 **What they have built or are building:**
-- "Reimagining the Bank" is a three-year, $300M AI-driven transformation announced July 2025. 47 initiatives. Target: 50%+ of retail call-center calls handled by non-humans by year-end 2026.[^cfgam]
+- "Reimagining the Bank" is a three-year, $300M AI-driven transformation announced in 2025. 47 initiatives. Target: 50%+ of retail call-center calls handled by non-humans by year-end 2026.[^cfgam][^cfgam2]
 - Piloting agentic AI in fraud claims and complaint handling.[^cfgam2]
 - 750 applications moved to cloud, 25 data centers eliminated. 10-15% infrastructure cost reduction realized.[^cfgts]
 - Hyderabad hub opened for IT, data, and AI staff. Up to 1,000 staff by March 2026. Cognizant is the partner.[^cfghyd]
@@ -336,8 +336,8 @@ Citizens is approximately $227.9B in assets as of Q1 2026,[^cfg-size] the larges
 - Head of IR: Kristin Silberberg.
 - IR contact page: https://investor.citizensbank.com/about-us/investor-relations/contact-investor-relations.aspx
 
-[^cfgam]: Penny Crosman, "Inside Citizens' plan to reimagine itself with AI," American Banker, July 2025. https://www.americanbanker.com/news/inside-citizens-plan-to-reimagine-itself-with-ai
-[^cfgam2]: American Banker, "Citizens details how AI is speeding everything up." https://www.americanbanker.com/news/citizens-details-how-ai-is-speeding-everything-up
+[^cfgam]: Penny Crosman, "Citizens details how AI is speeding everything up," American Banker, March 27, 2026. https://www.americanbanker.com/news/citizens-details-how-ai-is-speeding-everything-up
+[^cfgam2]: Penny Crosman, "Inside Citizens' plan to reimagine itself with AI," American Banker, December 1, 2025. https://www.americanbanker.com/news/inside-citizens-plan-to-reimagine-itself-with-ai
 [^cfgts]: Tearsheet, "How Citizens Bank is building GenAI with a five-year vision, not just quick fixes." https://tearsheet.co/artificial-intelligence/how-citizens-bank-is-building-genai-with-a-five-year-vision-not-just-quick-fixes/
 [^cfghyd]: QA Financial, "Citizens launches Hyderabad hub to boost digital resilience." https://qa-financial.com/citizens-launches-hyderabad-hub-to-boost-digital-resilience/
 [^cfgboy]: Citizens press release, December 16, 2025. https://investor.citizensbank.com/about-us/newsroom/latest-news/2025/2025-12-16-140837139.aspx
@@ -348,7 +348,7 @@ Citizens is approximately $227.9B in assets as of Q1 2026,[^cfg-size] the larges
 Live Oak is approximately $15.3B in assets as of Q1 2026[^lob-size] and is the single bank in this set with the cleanest AI-deploys-into-loan-workflow public story.
 
 **What they have built or are building:**
-- August 19, 2025: Live Oak Ventures invested in Cascading AI (Casca). Live Oak participated in a $29M round alongside Huntington.[^lobcasca][^lobam]
+- August 19, 2025: Live Oak Ventures invested in Cascading AI (Casca). Live Oak participated in a $29M Canapi Ventures-led round; Huntington, Bankwell, and Y Combinator also co-invested.[^lobcasca][^lobam]
 - Live Oak is a design partner deploying Casca to automate the Live Oak Express SBA loan workflow. Target: approve in 1-2 days.
 
 **What is publicly known about cost or scope:** Not disclosed beyond the Casca round size.
@@ -399,7 +399,7 @@ Several names were on the original candidate list and were excluded after resear
 - **First National Bank of Long Island (FLIC)**: Merged into ConnectOne Bancorp June 2, 2025.[^flicmerge]
 - **Salisbury Bancorp**: Acquired by NBT Bancorp August 2023. Defunct entity.
 - **Hanover Bancorp, NBT Bancorp, Provident Financial Services**: Researched. No public AI deployment surfaced.
-- **Patriot National Bancorp (PNBK)**: In turnaround. CEO David Lowery exited March 2025. Steven Sugarman (ex-Banc of California founder) installed as Chair, President, CEO after $57.75M private placement under Nasdaq financial-viability exception.[^pnbkam] Not an AI peer.
+- **Patriot National Bancorp (PNBK)**: In turnaround. CEO David Lowery stepped down April 2025. Steven Sugarman (ex-Banc of California founder) installed as Chair, President, CEO after approximately $50M private placement under Nasdaq financial-viability exception.[^pnbkam] Not an AI peer.
 
 [^pnfpmerge]: Pinnacle press release. https://www.pnfp.com/about-pinnacle/media-room/news-releases/pinnacle-and-synovus-complete-merger-to-become-regional-bank-growth-champion/
 [^bbtmerge]: Boston Globe coverage of Berkshire-Brookline merger completion. https://www.bostonglobe.com/2025/09/03/business/berkshire-brookline-bank-beacon-financial/
@@ -495,7 +495,7 @@ There are two areas where USB should build, both small and both internal.
 Most categories. The vendor recommendations below are filtered to vendors with named community-bank customers, transparent pricing or analyst-estimated pricing, and a regulatory profile that survives diligence. Detailed vendor profiles are in the briefs received during research; the names and use cases are summarized here.
 
 **Productivity (full-headcount deployment):**
-- Microsoft 365 Copilot Enterprise. $30 per user per month list (annual commit).[^copilot-price] Microsoft 365 Copilot Business is $18/user/month promo through June 30, 2026, then $21/user/month, but Enterprise is the right tier for a regulated bank. Standard contract supports no-training commitments and tenant isolation. The lowest-risk first AI deployment.
+- Microsoft 365 Copilot Enterprise. $30 per user per month list (annual commit).[^copilot-price] Standard contract supports no-training commitments and tenant isolation. The lowest-risk first AI deployment.
 
 **Email and endpoint defense:**
 - Abnormal Security. Behavioral AI for inbound email. Sits on top of Microsoft 365 or Google Workspace.
@@ -542,7 +542,7 @@ Three vendor-level items the board should be aware of when reviewing third-party
 [^verafin-scale]: Per Nasdaq Verafin's homepage. Verify at https://verafin.com
 [^ncino-scale]: Per nCino's homepage. Verify at https://www.ncino.com
 [^glia-scale]: Per Glia's website. Verify at https://www.glia.com
-[^copilot-price]: Microsoft 365 Copilot list pricing as of May 2026. Enterprise tier $30/user/month annual commit; Business tier $18/user/month promo through June 30, 2026, rising to $21/user/month thereafter. https://www.microsoft.com/en-us/microsoft-365-copilot/pricing-new
+[^copilot-price]: Microsoft 365 Copilot Enterprise list pricing as of May 2026. $30/user/month annual commit. https://www.microsoft.com/en-us/microsoft-365-copilot/pricing-new
 
 ---
 
