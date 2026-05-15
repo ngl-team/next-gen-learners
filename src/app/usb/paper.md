@@ -1,7 +1,6 @@
 # Artificial Intelligence at a $3B Community Bank: A Research Brief for Union Savings Bank
 
 **Author**: Brayan Tenesaca
-**Intended readers**: USB Board of Directors and Chelen Reyes, CEO
 **Date**: May 3, 2026
 
 ---
