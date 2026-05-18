@@ -16,36 +16,15 @@ export const metadata: Metadata = {
 };
 
 const PHISHING_CHART = `flowchart TB
-    External(["Email arrives in Gmail"])
+    A["Step 1. Email arrives<br/>in the teacher's Gmail tab"]
+    B["Step 2. Extension reads<br/>the sender's display name and domain<br/>(runs on the teacher's device)"]
+    C["Step 3. Compare against<br/>the trusted contacts list<br/>(stored on the same device)"]
+    D["Step 4. If the display name matches<br/>but the domain does not,<br/>a red warning appears above the email"]
 
-    subgraph browser["Teacher's Chrome browser. All local."]
-        direction TB
-        Gmail["Gmail tab<br/>mail.google.com"]
-        Script["NGL extension code<br/>runs only inside the Gmail tab"]
-        Parser["Reads sender's display name<br/>and domain"]
-        NameCheck{"Display name matches<br/>a trusted contact?"}
-        DomainCheck{"Sender domain matches<br/>that contact's known domain?"}
-        Banner["Red warning banner<br/>injected above the email"]
-        Clean["No banner. Email appears normally."]
-        Store[("Local browser storage<br/>trusted contacts list<br/>mark-safe decisions<br/>stays on this device")]
-    end
+    A --> B --> C --> D
 
-    External --> Gmail
-    Gmail --> Script
-    Script --> Parser
-    Parser --> NameCheck
-    NameCheck -->|Yes, name matches| DomainCheck
-    NameCheck -->|No match| Clean
-    DomainCheck -->|Domain matches| Clean
-    DomainCheck -->|Domain differs| Banner
-    Script <-.-> Store
-
-    classDef bound fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
-    classDef warn fill:#ffcdd2,stroke:#c62828,stroke-width:2px
-    classDef ok fill:#c8e6c9,stroke:#2e7d32
-    class browser bound
-    class Banner warn
-    class Clean ok`;
+    classDef step fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    class A,B,C,D step`;
 
 const PRIVACY_POINTS = [
   {
@@ -126,102 +105,109 @@ export default function PhishingArchitecturePage() {
           </p>
         </Section>
 
-        <Section title="Architecture">
+        <Section title="How it works">
           <MermaidDiagram chart={PHISHING_CHART} id="phishing" />
         </Section>
 
-        <Section title="Privacy boundaries">
-          <ul className="space-y-5">
-            {PRIVACY_POINTS.map((p) => (
-              <li key={p.title}>
-                <h3 className="font-semibold text-[#1E1B4B] mb-1">{p.title}</h3>
-                <p className="text-[#1E1B4B]/75 leading-relaxed">{p.body}</p>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        <Section title="How trusted contacts gets populated">
-          <p className="text-[#1E1B4B]/75 leading-relaxed mb-4">
-            Two paths. The teacher controls both.
+        <Section title="More information">
+          <p className="text-sm text-[#1E1B4B]/60 mb-4">
+            Tap any section to read more.
           </p>
-          <ol className="space-y-3 text-[#1E1B4B]/75 leading-relaxed">
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Auto-bootstrap (opt-in).</span>{' '}
-              On first install the extension can scan the user&apos;s last 90 days of sent mail and build a list of people they regularly email. The mapping is name to known domain.
-            </li>
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Manual add.</span>{' '}
-              The teacher can add or edit entries any time. Useful for new colleagues, family members, vendors.
-            </li>
-          </ol>
-          <p className="text-[#1E1B4B]/75 leading-relaxed mt-4">
-            The list lives on the teacher&apos;s machine only.
-          </p>
-        </Section>
-
-        <Section title="What gets flagged vs left alone">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[#1E1B4B]/10">
-                  <th className="text-left py-3 pr-4 font-semibold text-[#1E1B4B]">Scenario</th>
-                  <th className="text-left py-3 font-semibold text-[#1E1B4B] w-20">Flag?</th>
-                </tr>
-              </thead>
-              <tbody>
-                {FLAG_CASES.map((c) => (
-                  <tr key={c.scenario} className="border-b border-[#1E1B4B]/5">
-                    <td className="py-3 pr-4 text-[#1E1B4B]/75">{c.scenario}</td>
-                    <td
-                      className={
-                        c.flag === 'Yes'
-                          ? 'py-3 font-bold text-[#c62828]'
-                          : 'py-3 font-semibold text-[#2e7d32]'
-                      }
-                    >
-                      {c.flag}
-                    </td>
-                  </tr>
+          <div className="space-y-3">
+            <Disclosure title="Privacy boundaries">
+              <ul className="space-y-5">
+                {PRIVACY_POINTS.map((p) => (
+                  <li key={p.title}>
+                    <h3 className="font-semibold text-[#1E1B4B] mb-1">{p.title}</h3>
+                    <p className="text-[#1E1B4B]/75 leading-relaxed">{p.body}</p>
+                  </li>
                 ))}
-              </tbody>
-            </table>
+              </ul>
+            </Disclosure>
+
+            <Disclosure title="How trusted contacts gets populated">
+              <p className="text-[#1E1B4B]/75 leading-relaxed mb-4">
+                Two paths. The teacher controls both.
+              </p>
+              <ol className="space-y-3 text-[#1E1B4B]/75 leading-relaxed">
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Auto-bootstrap (opt-in).</span>{' '}
+                  On first install the extension can scan the user&apos;s last 90 days of sent mail and build a list of people they regularly email. The mapping is name to known domain.
+                </li>
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Manual add.</span>{' '}
+                  The teacher can add or edit entries any time. Useful for new colleagues, family members, vendors.
+                </li>
+              </ol>
+              <p className="text-[#1E1B4B]/75 leading-relaxed mt-4">
+                The list lives on the teacher&apos;s machine only.
+              </p>
+            </Disclosure>
+
+            <Disclosure title="What gets flagged vs left alone">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[#1E1B4B]/10">
+                      <th className="text-left py-3 pr-4 font-semibold text-[#1E1B4B]">Scenario</th>
+                      <th className="text-left py-3 font-semibold text-[#1E1B4B] w-20">Flag?</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {FLAG_CASES.map((c) => (
+                      <tr key={c.scenario} className="border-b border-[#1E1B4B]/5">
+                        <td className="py-3 pr-4 text-[#1E1B4B]/75">{c.scenario}</td>
+                        <td
+                          className={
+                            c.flag === 'Yes'
+                              ? 'py-3 font-bold text-[#c62828]'
+                              : 'py-3 font-semibold text-[#2e7d32]'
+                          }
+                        >
+                          {c.flag}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[#1E1B4B]/75 leading-relaxed mt-4">
+                V1 is intentionally narrow. It catches the impersonation case (the most damaging) and ignores everything else. No false-positive noise.
+              </p>
+            </Disclosure>
+
+            <Disclosure title="What this is not">
+              <ul className="space-y-2">
+                {NOT_THIS.map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-[#1E1B4B]/75">
+                    <span className="text-[#4F46E5] font-bold mt-0.5">·</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </Disclosure>
+
+            <Disclosure title="Deployment model">
+              <ul className="space-y-3 text-[#1E1B4B]/75 leading-relaxed">
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Distribution.</span>{' '}
+                  A .crx file or a private Chrome Web Store listing scoped to the danbury.k12.ct.us domain.
+                </li>
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Install.</span>{' '}
+                  One click per teacher. No IT touch required after the initial push.
+                </li>
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Update.</span>{' '}
+                  Standard Chrome extension auto-update.
+                </li>
+                <li>
+                  <span className="font-semibold text-[#1E1B4B]">Removal.</span>{' '}
+                  Standard uninstall. Takes the local storage with it.
+                </li>
+              </ul>
+            </Disclosure>
           </div>
-          <p className="text-[#1E1B4B]/75 leading-relaxed mt-4">
-            V1 is intentionally narrow. It catches the impersonation case (the most damaging) and ignores everything else. No false-positive noise.
-          </p>
-        </Section>
-
-        <Section title="What this is not">
-          <ul className="space-y-2">
-            {NOT_THIS.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-[#1E1B4B]/75">
-                <span className="text-[#4F46E5] font-bold mt-0.5">·</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </Section>
-
-        <Section title="Deployment model">
-          <ul className="space-y-3 text-[#1E1B4B]/75 leading-relaxed">
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Distribution.</span>{' '}
-              A .crx file or a private Chrome Web Store listing scoped to the danbury.k12.ct.us domain.
-            </li>
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Install.</span>{' '}
-              One click per teacher. No IT touch required after the initial push.
-            </li>
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Update.</span>{' '}
-              Standard Chrome extension auto-update.
-            </li>
-            <li>
-              <span className="font-semibold text-[#1E1B4B]">Removal.</span>{' '}
-              Standard uninstall. Takes the local storage with it.
-            </li>
-          </ul>
         </Section>
 
         <Section title="Build effort">
@@ -254,5 +240,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       </h2>
       {children}
     </section>
+  );
+}
+
+function Disclosure({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="group rounded-lg border border-[#1E1B4B]/10 bg-white">
+      <summary className="cursor-pointer list-none px-5 py-4 font-semibold text-[#1E1B4B] flex items-center justify-between hover:bg-[#FAFBFF] transition select-none">
+        <span>{title}</span>
+        <span className="text-[#4F46E5] text-2xl font-light leading-none group-open:rotate-45 transition-transform">+</span>
+      </summary>
+      <div className="px-5 pb-5 pt-2 border-t border-[#1E1B4B]/10">
+        {children}
+      </div>
+    </details>
   );
 }
