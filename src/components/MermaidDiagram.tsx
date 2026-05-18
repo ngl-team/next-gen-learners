@@ -60,7 +60,7 @@ export function MermaidDiagram({ chart, id = 'mermaid' }: MermaidDiagramProps) {
 
   return (
     <div
-      className="bg-white border border-[#1E1B4B]/10 rounded-lg p-4 sm:p-8 overflow-x-auto [&_svg]:max-w-full [&_svg]:h-auto"
+      className="bg-white border border-[#1E1B4B]/10 rounded-lg p-4 sm:p-8 overflow-x-auto [&_svg]:max-w-full [&_svg]:h-auto [&_svg]:block [&_svg]:mx-auto"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );
