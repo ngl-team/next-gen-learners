@@ -127,6 +127,29 @@ export default function CoachArchitecturePage() {
           </p>
         </Section>
 
+        <Section title="What you can do with this">
+          <p className="text-[#1E1B4B]/75 leading-relaxed mb-5">
+            Built from your brief and the May 12 working session with your team. The five steps below are the system you described, translated into what someone would need to do to build it.
+          </p>
+          <p className="text-[#1E1B4B]/75 leading-relaxed mb-4">
+            Three ways this page is yours to use:
+          </p>
+          <ol className="space-y-3">
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">1.</span>
+              <span><strong className="text-[#1E1B4B] font-semibold">Walk anyone through the tool in thirty seconds.</strong> No engineer, vendor, or admin needs me on the line for the page to land.</span>
+            </li>
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">2.</span>
+              <span><strong className="text-[#1E1B4B] font-semibold">Evaluate any vendor against it.</strong> If a vendor cannot honor every step, especially where the data lives, they do not match your brief.</span>
+            </li>
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">3.</span>
+              <span><strong className="text-[#1E1B4B] font-semibold">Hand it to a builder.</strong> A developer has a clear specification to implement without further explanation from me.</span>
+            </li>
+          </ol>
+        </Section>
+
         <Section title="How it works">
           <MermaidDiagram chart={COACH_CHART} id="coach" />
         </Section>
