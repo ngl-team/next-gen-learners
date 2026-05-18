@@ -124,6 +124,72 @@ export default function PhishingArchitecturePage() {
 
         <Section title="How it works">
           <MermaidDiagram chart={PHISHING_CHART} id="phishing" />
+
+          <div className="mt-10">
+            <h3 className="text-sm font-bold uppercase tracking-[0.14em] text-[#1E1B4B]/60 mb-2">
+              What the teacher sees in Gmail
+            </h3>
+            <p className="text-sm text-[#1E1B4B]/60 mb-4 leading-relaxed">
+              Display name &ldquo;Kara Casimiro&rdquo; lands from a domain she does not use. The extension injects the warning banner above the email body.
+            </p>
+
+            <div className="rounded-lg border border-[#1E1B4B]/10 bg-white overflow-hidden shadow-sm">
+              <div className="border-b border-[#1E1B4B]/10 px-4 py-2 bg-[#FAFBFF] flex items-center gap-3 text-xs text-[#1E1B4B]/50">
+                <span>&larr; Inbox</span>
+                <span className="ml-auto">1 of 247</span>
+              </div>
+
+              <div className="px-5 sm:px-6 pt-5 pb-3">
+                <h4 className="text-base sm:text-lg font-semibold text-[#1E1B4B]">
+                  Quick favor before the board meeting
+                </h4>
+              </div>
+
+              <div className="px-5 sm:px-6 pb-4 flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#4F46E5] text-white flex items-center justify-center font-semibold text-sm shrink-0">
+                  KC
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm">
+                    <span className="font-semibold text-[#1E1B4B]">Kara Casimiro</span>
+                    <span className="text-[#1E1B4B]/60 break-all">
+                      {' '}&lt;kara.casimiro@gmail-securl.com&gt;
+                    </span>
+                  </div>
+                  <div className="text-xs text-[#1E1B4B]/50 mt-0.5">to me &middot; 2:47 PM</div>
+                </div>
+              </div>
+
+              <div className="mx-5 sm:mx-6 mb-4 rounded-md border-2 border-[#c62828] bg-[#FFEBEE] px-4 py-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-[#c62828] text-xl leading-none mt-0.5 font-bold" aria-hidden>
+                    &#9888;
+                  </span>
+                  <div className="flex-1 text-sm">
+                    <p className="font-semibold text-[#c62828]">Possible impersonation</p>
+                    <p className="text-[#c62828]/90 mt-1 leading-relaxed">
+                      The display name Kara Casimiro matches a trusted contact. The sender domain{' '}
+                      <span className="font-mono text-xs bg-white px-1.5 py-0.5 rounded">gmail-securl.com</span>
+                      {' '}does not match her known domain{' '}
+                      <span className="font-mono text-xs bg-white px-1.5 py-0.5 rounded">danbury.k12.ct.us</span>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 sm:px-6 pb-6 text-sm text-[#1E1B4B]/80 leading-relaxed">
+                <p>Hi there,</p>
+                <p className="mt-3">
+                  Are you at your desk? I need a quick favor before the 3pm board meeting. Can you pick up two $100 gift cards from the front office and text me a photo of the codes? Will reimburse tomorrow morning.
+                </p>
+                <p className="mt-3">
+                  Thanks,
+                  <br />
+                  Kara
+                </p>
+              </div>
+            </div>
+          </div>
         </Section>
 
         <Section title="More information">
