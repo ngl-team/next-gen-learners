@@ -121,10 +121,21 @@ export default function CoachArchitecturePage() {
           </p>
         </div>
 
-        <Section title="The loop in one line">
-          <p className="text-[#1E1B4B]/75 leading-relaxed">
-            The teacher records a lesson. The tool returns private feedback on tone, intonation, scaffolding language, student questions, and movement. The teacher applies the feedback and records again.
-          </p>
+        <Section title="The loop in three steps">
+          <ol className="space-y-3">
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">1.</span>
+              <span>The teacher records a lesson.</span>
+            </li>
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">2.</span>
+              <span>The tool returns private feedback on tone, intonation, scaffolding language, student questions, and movement.</span>
+            </li>
+            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
+              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">3.</span>
+              <span>The teacher applies the feedback and records again.</span>
+            </li>
+          </ol>
         </Section>
 
         <Section title="What you can do with this">
