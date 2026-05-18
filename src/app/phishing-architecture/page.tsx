@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 };
 
 const PHISHING_CHART = `flowchart TB
-    A["Step 1. Email arrives<br/>in the teacher's Gmail tab"]
-    B["Step 2. Extension reads<br/>the sender's display name and domain<br/>(runs on the teacher's device)"]
-    C["Step 3. Compare against<br/>the trusted contacts list<br/>(stored on the same device)"]
-    D["Step 4. If the display name matches<br/>but the domain does not,<br/>a red warning appears above the email"]
+    A["<b>Step 1. Receive</b><br/>Email arrives in the teacher's Gmail tab"]
+    B["<b>Step 2. Read</b><br/>The extension reads the sender's display name and domain on the teacher's device"]
+    C["<b>Step 3. Compare</b><br/>Match against the trusted contacts list stored on the same device"]
+    D["<b>Step 4. Warn</b><br/>If the display name matches but the domain does not, a red banner appears above the email"]
 
     A --> B --> C --> D
 
@@ -98,12 +98,6 @@ export default function PhishingArchitecturePage() {
             Prepared by Brayan Tenesaca, Co-Founder, Next Generation Learners
           </p>
         </div>
-
-        <Section title="The detection logic in one line">
-          <p className="text-[#1E1B4B]/75 leading-relaxed">
-            If the sender&apos;s display name matches a trusted contact but the domain does not match that contact&apos;s known domain, flag it. Otherwise, leave the email alone.
-          </p>
-        </Section>
 
         <Section title="What you can do with this">
           <p className="text-[#1E1B4B]/75 leading-relaxed mb-5">
@@ -231,12 +225,6 @@ export default function PhishingArchitecturePage() {
               </ul>
             </Disclosure>
           </div>
-        </Section>
-
-        <Section title="Build effort">
-          <p className="text-[#1E1B4B]/75 leading-relaxed">
-            Weekend-scale. Single content script, single background service worker, single options page for the trusted contacts editor. No backend to stand up.
-          </p>
         </Section>
 
         <section className="mt-16 pt-12 border-t border-[#1E1B4B]/10">

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 };
 
 const COACH_CHART = `flowchart TB
-    A["Step 1. Record<br/>Audio plus optional video,<br/>captured on the teacher's device"]
-    B["Step 2. Transcribe<br/>Audio becomes text<br/>without leaving the laptop"]
-    C["Step 3. Analyze<br/>Local model reviews tone, language,<br/>student questions, and movement"]
-    D["Step 4. Report<br/>Private feedback,<br/>visible only to the teacher"]
-    E["Step 5. Decide<br/>Teacher keeps it private,<br/>shares with one person, or deletes"]
+    A["<b>Step 1. Record</b><br/>Audio plus optional video, captured on the teacher's device"]
+    B["<b>Step 2. Transcribe</b><br/>Audio becomes text without leaving the laptop"]
+    C["<b>Step 3. Analyze</b><br/>Local model reviews tone, language, student questions, and movement"]
+    D["<b>Step 4. Report</b><br/>Private feedback, visible only to the teacher"]
+    E["<b>Step 5. Decide</b><br/>Teacher keeps it private, shares with one person, or deletes"]
 
     A --> B --> C --> D --> E
 
@@ -119,24 +119,22 @@ export default function CoachArchitecturePage() {
           <p className="text-sm text-[#1E1B4B]/50 mt-4">
             Prepared by Brayan Tenesaca, Co-Founder, Next Generation Learners
           </p>
-        </div>
 
-        <Section title="The loop in three steps">
-          <ol className="space-y-3">
-            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
-              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">1.</span>
-              <span>The teacher records a lesson.</span>
-            </li>
-            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
-              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">2.</span>
-              <span>The tool returns private feedback on tone, intonation, scaffolding language, student questions, and movement.</span>
-            </li>
-            <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
-              <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">3.</span>
-              <span>The teacher applies the feedback and records again.</span>
-            </li>
-          </ol>
-        </Section>
+          <div className="mt-8 rounded-lg border border-[#4F46E5]/20 bg-[#4F46E5]/5 px-5 py-4">
+            <p className="text-sm">
+              <span className="font-semibold text-[#4F46E5]">Try it: </span>
+              <Link
+                href="/coach"
+                className="text-[#4F46E5] hover:opacity-70 transition underline underline-offset-2 font-medium"
+              >
+                nextgenerationlearners.com/coach
+              </Link>
+            </p>
+            <p className="text-sm text-[#1E1B4B]/70 mt-1">
+              A working prototype. Open it, click record, see what comes back.
+            </p>
+          </div>
+        </div>
 
         <Section title="What you can do with this">
           <p className="text-[#1E1B4B]/75 leading-relaxed mb-5">
@@ -271,12 +269,6 @@ export default function CoachArchitecturePage() {
               </li>
             ))}
           </ul>
-        </Section>
-
-        <Section title="Build effort">
-          <p className="text-[#1E1B4B]/75 leading-relaxed">
-            Refinement of an existing prototype, not from scratch. The core record + transcribe + analyze loop already exists in NGL&apos;s stack. Refinement work targets the specific signals (tone, intonation, scaffolding, student questions, movement) and the local-only privacy posture.
-          </p>
         </Section>
 
         <section className="mt-16 pt-12 border-t border-[#1E1B4B]/10">
