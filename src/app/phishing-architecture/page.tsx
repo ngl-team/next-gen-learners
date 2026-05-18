@@ -21,14 +21,13 @@ const PHISHING_CHART = `flowchart TB
     subgraph browser["Teacher's Chrome browser. All local."]
         direction TB
         Gmail["Gmail tab<br/>mail.google.com"]
-        Script["NGL content script<br/>activates on inbox load"]
-        Parser["Parse email metadata<br/>display name + sender domain"]
+        Script["NGL extension code<br/>runs only inside the Gmail tab"]
+        Parser["Reads sender's display name<br/>and domain"]
         NameCheck{"Display name matches<br/>a trusted contact?"}
         DomainCheck{"Sender domain matches<br/>that contact's known domain?"}
         Banner["Red warning banner<br/>injected above the email"]
         Clean["No banner. Email appears normally."]
-        Worker["Background service worker"]
-        Store[("chrome.storage.local<br/>trusted contacts list<br/>user mark-safe decisions")]
+        Store[("Local browser storage<br/>trusted contacts list<br/>mark-safe decisions<br/>stays on this device")]
     end
 
     External --> Gmail
@@ -39,8 +38,7 @@ const PHISHING_CHART = `flowchart TB
     NameCheck -->|No match| Clean
     DomainCheck -->|Domain matches| Clean
     DomainCheck -->|Domain differs| Banner
-    Script <-.-> Worker
-    Worker <-.-> Store
+    Script <-.-> Store
 
     classDef bound fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
     classDef warn fill:#ffcdd2,stroke:#c62828,stroke-width:2px
@@ -55,8 +53,8 @@ const PRIVACY_POINTS = [
     body: 'No email content, metadata, or user behavior leaves the teacher\'s machine. The extension never talks to an NGL server. There is no NGL server.',
   },
   {
-    title: 'chrome.storage.local is the only data store',
-    body: 'Contains the trusted contacts list and the teacher\'s mark-safe decisions. Wiped when the extension is uninstalled.',
+    title: 'Local browser storage is the only data store',
+    body: 'Contains the trusted contacts list and the teacher\'s mark-safe decisions. Lives on the teacher\'s device only. Wiped when the extension is uninstalled.',
   },
   {
     title: 'No telemetry, no analytics, no update pings',

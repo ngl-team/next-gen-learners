@@ -21,12 +21,12 @@ const COACH_CHART = `flowchart TB
     subgraph laptop["Teacher's laptop. All local."]
         direction TB
         Record["Record lesson<br/>microphone + optional camera"]
-        Storage[("Encrypted local files<br/>only the teacher can open")]
-        Whisper["Local transcription<br/>Whisper running on-device"]
-        Analyze["Analysis engine<br/>tone of voice<br/>intonation<br/>scaffolding language<br/>student question count and type<br/>movement (if video)"]
+        Whisper["Local transcription<br/>converts audio to text on this laptop"]
+        Analyze["Analysis<br/>runs locally on the transcript and video frames"]
         Report["Feedback report<br/>teacher-only view"]
         Decide{"Teacher chooses what happens next"}
         Iterate["Record again<br/>apply the feedback"]
+        Storage[("Encrypted local files<br/>only the teacher can open")]
     end
 
     subgraph optional["Optional outbound. Teacher-initiated only."]
@@ -36,8 +36,7 @@ const COACH_CHART = `flowchart TB
     end
 
     Teacher --> Record
-    Record --> Storage
-    Storage --> Whisper
+    Record --> Whisper
     Whisper --> Analyze
     Analyze --> Report
     Report --> Decide
@@ -45,6 +44,9 @@ const COACH_CHART = `flowchart TB
     Decide -->|Share| ShareOne
     Decide -->|Delete| DeleteAll
     Iterate --> Record
+    Record -.-> Storage
+    Whisper -.-> Storage
+    Report -.-> Storage
 
     classDef bound fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
     classDef optBound fill:#fff8e1,stroke:#f57f17,stroke-width:2px,stroke-dasharray: 5 5
