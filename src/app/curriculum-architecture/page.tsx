@@ -111,7 +111,7 @@ export default function CurriculumArchitecturePage() {
             </li>
             <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
               <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">2.</span>
-              <span><strong className="text-[#1E1B4B] font-semibold">Show your team without me on the call.</strong> Christy, Danielle, or any teacher you would pilot with can see the proposed flow before committing.</span>
+              <span><strong className="text-[#1E1B4B] font-semibold">Show your team without me on the call.</strong> Dr. Zaleta, Danielle, or any teacher you would pilot with can see the proposed flow before committing.</span>
             </li>
             <li className="flex items-start gap-3 text-[#1E1B4B]/75 leading-relaxed">
               <span className="text-[#4F46E5] font-bold mt-0.5 shrink-0">3.</span>
